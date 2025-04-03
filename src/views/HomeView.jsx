@@ -1,6 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
+// -----------------------------------------------------------------------------
+//------ Styled Components   
+// -----------------------------------------------------------------------------
+
 const StyledHomeView = styled.div`
   display: flex;
   justify-content: center;
@@ -8,6 +12,9 @@ const StyledHomeView = styled.div`
   width: 100vw;
   height: 100vh;
 `
+// -----------------------------------------------------------------------------
+//------ HomeView   
+// -----------------------------------------------------------------------------
 
 const HomeView = () => {
   return <StyledHomeView />
