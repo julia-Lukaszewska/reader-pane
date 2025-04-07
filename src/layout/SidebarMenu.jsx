@@ -56,22 +56,22 @@ const SidebarMenu = ({ $isOpen }) => {
 
       {/* Reader view – opens reading mode (bookId to be replaced dynamically)   */}
       <Btn $variant="sidebar_btn" onClick={() => navigate('/read/:bookId')}>
-        Czytnik
+        Reader
       </Btn>
 
       {/* Library page – shows added books   */}
       <Btn $variant="sidebar_btn" onClick={() => navigate('/library')}>
-        Biblioteka
+        Library
       </Btn>
 
       {/* Settings page – app configuration   */}
       <Btn $variant="sidebar_btn" onClick={() => navigate('/settings')}>
-        Ustawienia
+        Settings
       </Btn>
 
       {/* Trash – shows deleted books or notes   */}
       <Btn $variant="sidebar_btn" onClick={() => navigate('/deleted')}>
-        Kosz
+        Archive
       </Btn>
     </StyledMenu>
   )

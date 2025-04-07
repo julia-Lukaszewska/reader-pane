@@ -81,6 +81,56 @@ const $variants = {
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);  
     transition: all 0.3s ease;  
   `,
+  // ---------------------------------------------------------------------------
+  //------ Close Icon Btn   
+  // ---------------------------------------------------------------------------
+  close_icon_btn: css`
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1.6rem;
+    color: white;
+    cursor: pointer;
+    z-index: 2;
+    text-shadow: -1px 1px 3px #2a2a80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  `,
+
+  // ---------------------------------------------------------------------------
+  //------ Menu Btn   
+  // ---------------------------------------------------------------------------
+  menu_btn: css`
+    font-size: 1.5rem;
+    padding: 1.2rem 2.4rem;
+    border-radius: 2% 50%;
+    min-width: 18rem;
+    max-width: 18rem;
+    background: var(--gradient-metal-violet-mystic);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: var(--color-dark-900);
+
+    &:hover {
+      background: var(--gradient-metal-violet-midnight);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  `,
 
   // ---------------------------------------------------------------------------
   //------ Menu Tile Btn   

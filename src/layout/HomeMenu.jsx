@@ -2,18 +2,26 @@ import MenuTile from '../components/MenuTile'
 import styled from 'styled-components'
 import MenuTileBtn from '../components/MenuTileBtn'
 
-const StyledHomeMenu = styled.div`
-  position: absolute;
-  top: 70%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.7);
+// -----------------------------------------------------------------------------
+//------ StyledHomeMenu   
+// -----------------------------------------------------------------------------
 
-  width: 50vh;
+const StyledHomeMenu = styled.div`
+  position: absolute;  
+  top: 70%;  
+  left: 50%;  
+  transform: translate(-50%, -50%) scale(0.7);  
+
+  width: 50vh;  
   height: 50vh;
-  display: flex;
+  display: flex;  
   flex-direction: column;
-  gap: 20px;
+  gap: 20px;  
 `
+
+// -----------------------------------------------------------------------------
+//------ HomeMenu component   
+// -----------------------------------------------------------------------------
 
 const HomeMenu = () => {
   const lastBookId = localStorage.getItem('lastBookId')
@@ -24,7 +32,7 @@ const HomeMenu = () => {
       <MenuTile
         name="library"
         route="/library"
-        color="var(--color-metal-blue-light)" /* Nowy kolor dla kafelka */
+        color="var(--color-metal-blue-light)"
         position={{ x: '0%', y: '0%' }}
         label="Library"
       >
@@ -34,7 +42,7 @@ const HomeMenu = () => {
       <MenuTile
         name="reader"
         route="/read/1"
-        color="var(--color-metal-blue-dark)" /* Zmieniony kolor dla "reader" */
+        color="var(--color-metal-blue-dark)"
         position={{ x: '0%', y: '-100%' }}
         label="Reader"
       >
@@ -44,7 +52,7 @@ const HomeMenu = () => {
       <MenuTile
         name="settings"
         route="/settings"
-        color="var(--color-metal-blue-deep)" /* Nowy kolor dla ustawień */
+        color="var(--color-metal-blue-deep)"
         position={{ x: '-100%', y: '0%' }}
         label="Settings"
       >

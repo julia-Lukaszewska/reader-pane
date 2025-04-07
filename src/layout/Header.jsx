@@ -15,7 +15,7 @@ import { SlHome, SlMenu } from 'react-icons/sl' // Icons from react-icons
 // -----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
-  background: var(--header-bg);
+  background: var(--gradient-blue-clear);
   // Background gradient  
 
   grid-row: 1;
@@ -29,7 +29,7 @@ const HeaderStyled = styled.header`
 
   color: var(--color-dark-900);
   padding: 0 3rem;
-  box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   z-index: 100;
 `
 
@@ -47,6 +47,9 @@ const Title = styled.h1`
   text-align: center;  
   margin-left: -4rem;  
   font-family: 'Poppins', sans-serif;  
+  color: var(--color-dark-900);
+  text-shadow: var(--glass-text-shadow);
+  transition: color 0.3s ease;
 `
 
 // -----------------------------------------------------------------------------
