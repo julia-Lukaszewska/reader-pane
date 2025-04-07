@@ -2,17 +2,17 @@
 // === Imports ===  
 // =============================================================================
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'  
+import { createBrowserRouter, RouterProvider } from 'react-router-dom' // Sets up routing system with React Router  
+import GlobalStyles from './style/GlobalStyles' // Imports global styling rules  
+import MainLayout from './layout/MainLayout' // Main layout used across all views  
 
-import GlobalStyles from './style/GlobalStyles'  
-import MainLayout from './layout/MainLayout'  
-
-import HomeView from './views/HomeView'  
-import ReaderView from './views/ReaderView'  
-import MyLibraryView from './views/MyLibraryView'  
-import SettingsView from './views/SettingsView'  
-import PageNotFoundView from './views/PageNotFoundView'  
-import DeletedBooksView from './views/DeletedBooksView'  
+// Views for different application pages
+import HomeView from './views/HomeView' // Home screen view  
+import ReaderView from './views/ReaderView' // Reader for displaying book content  
+import MyLibraryView from './views/MyLibraryView' // User's library of books  
+import SettingsView from './views/SettingsView' // User settings and preferences  
+import PageNotFoundView from './views/PageNotFoundView' // Fallback view for unknown routes  
+import DeletedBooksView from './views/DeletedBooksView' // View for deleted items  
 
 // -----------------------------------------------------------------------------
 //------ Router configuration  
@@ -20,28 +20,28 @@ import DeletedBooksView from './views/DeletedBooksView'
 
 const router = createBrowserRouter([
   {
-    path: '/', // Root path of the app  
-    element: <MainLayout />, // Main layout with header and sidebar  
-    errorElement: <PageNotFoundView />, // Error view (e.g. 404)  
+    path: '/', // Root route of the application  
+    element: <MainLayout />, // Shared layout used across all pages  
+    errorElement: <PageNotFoundView />, // Displayed if path doesn't match any route  
     children: [
       {
-        index: true, // Default page – HomeView  
+        index: true, // Default child route ("/")  
         element: <HomeView />,
       },
       {
-        path: 'library', // Library view  
+        path: 'library', // /library page  
         element: <MyLibraryView />,
       },
       {
-        path: 'read/:bookId', // Reader view with dynamic book ID  
+        path: 'read/:bookId', // Dynamic route for reading a book by ID  
         element: <ReaderView />,
       },
       {
-        path: 'settings', // Settings view  
+        path: 'settings', // /settings page  
         element: <SettingsView />,
       },
       {
-        path: 'deleted', // Deleted books view  
+        path: 'deleted', // /deleted page (trash)  
         element: <DeletedBooksView />,
       },
     ],
@@ -55,15 +55,14 @@ const router = createBrowserRouter([
 const AppRoutes = () => {
   return (
     <>
-      {/* GlobalStyles component   */}
+      {/* Inject global styles into the app   */}
       <GlobalStyles />
 
-      {/* RouterProvider component   */}
-
+      {/* Provides the routing context to the app   */}
       <RouterProvider router={router} />
     </>
   )
 }
 
- 
+// Export the component for use in index.jsx  
 export default AppRoutes

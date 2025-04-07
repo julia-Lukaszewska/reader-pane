@@ -12,6 +12,7 @@ const StyledToolbar = styled.nav`
   height: 8vh;  
   width: 100vw;  
   padding: 2rem 3rem;  
+  background: var(--toolbar-bg);  
 `
 
 // -----------------------------------------------------------------------------
