@@ -1,3 +1,7 @@
+// -----------------------------------------------------------------------------
+//------ Header: Top navigation bar component  
+// -----------------------------------------------------------------------------
+
 import React, { useContext } from 'react' // React library for building user interfaces  
 import { AppContext } from '../context/AppContext' // AppContext for global state management  
 import styled from 'styled-components' // Styled-components for styling with CSS in JS  
@@ -11,15 +15,19 @@ import { SlHome, SlMenu } from 'react-icons/sl' // Icons from react-icons
 // -----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
-  background: var(--gradient-metal-blue-light); // zamiast indigo-shadow
+  background: var(
+    --gradient-metal-blue-light
+  ); // Background gradient  
 
   grid-row: 1;
   grid-column: 1/3;
   height: 10vh;
   width: 100vw;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   color: var(--color-dark-900);
   padding: 0 3rem;
   box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.3);
@@ -57,31 +65,32 @@ const BtnGroup = styled.div`
 // -----------------------------------------------------------------------------
 
 const Header = ({ onToggleSidebar }) => {
-  const { dispatch } = useContext(AppContext) // Access context for dispatch  
-  const navigate = useNavigate() // Navigation hook  
-  const location = useLocation() // Location hook  
-  const isReaderView = location.pathname.startsWith('/read') // Check view  
+  const { dispatch } = useContext(AppContext) // Get dispatch function from context  
+  const navigate = useNavigate() // Hook for page navigation  
+  const location = useLocation() // Hook for current location path  
+  const isReaderView = location.pathname.startsWith('/read') // Check if in reader view  
 
-  const goHome = () => navigate('/') // Go to home  
-  const toggleTheme = () => dispatch({ type: 'TOGGLE_THEME' }) // Toggle app theme  
+  const goHome = () => navigate('/') // Navigate to homepage  
+  const toggleTheme = () => dispatch({ type: 'TOGGLE_THEME' }) // Dispatch theme toggle action  
 
   return (
     <HeaderStyled>
       <BtnGroup>
-        {/* Open menu button for sidebar   */}
+        {/* Menu button (hidden in reader view)   */}
         {!isReaderView && (
           <Btn
             $variant="circle_icon_btn"
-            onClick={onToggleSidebar} // Open sidebar menu  
-            ariaLabel="Open menu" // Accessibility label  
+            onClick={onToggleSidebar} // Trigger sidebar toggle  
+            ariaLabel="Open menu" // ARIA label for accessibility  
           >
-            <SlMenu /> {/* Sidebar icon   */}
+            <SlMenu /> {/* Menu icon   */}
           </Btn>
         )}
+
         <Btn
           $variant="circle_icon_btn"
-          onClick={goHome} // Go home  
-          ariaLabel="Go to home" // Accessibility label  
+          onClick={goHome} // Navigate to home  
+          ariaLabel="Go to home" // ARIA label for accessibility  
         >
           <SlHome /> {/* Home icon   */}
         </Btn>
@@ -95,5 +104,8 @@ const Header = ({ onToggleSidebar }) => {
   )
 }
 
-// Export header component  
+// -----------------------------------------------------------------------------
+//------ Export Header component   
+// -----------------------------------------------------------------------------
+
 export default Header
