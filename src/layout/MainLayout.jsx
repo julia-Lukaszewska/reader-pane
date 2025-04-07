@@ -23,7 +23,12 @@ const StyledMainLayout = styled.div`
       : '0 auto'}; // Conditional sidebar width  
   transition: grid-template-columns 0.4s ease;
   overflow: hidden;
-  background: var(--gradient-metal-blue-dark);
+  background: var(
+    --gradient-metal-blue-dark
+  );  
+  color: var(
+    --color-light-0
+  );  
 `
 
 // -----------------------------------------------------------------------------

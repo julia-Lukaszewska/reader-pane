@@ -15,9 +15,8 @@ import { SlHome, SlMenu } from 'react-icons/sl' // Icons from react-icons
 // -----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
-  background: var(
-    --gradient-metal-blue-light
-  ); // Background gradient  
+  background: var(--header-bg);
+  // Background gradient  
 
   grid-row: 1;
   grid-column: 1/3;

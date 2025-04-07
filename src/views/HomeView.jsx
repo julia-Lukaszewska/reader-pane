@@ -1,23 +1,51 @@
+// =============================================================================
+// === Imports ===  
+// =============================================================================
+
 import React from 'react'
 import styled from 'styled-components'
+import HomeMenu from '../layout/HomeMenu' // Home menu component  
 
 // -----------------------------------------------------------------------------
-//------ Styled Components   
+// === Styled Components ===  
 // -----------------------------------------------------------------------------
 
 const StyledHomeView = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 100vh;
+  position: relative;  
+  display: flex;  
+  justify-content: center;  
+  align-items: center;  
+
+  width: 100vw;  
+  height: 100%;  
+
+  background: var(
+    --gradient-blue-light
+  );  
+  color: var(--color-light-0);  
+
+  box-shadow: var(--glass-shadow);  
+
+  &:hover {
+    filter: brightness(1.05);  
+  }
 `
+
 // -----------------------------------------------------------------------------
-//------ HomeView   
+// === HomeView Component ===  
 // -----------------------------------------------------------------------------
 
 const HomeView = () => {
-  return <StyledHomeView />
+  return (
+    <StyledHomeView>
+      {/* Renderuje menu główne aplikacji   */}
+      <HomeMenu />
+    </StyledHomeView>
+  )
 }
+
+// -----------------------------------------------------------------------------
+// === Export ===  
+// -----------------------------------------------------------------------------
 
 export default HomeView

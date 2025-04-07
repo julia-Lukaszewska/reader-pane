@@ -8,6 +8,7 @@
 
 export const initialState = {
   theme: 'light', // Default theme is light  
+  activeItem: null, // Currently active item (e.g., book, article)  
 }
 
 // -----------------------------------------------------------------------------
@@ -22,7 +23,16 @@ export function appReducer(state, action) {
         ...state,
         theme: state.theme === 'light' ? 'dark' : 'light',
       }
-
+    case 'SET_ACTIVE_ITEM':
+      return {
+        ...state,
+        activeItem: action.payload, // Set active item to the one clicked  
+      }
+    case 'CLEAR_ACTIVE_ITEM':
+      return {
+        ...state,
+        activeItem: null, // Clear active item when navigating away  
+      }
     default:
       // Return current state if action is unknown  
       return state

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite && start chrome http://localhost:3000",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -29,6 +29,6 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "prettier": "^3.5.3",
-    "vite": "^6.2.0"
+    "vite": "^6.2.5"
   }
 }

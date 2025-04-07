@@ -17,9 +17,7 @@ const $variants = {
     background-color: var(--color-mint-200);  
     color: var(--color-aqua-200);  
     text-shadow: 0 1px 2px rgba(18, 33, 148, 0.151);  
-
     backdrop-filter: blur(6px);
-
     border: 0px solid rgba(142, 150, 158, 0.739);  
     box-shadow: 0 0.4rem 1rem rgba(2, 12, 59, 0.513);  
     border-radius: 10px;
@@ -48,7 +46,6 @@ const $variants = {
     padding: 0;  
     border-radius: 50%;  
     background: var(--bg-icon-default);  
-
     font-size: 2rem;  
     display: flex;  
     align-items: center;  
@@ -83,6 +80,43 @@ const $variants = {
     overflow: hidden;  
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);  
     transition: all 0.3s ease;  
+  `,
+
+  // ---------------------------------------------------------------------------
+  //------ Menu Tile Btn   
+  // ---------------------------------------------------------------------------
+  menu_tile_btn: css`
+    position: absolute;  
+    bottom: 2rem;  
+    left: 50%;  
+    transform: translateX(-50%);  
+    padding: 1rem 2rem;  
+    font-size: 1rem;  
+    background: var(
+      --gradient-blue-light
+    );  
+    color: var(--color-dark-900);  
+    border: none;  
+    border-radius: 1.5rem;  
+    text-transform: uppercase;  
+    letter-spacing: 1px;  
+    box-shadow: var(--shadow-icon);  
+    white-space: nowrap;  
+
+    &:hover {
+      background: var(
+        --gradient-blue-clear
+      );  
+      transform: translateX(-50%) scale(1.05);  
+      box-shadow: var(
+        --shadow-icon-hover
+      );  
+    }
+
+    &:active {
+      transform: scale(0.97);  
+      box-shadow: none;  
+    }
   `,
 }
 
