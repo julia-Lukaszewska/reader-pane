@@ -1,51 +1,49 @@
-// =============================================================================
-// === Imports ===  
-// =============================================================================
-
 import React from 'react'
 import styled from 'styled-components'
 import HomeMenu from '../layout/HomeMenu' // Home menu component  
+import { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
 
 // -----------------------------------------------------------------------------
-// === Styled Components ===  
+//------------- StyledHomeView   
 // -----------------------------------------------------------------------------
 
 const StyledHomeView = styled.div`
-  position: relative;  
-  display: flex;  
-  justify-content: center;  
-  align-items: center;  
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: 1fr auto 1fr;
+  justify-content: center;
+  align-items: center;
 
-  width: 100vw;  
-  height: 100%;  
+  width: 100vw;
+  height: 100%;
 
-  background: var(
-    --gradient-blue-light
-  );  
-  color: var(--color-light-0);  
+  background: var(--gradient-metal-deepblue-v7);
+  color: var(--color-light-0);
 
-  box-shadow: var(--glass-shadow);  
+  ${({ $blurred }) =>
+    $blurred &&
+    `
+    // background: var(--gradient-metal-deepblue-v9);
 
-  &:hover {
-    filter: brightness(1.05);  
-  }
+    transition: backdrop-filter 0.6s ease, background 0.6s ease;
+  `}
 `
 
 // -----------------------------------------------------------------------------
-// === HomeView Component ===  
-// -----------------------------------------------------------------------------
+//------ HomeView component   
+// -----------------------------------------------------------------------------S
 
 const HomeView = () => {
+  const { state } = useContext(AppContext)
+  const isTileActive = state.activeItem !== null
   return (
-    <StyledHomeView>
+    <StyledHomeView $blurred={isTileActive}>
       {/* Renderuje menu główne aplikacji   */}
       <HomeMenu />
     </StyledHomeView>
   )
 }
-
-// -----------------------------------------------------------------------------
-// === Export ===  
-// -----------------------------------------------------------------------------
 
 export default HomeView

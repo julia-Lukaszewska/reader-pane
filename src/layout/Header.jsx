@@ -15,8 +15,34 @@ import { SlHome, SlMenu } from 'react-icons/sl' // Icons from react-icons
 // -----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
-  background: var(--gradient-blue-clear);
-  // Background gradient  
+  background:
+    linear-gradient(
+      37deg,
+      #2f6eb23a 20%,
+      #6fafe642 45%,
+      #9bd4ff1c 70%,
+      #417cbf2f 100%
+    ),
+    linear-gradient(
+      125deg,
+      rgba(64, 172, 255, 0.549) 0%,
+      rgba(30, 32, 106, 0.47) 50%,
+      rgba(61, 105, 171, 0.08) 100%
+    ),
+    repeating-linear-gradient(
+      70deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(8, 75, 88, 0.578) 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(222, 222, 222, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(127, 196, 198, 0.441) 20%,
+      rgba(0, 0, 0, 0.02) 1px,
+      rgba(0, 0, 0, 0.02) 2px
+    );
 
   grid-row: 1;
   grid-column: 1/3;
@@ -27,10 +53,12 @@ const HeaderStyled = styled.header`
   align-items: center;
   justify-content: space-between;
 
-  color: var(--color-dark-900);
+  color: white;
   padding: 0 3rem;
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
+
+  border-bottom: 0.2rem solid rgba(150, 232, 255, 0.315); // Border color  
+
+  z-index: 1;
 `
 
 // -----------------------------------------------------------------------------
@@ -47,8 +75,8 @@ const Title = styled.h1`
   text-align: center;  
   margin-left: -4rem;  
   font-family: 'Poppins', sans-serif;  
-  color: var(--color-dark-900);
-  text-shadow: var(--glass-text-shadow);
+  color: white;
+  text-shadow: var(--color-);
   transition: color 0.3s ease;
 `
 
@@ -60,6 +88,7 @@ const BtnGroup = styled.div`
   display: flex;  
   align-items: center;  
   gap: 1.2rem;  
+  color: white;  
 `
 
 // -----------------------------------------------------------------------------
@@ -70,7 +99,7 @@ const Header = ({ onToggleSidebar }) => {
   const { dispatch } = useContext(AppContext) // Get dispatch function from context  
   const navigate = useNavigate() // Hook for page navigation  
   const location = useLocation() // Hook for current location path  
-  const isReaderView = location.pathname.startsWith('/read') // Check if in reader view  
+  const isHomeView = location.pathname === '/' // Check if current path is home  
 
   const goHome = () => navigate('/') // Navigate to homepage  
   const toggleTheme = () => dispatch({ type: 'TOGGLE_THEME' }) // Dispatch theme toggle action  
@@ -79,7 +108,7 @@ const Header = ({ onToggleSidebar }) => {
     <HeaderStyled>
       <BtnGroup>
         {/* Menu button (hidden in reader view)   */}
-        {!isReaderView && (
+        {!isHomeView && (
           <Btn
             $variant="circle_icon_btn"
             onClick={onToggleSidebar} // Trigger sidebar toggle  
@@ -88,18 +117,19 @@ const Header = ({ onToggleSidebar }) => {
             <SlMenu /> {/* Menu icon   */}
           </Btn>
         )}
-
-        <Btn
-          $variant="circle_icon_btn"
-          onClick={goHome} // Navigate to home  
-          ariaLabel="Go to home" // ARIA label for accessibility  
-        >
-          <SlHome /> {/* Home icon   */}
-        </Btn>
+        {!isHomeView && (
+          <Btn
+            $variant="circle_icon_btn"
+            onClick={goHome} // Navigate to home  
+            ariaLabel="Go to home" // ARIA label for accessibility  
+          >
+            <SlHome /> {/* Home icon   */}
+          </Btn>
+        )}
       </BtnGroup>
       <Title>Pane</Title> {/* App title   */}
       <BtnGroup>
-        <Switch variant="theme" onClick={toggleTheme} />{' '}
+        <Switch variant="theme" onClick={toggleTheme} />
         {/* Theme switcher   */}
       </BtnGroup>
     </HeaderStyled>

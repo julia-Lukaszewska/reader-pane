@@ -21,14 +21,14 @@ const StyledMenu = styled.nav`
 
   // Animate each direct child (button)
   & > * {
-    opacity: ${({ $isOpen }) =>
-      $isOpen
-        ? 1
-        : 0}; // Show or hide based on sidebar state  
     transform: ${({ $isOpen }) =>
       $isOpen
         ? 'translateX(0)'
         : 'translateX(10vw)'}; // Slide in/out animation  
+    opacity: ${({ $isOpen }) =>
+      $isOpen
+        ? 1
+        : 0}; // Show or hide based on sidebar state  
     filter: ${({ $isOpen }) =>
       $isOpen
         ? 'brightness(1)'
@@ -54,8 +54,8 @@ const SidebarMenu = ({ $isOpen }) => {
         Strona Główna
       </Btn>
 
-      {/* Reader view – opens reading mode (bookId to be replaced dynamically)   */}
-      <Btn $variant="sidebar_btn" onClick={() => navigate('/read/:bookId')}>
+      
+      <Btn $variant="sidebar_btn" onClick={() => navigate('/read')}>
         Reader
       </Btn>
 

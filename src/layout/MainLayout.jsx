@@ -8,7 +8,6 @@ import { Outlet, useLocation } from 'react-router-dom' // Routing tools
 import styled from 'styled-components' // Styling using styled-components  
 import Header from './Header' // Header component  
 import Sidebar from './Sidebar' // Sidebar component  
-import Toolbar from './Toolbar' // Toolbar component (reserved)  
 
 // -----------------------------------------------------------------------------
 //------ StyledMainLayout  
@@ -19,13 +18,11 @@ const StyledMainLayout = styled.div`
   grid-template-rows: 10vh auto;
   grid-template-columns: ${({ $isSidebarOpen }) =>
     $isSidebarOpen
-      ? '20rem auto'
-      : '0 auto'}; // Conditional sidebar width  
+      ? '20rem auto 20rem'
+      : '0 auto 0'}; // Conditional sidebar width  
   transition: grid-template-columns 0.4s ease;
   overflow: hidden;
-  background: var(
-    --gradient-metal-blue-dark
-  );  
+  background: var(--gradient-metal-deepblue-v7);
   color: var(
     --color-light-0
   );  
@@ -40,11 +37,7 @@ const StyledMain = styled.main`
   height: 100%;  
   grid-row: 2;  
   grid-column: 2;  
-  background-image: var(--gradient-metal-blue-light);
-  background-size: cover;  
-  background-position: center;  
-  background-repeat: no-repeat;  
-  background-color: var(--main-layout-background);  
+  background-color: var(--see-07);
   z-index: 200;  
 `
 
@@ -55,18 +48,19 @@ const StyledMain = styled.main`
 const MainLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false) // Sidebar open/close state  
   const location = useLocation() // Access current path  
-  const isReaderView = location.pathname.startsWith('/read') // Check if in reader view  
+  // const isReaderView = location.pathname.startsWith('/read') // Check if in reader view  
+  const isHomeView = location.pathname === '/' // Check if in home view  
 
   useEffect(() => {
     setSidebarOpen(false) // Auto-close sidebar on route change  
   }, [location.pathname])
 
   return (
-    <StyledMainLayout $isSidebarOpen={!isReaderView && isSidebarOpen}>
+    <StyledMainLayout $isSidebarOpen={!isHomeView && isSidebarOpen}>
       <Header onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
       {/* Header with toggle function for sidebar   */}
 
-      {!isReaderView && <Sidebar $isOpen={isSidebarOpen} />}
+      {!isHomeView && <Sidebar $isOpen={isSidebarOpen} />}
       {/* Sidebar only outside reader view   */}
 
       <StyledMain>

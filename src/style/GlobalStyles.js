@@ -1,189 +1,326 @@
 // -----------------------------------------------------------------------------
-//------ GlobalStyles.js: Global styles with CSS variables and theming
- 
+//------ GlobalStyles: Global CSS variables and base styles  
 // -----------------------------------------------------------------------------
 
-import { createGlobalStyle } from 'styled-components' // Utility for global styles  
-
-// -----------------------------------------------------------------------------
-//------ GlobalStyles component  
-// -----------------------------------------------------------------------------
+import { createGlobalStyle } from 'styled-components'
+import resetBaseStyles from './resetBaseStyles'
 
 const GlobalStyles = createGlobalStyle`
-  // ---------------------------------------------------------------------------
-  //------ Color variables – light theme  
-  // ---------------------------------------------------------------------------
-  :root {
-    // Base background and text colors
-    --color-light-0:   #ffffff;   // Pure white background  
-    --color-light-100: #f7faff;   // App main background  
-    --color-light-200: #eaf3fb;   // Card or section background  
-    --color-dark-900:  #0b1626;   // Main text color  
 
-    // Accent blue shades
-    --color-blue-100:  #dceaf8;   // Very light accent  
-    --color-blue-200:  #b9d3ee;   // Light blue  
-    --color-blue-300:  #8ab5dc;   // Medium light blue  
-    --color-blue-400:  #609bd0;   // Medium blue  
-    --color-blue-500:  #3f83c5;   // Primary button blue  
-    --color-blue-600:  #2c6aad;   // Darker blue  
-    --color-blue-700:  #1f518a;   // Icons and headers  
-
-    // Glassmorphism effect
-    --glass-bg: var(--gradient-blue-glass);                // Transparent glass background  
-    --glass-blur: blur(8px);                               // Glass blur effect  
-    --glass-shadow: 0 0.8rem 2rem rgba(60, 100, 180, 0.2);      // Glass shadow  
-    --glass-text-shadow: -1px 1px 2px rgba(60, 100, 180, 0.3);   // Text shadow  
-    --shadow-lg: 0 2.4rem 3.2rem rgba(100, 150, 200, 0.15);
-
-    // Icon and button styles
-    --color-icon-default: var(--color-blue-700);            // Default icon color  
-    --bg-icon-default: rgba(255, 255, 255, 0.05);           // Default button bg  
-    --bg-icon-hover: rgba(255, 255, 255, 0.1);              // Hover bg  
-    --shadow-icon: 0 0 0.8rem rgba(60, 100, 180, 0.25);     // Button shadow  
-    --shadow-icon-hover: 0 0 1.5rem rgba(60, 100, 180, 0.35);  
-
-    // Gradients
-    --gradient-blue-light: linear-gradient(to bottom right, #e3f2fd, #bbdefb, #90caf9);  
-    --gradient-blue-clear: linear-gradient(to top left, #f5fbff, #e0f0ff, #cde5ff);  
-    --gradient-blue-glass: linear-gradient(to bottom right, rgba(240,248,255,0.6), rgba(224,240,255,0.4));  
-    --gradient-blue-dark: linear-gradient(to bottom right, #1f518a, #0d1f3a, #1b0039);  
-
-    // Utility variables
-    --backdrop-color: rgba(255,255,255,0.1);  // Backdrop blur color  
-    --shadow-lg: 0 2.4rem 3.2rem rgba(0,0,0,0.12);  
-    --border-radius: 7px;  
-  }
+:root {
 
   // ---------------------------------------------------------------------------
-//------ Color variables – dark theme  
-// ---------------------------------------------------------------------------
-
-[data-theme="dark"] {
-  // Base background and text colors
-  --color-light-0:   #0b1626;   // Darkest background  
-  --color-light-100: #101d33;   // App main background  
-  --color-light-200: #182743;   // Card or section background  
-  --color-dark-900:  #ffffff;   // Main text color  
-
-  // Accent blue shades
-  --color-blue-100:  #2e3d56;   // Very light accent  
-  --color-blue-200:  #3a5272;   // Light blue  
-  --color-blue-300:  #4f6990;   // Medium light blue  
-  --color-blue-400:  #6783b0;   // Medium blue  
-  --color-blue-500:  #7fa1d2;   // Primary button blue  
-  --color-blue-600:  #a1c2f3;   // Darker blue  
-  --color-blue-700:  #cbe2ff;   // Icons and headers  
-
-  // Glassmorphism effect
-  --glass-bg: linear-gradient(to bottom right, rgba(30,40,60,0.5), rgba(20,30,50,0.4));                // Transparent glass background  
-  --glass-blur: blur(10px);                               // Glass blur effect  
-  --glass-shadow: 0 1rem 2rem rgba(70, 130, 180, 0.25);       // Glass shadow  
-  --glass-text-shadow: -1px 1px 2px rgba(70, 130, 180, 0.4);     // Text shadow  
-  --shadow-lg: 0 2.4rem 3.2rem rgba(50, 100, 160, 0.2);
-
-  // Icon and button styles
-  --color-icon-default: var(--color-blue-300);            // Default icon color  
-  --bg-icon-default: rgba(255, 255, 255, 0.1);           // Default button bg  
-  --bg-icon-hover: rgba(255, 255, 255, 0.15);             // Hover bg  
-  --shadow-icon: 0 0 0.8rem rgba(190,220,255,0.15);       // Button shadow  
-  --shadow-icon-hover: 0 0 1.5rem rgba(190,220,255,0.25); // Cień przy hoverze  
-
-  // Gradients
-  --gradient-blue-light: linear-gradient(to bottom right, #2c3e50, #34495e, #5d6d7e); // Darker shades of light blue  
-  --gradient-blue-clear: linear-gradient(to top left, #1c2632, #2a3b4c, #344c64); // Transparent gradient for dark mode  
-  --gradient-blue-glass: linear-gradient(to bottom right, rgba(30, 60, 100, 0.9), rgba(0, 60, 120, 0.8));  // Glass effect in dark mode  
-  --gradient-blue-dark: linear-gradient(to bottom right, #1f518a, #0d1f3a, #1b0039); // Keep the same dark gradient  
-
-  // Utility variables
-  --backdrop-color: rgba(0,8,20,0.2);  // Backdrop blur color  
-  --shadow-lg: 0 2.4rem 3.2rem rgba(0,0,0,0.12);  
-  --border-radius: 7px;  
-}
-
+  //------ Basic colors: light and dark shades  
+  // ---------------------------------------------------------------------------
+       --color-light-0:   #ffffff;
+       --color-light-100: #f7faff;
+       --color-light-200: #eaf3fb;
+       --color-dark-900:  #0b1626;
 
   // ---------------------------------------------------------------------------
-  //------ Reset and base styles  
+  //------ Accent blue shades  
   // ---------------------------------------------------------------------------
-  * {
-    box-sizing: border-box;  
-    margin: 0;
-    padding: 0;
-    transition: background-color 0.3s, border 0.3s, color 0.3s;  
-  }
-
-  html {
-    font-size: 62.5%;  
-  }
-
-  body {
-    font-family: "Poppins", sans-serif;  
-    font-size: 1.6rem;
-    line-height: 1.5;
-    background-color: var(--color-light-100);  
-    color: var(--color-blue-700);  
-    min-height: 100vh;
-  }
+        --color-blue-100: #dceaf8;
+        --color-blue-200: #b9d3ee;
+        --color-blue-300: #8ab5dc;
+        --color-blue-400: #609bd0;
+        --color-blue-500: #3f83c5;
+        --color-blue-600: #2c6aad;
+        --color-blue-700: #1f518a;
 
   // ---------------------------------------------------------------------------
-  //------ Form elements  
+  //------ Icon colors and shadows  
   // ---------------------------------------------------------------------------
-  input,
-  button,
-  textarea,
-  select {
-    font: inherit;  
-    color: inherit;  
-    background: none;  
-    border: none;  
-    outline: none;  
-  }
-
-  button {
-    cursor: pointer;  
-    font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;  
-  }
-
-  *:disabled {
-    cursor: not-allowed;  
-  }
+        --color-icon-default: var(--color-blue-700);
+        --bg-icon-default: rgba(53, 38, 218, 0.194);
+        --bg-icon-hover: rgba(255, 255, 255, 0.1);
+        --shadow-icon: 0 0 0.8rem rgba(60, 100, 180, 0.25);
+        --shadow-icon-hover: 0 0 1.5rem rgba(60, 100, 180, 0.35);
 
   // ---------------------------------------------------------------------------
-  //------ Links and lists  
+  //------ SEE colors – semantic effects  
   // ---------------------------------------------------------------------------
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  ul {
-    list-style: none;
-  }
-
-  // ---------------------------------------------------------------------------
-  //------ Typography elements  
-  // ---------------------------------------------------------------------------
-  p,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    overflow-wrap: break-word;
-    hyphens: auto;
-  }
+        --see-01: rgba(0, 116, 210, 0.71);
+        --see-02: rgba(71, 175, 255, 0.98);
+        --see-03: rgba(31, 32, 109, 0.85);
+        --see-04: rgba(72, 254, 248, 0.07);
+        --see-05: rgb(0, 108, 197);
+        --see-06: rgba(207, 229, 255, 0.705);
+        --see-07: rgb(133, 175, 209);
+        --see-08: rgba(22, 140, 209, 0.151);
+        --see-akcent: rgb(194, 249, 255);
+        --see-akcent-02: hsl(210 70% 69% / 0.6);
+        --see-akcent-03: hsl(206 50% 61%);
 
   // ---------------------------------------------------------------------------
-  //------ Images  
+  //------ Tile background active (MenuTile)  
   // ---------------------------------------------------------------------------
-  img {
-    max-width: 100%;
-    display: block;
-  }
-`
+       --tile-bg-active:
+         linear-gradient(
+           22deg,
+           #d2ecff73 0%,
+           #9fcff310 27%,
+           #68a6dca2 49%,
+           #b2d8ff4e 76%,
+           #5c9de695 100%
+         ),
+         linear-gradient(
+           115deg,
+           rgba(255, 255, 255, 0.2) 0%,
+           rgba(136, 168, 208, 0.177) 40%,
+           rgba(255, 255, 255, 0.06) 100%
+         ),
+         repeating-linear-gradient(
+           25deg,
+           rgba(255, 255, 255, 0.05) 0px,
+           rgba(255, 255, 255, 0.05) 1.5px,
+           rgba(0, 0, 0, 0.03) 1.5px,
+           rgba(0, 0, 0, 0.03) 3px
+         );
 
-// ---------------------------------------------------------------------------
-//------ Export GlobalStyles  
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  //------ Tile shadow active (MenuTile)  
+  // ---------------------------------------------------------------------------
+        --tile-shadow-active:
+          0 2rem 5rem rgba(11, 40, 73, 0.55),
+          inset 0 0 1.5rem rgba(88, 83, 150, 0.4),
+          0 0 1.5rem rgba(255, 255, 255, 0.3);
+
+  // ---------------------------------------------------------------------------
+  //------ Gradients: blue clear  
+  // ---------------------------------------------------------------------------
+       --gradient-blue-clear:
+         linear-gradient(
+           to top left,
+           #f5fbff,
+           rgb(80, 138, 192),
+           #cde5ff
+         );
+
+  // ---------------------------------------------------------------------------
+  //------ Gradients: metal deep blue v7  
+  // ---------------------------------------------------------------------------
+        --gradient-metal-deepblue-v7:
+          linear-gradient(
+            22deg,
+            #d2ecff 0%,
+            #9fcff3 27%,
+            #68a5dc 49%,
+            #b2d8ff 76%,
+            #4178b8 100%
+          ),
+          linear-gradient(
+            115deg,
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(0, 0, 0, 0.03) 40%,
+            rgba(255, 255, 255, 0.06) 100%
+          ),
+          repeating-linear-gradient(
+            25deg,
+            rgba(255, 255, 255, 0.05) 0px,
+            rgba(255, 255, 255, 0.05) 1.5px,
+            rgba(0, 0, 0, 0.03) 1.5px,
+            rgba(0, 0, 0, 0.03) 3px
+          );
+
+//--------------------------------------------------
+//------ gradient-main
+//--------------------------------------------------- 
+
+        --gradient-main:
+          linear-gradient(
+            37deg,
+            #2f6eb23a 20%,
+            #6fafe642 45%,
+            #9bd4ff1c 70%,
+            #417cbf2f 100%
+          ),
+          linear-gradient(
+            125deg,
+            rgba(64, 172, 255, 0.549) 0%,
+            rgba(30, 32, 106, 0.47) 50%,
+            rgba(61, 105, 171, 0.08) 100%
+          ),
+          repeating-linear-gradient(
+            70deg,
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(8, 75, 88, 0.578) 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(222, 222, 222, 0.03) 4px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(127, 196, 198, 0.441) 20%,
+            rgba(0, 0, 0, 0.02) 1px,
+            rgba(0, 0, 0, 0.02) 2px
+          );
+
+//------------------------------------------------
+//------ gradient-main-v2
+//--------------------------------------------------
+
+        --gradient-main-v2:
+          linear-gradient(
+            37deg,
+            #3655a994 20%,
+            #b1daff95 45%,
+            #b2d8ff 70%,
+            #438bbcb6 100%
+          ),
+          linear-gradient(
+            125deg,
+            rgba(7, 26, 41, 0.549) 0%,
+            rgba(24, 24, 40, 0.47) 50%,
+            rgba(61, 105, 171, 0.08) 100%
+          ),
+          repeating-linear-gradient(
+            70deg,
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(8, 75, 88, 0.578) 2px,
+            rgba(255, 255, 255, 0.92) 2px,
+            rgba(55, 94, 102, 0.03) 4px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(127, 196, 198, 0.441) 20%,
+            rgba(0, 0, 0, 0.02) 1px,
+            rgba(0, 0, 0, 0.348) 2px
+          );
+
+//--------------------------------------------------     
+//------ gradient-main-v3
+//--------------------------------------------------   
+
+        --gradient-main-v3:
+          linear-gradient(
+            138deg,
+            #a3d3f1b8 20%,
+            #73b2e9d2 45%,
+            #3a93ff92 70%,
+            #a2daffb6 100%
+          ),
+          linear-gradient(
+            15deg,
+            rgba(7, 26, 41, 0.549) 0%,
+            rgba(24, 24, 40, 0.47) 50%,
+            rgba(61, 105, 171, 0.08) 100%
+          ),
+          repeating-linear-gradient(
+            310deg,
+            rgba(255, 255, 255, 0.04) 0px,
+            rgba(8, 75, 88, 0.578) 2px,
+            rgba(255, 255, 255, 0.33) 2px,
+            rgba(55, 94, 102, 0.03) 4px
+          ),
+          repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(127, 196, 198, 0.441) 20%,
+            rgba(0, 0, 0, 0.02) 1px,
+            rgba(0, 0, 0, 0.348) 2px
+          );
+
+//--------------------------------------------------     
+//------ gradient-main-v4
+//--------------------------------------------------   
+
+         --gradient-main-v4:
+           linear-gradient(
+             138deg,
+             #a3c7f1cf 20%,
+             #73b2e9f8 45%,
+             #3a93ff92 70%,
+             #1d83c7df 100%
+           ),
+           linear-gradient(
+             15deg,
+             rgb(7, 26, 41) 0%,
+             rgba(19, 61, 80, 0.589) 50%,
+             rgba(118, 158, 218, 0.384) 100%
+           ),
+           repeating-linear-gradient(
+             310deg,
+             rgba(255, 255, 255, 0.04) 0rem,
+             rgba(8, 75, 88, 0.578) 0.2rem,
+             rgba(106, 118, 145, 0.33) 0.22rem,
+             rgba(55, 94, 102, 0.03) 0.3rem
+           ),
+           repeating-linear-gradient(
+             -45deg,
+             rgba(255, 255, 255, 0.02) 0rem,
+             rgba(127, 196, 198, 0.441) 0.1rem,
+             rgba(0, 0, 0, 0.02) 0.1rem,
+             rgba(0, 0, 0, 0.062) 0.1rem
+           );
+//--------------------------------------------------     
+//------ gradient-main-v5
+//--------------------------------------------------   
+
+         --gradient-main-v5:
+           linear-gradient(
+             138deg,
+             #a3c7f1cf 20%,
+             #73b2e9f8 45%,
+             #97c3fad3 70%,
+             #66bdf7df 100%
+           ),
+           linear-gradient(
+             15deg,
+             rgb(7, 26, 41) 0%,
+             rgba(19, 61, 80, 0.589) 50%,
+             rgba(118, 158, 218, 0.384) 100%
+           ),
+           repeating-linear-gradient(
+             310deg,
+             rgba(255, 255, 255, 0.04) 0rem,
+             rgba(8, 75, 88, 0.578) 0.2rem,
+             rgba(106, 118, 145, 0.33) 0.22rem,
+             rgba(55, 94, 102, 0.03) 0.3rem
+           ),
+           repeating-linear-gradient(
+             -45deg,
+             rgba(255, 255, 255, 0.02) 0rem,
+             rgba(127, 196, 198, 0.441) 0.1rem,
+             rgba(0, 0, 0, 0.02) 0.1rem,
+             rgba(0, 0, 0, 0.062) 0.1rem
+           );
+//--------------------------------------------------     
+//------ gradient-main-v6
+//--------------------------------------------------   
+              
+         --gradient-main-v6:
+           linear-gradient(
+             138deg,
+             #9bcaff1a 20%,
+             #73b2e92f 45%,
+             #97c3fa24 70%,
+             #66bdf742 100%
+           ),
+           linear-gradient(
+             15deg,
+             rgba(23, 94, 148, 0.479) 0%,
+             rgba(79, 174, 218, 0.24) 50%,
+             rgba(118, 158, 218, 0.116) 100%
+           ),
+           repeating-linear-gradient(
+             310deg,
+             rgba(255, 255, 255, 0.253) 0rem,
+             rgba(212, 234, 238, 0.027) 0.2rem,
+             rgba(106, 118, 145, 0.33) 0.52rem,
+             rgba(55, 94, 102, 0.03) 0.3rem
+           ),
+           repeating-linear-gradient(
+             -45deg,
+             rgba(255, 255, 255, 0.02) 0rem,
+             rgba(214, 254, 255, 0.185) 0.1rem,
+             rgba(170, 255, 248, 0.02) 0.1rem,
+             rgba(247, 247, 247, 0.062) 0.1rem
+           );
+         }
+       
+ ${resetBaseStyles}
+ 
+   `
 export default GlobalStyles

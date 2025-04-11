@@ -9,19 +9,17 @@ const ReaderContainer = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-  padding: 2rem;
-  background: var(--gradient-blue-clear); // 🌞 jasny lub 🌙 ciemny gradient
-  transition: background 0.3s ease;
+
   box-sizing: border-box;
+  z-index: 200;
 `
 
 const ToolbarPlaceholder = styled.div`
-  background-color: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
   color: var(--color-dark-900);
   padding: 1.2rem 2rem;
   border-radius: var(--border-radius);
-  margin-bottom: 1rem;
+
+  background: var(--gradient-main);
   box-shadow: var(--glass-shadow);
   text-shadow: var(--glass-text-shadow);
   font-weight: bold;
@@ -31,12 +29,13 @@ const ToolbarPlaceholder = styled.div`
 
 const PDFViewPlaceholder = styled.div`
   flex: 1;
-  border: 2px dashed var(--color-blue-300);
-  border-radius: var(--border-radius);
+
   display: flex;
+
+  background: var(--gradient-main-v5);
   justify-content: center;
   align-items: center;
-  color: var(--color-dark-900);
+
   font-size: 1.6rem;
   text-align: center;
   transition: all 0.3s ease;

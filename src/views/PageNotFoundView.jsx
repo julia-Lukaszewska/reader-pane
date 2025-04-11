@@ -12,5 +12,4 @@ const PageNotFoundView = () => {
   )
 }
 
- 
 export default PageNotFoundView

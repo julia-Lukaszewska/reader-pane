@@ -1,18 +1,18 @@
-import styled from 'styled-components'
-import { FiPlus } from 'react-icons/fi'
+import styled from 'styled-components' // Styling with styled-components  
+import { FiPlus } from 'react-icons/fi' // Plus icon from Feather icons  
 
 // -----------------------------------------------------------------------------
-//------ Styled Components   
+//------ AddTile styled component  
 // -----------------------------------------------------------------------------
 
 const AddTile = styled.div`
   aspect-ratio: 2 / 3;
   width: var(--book-size, 150px);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border-radius: var(--border-radius);
-  box-shadow: var(--glass-shadow);
-  color: var(--color-dark-900);
+  background: var(--gradient-main);
+  backdrop-filter: blur(6px);
+  border-radius: var(--border-radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -22,33 +22,31 @@ const AddTile = styled.div`
   text-align: center;
   font-size: 0.9rem;
   padding: 1rem;
-  transition: all 0.3s ease;
 
   svg {
     font-size: 3rem;
     stroke-width: 3;
-    color: var(--color-icon-default);
+    color: white;
   }
 
   &:hover {
-    background-color: var(--bg-icon-hover);
     transform: translateY(-4px);
-    box-shadow: var(--shadow-icon-hover);
+    background-color: rgba(58, 138, 195, 0.86);
   }
-`
+`  
 
 // -----------------------------------------------------------------------------
-//------ AddBookTile Component   
+//------ AddBookTile component  
 // -----------------------------------------------------------------------------
 
-const AddBookTile = () => {
+const AddBookTile = ({ inputRef }) => {
   return (
-    <AddTile>
+    <AddTile onClick={() => inputRef.current?.click()}>
       <FiPlus />
-      <span>Dodaj książkę</span>
-      <small>Wgraj PDF</small>
+      <span>Dodaj książkę</span> 
+      <small>Wgraj PDF</small> 
     </AddTile>
   )
 }
 
-export default AddBookTile
+export default AddBookTile // Export component  

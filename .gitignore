@@ -8,6 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 /.tours/
 node_modules
+/docs/app-structure.md
+/server/clean-uploads.js
+/docs/
+# /server/uploads/
 dist
 dist-ssr
 *.local

@@ -16,7 +16,6 @@ const SettingsContainer = styled.div`
   background: var(--gradient-blue-clear);
 
   box-shadow: var(--shadow-lg);
-  transition: background 0.3s ease;
 `
 
 const Title = styled.h2`

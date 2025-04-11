@@ -1,22 +1,24 @@
 import MenuTile from '../components/MenuTile'
 import styled from 'styled-components'
-import MenuTileBtn from '../components/MenuTileBtn'
+import { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
 
 // -----------------------------------------------------------------------------
 //------ StyledHomeMenu   
 // -----------------------------------------------------------------------------
 
 const StyledHomeMenu = styled.div`
-  position: absolute;  
-  top: 70%;  
+  position: relative;  
+  top: 100%;  
   left: 50%;  
-  transform: translate(-50%, -50%) scale(0.7);  
-
-  width: 50vh;  
-  height: 50vh;
+  transform: translate(-50%, -50%) scale(1);  
+  grid-column: 2;
+  grid-row: 2;
+  width: 30vh;  
+  height: 30vh;
   display: flex;  
-  flex-direction: column;
-  gap: 20px;  
+
+  gap: 0px;  
 `
 
 // -----------------------------------------------------------------------------
@@ -24,8 +26,8 @@ const StyledHomeMenu = styled.div`
 // -----------------------------------------------------------------------------
 
 const HomeMenu = () => {
-  const lastBookId = localStorage.getItem('lastBookId')
-  const readerRoute = lastBookId ? `/read/${lastBookId}` : '/library'
+  const { state } = useContext(AppContext)
+  const isAnyTileActive = state.activeItem !== null
 
   return (
     <StyledHomeMenu>
@@ -35,29 +37,29 @@ const HomeMenu = () => {
         color="var(--color-metal-blue-light)"
         position={{ x: '0%', y: '0%' }}
         label="Library"
-      >
-        <MenuTileBtn label="Przejdź do biblioteki" route="/library" />
-      </MenuTile>
+        isAnyTileActive={isAnyTileActive}
+        buttonLabel="Przejdź do biblioteki"
+      ></MenuTile>
 
       <MenuTile
         name="reader"
-        route="/read/1"
+        route="/read"
         color="var(--color-metal-blue-dark)"
-        position={{ x: '0%', y: '-100%' }}
+        position={{ x: '0%', y: '-105%' }}
         label="Reader"
-      >
-        <MenuTileBtn label="Czytaj książkę" route={readerRoute} />
-      </MenuTile>
+        isAnyTileActive={isAnyTileActive}
+        buttonLabel="Czytaj książkę"
+      ></MenuTile>
 
       <MenuTile
         name="settings"
         route="/settings"
         color="var(--color-metal-blue-deep)"
-        position={{ x: '-100%', y: '0%' }}
+        position={{ x: '-105%', y: '0%' }}
         label="Settings"
-      >
-        <MenuTileBtn label="Ustawienia" route="/settings" />
-      </MenuTile>
+        isAnyTileActive={isAnyTileActive}
+        buttonLabel="Ustawienia"
+      ></MenuTile>
     </StyledHomeMenu>
   )
 }

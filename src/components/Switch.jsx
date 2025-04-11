@@ -4,7 +4,7 @@
 
 import { useContext } from 'react' // React hook for accessing context  
 import styled from 'styled-components' // CSS-in-JS library  
-import { AppContext } from '../context/AppContext.jsx' // Global state context  
+import { AppContext } from '../context/AppContext' // Global state context  
 import Btn from './Btn' // Custom button component  
 import { LuSun, LuMoon } from 'react-icons/lu' // Icons for theme switch  
 
@@ -24,10 +24,10 @@ const SwitchContent = styled.div`
 
 const Thumb = styled.div`
   position: absolute;
-  top: 2px;
-  left: ${({ theme }) => (theme === 'light' ? '2px' : 'calc(100% - 26px)')};
-  width: 24px;
-  height: 24px;
+  top: 0.3rem;
+  left: ${({ theme }) => (theme === 'light' ? '0.3rem' : 'calc(100% - 3rem)')};
+  width: 3.2rem;
+  height: 3.2rem;
   border-radius: 50%;
   background: ${({ theme }) => (theme === 'light' ? '#ffffffcc' : '#aad0ff')};
   box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.4);
@@ -47,7 +47,8 @@ const Switch = () => {
   }
 
   const icons = [<LuSun key="sun" />, <LuMoon key="moon" />] // Theme icons array  
-  const thumbPosition = state.theme === 'light' ? '2px' : 'calc(100% - 26px)' // Thumb X-position based on theme  
+  const thumbPosition =
+    state.theme === 'light' ? '0.3rem' : 'calc(100% - 3.3rem)' // Thumb X-position based on theme  
   const thumbColor = state.theme === 'light' ? '#ffffffcc' : '#aad0ff' // Thumb color based on theme  
 
   return (

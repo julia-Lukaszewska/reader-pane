@@ -1,44 +1,35 @@
-// ***************************************************************************
-//------ Sidebar: Vertical navigation panel  
-// ***************************************************************************
-
 import React from 'react' // React library for component creation  
 import styled from 'styled-components' // Styled-components for scoped CSS  
 import SidebarMenu from './SidebarMenu' // Sidebar menu component  
 
 // -----------------------------------------------------------------------------
-//------ SidebarStyled  
+// ------ SidebarStyled  
 // -----------------------------------------------------------------------------
 
 const SidebarStyled = styled.div`
-  grid-column: 1; // First column in layout  
-  grid-row: 2 / 3; // Second row only  
-  background: var(
-    --gradient-blue-light
-  ); // Background gradient  
-  color: var(--color-dark-900); // Text color  
-
+  grid-column: 1;
+  grid-row: 2 / 3;
+  background: var(--gradient-main-v2);
+  color: var(--color-dark-900);
+  border-right: 3px solid var(--see-akcent-02);
   display: grid;
-  grid-template-rows: 5vh auto 2fr; // Top spacing, content, spacer  
+  grid-template-rows: 5vh auto 2fr;
   overflow: hidden;
-  justify-items: center; // Center contents horizontally  
+  justify-items: center;
+  z-index: 1000;
 `
 
 // -----------------------------------------------------------------------------
-//------ Sidebar component  
+// ------ Sidebar component  
 // -----------------------------------------------------------------------------
 
-const Sidebar = ({ $isOpen }) => {
+const Sidebar = ({ $isOpen, bookId }) => {
   return (
     <SidebarStyled $isOpen={$isOpen}>
       {/* Sidebar menu component with visibility state   */}
-      <SidebarMenu $isOpen={$isOpen} />
+      <SidebarMenu $isOpen={$isOpen} bookId={bookId} />
     </SidebarStyled>
   )
 }
-
-// -----------------------------------------------------------------------------
-//------ Export Sidebar  
-// -----------------------------------------------------------------------------
 
 export default Sidebar

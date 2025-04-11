@@ -1,175 +1,161 @@
-// -----------------------------------------------------------------------------
-//------ MenuTile: Interactive menu tile with expand/collapse logic  
-// -----------------------------------------------------------------------------
-
-import React from 'react'
-import styled from 'styled-components' // styled-components for CSS-in-JS  
-import { IoCloseOutline } from 'react-icons/io5' // Icon for close button  
-import { useMenuItem } from '../hooks/useMenuItem' // Custom hook to handle tile logic  
+import React from 'react' // React core  
+import { IoCloseOutline } from 'react-icons/io5' // Close icon  
+import { useMenuItem } from '../hooks/useMenuItem' // Custom hook for tile logic  
+import styled from 'styled-components' // Styling  
+import MenuTileBtn from './MenuTileBtn' // Inner button inside active tile  
 
 // -----------------------------------------------------------------------------
-//------ StyleMenuTile: Main tile container style  
-// -----------------------------------------------------------------------------
-
-const StyleMenuTile = styled.div`
-  position: absolute; // Absolute positioning for precise placement  
-  width: ${({ $isActive }) =>
-    $isActive
-      ? '30vh'
-      : '30vh'}; // Tile width, constant for active/inactive  
-  height: ${({ $isActive }) =>
-    $isActive
-      ? '40vh'
-      : '30vh'}; // Dynamic height based on active state  
-  display: flex; // Flexbox for centering content  
-  justify-content: center;
-  align-items: center;
-  cursor: pointer; // Pointer cursor indicates clickable tile  
-  rotate: ${({ $isActive }) =>
-    $isActive
-      ? '0deg'
-      : '45deg'}; // Rotation animation depending on tile state  
-  transition: all 0.4s ease; // Smooth transition effects  
-  transform: ${({ $isActive, $position }) =>
-    $isActive
-      ? 'translate(0%, -20%)'
-      : `translate(${$position?.x || '0%'}, ${$position?.y || '0%'})`}; // Dynamic positioning based on active state  
-  border-radius: ${({ $isActive }) =>
-    $isActive
-      ? '2rem'
-      : '1rem'}; // Rounded corners  
-  scale: ${({ $isActive }) =>
-    $isActive
-      ? 3
-      : 1}; // Scale up tile when active  
-  z-index: ${({ $isActive }) =>
-    $isActive
-      ? 10
-      : 1}; // Active tile overlay  
-  background: var(
-    --gradient-blue-glass
-  ); // Gradient glass background adapts to theme  
-  background-color: ${({ color }) =>
-    color ||
-    'var(--color-light-200)'}; // Fallback solid color  
-  box-shadow: ${({ $isActive }) =>
-    $isActive
-      ? 'none'
-      : 'var(--glass-shadow)'}; // Shadow adapts to theme  
-  pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'all')};
-
-  &:hover {
-    z-index: ${({ $isActive }) =>
-      $isActive
-        ? 10
-        : 5}; // Hover brings tile forward  
-    transform: ${({ $isActive, $position }) =>
-      $isActive
-        ? 'translate(0%, -20%)'
-        : `translate(${$position?.x || '0%'}, ${$position?.y || '0%'}) scale(1.05)`}; // Slightly enlarge on hover  
-    box-shadow: ${({ $isActive }) =>
-      $isActive
-        ? 'none'
-        : 'var(--shadow-lg)'}; // Hover shadow  
-  }
-`
-
-// -----------------------------------------------------------------------------
-//------ StyledLabel: Label shown when tile is inactive  
+//------ MenuTile styled components  
 // -----------------------------------------------------------------------------
 
 const StyledLabel = styled.span`
-  font-size: 3rem; // Large font size for visibility  
-  font-weight: 600; // Bold font weight  
-  text-transform: uppercase; // Uppercase letters for emphasis  
-  letter-spacing: 0.5px; // Spacing for readability  
-  text-shadow: var(
-    --glass-text-shadow
-  ); // Text shadow adapts to theme  
-  transform: rotate(
-    -45deg
-  ); // Label rotated to match inactive tile  
-  color: var(
-    --color-dark-900
-  ); // Text color based on theme  
-`
+  font-size: clamp(0.8em, 2.5vh, 1.6em);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3rem;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: rotate(-45deg);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+`  
 
-// -----------------------------------------------------------------------------
-//------ CloseButton: Closes the tile when active  
-// -----------------------------------------------------------------------------
+const StyleMenuTile = styled.div`
+  position: absolute;
+  width: ${({ $isActive }) => ($isActive ? '40vh' : '30vh')};
+  height: ${({ $isActive }) => ($isActive ? '40vh' : '30vh')};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transform: ${({ $isActive, $position }) =>
+    $isActive
+      ? 'translate(0%, -20%)'
+      : `translate(${$position?.x || '0%'}, ${$position?.y || '0%'})`};
+
+  rotate: ${({ $isActive }) => ($isActive ? '-45deg' : '45deg')};
+  scale: ${({ $isActive }) => ($isActive ? 1.5 : 1)};
+  z-index: ${({ $isActive }) => ($isActive ? 1000 : 100)};
+  pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'all')};
+  cursor: pointer;
+  transition: all 0.6s ease;
+
+  background: ${({ $isActive, $inactiveColor }) =>
+    $isActive
+      ? 'var(--tile-bg-active)'
+      : $inactiveColor ||
+        `linear-gradient(
+          37deg,
+          #2f6eb23a 20%,
+          #6fafe642 45%,
+          #9bd4ff1c 70%,
+          #417cbf2f 100%
+        ),
+        linear-gradient(
+          125deg,
+          rgba(64, 172, 255, 0.549) 0%,
+          rgba(30, 32, 106, 0.47) 50%,
+          rgba(61, 105, 171, 0.08) 100%
+        ),
+        repeating-linear-gradient(
+          70deg,
+          rgba(255, 255, 255, 0.04) 0px,
+          rgba(8, 75, 88, 0.578) 2px,
+          rgba(0, 0, 0, 0.03) 2px,
+          rgba(222, 222, 222, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 255, 255, 0.02) 0px,
+          rgba(127, 196, 198, 0.441) 20%,
+          rgba(0, 0, 0, 0.02) 1px,
+          rgba(0, 0, 0, 0.02) 2px
+        )`};
+
+  border: ${({ $isActive }) =>
+    $isActive
+      ? '0.6px solid rgba(143, 236, 246, 0.46)'
+      : '3px solid rgba(194, 249, 255, 0.996)'};
+  border-radius: ${({ $isActive }) =>
+    $isActive ? '1.2rem' : '1rem'};  
+  box-shadow: ${({ $isActive }) =>
+    $isActive ? 'var(--tile-shadow-active)' : 'var(--tile-shadow-inactive)'};
+  backdrop-filter: ${({ $isActive }) =>
+    $isActive ? 'var(--tile-blur-active)' : 'var(--tile-blur-inactive)'};
+`  
 
 const CloseButton = styled.button`
-  position: absolute; // Absolute position within tile  
+  position: absolute;
   top: 1rem;
   right: 1rem;
   background: none;
   border: none;
-  font-size: 2rem; // Icon size  
+  font-size: 2rem;
   cursor: pointer;
-  color: var(
-    --color-dark-900
-  ); // Close button color adapts to theme  
-  text-shadow: var(
-    --glass-text-shadow
-  ); // Text shadow based on theme  
+  color: var(--color-dark-900);
+  text-shadow: var(--glass-text-shadow);
   pointer-events: auto;
   z-index: 999;
 
   &:hover {
-    transform: scale(
-      1.2
-    ); // Enlarge close button on hover  
+    transform: scale(1.2);
   }
-`
+`  
 
 // -----------------------------------------------------------------------------
-//------ MenuTile Component  
+//------ MenuTile component  
 // -----------------------------------------------------------------------------
 
-const MenuTile = ({ name, route, color, position, label, children }) => {
-  // Get tile state and handlers  
-  const { $isActive, handleClick, handleClose } = useMenuItem(name, route)
+const MenuTile = ({
+  name,  
+  route,  
+  color,  
+  position,  
+  label,  
+  isAnyTileActive,  
+  buttonLabel,  
+}) => {
+  const { $isActive, handleClick, handleClose } = useMenuItem(name, route)  
 
-  // Handle tile click when tile is inactive  
   const handleTileClick = (e) => {
     if (!$isActive) {
-      e.stopPropagation() // Stop event from reaching parent elements  
-      handleClick() // Activate tile  
+      e.stopPropagation()  
+      handleClick()  
     }
   }
 
   return (
     <StyleMenuTile
-      $isActive={$isActive} // Apply active state styles  
-      onClick={!$isActive ? handleTileClick : undefined} // Click handler only when inactive  
-      color={color} // Background color  
-      $position={position} // Tile position  
+      $isActive={$isActive}
+      onClick={!$isActive ? handleTileClick : undefined}
+      color={color}
+      $position={position}
     >
-      {/* Label visible only when tile is inactive   */}
-      {!$isActive && <StyledLabel>{label}</StyledLabel>}
+      {!$isActive && !isAnyTileActive && <StyledLabel>{label}</StyledLabel>}
 
-      {/* Content and close button shown when tile is active   */}
       {$isActive && (
         <>
           <CloseButton
             onClick={(e) => {
-              e.stopPropagation() // Prevent click from bubbling up  
-              handleClose() // Deactivate tile  
+              e.stopPropagation()
+              handleClose()  
             }}
           >
-            <IoCloseOutline size={30} color="white" />{' '}
-            {/* Close icon   */}
+            <IoCloseOutline size={30} color="white" />
           </CloseButton>
-          {children}{' '}
-          {/* Additional content inside tile   */}
+
+          <MenuTileBtn
+            label={buttonLabel || `Przejdź do ${label.toLowerCase()}`}  
+            route={route}
+          />
         </>
       )}
     </StyleMenuTile>
   )
 }
 
-// -----------------------------------------------------------------------------
-//------ Export MenuTile  
-// -----------------------------------------------------------------------------
-
-export default MenuTile
+export default MenuTile // Export component  
