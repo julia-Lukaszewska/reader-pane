@@ -1,5 +1,5 @@
-import styled from 'styled-components' // Styling with styled-components  
-import Btn from './Btn' // Custom button component  
+import styled from 'styled-components'
+import Btn from './Btn'
 
 // -----------------------------------------------------------------------------
 //------ Styled components  
@@ -53,21 +53,21 @@ const ConfirmModal = ({
   onCancel,  
   variant = 'library',  
 }) => {
-  const isLibrary = variant === 'library' // Delete with archive option  
-  const isPermanent = variant === 'permanent-delete' // Permanent delete  
-  const isRestore = variant === 'restore' // Restore from trash  
+  const isLibrary = variant === 'library'  
+  const isPermanent = variant === 'permanent-delete'  
+  const isRestore = variant === 'restore'  
 
   return (
     <Overlay onClick={onCancel}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
-        {' '}
-        
+        {/* Stop propagation to prevent modal close on inner click   */}
         <Title>
           {isLibrary && `Are you sure you want to delete "${bookTitle}"?`}
           {isPermanent &&
             `Are you sure you want to permanently delete "${bookTitle}"?`}
           {isRestore && `Restore "${bookTitle}" to library?`}
         </Title>
+
         <BtnRow>
           {isLibrary && (
             <>
@@ -91,6 +91,7 @@ const ConfirmModal = ({
             </>
           )}
         </BtnRow>
+
         {isLibrary && (
           <Btn
             $variant="button_link"
@@ -105,4 +106,4 @@ const ConfirmModal = ({
   )
 }
 
-export default ConfirmModal // Export modal component  
+export default ConfirmModal  

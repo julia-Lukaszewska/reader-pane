@@ -1,56 +1,63 @@
-import styled from 'styled-components'
+//-----------------------------------------------------------------------------
+//------ ReaderView: Displays toolbar and rendered PDF book  
+//-----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-//------ Styled Components   
-// -----------------------------------------------------------------------------
+import { useEffect, useContext } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import * as pdfjsLib from 'pdfjs-dist'
 
-const ReaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
+import { AppContext } from '../context/AppContext'
+import Toolbar from '../layout/Toolbar'
+import RenderedPDFViewer from '../components/RenderedPDFViewer'
+import { usePreloadPDFPages } from '../hooks/usePreloadPDFPages'
+import { useReadingProgress } from '../hooks/useReadingProgress'
+import { saveLastBookId } from '../utils/storage'
+import { useBookLoader } from '../hooks/useBookLoader'
 
-  box-sizing: border-box;
-  z-index: 200;
-`
-
-const ToolbarPlaceholder = styled.div`
-  color: var(--color-dark-900);
-  padding: 1.2rem 2rem;
-  border-radius: var(--border-radius);
-
-  background: var(--gradient-main);
-  box-shadow: var(--glass-shadow);
-  text-shadow: var(--glass-text-shadow);
-  font-weight: bold;
-  height: 8%;
-  transition: all 0.3s ease;
-`
-
-const PDFViewPlaceholder = styled.div`
-  flex: 1;
-
-  display: flex;
-
-  background: var(--gradient-main-v5);
-  justify-content: center;
-  align-items: center;
-
-  font-size: 1.6rem;
-  text-align: center;
-  transition: all 0.3s ease;
-`
-
-// -----------------------------------------------------------------------------
-//------ ReaderView Component   
-// -----------------------------------------------------------------------------
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
 const ReaderView = () => {
+  const { bookId: routeBookId } = useParams()
+  const navigate = useNavigate()
+  const { state, dispatch } = useContext(AppContext)
+  const { activeBook, currentPage } = state
+  const totalPages = activeBook?.totalPages
+
+  // Redirect to home if no book ID and no activeBook  
+  useEffect(() => {
+    if (!routeBookId && !activeBook) {
+      navigate('/', { replace: true })
+    }
+  }, [routeBookId, activeBook, navigate])
+
+  // Load book data from API if ID is in route  
+  const { isLoading, error } = useBookLoader(routeBookId)
+
+  // Clear cached pages on book change  
+  useEffect(() => {
+    dispatch({ type: 'CLEAR_RENDERED_PAGES' })
+    dispatch({ type: 'CLEAR_RENDERED_RANGES' })
+  }, [routeBookId, dispatch])
+
+  // Preload pages and autosave reading progress  
+  usePreloadPDFPages()
+  useReadingProgress()
+
+  // Save last opened book ID only if route ID exists  
+  useEffect(() => {
+    if (routeBookId) {
+      saveLastBookId(routeBookId)
+    }
+  }, [routeBookId])
+
+  if (isLoading) return <p>Loading book...</p>
+  if (error) return <p>{error}</p>
+
   return (
-    <ReaderContainer>
-      <ToolbarPlaceholder> </ToolbarPlaceholder>
-      <PDFViewPlaceholder></PDFViewPlaceholder>
-    </ReaderContainer>
+    <>
+      <Toolbar currentPage={currentPage} totalPages={totalPages} />
+      <RenderedPDFViewer />
+    </>
   )
 }
 

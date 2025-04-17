@@ -1,11 +1,11 @@
-import React from 'react' // React core  
-import { useNavigate } from 'react-router-dom' // Navigation hook  
-import Btn from './Btn' // Custom button component  
-import styled from 'styled-components' // Styling  
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import Btn from './Btn'
+import styled from 'styled-components'
 
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //------ Styled components  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 const PositionedBtn = styled.div`
   position: relative;
@@ -28,15 +28,15 @@ const LabelText = styled.span`
   z-index: 2100;
 `  
 
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //------ MenuTileBtn component  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 const MenuTileBtn = ({ label, route }) => {
-  const navigate = useNavigate() // Hook for programmatic navigation  
+  const navigate = useNavigate() // Navigate to route  
 
   const handleClick = (e) => {
-    e.stopPropagation() // Prevent tile from closing  
+    e.stopPropagation() // Prevent tile click from bubbling  
     if (route) navigate(route) // Go to route if provided  
   }
 
@@ -49,4 +49,4 @@ const MenuTileBtn = ({ label, route }) => {
   )
 }
 
-export default MenuTileBtn // Export component  
+export default MenuTileBtn

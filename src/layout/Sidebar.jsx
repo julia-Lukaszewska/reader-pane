@@ -3,7 +3,7 @@ import styled from 'styled-components' // Styled-components for scoped CSS
 import SidebarMenu from './SidebarMenu' // Sidebar menu component  
 
 // -----------------------------------------------------------------------------
-// ------ SidebarStyled  
+//------ SidebarStyled: Sidebar wrapper styles  
 // -----------------------------------------------------------------------------
 
 const SidebarStyled = styled.div`
@@ -20,13 +20,12 @@ const SidebarStyled = styled.div`
 `
 
 // -----------------------------------------------------------------------------
-// ------ Sidebar component  
+//------ Sidebar component definition  
 // -----------------------------------------------------------------------------
 
 const Sidebar = ({ $isOpen, bookId }) => {
   return (
     <SidebarStyled $isOpen={$isOpen}>
-      {/* Sidebar menu component with visibility state   */}
       <SidebarMenu $isOpen={$isOpen} bookId={bookId} />
     </SidebarStyled>
   )

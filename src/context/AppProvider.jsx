@@ -1,41 +1,47 @@
-// -----------------------------------------------------------------------------
-//------ AppProvider Component   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ AppProvider: Global context provider for the app  
+//-----------------------------------------------------------------------------
 
-import { useEffect, useReducer } from 'react' // React hooks  
-import { appReducer, initialState } from './AppReducer' // Reducer logic  
-import { AppContext } from './AppContext' // Global context object  
-import { getBooks } from '../utils/api' // API call to fetch books  
-
-// -----------------------------------------------------------------------------
-//------ AppProvider   
-// -----------------------------------------------------------------------------
+import { useEffect, useReducer } from 'react'
+import { appReducer, initialState } from './AppReducer'
+import { AppContext } from './AppContext'
+import { getBooks } from '../api'
+import { getLastBookId, clearLastBookId } from '../utils/storage'
 
 export const AppProvider = ({ children }) => {
-  const savedTheme = localStorage.getItem('theme') || initialState.theme // Load theme from localStorage  
+  const savedTheme = localStorage.getItem('theme') || initialState.theme
 
   const [state, dispatch] = useReducer(appReducer, {
     ...initialState,
     theme: savedTheme,
-  }) // Setup global state with reducer  
+  })
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const books = await getBooks() // Fetch books from API  
-        dispatch({ type: 'SET_LIBRARY', payload: books }) // Update state with fetched books  
+        const books = await getBooks() // 📥 Pobierz książki z backendu
+        dispatch({ type: 'SET_LIBRARY', payload: books }) // 📚 Zapisz w stanie aplikacji
+
+        // 🧹 Sprawdź, czy ostatnio otwarta książka nadal istnieje
+        const lastId = getLastBookId()
+        const bookStillExists = books.some((b) => b._id === lastId)
+
+        if (lastId && !bookStillExists) {
+          console.warn('🧹 Usuwam lastOpenedBookId – książki brak w bazie')
+          clearLastBookId()
+        }
       } catch (err) {
-        console.error('Błąd ładowania książek:', err) // Log error  
+        console.error('Błąd ładowania książek:', err)
       }
     }
 
-    fetchBooks() // Run on app start  
+    fetchBooks()
   }, [])
 
   useEffect(() => {
-    document.body.setAttribute('data-theme', state.theme)
-    localStorage.setItem('theme', state.theme)
-  }, [state.theme]) // Apply theme to document and save to localStorage  
+    document.body.setAttribute('data-theme', state.theme) //Apply theme to body attribute  
+    localStorage.setItem('theme', state.theme) //Save theme to localStorage  
+  }, [state.theme])
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

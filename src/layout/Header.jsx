@@ -1,18 +1,18 @@
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //------ Header: Top navigation bar component  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-import React, { useContext } from 'react' // React library for building user interfaces  
-import { AppContext } from '../context/AppContext' // AppContext for global state management  
-import styled from 'styled-components' // Styled-components for styling with CSS in JS  
-import Btn from '../components/Btn' // Button component for navigation  
-import { useNavigate, useLocation } from 'react-router-dom' // Hooks for navigation and location  
-import Switch from '../components/Switch' // Component for theme toggle  
-import { SlHome, SlMenu } from 'react-icons/sl' // Icons from react-icons  
+import React, { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
+import styled from 'styled-components'
+import Btn from '../components/Btn'
+import { useNavigate, useLocation } from 'react-router-dom'
+import Switch from '../components/Switch'
+import { SlHome, SlMenu } from 'react-icons/sl'
 
-// -----------------------------------------------------------------------------
-//------ Header styles   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ Header styles  
+//-----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
   background:
@@ -53,91 +53,86 @@ const HeaderStyled = styled.header`
   align-items: center;
   justify-content: space-between;
 
-  color: white;
   padding: 0 3rem;
-
-  border-bottom: 0.2rem solid rgba(150, 232, 255, 0.315); // Border color  
-
+  border-bottom: 0.2rem solid rgba(150, 232, 255, 0.315);
   z-index: 1;
 `
 
-// -----------------------------------------------------------------------------
-//------ Title styles   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ Title styles  
+//-----------------------------------------------------------------------------
 
 const Title = styled.h1`
-  font-size: 2.4rem;  
-  font-weight: 300;  
-  text-transform: uppercase;  
-  letter-spacing: 0.4rem;  
-
-  flex-grow: 1;  
-  text-align: center;  
-  margin-left: -4rem;  
-  font-family: 'Poppins', sans-serif;  
+  font-size: 2.4rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.4rem;
+  flex-grow: 1;
+  text-align: center;
+  margin-left: -4rem;
+  font-family: 'Poppins', sans-serif;
   color: white;
   text-shadow: var(--color-);
   transition: color 0.3s ease;
 `
 
-// -----------------------------------------------------------------------------
-//------ Button group styles   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ Button group styles  
+//-----------------------------------------------------------------------------
 
 const BtnGroup = styled.div`
-  display: flex;  
-  align-items: center;  
-  gap: 1.2rem;  
-  color: white;  
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
 `
 
-// -----------------------------------------------------------------------------
-//------ Header component   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ Header component definition  
+//-----------------------------------------------------------------------------
 
 const Header = ({ onToggleSidebar }) => {
-  const { dispatch } = useContext(AppContext) // Get dispatch function from context  
-  const navigate = useNavigate() // Hook for page navigation  
-  const location = useLocation() // Hook for current location path  
-  const isHomeView = location.pathname === '/' // Check if current path is home  
+  const { dispatch } = useContext(AppContext)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isHomeView = location.pathname === '/'
 
-  const goHome = () => navigate('/') // Navigate to homepage  
-  const toggleTheme = () => dispatch({ type: 'TOGGLE_THEME' }) // Dispatch theme toggle action  
+  const goHome = () => navigate('/')
+  const toggleTheme = () => dispatch({ type: 'TOGGLE_THEME' })
 
   return (
     <HeaderStyled>
       <BtnGroup>
-        {/* Menu button (hidden in reader view)   */}
         {!isHomeView && (
           <Btn
             $variant="circle_icon_btn"
-            onClick={onToggleSidebar} // Trigger sidebar toggle  
-            ariaLabel="Open menu" // ARIA label for accessibility  
+            onClick={onToggleSidebar}
+            ariaLabel="Open menu"
           >
-            <SlMenu /> {/* Menu icon   */}
+            <SlMenu />
           </Btn>
         )}
         {!isHomeView && (
           <Btn
             $variant="circle_icon_btn"
-            onClick={goHome} // Navigate to home  
-            ariaLabel="Go to home" // ARIA label for accessibility  
+            onClick={goHome}
+            ariaLabel="Go to home"
           >
-            <SlHome /> {/* Home icon   */}
+            <SlHome />
           </Btn>
         )}
       </BtnGroup>
-      <Title>Pane</Title> {/* App title   */}
+
+      <Title>Pane</Title>
+
       <BtnGroup>
         <Switch variant="theme" onClick={toggleTheme} />
-        {/* Theme switcher   */}
       </BtnGroup>
     </HeaderStyled>
   )
 }
 
-// -----------------------------------------------------------------------------
-//------ Export Header component   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ Export Header component  
+//-----------------------------------------------------------------------------
 
 export default Header

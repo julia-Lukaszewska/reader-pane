@@ -1,3 +1,7 @@
+//-----------------------------------------------------------------------------
+//------ App: Main application container with global styles and routes  
+//-----------------------------------------------------------------------------
+
 import React from 'react'
 import styled from 'styled-components'
  

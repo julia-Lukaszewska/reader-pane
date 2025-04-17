@@ -1,8 +1,8 @@
-import React from 'react' // React core  
-import { IoCloseOutline } from 'react-icons/io5' // Close icon  
-import { useMenuItem } from '../hooks/useMenuItem' // Custom hook for tile logic  
-import styled from 'styled-components' // Styling  
-import MenuTileBtn from './MenuTileBtn' // Inner button inside active tile  
+import React from 'react'
+import { IoCloseOutline } from 'react-icons/io5'
+import { useMenuItem } from '../hooks/useMenuItem'
+import styled from 'styled-components'
+import MenuTileBtn from './MenuTileBtn'
 
 // -----------------------------------------------------------------------------
 //------ MenuTile styled components  
@@ -149,7 +149,7 @@ const MenuTile = ({
           </CloseButton>
 
           <MenuTileBtn
-            label={buttonLabel || `Przejdź do ${label.toLowerCase()}`}  
+            label={buttonLabel || `Go to  ${label.toLowerCase()}`}  
             route={route}
           />
         </>

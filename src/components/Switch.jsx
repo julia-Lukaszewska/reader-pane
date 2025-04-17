@@ -1,16 +1,14 @@
-// -----------------------------------------------------------------------------
-//------ Switch: Theme toggle component  
-// -----------------------------------------------------------------------------
+import { useContext } from 'react'
+import styled from 'styled-components'
+import { AppContext } from '../context/AppContext'
+import Btn from './Btn'
+import { LuSun, LuMoon } from 'react-icons/lu'
+import { RxReader } from 'react-icons/rx'
+import { CgEreader } from 'react-icons/cg'
 
-import { useContext } from 'react' // React hook for accessing context  
-import styled from 'styled-components' // CSS-in-JS library  
-import { AppContext } from '../context/AppContext' // Global state context  
-import Btn from './Btn' // Custom button component  
-import { LuSun, LuMoon } from 'react-icons/lu' // Icons for theme switch  
-
-// -----------------------------------------------------------------------------
-//------- Styled components  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ SwitchContent: layout for icons inside switch  
+//-----------------------------------------------------------------------------
 
 const SwitchContent = styled.div`
   display: flex;
@@ -20,53 +18,76 @@ const SwitchContent = styled.div`
   font-size: 1.4rem;
   color: var(--color-brand-100);
   z-index: 2;
-`  
+`
+
+//-----------------------------------------------------------------------------
+//------ Thumb: animated indicator inside switch  
+//-----------------------------------------------------------------------------
 
 const Thumb = styled.div`
   position: absolute;
   top: 0.3rem;
-  left: ${({ theme }) => (theme === 'light' ? '0.3rem' : 'calc(100% - 3rem)')};
+  left: ${({ $position }) => $position};
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
-  background: ${({ theme }) => (theme === 'light' ? '#ffffffcc' : '#aad0ff')};
+  background: ${({ $color }) => $color};
   box-shadow: 0 0 0.6rem rgba(255, 255, 255, 0.4);
   transition: all 0.35s ease;
   z-index: 1;
-`  
+`
 
-// -----------------------------------------------------------------------------
-//------ Switch component  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ Switch component: theme/view toggle button  
+//-----------------------------------------------------------------------------
 
-const Switch = () => {
-  const { state, dispatch } = useContext(AppContext) // Access state and dispatch from context  
+const Switch = ({ variant = 'theme' }) => {
+  const { state, dispatch } = useContext(AppContext)
+
+  const isTheme = variant === 'theme' // Is theme switch?  
+  const isReader = variant === 'reader' // Is reader mode switch?  
 
   const handleClick = () => {
-    dispatch({ type: 'TOGGLE_THEME' }) // Trigger theme toggle action  
+    if (isTheme) {
+      dispatch({ type: 'TOGGLE_THEME' }) // Toggle theme  
+    } else if (isReader) {
+      dispatch({
+        type: 'SET_VIEW_MODE',
+        payload: state.viewMode === 'single' ? 'double' : 'single', // Toggle view mode  
+      })
+    }
   }
 
-  const icons = [<LuSun key="sun" />, <LuMoon key="moon" />] // Theme icons array  
-  const thumbPosition =
-    state.theme === 'light' ? '0.3rem' : 'calc(100% - 3.3rem)' // Thumb X-position based on theme  
-  const thumbColor = state.theme === 'light' ? '#ffffffcc' : '#aad0ff' // Thumb color based on theme  
+  const icons = isTheme
+    ? [<LuSun key="sun" />, <LuMoon key="moon" />] // Theme icons  
+    : [<RxReader key="single" />, <CgEreader key="double" />] // View mode icons  
+
+  const thumbPosition = isTheme
+    ? state.theme === 'light'
+      ? '0.3rem'
+      : 'calc(100% - 3.3rem)'
+    : state.viewMode === 'single'
+      ? '0.3rem'
+      : 'calc(100% - 3.3rem)'
+
+  const thumbColor = isTheme
+    ? state.theme === 'light'
+      ? '#ffffffcc'
+      : '#aad0ff'
+    : state.viewMode === 'single'
+      ? '#ffffffcc'
+      : '#aad0ff'
 
   return (
     <Btn
-      $variant="theme_switch_btn" // Custom style variant for theme switch  
+      $variant={`${variant}_switch_btn`}
       onClick={handleClick}
-      ariaLabel="Przełącz motyw" // ARIA label for accessibility  
+      ariaLabel={`Przełącz ${variant}`} // ARIA label  
     >
-      {/* Thumb element indicating current theme   */}
-      <Thumb
-        theme={state.theme}
-        style={{ left: thumbPosition, background: thumbColor }}
-      />
-
-      {/* Container for theme icons   */}
+      <Thumb $position={thumbPosition} $color={thumbColor} />
       <SwitchContent>{icons}</SwitchContent>
     </Btn>
   )
 }
 
-export default Switch // Export Switch component  
+export default Switch

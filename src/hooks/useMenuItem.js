@@ -6,50 +6,61 @@ import { useEffect, useContext } from 'react' // React hook for side effects
 import { useNavigate, useLocation } from 'react-router-dom' // Routing hooks  
 import { AppContext } from '../context/AppContext' // App-wide context state  
 
+/**
+ * Hook for managing interaction logic for a single menu tile.
+ * Handles activation, navigation, and deactivation states.
+ * Also resets state when user navigates to home route.
+ */
 export const useMenuItem = (name, route) => {
-  const navigate = useNavigate() // Function to navigate to route  
-  const location = useLocation() // Get current path  
-  const { state, dispatch } = useContext(AppContext) // Get global state and dispatcher  
+  const navigate = useNavigate()  
+  const location = useLocation()  
+  const { state, dispatch } = useContext(AppContext)  
 
-  const $isActive = state.activeItem === name // Is this tile active?  
+  const $isActive = state.activeItem === name  
 
-  // ---------------------------------------------------------------------------
-  //------ handleClick: activate tile if none or same is active  
-  // ---------------------------------------------------------------------------
+  /**
+   * Activate this tile if it's not already active.
+   * Prevents multiple tiles from being activated.
+   */
   const handleClick = () => {
-    if (state.activeItem && !$isActive) return // Ignore if other tile is active  
+    if (state.activeItem && !$isActive) return
     if (!$isActive) {
-      dispatch({ type: 'SET_ACTIVE_ITEM', payload: name }) // Activate this tile  
+      dispatch({ type: 'SET_ACTIVE_ITEM', payload: name })  
     }
   }
 
-  // ---------------------------------------------------------------------------
-  //------ handleNavigate: navigate to tile route  
-  // ---------------------------------------------------------------------------
+  /**
+   * Navigate to the tile's assigned route.
+   * Stops event bubbling to avoid triggering parent handlers.
+   */
   const handleNavigate = (e) => {
-    e.stopPropagation() // Stop click bubbling  
-    navigate(route) // Go to assigned route  
+    e.stopPropagation()  
+    navigate(route)  
   }
 
-  // ---------------------------------------------------------------------------
-  //------ handleClose: deactivate the tile  
-  // ---------------------------------------------------------------------------
+  /**
+   * Deactivate this tile (clears state).
+   * Optional event param allows usage inside click handlers.
+   */
   const handleClose = (e) => {
-    if (e?.stopPropagation) e.stopPropagation() // Optional: stop event  
-    dispatch({ type: 'CLEAR_ACTIVE_ITEM' }) // Clear active tile  
+    if (e?.stopPropagation) e.stopPropagation()  
+    dispatch({ type: 'CLEAR_ACTIVE_ITEM' })  
   }
 
-  // ---------------------------------------------------------------------------
-  //------ useEffect: auto-reset on home route  
-  // ---------------------------------------------------------------------------
+  /**
+   * Automatically reset active item when navigating to home (/).
+   * Ensures clean state when returning to main screen.
+   */
   useEffect(() => {
     if (location.pathname === '/') {
-      dispatch({ type: 'CLEAR_ACTIVE_ITEM' }) // Clear on homepage  
+      dispatch({ type: 'CLEAR_ACTIVE_ITEM' })  
     }
-  }, [location.pathname, dispatch]) // Run when route changes  
+  }, [location.pathname, dispatch])
 
-  // ---------------------------------------------------------------------------
-  //------ Return API  
-  // ---------------------------------------------------------------------------
-  return { $isActive, handleClick, handleNavigate, handleClose } // Expose tile control  
+  return {
+    $isActive, // Boolean: is this tile active?  
+    handleClick, // Function: activate this tile  
+    handleNavigate, // Function: go to assigned route  
+    handleClose, // Function: deactivate tile  
+  }
 }

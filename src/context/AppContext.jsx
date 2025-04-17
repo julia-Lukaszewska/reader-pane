@@ -1,11 +1,3 @@
-// -----------------------------------------------------------------------------
-//------ AppContext setup  
-// -----------------------------------------------------------------------------
+import { createContext } from 'react'
 
-import { createContext } from 'react' // React context API  
-
-// -----------------------------------------------------------------------------
-//------ Create and export context  
-// -----------------------------------------------------------------------------
-
-export const AppContext = createContext() // App-level context  
+export const AppContext = createContext()

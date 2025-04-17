@@ -1,12 +1,16 @@
+//-----------------------------------------------------------------------------
+//------ ArchiveView Component – View for deleted books (archive)  
+//-----------------------------------------------------------------------------
+
 import styled from 'styled-components'
 import { useState, useContext } from 'react'
 import { AppContext } from '../context/AppContext'
-import { restoreBook, deleteBookForever, getBooks } from '../utils/api'
+import { restoreBook, deleteBookForever, getBooks } from '../api'
 import ConfirmModal from '../components/ConfirmModal'
 
-//--------------------------------------------------------------------------
-//------ BookGridContainer   
-// --------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ BookGridContainer – outer layout container  
+//-----------------------------------------------------------------------------
 
 const BookGridContainer = styled.div`
   display: flex;
@@ -20,9 +24,9 @@ const BookGridContainer = styled.div`
   box-sizing: border-box;
 `
 
-//--------------------------------------------------------------------------
-//------ BooksGrid   
-// --------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ BooksGrid – grid of deleted books  
+//-----------------------------------------------------------------------------
 
 const BooksGrid = styled.div`
   display: grid;
@@ -37,9 +41,10 @@ const BooksGrid = styled.div`
   border-radius: var(--border-radius-md);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 `
-//---------------------------------------------------------------------------
-//------ BookCard   
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//------ BookCard – individual deleted book  
+//-----------------------------------------------------------------------------
 
 const BookCard = styled.div`
   position: relative;
@@ -61,9 +66,10 @@ const BookCard = styled.div`
     background-color: rgba(58, 138, 195, 0.86);
   }
 `
-//---------------------------------------------------------------------------
-//------ Title   
-//---------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+//------ Title – archive heading  
+//-----------------------------------------------------------------------------
 
 const Title = styled.h2`
   color: var(--color-light-900);
@@ -72,6 +78,10 @@ const Title = styled.h2`
   font-size: 2rem;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 `
+
+//-----------------------------------------------------------------------------
+//------ BtnPlaceholder – basic button style  
+//-----------------------------------------------------------------------------
 
 const BtnPlaceholder = styled.button`
   padding: 0.4rem 0.8rem;
@@ -86,9 +96,9 @@ const BtnPlaceholder = styled.button`
   }
 `
 
-// -----------------------------------------------------------------------------
-//------ ArchiveView Component   
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ ArchiveView – main functional component  
+//-----------------------------------------------------------------------------
 
 const ArchiveView = () => {
   const { state, dispatch } = useContext(AppContext)
