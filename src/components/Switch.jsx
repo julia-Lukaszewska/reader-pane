@@ -59,8 +59,14 @@ const Switch = ({ variant = 'theme' }) => {
   }
 
   const icons = isTheme
-    ? [<LuSun key="sun" />, <LuMoon key="moon" />] // Theme icons  
-    : [<RxReader key="single" />, <CgEreader key="double" />] // View mode icons  
+    ? [<LuSun key="sun" />, <LuMoon key="moon" />]
+    : [
+        state.viewMode === 'single' ? (
+          <RxReader key="single" />
+        ) : (
+          <CgEreader key="double" />
+        ),
+      ]
 
   const thumbPosition = isTheme
     ? state.theme === 'light'
@@ -82,7 +88,7 @@ const Switch = ({ variant = 'theme' }) => {
     <Btn
       $variant={`${variant}_switch_btn`}
       onClick={handleClick}
-      ariaLabel={`Przełącz ${variant}`} // ARIA label  
+      ariaLabel={`Switch ${variant}`}
     >
       <Thumb $position={thumbPosition} $color={thumbColor} />
       <SwitchContent>{icons}</SwitchContent>

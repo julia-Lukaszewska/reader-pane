@@ -1,43 +1,53 @@
 //-----------------------------------------------------------------------------
-//------ Initial state of the application  
+//------ initialState: shape of the global store  
 //-----------------------------------------------------------------------------
 
 export const initialState = {
-  //App settings  
-  theme: 'light',  
-  activeItem: null,  
+  // App settings  
+  theme: 'light', // Default theme is light  
+  activeItem: null, // Currently active sidebar item  
 
-  //Library  
-  library: [],  
+  // Library  
+  library: [], // Starts empty – user will add books  
 
-  //Active book  
-  activeBook: null,  
-  viewMode: 'single',  
-  currentPage: 1,  
+  // Active book  
+  activeBook: null, // Full book object or null  
+  viewMode: 'single', // Display mode – single or two‑page  
+  currentPage: 1, // Currently visible page number  
+  isSidebarOpen: false, // Whether the sidebar is open  
 
-  //Rendered PDF pages  
-  renderedPages: {},  
-  renderedRanges: {},  
+  // Rendered PDF pages cache  
+  renderedPages: {}, // Canvas pages grouped by scale  
+  renderedRanges: {}, // Ranges (from–to) already rendered  
 
-  //Zoom and pagination  
-  scaleLevels: [0.5, 0.75, 1, 1.25, 1.5],  
-  scaleIndex: 2,  
-  batchSize: 20,  
-  safetyOffset: 2,  
+  // Zoom & pagination  
+  scaleLevels: [1, 1.25, 1.5, 1.75, 2], // Allowed zoom levels  
+  scaleIndex: 0, // Index of current zoom; 0 = 1×  
+  batchSize: 20, // How many pages to render per batch  
+  safetyOffset: 2, // Preload when 2 pages before batch end  
 }
 
 //-----------------------------------------------------------------------------
-//------ Reducer: handles all state changes  
+//------ appReducer: handles every dispatched action  
 //-----------------------------------------------------------------------------
 
 export function appReducer(state, action) {
   switch (action.type) {
     //-----------------------------------------------------------------------------
-    //------ Theme & UI  
+    //------ Theme/UI  
     //-----------------------------------------------------------------------------
 
     case 'TOGGLE_THEME':
       return { ...state, theme: state.theme === 'light' ? 'dark' : 'light' }
+
+    case 'TOGGLE_SIDEBAR':
+      return { ...state, isSidebarOpen: !state.isSidebarOpen }
+
+    case 'SET_SIDEBAR':
+      return {
+        ...state,
+        isSidebarOpen: action.payload, // true or false  
+      }
 
     case 'SET_ACTIVE_ITEM':
       return { ...state, activeItem: action.payload }
@@ -94,6 +104,16 @@ export function appReducer(state, action) {
       }
     }
 
+    case 'UPDATE_BOOK':
+      return {
+        ...state,
+        library: state.library.map((book) =>
+          book._id === action.payload._id
+            ? { ...book, ...action.payload }
+            : book
+        ),
+      }
+
     case 'CLEAR_ACTIVE_BOOK':
       return { ...state, activeBook: null }
 
@@ -103,8 +123,11 @@ export function appReducer(state, action) {
     case 'SET_CURRENT_PAGE':
       return { ...state, currentPage: action.payload }
 
+    case 'SET_LIBRARY_VIEW_MODE':
+      return { ...state, libraryViewMode: action.payload }
+
     //-----------------------------------------------------------------------------
-    //------ Zoom & preload  
+    //------ Zoom & preload settings  
     //-----------------------------------------------------------------------------
 
     case 'SET_SCALE_INDEX':
@@ -117,7 +140,7 @@ export function appReducer(state, action) {
       return { ...state, safetyOffset: action.payload }
 
     //-----------------------------------------------------------------------------
-    //------ Rendered PDF pages  
+    //------ Render cache  
     //-----------------------------------------------------------------------------
 
     case 'ADD_RENDERED_PAGES': {
@@ -132,7 +155,7 @@ export function appReducer(state, action) {
     case 'SET_RENDERED_RANGE': {
       const { scale, range } = action.payload
       const prevRanges = state.renderedRanges[scale] || []
-      const nextRanges = [...prevRanges, range].slice(-2)
+      const nextRanges = [...prevRanges, range].slice(-2) // keep last 2  
       return {
         ...state,
         renderedRanges: { ...state.renderedRanges, [scale]: nextRanges },
@@ -163,10 +186,7 @@ export function appReducer(state, action) {
         }
         updatedPages[scale] = kept
       })
-      return {
-        ...state,
-        renderedPages: updatedPages,
-      }
+      return { ...state, renderedPages: updatedPages }
     }
 
     case 'CLEAR_RENDERED_PAGES':
@@ -174,6 +194,10 @@ export function appReducer(state, action) {
 
     case 'CLEAR_RENDERED_RANGES':
       return { ...state, renderedRanges: {} }
+
+    //-----------------------------------------------------------------------------
+    //------ Default  
+    //-----------------------------------------------------------------------------
 
     default:
       return state

@@ -2,13 +2,6 @@
 //------useReadingProgress – reading progress hook wrapper  
 //-----------------------------------------------------------------------------
 
-/*//#PL:
-Hook używany w komponentach do obsługi bieżącej strony książki.
-- Pobiera currentPage oraz dispatch z AppContext  
-- Używa useAutoSaveReadingProgress() do zapisu postępu w tle  
-- Zwraca currentPage i funkcję setCurrentPage()
-#/*/
-
 import { useContext } from 'react'
 import { AppContext } from '../context/AppContext'
 import { useAutoSaveReadingProgress } from './useAutoSaveReadingProgress'

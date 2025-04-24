@@ -8,8 +8,7 @@ import { useState, useContext } from 'react'
 import ConfirmModal from './ConfirmModal'
 import { moveToTrash, deleteBookForever } from '../api'
 import { AppContext } from '../context/AppContext'
-import { useNavigate } from 'react-router-dom'
-import { saveLastBookId } from '../utils/storage'
+import BookPreviewModal from './BookPreviewModal'
 
 // -----------------------------------------------------------------------------
 //------ Styled Components  
@@ -64,22 +63,42 @@ const CloseBtn = styled.button`
   font-size: 1.4rem;
   color: var(--color-icon-default);
   cursor: pointer;
-  z-index: 2;
+  z-index: 9000;
+`
+const ProgressBar = styled.div`
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(255, 255, 255);
+  overflow: hidden;
+  margin-top: 0.5rem;
+`
+
+const ProgressFill = styled.div`
+  height: 100%;
+  background: var(--color-accent);
+  width: ${({ percent }) => percent}%;
+  transition: width 0.3s ease;
 `
 
 // -----------------------------------------------------------------------------
 //------ BookTile Component  
 // -----------------------------------------------------------------------------
 
-const BookTile = ({ book }) => {
+const BookTile = ({ book, isManaging, selectedBooks, setSelectedBooks }) => {
   const [showModal, setShowModal] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const { dispatch } = useContext(AppContext)
-  const navigate = useNavigate()
+  const current = book.currentPage || book.progress || 1 //Always some value
+  const total = book.totalPages
+
+  const percent = (() => {
+    if (!total || total <= 1) return current >= total ? 100 : 0
+    const raw = ((current - 1) / (total - 1)) * 100
+    return Math.min(100, Math.max(0, Math.round(raw)))
+  })()
 
   const handleClick = () => {
-    saveLastBookId(book._id)  
-    dispatch({ type: 'SET_ACTIVE_BOOK', payload: book })  
-    navigate(`/read/${book._id}`)  
+    setShowPreview(true)
   }
 
   const handleArchive = async () => {
@@ -106,9 +125,39 @@ const BookTile = ({ book }) => {
         >
           <IoCloseOutline />
         </CloseBtn>
+        {isManaging && (
+          <input
+            type="checkbox"
+            checked={selectedBooks.includes(book._id)}
+            onChange={(e) => {
+              e.stopPropagation()
+              if (e.target.checked) {
+                setSelectedBooks((prev) => [...prev, book._id])
+              } else {
+                setSelectedBooks((prev) => prev.filter((id) => id !== book._id))
+              }
+            }}
+            style={{
+              position: 'absolute',
+              top: '0.5rem',
+              left: '0.5rem',
+              zIndex: 9000,
+              transform: 'scale(40)',
+              color: 'white',
+              backgroundColor: 'white',
+            }}
+          />
+        )}
         <h4>{book.title}</h4>
-        <small>PDF</small>
+
         <Overlay>Preview not available</Overlay>
+        <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+          {percent}% read
+        </span>
+
+        <ProgressBar>
+          <ProgressFill percent={percent} />
+        </ProgressBar>
       </Card>
 
       {showModal && (
@@ -119,6 +168,9 @@ const BookTile = ({ book }) => {
           onConfirm={handleDelete}
           onCancel={() => setShowModal(false)}
         />
+      )}
+      {showPreview && (
+        <BookPreviewModal book={book} onClose={() => setShowPreview(false)} />
       )}
     </>
   )

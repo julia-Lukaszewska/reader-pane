@@ -1,6 +1,6 @@
-import React from 'react' // React library for component creation  
-import styled from 'styled-components' // Styled-components for scoped CSS  
-import SidebarMenu from './SidebarMenu' // Sidebar menu component  
+import React from 'react'
+import styled from 'styled-components'
+import SidebarMenu from './SidebarMenu'
 
 // -----------------------------------------------------------------------------
 //------ SidebarStyled: Sidebar wrapper styles  

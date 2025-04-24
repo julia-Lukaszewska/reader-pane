@@ -19,19 +19,21 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const books = await getBooks() // 📥 Pobierz książki z backendu
-        dispatch({ type: 'SET_LIBRARY', payload: books }) // 📚 Zapisz w stanie aplikacji
+        const books = await getBooks() // Fetch books from backend  
+        dispatch({ type: 'SET_LIBRARY', payload: books }) // Save to application state  
 
-        // 🧹 Sprawdź, czy ostatnio otwarta książka nadal istnieje
+        // Check if the last-opened book still exists  
         const lastId = getLastBookId()
         const bookStillExists = books.some((b) => b._id === lastId)
 
         if (lastId && !bookStillExists) {
-          console.warn('🧹 Usuwam lastOpenedBookId – książki brak w bazie')
+          console.warn(
+            'Cleaning lastOpenedBookId – book no longer exists in DB'
+          )  
           clearLastBookId()
         }
       } catch (err) {
-        console.error('Błąd ładowania książek:', err)
+        console.error('Error while loading books:', err)  
       }
     }
 
@@ -39,8 +41,8 @@ export const AppProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    document.body.setAttribute('data-theme', state.theme) //Apply theme to body attribute  
-    localStorage.setItem('theme', state.theme) //Save theme to localStorage  
+    document.body.setAttribute('data-theme', state.theme) // Apply theme to body attribute  
+    localStorage.setItem('theme', state.theme) // Save theme to localStorage  
   }, [state.theme])
 
   return (

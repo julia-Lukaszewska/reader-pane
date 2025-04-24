@@ -2,23 +2,26 @@
 //------ MainLayout: Page structure with header, sidebar and main content  
 // -----------------------------------------------------------------------------
 
-import React, { useState, useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import Header from './Header'
 import Sidebar from './Sidebar'
 
+import { AppContext } from '../context/AppContext'
 // -----------------------------------------------------------------------------
 //------ StyledMainLayout: Main grid layout wrapper  
 // -----------------------------------------------------------------------------
 
 const StyledMainLayout = styled.div`
   display: grid;
-  grid-template-rows: 10vh auto;
+  grid-template-rows: 10vh 1fr;
   grid-template-columns: ${({ $isSidebarOpen }) =>
-    $isSidebarOpen ? '20rem auto 20rem' : '0 auto 0'};
+    $isSidebarOpen ? '20rem 1fr' : '0rem 1fr'};
+  width: 100vw;
+  height: 100vh;
   transition: grid-template-columns 0.4s ease;
-  overflow: hidden;
+  overflow: visible;
   background: var(--gradient-metal-deepblue-v7);
   color: var(--color-light-0);
 `
@@ -28,12 +31,19 @@ const StyledMainLayout = styled.div`
 // -----------------------------------------------------------------------------
 
 const StyledMain = styled.main`
+  transition: width 0.4s ease;
+  /* width: ${({ $isSidebarOpen }) =>
+    $isSidebarOpen ? 'calc(100vw - 20rem)' : '100vw'}; */
   width: 100%;
   height: 100%;
   grid-row: 2;
   grid-column: 2;
+  padding-bottom: 2rem;
+
   background-color: var(--see-07);
   z-index: 200;
+  justify-content: center;
+  overflow: visible;
 `
 
 // -----------------------------------------------------------------------------
@@ -41,21 +51,21 @@ const StyledMain = styled.main`
 // -----------------------------------------------------------------------------
 
 const MainLayout = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false)
+  const { state, dispatch } = useContext(AppContext)  
+  const isSidebarOpen = state.isSidebarOpen
+
   const location = useLocation()
   const isHomeView = location.pathname === '/'  
 
   useEffect(() => {
-    setSidebarOpen(false)  
-  }, [location.pathname])
+    dispatch({ type: 'SET_SIDEBAR', payload: false })  
+  }, [location.pathname, dispatch])
 
   return (
     <StyledMainLayout $isSidebarOpen={!isHomeView && isSidebarOpen}>
-      <Header onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
-
+      <Header />
       {!isHomeView && <Sidebar $isOpen={isSidebarOpen} />}
-
-      <StyledMain>
+      <StyledMain $isSidebarOpen={!isHomeView && isSidebarOpen}>
         <Outlet />
       </StyledMain>
     </StyledMainLayout>

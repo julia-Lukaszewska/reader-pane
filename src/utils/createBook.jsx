@@ -7,11 +7,6 @@
  * Can be used to create book instances locally or for testing purposes.
  * All properties match the backend Book schema.
  */
-//#PL:
-// Tworzy nowy obiekt książki z wartościami domyślnymi.
-// Może być używany do lokalnego tworzenia książek lub testów.
-// Struktura zgodna ze schematem Book z backendu.
-//#/
 
 export function createBook({
   _id = crypto.randomUUID(), // Unique identifier  

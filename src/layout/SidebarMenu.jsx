@@ -34,7 +34,7 @@ const SidebarMenu = ({ $isOpen }) => {
     <StyledMenu $isOpen={$isOpen}>
       {/* Home page button   */}
       <Btn $variant="sidebar_btn" onClick={() => navigate('/')}>
-        Strona Główna
+        Home
       </Btn>
 
       {/* Reader view button   */}

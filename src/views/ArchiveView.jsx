@@ -129,7 +129,6 @@ const ArchiveView = () => {
           <BookCard key={book._id}>
             <div>
               <h4>{book.title}</h4>
-              <small>PDF</small>
             </div>
             <div
               style={{

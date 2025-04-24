@@ -72,15 +72,15 @@ const AddBookTile = () => {
     }
 
     try {
-      const totalPages = await countPages(file)
-      console.log('[UPLOAD] Total pages:', totalPages)
+      const totalPages = await countPages(file)  
+      console.log('[UPLOAD] Total pages:', totalPages)  
 
-      const formData = new FormData()
+      const formData = new FormData()  
       formData.append('file', file)
       formData.append('totalPages', totalPages)
 
-      const uploadedBook = await uploadBook(formData)
-      console.log('[UPLOAD] API response:', uploadedBook)
+      const uploadedBook = await uploadBook(formData)  
+      console.log('[UPLOAD] API response:', uploadedBook)  
 
       if (uploadedBook?.fileUrl) {
         dispatch({ type: 'ADD_BOOK', payload: uploadedBook })
@@ -99,9 +99,8 @@ const AddBookTile = () => {
     <>
       <AddTile onClick={() => inputRef.current?.click()}>
         <FiPlus />
-        <span>Add a book</span> {/* Home label   */}
-        <small>Upload PDF</small>{' '}
-        {/* Subtext label   */}
+        <span>Add a book</span>
+        <small>Upload PDF</small>
       </AddTile>
 
       <HiddenInput

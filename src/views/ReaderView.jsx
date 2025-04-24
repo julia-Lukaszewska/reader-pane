@@ -13,8 +13,15 @@ import { usePreloadPDFPages } from '../hooks/usePreloadPDFPages'
 import { useReadingProgress } from '../hooks/useReadingProgress'
 import { saveLastBookId } from '../utils/storage'
 import { useBookLoader } from '../hooks/useBookLoader'
-
+import { useMobileViewMode } from '../hooks/useMobileViewMode'
+import styled from 'styled-components'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+
+const StyledReaderView = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 95%;
+`
 
 const ReaderView = () => {
   const { bookId: routeBookId } = useParams()
@@ -38,6 +45,7 @@ const ReaderView = () => {
     dispatch({ type: 'CLEAR_RENDERED_PAGES' })
     dispatch({ type: 'CLEAR_RENDERED_RANGES' })
   }, [routeBookId, dispatch])
+  useMobileViewMode()
 
   // Preload pages and autosave reading progress  
   usePreloadPDFPages()
@@ -54,10 +62,10 @@ const ReaderView = () => {
   if (error) return <p>{error}</p>
 
   return (
-    <>
+    <StyledReaderView>
       <Toolbar currentPage={currentPage} totalPages={totalPages} />
       <RenderedPDFViewer />
-    </>
+    </StyledReaderView>
   )
 }
 

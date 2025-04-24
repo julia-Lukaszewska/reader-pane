@@ -90,7 +90,7 @@ const BtnGroup = styled.div`
 //------ Header component definition  
 //-----------------------------------------------------------------------------
 
-const Header = ({ onToggleSidebar }) => {
+const Header = () => {
   const { dispatch } = useContext(AppContext)
   const navigate = useNavigate()
   const location = useLocation()
@@ -105,7 +105,7 @@ const Header = ({ onToggleSidebar }) => {
         {!isHomeView && (
           <Btn
             $variant="circle_icon_btn"
-            onClick={onToggleSidebar}
+            onClick={() => dispatch({ type: 'TOGGLE_SIDEBAR' })}
             ariaLabel="Open menu"
           >
             <SlMenu />

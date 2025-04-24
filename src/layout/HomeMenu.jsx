@@ -39,7 +39,7 @@ const HomeMenu = () => {
         position={{ x: '0%', y: '0%' }}
         label="Library"
         isAnyTileActive={isAnyTileActive}
-        buttonLabel="Przejdź do biblioteki"
+        buttonLabel="Go to library"
       />
 
       <MenuTile
@@ -49,7 +49,7 @@ const HomeMenu = () => {
         position={{ x: '0%', y: '-105%' }}
         label="Reader"
         isAnyTileActive={isAnyTileActive}
-        buttonLabel="Czytaj książkę"
+        buttonLabel="Start reading"
       />
 
       <MenuTile
@@ -59,7 +59,7 @@ const HomeMenu = () => {
         position={{ x: '-105%', y: '0%' }}
         label="Settings"
         isAnyTileActive={isAnyTileActive}
-        buttonLabel="Ustawienia"
+        buttonLabel="Settings"
       />
     </StyledHomeMenu>
   )

@@ -1,18 +1,11 @@
-//-----------------------------------------------------------------------------
-//------ MyLibraryView – displays user's personal book library  
-//-----------------------------------------------------------------------------
-
-import { useContext, useRef, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import BookTile from '../components/BookTile' // Book display component  
-import AddBookTile from '../components/AddBookTile' // Add button tile  
-import { AppContext } from '../context/AppContext' // Global app state context  
-import { deleteBookForever } from '../api' // Book removal API call  
-import { getLastBookId, clearLastBookId } from '../utils/storage' // LocalStorage helpers  
-
-//-----------------------------------------------------------------------------
-//------ BookGridContainer – wrapper for full view layout  
-//-----------------------------------------------------------------------------
+import { AppContext } from '../context/AppContext'
+import { deleteBookForever } from '../api'
+import { getLastBookId, clearLastBookId } from '../utils/storage'
+import BookPreviewModal from '../components/BookPreviewModal'
+import MyLibraryGridView from '../views/LibraryGridView'
+import MyLibraryListView from '../views/LibraryListView'
 
 const BookGridContainer = styled.div`
   display: flex;
@@ -22,31 +15,34 @@ const BookGridContainer = styled.div`
   height: 100%;
   width: 100%;
   background: var(--gradient-blue-clear);
+  flex-direction: column;
 `
 
-//-----------------------------------------------------------------------------
-//------ BooksGrid – responsive book grid layout  
-//-----------------------------------------------------------------------------
-
-const BooksGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
-  padding: 2rem;
+const ViewSwitch = styled.div`
+  display: flex;
+  justify-content: flex-end;
   width: 100%;
-  height: 100%;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border-radius: var(--border-radius);
+  padding: 1rem 2rem 0 2rem;
+  gap: 1rem;
 `
 
-//-----------------------------------------------------------------------------
-//------ MyLibraryView component definition  
-//-----------------------------------------------------------------------------
+const SwitchButton = styled.button`
+  background: ${({ $active }) =>
+    $active ? 'var(--color-accent)' : 'transparent'};
+  color: white;
+  border: 1px solid white;
+  padding: 0.3rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+`
 
 const MyLibraryView = () => {
   const { state, dispatch } = useContext(AppContext)
-  const inputRef = useRef(null)
+  const viewMode = state.libraryViewMode || 'grid'
+  const [selectedBook, setSelectedBook] = useState(null)
+  const [isManaging, setIsManaging] = useState(false)
+  const [selectedBooks, setSelectedBooks] = useState([])
 
   useEffect(() => {
     const checkFiles = async () => {
@@ -61,30 +57,60 @@ const MyLibraryView = () => {
             } catch (err) {
               console.error('Error while removing from backend:', err)
             }
-
             dispatch({ type: 'REMOVE_BOOK', payload: book._id })
-
-            if (getLastBookId() === book._id) {
-              clearLastBookId()
-            }
+            if (getLastBookId() === book._id) clearLastBookId()
           }
         })
       )
     }
 
-    if (state.library?.length) {
-      checkFiles()
-    }
-  }, [state.library, dispatch]) // Run check when library updates  
+    if (state.library?.length) checkFiles()
+  }, [state.library, dispatch, selectedBooks, isManaging])
+
+  const filteredBooks = state.library?.filter((book) => !book.isDeleted)
 
   return (
     <BookGridContainer>
-      <BooksGrid>
-        {state.library?.map((book) =>
-          !book.isDeleted ? <BookTile key={book._id} book={book} /> : null
-        )}
-        <AddBookTile inputRef={inputRef} />
-      </BooksGrid>
+      <ViewSwitch>
+        <SwitchButton
+          $active={isManaging}
+          onClick={() => {
+            setIsManaging(!isManaging)
+            setSelectedBooks([])
+          }}
+        >
+          🛠 Manage
+        </SwitchButton>
+        <SwitchButton
+          $active={viewMode === 'grid'}
+          onClick={() =>
+            dispatch({ type: 'SET_LIBRARY_VIEW_MODE', payload: 'grid' })
+          }
+        >
+          🟦 Tiles
+        </SwitchButton>
+        <SwitchButton
+          $active={viewMode === 'list'}
+          onClick={() =>
+            dispatch({ type: 'SET_LIBRARY_VIEW_MODE', payload: 'list' })
+          }
+        >
+          📃 List
+        </SwitchButton>
+      </ViewSwitch>
+
+      {viewMode === 'grid' ? (
+        <MyLibraryGridView books={filteredBooks} />
+      ) : (
+        <MyLibraryListView books={filteredBooks} onSelect={setSelectedBook} />
+      )}
+
+      {selectedBook && (
+        <BookPreviewModal
+          book={selectedBook}
+          onClose={() => setSelectedBook(null)}
+        />
+      )}
     </BookGridContainer>
   )
 }
