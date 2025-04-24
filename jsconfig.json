@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@books/*": ["src/features/books/*"],
+      "@pdf/*": ["src/features/pdf/*"],
+      "@ui/*": ["src/features/ui/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
