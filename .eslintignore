@@ -1,8 +1,0 @@
-*.md
-/docs/
-docs/
-public/pdf.worker.min.js
-/public/pdf.worker.min.js
-**/public/pdf.worker.min.js
-/server/uploads/*
-public/pdf.worker.min.js
