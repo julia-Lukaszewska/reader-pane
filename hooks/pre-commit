@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec pwsh -NoProfile -ExecutionPolicy Bypass -File "$(dirname "$0")/pre-commit.ps1" "$@"
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(dirname "$0")/pre-commit.ps1" "$@"
