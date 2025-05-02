@@ -78,5 +78,5 @@ foreach ($file in $files) {
     git add $file
     Remove-Item $backup -Force
 
-    Write-Host "✔ Cleaned: $file"
+    Write-Host " Cleaned: $file"
 }
