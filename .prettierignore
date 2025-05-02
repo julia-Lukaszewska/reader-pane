@@ -4,5 +4,6 @@ build
 coverage
 .vite
 *.lock
-
+public/pdf.worker.min.js
 docs/
+/docs/

@@ -8,14 +8,18 @@ pnpm-debug.log*
 lerna-debug.log*
 /.tours/
 node_modules
-/docs/app-structure.md
-/server/clean-uploads.js
+docs/app-structure.md
+*.md
+public/pdf.worker.min.js
 /docs/
 # /server/uploads/
 dist
 dist-ssr
 *.local
-/src/.gitignore/
+src/.gitignore/
+
+server/uploads/
+/server/uploads/
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -28,3 +32,6 @@ dist-ssr
 *.sw?
 *.config.js
 Btn.gitignore
+*.backup
+*.temp
+test/output/
