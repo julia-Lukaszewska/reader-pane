@@ -1,17 +1,17 @@
 //------------------------------------------------------------------
-//------ Manage book state: delete, archive, restore //#PL: 📦 Zarządzanie stanem książki – usuwanie, archiwizacja, przywracanie #/
+//------ Manage book state: delete, archive, restore 
 //------------------------------------------------------------------
 
-import express from 'express' //#PL: 🔹 Express – tworzy serwer i obsługuje trasy #/
-import Book from '../models/Book.js' //#PL: 🔹 Model książki z MongoDB #/
-import path from 'path' //#PL: 📁 Narzędzie Node.js do pracy ze ścieżkami plików #/
-import fs from 'fs' //#PL: 🗑️ Narzędzie do operacji na plikach (np. usuwanie) #/
-import { fileURLToPath } from 'url' //#PL: 📌 Uzyskanie __dirname w środowisku ES Modules #/
+import express from 'express' 
+import Book from '../models/Book.js' 
+import path from 'path' 
+import fs from 'fs' 
+import { fileURLToPath } from 'url' 
 
-const router = express.Router() //#PL: 🔹 Tworzy router Expressa #/
+const router = express.Router() 
 
 //------------------------------------------------------------------
-//------ Move book to archive //#PL: 🗂️ Przeniesienie książki do archiwum (isDeleted = true) #/
+//------ Move book to archive 
 //------------------------------------------------------------------
 
 router.patch('/:id/delete', async (req, res) => {
@@ -21,15 +21,15 @@ router.patch('/:id/delete', async (req, res) => {
       { isDeleted: true },  
       { new: true }  
     )
-    res.status(200).json(book) // Return updated book (HTTP 200 – OK)
+    res.status(200).json(book) 
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Error while moving the book to archive' }) // Error handling
+    res.status(500).json({ error: 'Error while moving the book to archive' }) 
   }
 })
 
 //------------------------------------------------------------------
-//------ Restore book from archive  
+//------ Restore book from archive   
 //------------------------------------------------------------------
 
 router.patch('/:id/restore', async (req, res) => {
@@ -39,10 +39,10 @@ router.patch('/:id/restore', async (req, res) => {
       { isDeleted: false },  
       { new: true }  
     )
-    res.status(200).json(book) // Return restored book
+    res.status(200).json(book)
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Error while restoring the book' }) // Error handling
+    res.status(500).json({ error: 'Error while restoring the book' }) 
   }
 })
 
@@ -64,17 +64,17 @@ router.delete('/:id', async (req, res) => {
 
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath)  
-      console.log('🧹 Deleted file:', fileName)
+      console.log(' Deleted file:', fileName)
     } else {
-      console.log('⚠️ The file does not exist in the "uploads" folder')
+      console.log(' The file does not exist in the "uploads" folder')
     }
 
     await Book.findByIdAndDelete(req.params.id)  
-    res.status(200).json({ message: 'Book and file permanently deleted' }) // Success message
+    res.status(200).json({ message: 'Book and file permanently deleted' }) 
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Error while deleting the book' }) // Error handling
+    res.status(500).json({ error: 'Error while deleting the book' }) 
   }
 })
 
-export default router //#PL: 📤 Eksport routera do użycia w serwerze głównym #/
+export default router 

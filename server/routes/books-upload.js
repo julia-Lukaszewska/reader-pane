@@ -1,80 +1,47 @@
-//------------------------------------------------------------------
-//------ Manage book state: delete, archive, restore //#PL: 📦 Zarządzanie stanem książki – usuwanie, archiwizacja, przywracanie #/
-//------------------------------------------------------------------
+import express from 'express'
+import multer from 'multer'
+import path from 'path'
+import Book from '../models/Book.js'
 
-import express from 'express' //#PL: 🔹 Express – tworzy serwer i obsługuje trasy #/
-import Book from '../models/Book.js' //#PL: 🔹 Model książki z MongoDB #/
-import path from 'path' //#PL: 📁 Narzędzie Node.js do pracy ze ścieżkami plików #/
-import fs from 'fs' //#PL: 🗑️ Narzędzie do operacji na plikach (np. usuwanie) #/
-import { fileURLToPath } from 'url' //#PL: 📌 Uzyskanie __dirname w środowisku ES Modules #/
+const router = express.Router()
 
-const router = express.Router() //#PL: 🔹 Tworzy router Expressa #/
-
-//------------------------------------------------------------------
-//------ Move book to archive //#PL: 🗂️ Przeniesienie książki do archiwum (isDeleted = true) #/
-//------------------------------------------------------------------
-
-router.patch('/:id/delete', async (req, res) => {
-  try {
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
-      { isDeleted: true },  
-      { new: true }  
-    )
-    res.status(200).json(book) // Return updated book (HTTP 200 – OK)  
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Error while moving the book to archive' }) // Error handling  
-  }
+// ➕ Konfiguracja multer – folder 'uploads/' + oryginalna nazwa pliku
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, file.originalname),
 })
+const upload = multer({ storage })
 
 //------------------------------------------------------------------
-//------ Restore book from archive  
+//------ Upload a new book (file + metadata) 
 //------------------------------------------------------------------
 
-router.patch('/:id/restore', async (req, res) => {
+router.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
-      { isDeleted: false },  
-      { new: true }  
-    )
-    res.status(200).json(book) // Return restored book (HTTP 200 – OK)  
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Error while restoring the book' }) // Error handling  
-  }
-})
+    const { title, author, totalPages } = req.body
 
-//------------------------------------------------------------------
-//------ Permanently delete book and file  
-//------------------------------------------------------------------
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id)  
-    if (!book) {
-      return res.status(404).json({ message: 'The book does not exist' })  
+    if (!req.file || !title || !author || !totalPages) {
+      return res.status(400).json({ error: 'Missing fields or file' })
     }
 
-    const fileName = path.basename(book.fileUrl)  
-    const __filename = fileURLToPath(import.meta.url)  
-    const __dirname = path.dirname(__filename)  
-    const filePath = path.join(__dirname, '../uploads', fileName)  
+    const fileUrl = `/uploads/${req.file.filename}`
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath)  
-      console.log(' Deleted file:', fileName)
-    } else {
-      console.log(' The file does not exist in the "uploads" folder')
-    }
+    const book = new Book({
+      title,
+      author,
+      totalPages,
+      fileUrl,
+      addedAt: new Date(),
+      currentPage: 1,
+      progress: 0,
+    })
 
-    await Book.findByIdAndDelete(req.params.id)  
-    res.status(200).json({ message: 'Book and file permanently deleted' }) // Success message  
+    await book.save()
+    res.status(201).json(book)
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Error while deleting the book' }) // Error handling  
+    res.status(500).json({ error: 'Error while uploading the book' })
   }
 })
 
-export default router //#PL: 📤 Eksport routera do użycia w serwerze głównym #/
+export default router

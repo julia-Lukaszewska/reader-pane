@@ -1,14 +1,14 @@
 //------------------------------------------------------------------
-//------ Progress routes for books //#PL: 📊 Trasy do obsługi postępu czytania #/
+//------ Progress routes for books 
 //------------------------------------------------------------------
 
-import express from 'express' //#PL: 🔹 Express do tworzenia tras API #/
-import Book from '../models/Book.js' //#PL: 🔹 Model MongoDB dla książki #/
+import express from 'express' 
+import Book from '../models/Book.js' 
 
-const router = express.Router() //#PL: 🔹 Router Express do tworzenia ścieżek #/
+const router = express.Router() 
 
 //------------------------------------------------------------------
-//------ Get reading progress from DB //#PL: 📥 Pobierz aktualny postęp czytania #/
+//------ Get reading progress from DB 
 //------------------------------------------------------------------
 
 router.get('/:id/progress', async (req, res) => {
@@ -25,13 +25,13 @@ router.get('/:id/progress', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-//------ Save reading progress to DB //#PL: 💾 Zapisz aktualny postęp czytania #/
+//------ Save reading progress to DB 
 //------------------------------------------------------------------
 
 router.patch('/:id/progress', async (req, res) => {
   try {
     const { currentPage, totalPages } = req.body  
-    const update = {}  
+    const update =   
 
     if (currentPage && currentPage >= 1) update.currentPage = currentPage
     if (totalPages && totalPages >= 1) update.totalPages = totalPages
@@ -52,7 +52,7 @@ router.patch('/:id/progress', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-//------ Auto-save progress with percentage //#PL: 🔄 Oblicz i zapisz % postępu #/
+//------ Auto-save progress with percentage 
 //------------------------------------------------------------------
 
 router.patch('/:id/progress/auto', async (req, res) => {
@@ -88,4 +88,4 @@ router.patch('/:id/progress/auto', async (req, res) => {
   }
 })
 
-export default router //#PL: 📤 Eksport routera do użycia w aplikacji #/
+export default router 

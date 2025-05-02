@@ -1,22 +1,22 @@
 //------------------------------------------------------------------
-//------ Main router that combines all book-related routes //#PL: 🧩 Główny router łączący wszystkie trasy książek #/
+//------ Main router that combines all book-related routes 
 //------------------------------------------------------------------
 
-import express from 'express' //#PL: 🔹 Express – tworzenie routera głównego #/
-import uploadRoutes from './books-upload.js' //#PL: 📂 Trasy do uploadu książek #/
-import readRoutes from './books-read.js' //#PL: 📖 Trasy do pobierania książek #/
-import stateRoutes from './books-state.js' //#PL: 🗑️ Trasy do usuwania, przywracania i archiwizacji #/
-import progressRoutes from './books-progress.js' //#PL: 📊 Trasy do postępu czytania #/
-
-const router = express.Router() //#PL: 🔹 Inicjalizacja routera Expressa #/
+import express from 'express' 
+import readRoutes from './books-read.js' 
+import stateRoutes from './books-state.js' 
+import progressRoutes from './books-progress.js' 
+import editRoutes from './books-edit.js' 
+import uploadRoutes from './books-upload.js' 
+const router = express.Router() 
 
 //------------------------------------------------------------------
-//------ Mount routes //#PL: 🔗 Podłącz podmoduły z trasami #/
+//------ Mount routes 
 //------------------------------------------------------------------
 
-router.use(uploadRoutes) //#PL: 🔼 Upload plików #/
-router.use(readRoutes) //#PL: 📚 Pobieranie danych książek #/
-router.use(stateRoutes) //#PL: 🗑️ Usuwanie i archiwizacja #/
-router.use(progressRoutes) //#PL: 🔁 Postęp czytania #/
-
-export default router //#PL: 📤 Eksport routera głównego #/
+router.use(readRoutes)
+router.use(stateRoutes)
+router.use(progressRoutes)
+router.use(editRoutes)
+router.use(uploadRoutes)
+export default router 
