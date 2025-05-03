@@ -3,14 +3,14 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { setCurrentPage, selectBookById } from '@/store'
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
-// import styled from 'styled-components'
+import styled from 'styled-components'
 
-// const StyledPagination = styled.div`
-
-// `
-// const PageInfo = styled.span`
-
-// `
+const StyledPagination = styled.div`
+  /* … */
+`
+const PageInfo = styled.span`
+  /* … */
+`
 
 export default function PDFPageControls() {
   const dispatch = useDispatch()

@@ -80,7 +80,7 @@ const BatchDeleteButton = styled.button.withConfig({
   }
 `
 
-export const LibraryToolbar = React.memo(() => {
+const LibraryToolbar = React.memo(() => {
   const dispatch = useDispatch()
   const { pathname } = useLocation()
 
@@ -92,7 +92,6 @@ export const LibraryToolbar = React.memo(() => {
     return ''
   }, [pathname])
 
-
   const inLibrary = pathname.startsWith('/library')
   const { libraryViewMode, sortMode, isManaging, selectedBooks } = useSelector(
     (s) => s.library
@@ -101,7 +100,6 @@ export const LibraryToolbar = React.memo(() => {
   const selectedCount = selectedBooks.length
 
   const handleBatchDelete = () => {
-  
     selectedBooks.forEach((id) => dispatch(archiveBookThunk(id)))
     dispatch(clearSelectedBooks())
   }
@@ -169,5 +167,7 @@ export const LibraryToolbar = React.memo(() => {
     </ToolbarWrapper>
   )
 })
+
+LibraryToolbar.displayName = 'LibraryToolbar'
 
 export default LibraryToolbar

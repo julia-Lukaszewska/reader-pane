@@ -1,9 +1,18 @@
+// src/components/modals/ConfirmModal.jsx
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import Btn from './Btn'
+import { useDispatch, useSelector } from 'react-redux'
+import { saveBookToArchiveStorage } from '@/utils'
+import {
+  archiveBookThunk,
+  deleteBookForeverThunk,
+  restoreBookThunk,
+} from '@/store' // thunki do archiwizacji/usuń/restore :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+import { Button } from '@/components' // Twój Button z wariantami
 
-// -----------------------------------------------------------------------------
-//------ Styled components  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
 
 const Overlay = styled.div`
   position: fixed;
@@ -14,7 +23,7 @@ const Overlay = styled.div`
   justify-content: center;
   z-index: 9999;
   backdrop-filter: blur(6px);
-`  
+`
 
 const ModalBox = styled.div`
   background: var(--glass-bg);
@@ -26,13 +35,13 @@ const ModalBox = styled.div`
   max-width: 420px;
   width: 90%;
   text-align: center;
-`  
+`
 
 const Title = styled.h3`
   margin-bottom: 1.6rem;
   font-size: 1.8rem;
   text-shadow: var(--glass-text-shadow);
-`  
+`
 
 const BtnRow = styled.div`
   display: flex;
@@ -40,70 +49,126 @@ const BtnRow = styled.div`
   margin-top: 2rem;
   gap: 1.2rem;
   flex-wrap: wrap;
-`  
+`
 
-// -----------------------------------------------------------------------------
-//------ ConfirmModal component  
-// -----------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------
+// ConfirmModal
+//-----------------------------------------------------------------------------
+// Props:
+//   bookId      – ID książki (do thunków)
+//   bookTitle   – tytuł, do wyświetlenia
+//   onCancel    – zawsze wymagasz tej funkcji, żeby zamknąć modal
+//   variant     – 'library' | 'permanent-delete' | 'restore'
+//   onTrash     – opcjonalny override dla archiwizacji
+//   onConfirm   – opcjonalny override dla permanentnego usunięcia / przywrócenia
 const ConfirmModal = ({
-  bookTitle,  
-  onTrash,  
-  onConfirm,  
-  onCancel,  
-  variant = 'library',  
+  bookId,
+  bookTitle,
+  onCancel,
+  variant = 'library',
+  onTrash,
+  onConfirm,
 }) => {
-  const isLibrary = variant === 'library'  
-  const isPermanent = variant === 'permanent-delete'  
-  const isRestore = variant === 'restore'  
+  const dispatch = useDispatch()
+
+  const isLibrary = variant === 'library'
+  const isPermanent = variant === 'permanent-delete'
+  const isRestore = variant === 'restore'
+  const book = useSelector((state) =>
+    state.library.list.find((b) => b._id === bookId)
+  )
+  useEffect(() => {
+    if (book?.isArchived) {
+      saveBookToArchiveStorage(book)
+    }
+  }, [book])
+
+  // Archiwizacja
+  const handleArchive = () => {
+    if (onTrash) {
+      onTrash()
+    } else {
+      dispatch(archiveBookThunk(bookId))
+    }
+    onCancel()
+  }
+
+  // Permanentne usunięcie
+  const handleDelete = () => {
+    if (onConfirm) {
+      onConfirm()
+    } else {
+      dispatch(deleteBookForeverThunk(bookId))
+    }
+    onCancel()
+  }
+
+  // Przywracanie z archiwum
+  const handleRestore = () => {
+    if (onConfirm) {
+      onConfirm()
+    } else {
+      dispatch(restoreBookThunk(bookId))
+    }
+    onCancel()
+  }
 
   return (
     <Overlay onClick={onCancel}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
-        {/* Stop propagation to prevent modal close on inner click   */}
         <Title>
-          {isLibrary && `Are you sure you want to delete "${bookTitle}"?`}
-          {isPermanent &&
-            `Are you sure you want to permanently delete "${bookTitle}"?`}
-          {isRestore && `Restore "${bookTitle}" to library?`}
+          {isLibrary && `What do you want to do with “${bookTitle}”?`}
+          {isPermanent && `Permanently delete “${bookTitle}”?`}
+          {isRestore && `Restore “${bookTitle}” to library?`}
         </Title>
 
         <BtnRow>
           {isLibrary && (
             <>
-              <Btn $variant="button_secondary" onClick={onTrash}>
+              <Button $variant="button_secondary" onClick={handleArchive}>
                 Archive
-              </Btn>
-              <Btn $variant="button_primary" onClick={onConfirm}>
+              </Button>
+              <Button $variant="button_primary" onClick={handleDelete}>
                 Delete
-              </Btn>
+              </Button>
             </>
           )}
 
-          {(isPermanent || isRestore) && (
+          {isPermanent && (
             <>
-              <Btn $variant="button_primary" onClick={onConfirm}>
+              <Button $variant="button_primary" onClick={handleDelete}>
                 Yes
-              </Btn>
-              <Btn $variant="button_secondary" onClick={onCancel}>
-                No
-              </Btn>
+              </Button>
+              <Button $variant="button_secondary" onClick={onCancel}>
+                Cancel
+              </Button>
+            </>
+          )}
+
+          {isRestore && (
+            <>
+              <Button $variant="button_primary" onClick={handleRestore}>
+                Yes
+              </Button>
+              <Button $variant="button_secondary" onClick={onCancel}>
+                Cancel
+              </Button>
             </>
           )}
         </BtnRow>
 
         {isLibrary && (
-          <Btn
+          <Button
             $variant="button_link"
             onClick={onCancel}
             style={{ marginTop: '1.4rem' }}
           >
             Cancel
-          </Btn>
+          </Button>
         )}
       </ModalBox>
     </Overlay>
   )
 }
 
-export default ConfirmModal  
+export default React.memo(ConfirmModal)

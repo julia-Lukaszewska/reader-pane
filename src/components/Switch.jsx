@@ -1,13 +1,14 @@
-import { useContext } from 'react'
 import styled from 'styled-components'
-import { AppContext } from '../context/AppContext'
-import Btn from './Btn'
+import { useSelector, useDispatch } from 'react-redux'
+import { Button } from '@/components'
+
+import { setViewMode, toggleTheme } from '@/store'
 import { LuSun, LuMoon } from 'react-icons/lu'
 import { RxReader } from 'react-icons/rx'
 import { CgEreader } from 'react-icons/cg'
 
 //-----------------------------------------------------------------------------
-//------ SwitchContent: layout for icons inside switch  
+//------ SwitchContent: layout for icons inside switch 
 //-----------------------------------------------------------------------------
 
 const SwitchContent = styled.div`
@@ -21,7 +22,7 @@ const SwitchContent = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ Thumb: animated indicator inside switch  
+//------ Thumb: animated indicator inside switch 
 //-----------------------------------------------------------------------------
 
 const Thumb = styled.div`
@@ -38,30 +39,29 @@ const Thumb = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ Switch component: theme/view toggle button  
+//------ Switch component: theme/view toggle button 
 //-----------------------------------------------------------------------------
 
 const Switch = ({ variant = 'theme' }) => {
-  const { state, dispatch } = useContext(AppContext)
+  const dispatch = useDispatch()
+  const theme = useSelector((state) => state.ui.theme)
+  const viewMode = useSelector((state) => state.reader.viewMode)
 
-  const isTheme = variant === 'theme' // Is theme switch?  
-  const isReader = variant === 'reader' // Is reader mode switch?  
+  const isTheme = variant === 'theme' // Is theme switch? 
+  const isReader = variant === 'reader' // Is reader mode switch? 
 
   const handleClick = () => {
     if (isTheme) {
-      dispatch({ type: 'TOGGLE_THEME' }) // Toggle theme  
+      dispatch(toggleTheme())
     } else if (isReader) {
-      dispatch({
-        type: 'SET_VIEW_MODE',
-        payload: state.viewMode === 'single' ? 'double' : 'single', // Toggle view mode  
-      })
+      dispatch(setViewMode(viewMode === 'single' ? 'double' : 'single'))
     }
   }
 
   const icons = isTheme
     ? [<LuSun key="sun" />, <LuMoon key="moon" />]
     : [
-        state.viewMode === 'single' ? (
+        viewMode === 'single' ? (
           <RxReader key="single" />
         ) : (
           <CgEreader key="double" />
@@ -69,30 +69,30 @@ const Switch = ({ variant = 'theme' }) => {
       ]
 
   const thumbPosition = isTheme
-    ? state.theme === 'light'
+    ? theme === 'light'
       ? '0.3rem'
       : 'calc(100% - 3.3rem)'
-    : state.viewMode === 'single'
+    : viewMode === 'single'
       ? '0.3rem'
       : 'calc(100% - 3.3rem)'
 
   const thumbColor = isTheme
-    ? state.theme === 'light'
+    ? theme === 'light'
       ? '#ffffffcc'
       : '#aad0ff'
-    : state.viewMode === 'single'
+    : viewMode === 'single'
       ? '#ffffffcc'
       : '#aad0ff'
 
   return (
-    <Btn
+    <Button
       $variant={`${variant}_switch_btn`}
       onClick={handleClick}
       ariaLabel={`Switch ${variant}`}
     >
       <Thumb $position={thumbPosition} $color={thumbColor} />
       <SwitchContent>{icons}</SwitchContent>
-    </Btn>
+    </Button>
   )
 }
 

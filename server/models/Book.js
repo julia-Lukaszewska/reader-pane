@@ -1,69 +1,76 @@
 //------------------------------------------------------------------
-//------ Book schema definition for MongoDB //#PL: 📘 Definicja schematu książki w Mongoose #/
+//------ Book schema definition for MongoDB 
 //------------------------------------------------------------------
 
-import mongoose from 'mongoose' //#PL: 🔹 Mongoose – ODM do MongoDB #/
+import mongoose from 'mongoose' 
 
 const bookSchema = new mongoose.Schema({
   //----------------------------------------------------------------
-  //------ Book title //#PL: 📖 Tytuł książki (np. nazwa pliku PDF) #/
+  //------ Book title 
   //----------------------------------------------------------------
   title: {
-    type: String,  
-    required: true,  
+    type: String, 
+    required: true, 
   },
 
   //----------------------------------------------------------------
-  //------ File URL //#PL: 🌐 Adres URL pliku (np. ścieżka do PDF-a) #/
+  //------ File URL 
   //----------------------------------------------------------------
   fileUrl: {
-    type: String,  
-    required: true,  
+    type: String, 
+    required: true, 
   },
 
   //----------------------------------------------------------------
-  //------ Date added //#PL: 🕒 Data dodania książki #/
+  //------ Date added 
   //----------------------------------------------------------------
   addedAt: {
-    type: Date,  
-    default: Date.now,  
+    type: Date, 
+    default: Date.now, 
   },
 
   //----------------------------------------------------------------
-  //------ Deletion flag //#PL: 🗑️ Status usunięcia książki (archiwizacja) #/
+  //------ Deletion flag 
   //----------------------------------------------------------------
-  isDeleted: {
-    type: Boolean,  
-    default: false,  
+  isArchived: {
+    type: Boolean, 
+    default: false, 
   },
 
   //----------------------------------------------------------------
-  //------ Reading progress (%) //#PL: 📊 Postęp czytania w procentach #/
+  //------ Favorite flag 
+  //----------------------------------------------------------------
+  isFavorited: {
+    type: Boolean,
+    default: false,
+  },
+  //----------------------------------------------------------------
+  //------ Reading progress (%) 
   //----------------------------------------------------------------
   progress: {
-    type: Number,  
-    default: 0,  
+    type: Number, 
+    default: 0, 
   },
 
   //----------------------------------------------------------------
-  //------ Current page //#PL: 📄 Bieżąca strona w książce #/
+  //------ Current page 
   //----------------------------------------------------------------
   currentPage: {
-    type: Number,  
-    default: 1,  
+    type: Number, 
+    default: 1, 
   },
 
   //----------------------------------------------------------------
-  //------ Total pages //#PL: 📚 Całkowita liczba stron w książce #/
+  //------ Total pages 
   //----------------------------------------------------------------
   totalPages: {
-    type: Number,  
-    default: 1,  
+    type: Number, 
+    default: 1, 
   },
 })
 
 //------------------------------------------------------------------
-//------ Export Book model //#PL: 📤 Eksport modelu do użycia w trasach #/
+//------ Export Book model 
 //------------------------------------------------------------------
 
 export default mongoose.model('Book', bookSchema)

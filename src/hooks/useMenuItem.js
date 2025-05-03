@@ -1,66 +1,46 @@
-// -----------------------------------------------------------------------------
-//------ useMenuItem: Custom hook to control menu tile behavior  
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//------ useMenuItem: Custom hook to control menu tile behavior 
+//-----------------------------------------------------------------------------
 
-import { useEffect, useContext } from 'react' // React hook for side effects  
-import { useNavigate, useLocation } from 'react-router-dom' // Routing hooks  
-import { AppContext } from '../context/AppContext' // App-wide context state  
+import { useEffect } from 'react' // React effect hook 
+import { useNavigate, useLocation } from 'react-router-dom' // Router hooks 
+import { useDispatch, useSelector } from 'react-redux' // Redux hooks 
+import { setActiveItem, clearActiveItem } from '@/store' // UI slice actions 
 
-/**
- * Hook for managing interaction logic for a single menu tile.
- * Handles activation, navigation, and deactivation states.
- * Also resets state when user navigates to home route.
- */
-export const useMenuItem = (name, route) => {
-  const navigate = useNavigate()  
-  const location = useLocation()  
-  const { state, dispatch } = useContext(AppContext)  
+const useMenuItem = (name, route) => {
+  // const hook declaration 
+  const navigate = useNavigate() // Navigation function 
+  const location = useLocation() // Current route 
+  const dispatch = useDispatch() // Redux dispatch 
+  const activeItem = useSelector((state) => state.ui.activeItem) // Currently active menu 
 
-  const $isActive = state.activeItem === name  
+  // Determine if this menu item is active 
+  const $isActive = activeItem === name 
 
-  /**
-   * Activate this tile if it's not already active.
-   * Prevents multiple tiles from being activated.
-   */
+  // Handle click on menu tile 
   const handleClick = () => {
-    if (state.activeItem && !$isActive) return
-    if (!$isActive) {
-      dispatch({ type: 'SET_ACTIVE_ITEM', payload: name })  
-    }
+    if (activeItem && !$isActive) return // Ignore if another is active 
+    if (!$isActive) dispatch(setActiveItem(name)) // Activate this item 
   }
 
-  /**
-   * Navigate to the tile's assigned route.
-   * Stops event bubbling to avoid triggering parent handlers.
-   */
+  // Navigate to route on click 
   const handleNavigate = (e) => {
-    e.stopPropagation()  
-    navigate(route)  
+    e.stopPropagation() // Prevent event bubbling 
+    navigate(route) // Go to route 
   }
 
-  /**
-   * Deactivate this tile (clears state).
-   * Optional event param allows usage inside click handlers.
-   */
+  // Close active menu item 
   const handleClose = (e) => {
-    if (e?.stopPropagation) e.stopPropagation()  
-    dispatch({ type: 'CLEAR_ACTIVE_ITEM' })  
+    e?.stopPropagation() // Prevent event bubbling 
+    dispatch(clearActiveItem()) // Clear active item 
   }
 
-  /**
-   * Automatically reset active item when navigating to home (/).
-   * Ensures clean state when returning to main screen.
-   */
+  // On route change, clear active item when home 
   useEffect(() => {
-    if (location.pathname === '/') {
-      dispatch({ type: 'CLEAR_ACTIVE_ITEM' })  
-    }
-  }, [location.pathname, dispatch])
+    if (location.pathname === '/') dispatch(clearActiveItem()) 
+  }, [location.pathname, dispatch]) // Dependencies 
 
-  return {
-    $isActive, // Boolean: is this tile active?  
-    handleClick, // Function: activate this tile  
-    handleNavigate, // Function: go to assigned route  
-    handleClose, // Function: deactivate tile  
-  }
+  return { $isActive, handleClick, handleNavigate, handleClose } 
 }
+
+export default useMenuItem // Export hook 

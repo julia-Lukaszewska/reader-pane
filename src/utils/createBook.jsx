@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-//------ createBook: Factory function for creating a new book object  
+//------ createBook: Factory function for creating a new book object 
 //-----------------------------------------------------------------------------
 
 /**
@@ -8,24 +8,24 @@
  * All properties match the backend Book schema.
  */
 
-export function createBook({
-  _id = crypto.randomUUID(), // Unique identifier  
-  title = 'Bez tytułu', // Default title  
-  fileUrl = '', // File path or URL  
-  addedAt = new Date().toISOString(), // ISO date format  
-  isDeleted = false, // Archive flag  
-  currentPage = 1, // Reading progress (page)  
-  totalPages = 1, // Total number of pages  
-  progress = 0, // Reading progress (%)  
-} = {}) {
+export default function createBook({
+  _id = crypto.randomUUID(), // Unique identifier 
+  title = 'Bez tytułu', // Default title 
+  fileUrl = '', // File path or URL 
+  addedAt = new Date().toISOString(), // ISO date format 
+  isArchived = false, // Archive flag 
+  currentPage = 1, // Reading progress (page) 
+ 
+  progress = 0, // Reading progress (%) 
+} = ) {
   return {
     _id,
     title,
     fileUrl,
     addedAt,
-    isDeleted,
+    isArchived,
     currentPage,
-    totalPages,
+   
     progress,
   }
 }

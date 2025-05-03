@@ -1,14 +1,14 @@
 //-----------------------------------------------------------------------------
-//------ HomeView – main landing view with interactive menu tiles  
+//------ HomeView – main landing view with interactive menu tiles 
 //-----------------------------------------------------------------------------
 
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import HomeMenu from '../layout/HomeMenu' // Home menu component  
-import { AppContext } from '../context/AppContext' // App context for global state  
+import { useSelector } from 'react-redux'
+import HomeMenu from '@/components/HomeMenu/HomeMenu' // Home menu component 
 
 //-----------------------------------------------------------------------------
-//------ StyledHomeView – grid layout with center tiles  
+//------ StyledHomeView – grid layout with center tiles 
 //-----------------------------------------------------------------------------
 
 const StyledHomeView = styled.div`
@@ -32,16 +32,16 @@ const StyledHomeView = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ HomeView component definition  
+//------ HomeView component definition 
 //-----------------------------------------------------------------------------
 
 const HomeView = () => {
-  const { state } = useContext(AppContext)
-  const isTileActive = state.activeItem !== null
+  const activeItem = useSelector((state) => state.ui.activeItem)
+  const isTileActive = activeItem !== null
 
   return (
     <StyledHomeView $blurred={isTileActive}>
-      {/* Render home menu with animated tiles   */}
+      {/* Render home menu with animated tiles  */}
       <HomeMenu />
     </StyledHomeView>
   )

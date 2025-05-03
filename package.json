@@ -11,10 +11,11 @@
     "safe-commit": "node safe-commit/safe-commit.js",
     "sc": "node safe-commit/safe-commit.js",
     "sc:dry": "node safe-commit/safe-commit.js --dry-run",
-   "format": "prettier --write .",
+    "format": "prettier --write .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@reduxjs/toolkit": "^2.7.0",
     "axios": "^1.9.0",
     "cors": "^2.8.5",

@@ -1,60 +1,49 @@
 //-----------------------------------------------------------------------------
-//------ renderPages: Renders PDF pages to data URLs at a given scale  
+//------ renderPages: Renders PDF pages to data URLs at a given scale 
 //-----------------------------------------------------------------------------
 
-/**
- * Renders individual PDF pages from `from` to `to` at a specific scale.
- * Skips pages that already exist in `renderedPages[scale]`.
- * Dispatches new pages and updates rendered range.
- */
+import { addRenderedPages, setRenderedRange } from '@/store' // Redux actions 
 
-export async function renderPages({
+const renderPages = async ({
   pdf,
   scale,
   from,
   to,
   renderedPages,
   dispatch,
-}) {
-  if (!pdf || from > pdf.numPages) return // No PDF or invalid range  
+}) => {
+  if (!pdf || from > pdf.numPages) return // No PDF or invalid range 
 
-  const pages = {} // Store rendered pages as image data URLs  
+  const pages =  // Collect newly rendered pages 
 
   for (let i = from; i <= Math.min(to, pdf.numPages); i++) {
-    if (renderedPages?.[scale]?.[i]) continue // Skip already rendered page  
+    if (renderedPages?.[scale]?.[i]) continue // Skip if already rendered 
 
     try {
-      const page = await pdf.getPage(i)
-      const viewport = page.getViewport({ scale })
+      const page = await pdf.getPage(i) // Get page object 
+      const viewport = page.getViewport({ scale }) // Compute viewport 
 
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
+      const canvas = document.createElement('canvas') // Create canvas 
+      const ctx = canvas.getContext('2d') // Get context 
 
-      canvas.width = viewport.width
-      canvas.height = viewport.height
+      canvas.width = viewport.width // Set width 
+      canvas.height = viewport.height // Set height 
 
-      await page.render({ canvasContext: ctx, viewport }).promise
+      await page.render({ canvasContext: ctx, viewport }).promise // Render page 
 
-      const dataUrl = canvas.toDataURL('image/png') // Convert to image URL  
+      const dataUrl = canvas.toDataURL('image/png') // Convert to data URL 
 
-      pages[i] = {
-        dataUrl,
-        width: viewport.width,
-        height: viewport.height,
-      }
+      pages[i] = { dataUrl, width: viewport.width, height: viewport.height } // Store page 
     } catch (err) {
-      console.error(`Error rendering page ${i}:`, err)  
+      console.error(`Error rendering page ${i}:`, err) // Log error 
     }
   }
 
   if (Object.keys(pages).length > 0) {
-    // Save rendered pages to context  
-    dispatch({ type: 'ADD_RENDERED_PAGES', payload: { scale, pages } })
-
-    // Optionally update range if not handled elsewhere  
-    dispatch({
-      type: 'SET_RENDERED_RANGE',
-      payload: { scale, range: [from, to] },
-    })
+    // Dispatch under key = scale so cache works correctly
+    dispatch(addRenderedPages({ [scale]: pages })) // Add pages to cache 
+    dispatch(setRenderedRange({ scale, range: [from, to] })) // Track rendered range 
   }
 }
+
+export default renderPages // Export as default 

@@ -6,7 +6,15 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
 
 export default [
-  { ignores: ['dist', 'node_modules/**'] },
+  {
+    ignores: [
+      'dist',
+      'node_modules/**',
+      'public/pdf.worker.min.js',
+      'docs',
+      'united*',
+    ],
+  },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -34,7 +42,7 @@ export default [
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      "react/prop-types": "off",
+      'react/prop-types': 'off',
 
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
       'react-refresh/only-export-components': [
