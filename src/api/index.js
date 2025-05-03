@@ -1,5 +1,5 @@
 //------------------------------------------------------------------
-//------ Export all API functions from one entry point //#PL: 📦 Główny punkt eksportu funkcji API #/
+//------ Export all API functions from one entry point 
 //------------------------------------------------------------------
 
 export * from './upload.js'
