@@ -1,6 +1,6 @@
 
 //-----------------------------------------------------------------------------
-// FavoritesView – renders favorite books under LibraryLayout using LibraryBooksRenderer 
+//------ FavoritesView – renders favorite books under LibraryLayout using LibraryBooksRenderer 
 //-----------------------------------------------------------------------------
 
 import styled from 'styled-components' 

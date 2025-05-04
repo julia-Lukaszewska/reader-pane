@@ -5,7 +5,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import AppRoutes from '@/routes/AppRoutes' // Main application routes
+import AppRoutes from '@/routes/AppRoutes' 
 
 import GlobalStyles from '@/styles/GlobalStyles'
 
@@ -27,9 +27,7 @@ const StyledApp = styled.div`
 const App = () => {
   return (
     <>
-      {/* Global styles   */}
       <GlobalStyles />
-      {/* Main layout container   */}
       <StyledApp>
         <AppRoutes />
       </StyledApp>

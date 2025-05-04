@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// ArchiveView – renders archived books under LibraryLayout with modal actions in all views 
+//------- ArchiveView – renders archived books under LibraryLayout with modal actions in all views 
 //-----------------------------------------------------------------------------
 import React, { useState } from 'react' 
 import styled from 'styled-components' 

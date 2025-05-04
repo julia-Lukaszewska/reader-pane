@@ -14,7 +14,7 @@ const renderPages = async ({
 }) => {
   if (!pdf || from > pdf.numPages) return // No PDF or invalid range 
 
-  const pages =  // Collect newly rendered pages 
+  const pages = ; // Collect newly rendered pages 
 
   for (let i = from; i <= Math.min(to, pdf.numPages); i++) {
     if (renderedPages?.[scale]?.[i]) continue // Skip if already rendered 

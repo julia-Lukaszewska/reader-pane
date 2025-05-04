@@ -12,7 +12,7 @@ import {
   MyLibraryTableView,
 } from '@/views' 
 import { useBookManagement } from '@/hooks' 
-import { LibraryToolbar } from '@/layout' 
+import { LibraryToolbar } from '@/layout/LibraryLayout' 
 
 const BooksManagementController = () => {
   const dispatch = useDispatch()

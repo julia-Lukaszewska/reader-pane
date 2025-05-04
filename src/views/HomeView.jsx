@@ -5,7 +5,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import HomeMenu from '@/components/HomeMenu/HomeMenu' // Home menu component 
+import {HomeMenu} from '@/components' 
 
 //-----------------------------------------------------------------------------
 //------ StyledHomeView – grid layout with center tiles 
@@ -41,7 +41,6 @@ const HomeView = () => {
 
   return (
     <StyledHomeView $blurred={isTileActive}>
-      {/* Render home menu with animated tiles  */}
       <HomeMenu />
     </StyledHomeView>
   )

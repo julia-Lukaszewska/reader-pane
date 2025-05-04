@@ -1,7 +1,10 @@
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
 import { defineConfig } from 'vite'
+// eslint-disable-next-line import/default
 import react from '@vitejs/plugin-react'
+
+
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -18,7 +21,7 @@ export default defineConfig({
     esbuildOptions: {
       define: {
         global: 'globalThis',
-        'process.env': '',
+        'process.env': JSON.stringify(),
       },
       plugins: [
         NodeGlobalsPolyfillPlugin({
@@ -26,6 +29,11 @@ export default defineConfig({
           buffer: true,
         }),
       ],
+    },
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5000',
     },
   },
 })

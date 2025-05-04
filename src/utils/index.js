@@ -18,4 +18,4 @@ export {
 } from './storage'
 // Storage utilities 
 
-export { validatePDF, countPDFPages } from './uploadPDFHelpers' // Upload helpers //#PL: Walidacja i liczenie stron PDF #
+export { validatePDF, countPDFPages } from './uploadPDFHelpers' // Upload helpers 

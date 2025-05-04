@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
-import { Header, Sidebar } from '@/layout'
+import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store'
 
 // -----------------------------------------------------------------------------
@@ -31,8 +31,9 @@ const MainContent = styled.main`
   background-color: var(--see-07);
   z-index: 200;
 `
+// Layout component — must be default export for React.lazy to work
 
-export const MainLayout = () => {
+const MainLayout = () => {
   const dispatch = useDispatch()
   const location = useLocation()
 
@@ -54,4 +55,5 @@ export const MainLayout = () => {
   )
 }
 
-export default MainLayout
+export default MainLayout// Do not use `export const`, or React.lazy will fail
+

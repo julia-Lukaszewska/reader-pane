@@ -2,7 +2,7 @@
 
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { SidebarMenu } from '@/layout'
+import { SidebarMenu } from '@/layout/MainLayout'
 
 // -----------------------------------------------------------------------------
 //-------SidebarStyled – wrapper for sidebar menu 

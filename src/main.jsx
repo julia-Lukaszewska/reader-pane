@@ -8,6 +8,9 @@ import App from '@/App'
 //------------------------------------------------------------------------------
 import * as pdfjsLib from 'pdfjs-dist'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+if (!window.Worker) {
+  console.error('Web Workers are not supported in this browser.')
+}
 
 //-----------------------------------------------------------------------------
 //------ Entry point: render app into DOM with context and strict mode 

@@ -1,4 +1,3 @@
-// File: src/views/library/LibraryLayout.jsx
 //-----------------------------------------------------------------------------
 // LibraryLayout – wrapper for /library routes: fetch, sort, filter + toolbar + Outlet context 
 //-----------------------------------------------------------------------------
@@ -20,6 +19,9 @@ const Container = styled.div`
   width: 100%;
   background: var(--gradient-blue-clear);
 ` 
+
+
+// Layout component — must be default export for React.lazy to work
 
 const LibraryLayout = () => {
   const dispatch = useDispatch()
@@ -73,4 +75,5 @@ const LibraryLayout = () => {
   )
 }
 
-export default LibraryLayout
+export default LibraryLayout // Do not use `export const`, or React.lazy will fail
+

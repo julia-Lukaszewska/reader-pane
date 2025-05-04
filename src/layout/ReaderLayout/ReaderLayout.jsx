@@ -7,6 +7,7 @@ const Container = styled.div`
   flex-direction: column;
   height: 100%;
 `
+// Layout component — must be default export for React.lazy to work
 
 const ReaderLayout = () => (
   <Container>
@@ -15,4 +16,5 @@ const ReaderLayout = () => (
   </Container>
 )
 
-export default ReaderLayout
+export default ReaderLayout  // Do not use `export const`, or React.lazy will fail
+

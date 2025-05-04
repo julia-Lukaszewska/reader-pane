@@ -7,8 +7,8 @@ import {
   archiveBookThunk,
   deleteBookForeverThunk,
   restoreBookThunk,
-} from '@/store' // thunki do archiwizacji/usuń/restore :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
-import { Button } from '@/components' // Twój Button z wariantami
+} from '@/store' 
+import { Button } from '@/components'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -51,16 +51,7 @@ const BtnRow = styled.div`
   flex-wrap: wrap;
 `
 
-//-----------------------------------------------------------------------------
-// ConfirmModal
-//-----------------------------------------------------------------------------
-// Props:
-//   bookId      – ID książki (do thunków)
-//   bookTitle   – tytuł, do wyświetlenia
-//   onCancel    – zawsze wymagasz tej funkcji, żeby zamknąć modal
-//   variant     – 'library' | 'permanent-delete' | 'restore'
-//   onTrash     – opcjonalny override dla archiwizacji
-//   onConfirm   – opcjonalny override dla permanentnego usunięcia / przywrócenia
+
 const ConfirmModal = ({
   bookId,
   bookTitle,
@@ -83,7 +74,7 @@ const ConfirmModal = ({
     }
   }, [book])
 
-  // Archiwizacja
+ 
   const handleArchive = () => {
     if (onTrash) {
       onTrash()
@@ -93,7 +84,7 @@ const ConfirmModal = ({
     onCancel()
   }
 
-  // Permanentne usunięcie
+ 
   const handleDelete = () => {
     if (onConfirm) {
       onConfirm()
@@ -103,7 +94,7 @@ const ConfirmModal = ({
     onCancel()
   }
 
-  // Przywracanie z archiwum
+
   const handleRestore = () => {
     if (onConfirm) {
       onConfirm()

@@ -4,7 +4,7 @@
 
 import styled from 'styled-components'
 import { Outlet } from 'react-router-dom'
-import { Header } from '@/layout'
+import { Header } from '@/layout/MainLayout'
 
 const Wrapper = styled.div`
   display: flex;
@@ -13,6 +13,7 @@ const Wrapper = styled.div`
   width: 100vw;
   background: var(--gradient-blue-clear);
 ` 
+// Layout component for the Home page — must be default export for React.lazy to work
 
 const HomeLayout = () => {
   return (
@@ -23,4 +24,5 @@ const HomeLayout = () => {
   )
 }
 
-export default HomeLayout
+export default HomeLayout // Do not use `export const`, or React.lazy will fail
+

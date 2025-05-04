@@ -24,4 +24,4 @@ const usePDFValidation = () => {
   return { validate } // Return validation function  
 }
 
-export { usePDFValidation } // Export hook  
+export { usePDFValidation } 
