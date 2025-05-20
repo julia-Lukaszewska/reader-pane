@@ -1,54 +1,113 @@
-//-----------------------------------------------------------------------------
-//------ API definition before store setup 
-//-----------------------------------------------------------------------------
+// src/store/index.js
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { configureStore, combineReducers } from '@reduxjs/toolkit'
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
+import storage from 'redux-persist/lib/storage' // uses localStorage
 
-export const booksApi = createApi({
-  reducerPath: 'booksApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
-  endpoints: (builder) => ({
-    getBook: builder.query({
-      query: (id) => `/books/${id}`,
-    }),
-  }),
+import { booksApi, externalApi } from './api'
+import bookReducer from './slices/bookSlice'
+import readerReducer from './slices/readerSlice'
+import pdfCacheReducer from './slices/pdfCacheSlice'
+import mainUiReducer from './slices/mainUiSlice'
+
+//------------------------------------------------------------------------------
+// Persistence configuration – book state
+//------------------------------------------------------------------------------
+
+const bookPersistConfig = {
+  key: 'book',
+  storage,
+  whitelist: [
+    'activeBookId',
+    'previewBookId',
+    'libraryViewMode',
+    'sortMode',
+    'selectedIds',
+    'progressMode',
+  ],
+}
+
+//------------------------------------------------------------------------------
+// Persistence configuration – reader state
+//------------------------------------------------------------------------------
+
+const readerPersistConfig = {
+  key: 'reader',
+  storage,
+  whitelist: [
+    'pagesByBook',
+    'scaleIndex',
+    'pageViewMode',
+  ],
+}
+
+//------------------------------------------------------------------------------
+// Root reducer
+//------------------------------------------------------------------------------
+
+const rootReducer = combineReducers({
+  ui: mainUiReducer,
+  book: persistReducer(bookPersistConfig, bookReducer),
+  reader: persistReducer(readerPersistConfig, readerReducer),
+  pdfCache: pdfCacheReducer,
+
+  // RTK Query
+  [booksApi.reducerPath]: booksApi.reducer,
+  [externalApi.reducerPath]: externalApi.reducer,
 })
 
-export const { useGetBookQuery } = booksApi
+//------------------------------------------------------------------------------
+// Global persist config (optional root wrapper)
+//------------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-//------ Store configuration 
-//-----------------------------------------------------------------------------
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['book', 'reader'],
+}
 
-import { configureStore } from '@reduxjs/toolkit'
-import booksReducer from './books/slice'
-import externalBooksReducer from './externalBooks/slice'
-import uploadReducer from './upload/slice'
-import readerReducer from './reader/slice'
-import uiReducer from './ui/slice'
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+//------------------------------------------------------------------------------
+// Middleware configuration
+//------------------------------------------------------------------------------
+
+const middleware = (getDefault) =>
+  getDefault({
+    serializableCheck: {
+      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+    },
+  }).concat(
+    booksApi.middleware,
+    externalApi.middleware
+  )
+
+//------------------------------------------------------------------------------
+// Store configuration
+//------------------------------------------------------------------------------
 
 export const store = configureStore({
-  reducer: {
-    library: booksReducer,
-    externalBooks: externalBooksReducer,
-    upload: uploadReducer,
-    reader: readerReducer,
-    ui: uiReducer,
-    [booksApi.reducerPath]: booksApi.reducer, // RTK Query
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(booksApi.middleware),
+  reducer: persistedReducer,
+  middleware,
   devTools: import.meta.env.MODE !== 'production',
 })
 
-//-----------------------------------------------------------------------------
-//------ Barrel export 
-//-----------------------------------------------------------------------------
+export const persistor = persistStore(store)
 
-export * from './books'
-export * from './externalBooks'
-export * from './upload'
-export * from './reader'
-export * from './ui'
+//------------------------------------------------------------------------------
+// Exports
+//------------------------------------------------------------------------------
 
+export * from './api'
+export * from './slices'
+export * from './selectors'
 export default store
