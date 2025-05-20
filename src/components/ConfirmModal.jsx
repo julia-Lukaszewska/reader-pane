@@ -1,17 +1,20 @@
-// src/components/modals/ConfirmModal.jsx
+//-----------------------------------------------------------------------------
+// ConfirmModal: modal used for archive, restore, or permanent delete actions
+//-----------------------------------------------------------------------------
+
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
-import { saveBookToArchiveStorage } from '@/utils'
+import { useSelector } from 'react-redux'
 import {
-  archiveBookThunk,
-  deleteBookForeverThunk,
-  restoreBookThunk,
-} from '@/store' 
+  useUpdateBookMutation,
+  useDeleteBookMutation,
+  booksApi,
+} from '@/store/api/booksApi'
+import { saveBookToArchiveStorage } from '@/utils'
 import { Button } from '@/components'
 
 //-----------------------------------------------------------------------------
-// Styled components
+// Styles
 //-----------------------------------------------------------------------------
 
 const Overlay = styled.div`
@@ -21,8 +24,8 @@ const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
   backdrop-filter: blur(6px);
+  z-index: 9999;
 `
 
 const ModalBox = styled.div`
@@ -51,6 +54,9 @@ const BtnRow = styled.div`
   flex-wrap: wrap;
 `
 
+//-----------------------------------------------------------------------------
+// Component
+//-----------------------------------------------------------------------------
 
 const ConfirmModal = ({
   bookId,
@@ -60,46 +66,49 @@ const ConfirmModal = ({
   onTrash,
   onConfirm,
 }) => {
-  const dispatch = useDispatch()
+  const [updateBook] = useUpdateBookMutation()
+  const [deleteBook] = useDeleteBookMutation()
 
-  const isLibrary = variant === 'library'
-  const isPermanent = variant === 'permanent-delete'
-  const isRestore = variant === 'restore'
   const book = useSelector((state) =>
-    state.library.list.find((b) => b._id === bookId)
+    booksApi.endpoints.getBook.select(bookId)(state)?.data
   )
+
   useEffect(() => {
-    if (book?.isArchived) {
+    if (book?.flags?.isArchived) {
       saveBookToArchiveStorage(book)
     }
   }, [book])
 
- 
-  const handleArchive = () => {
+  const isLibrary = variant === 'library'
+  const isPermanent = variant === 'permanent-delete'
+  const isRestore = variant === 'restore'
+
+  const handleDeleteForever = async () => {
+    await deleteBook(bookId)
+    onConfirm?.()
+    onCancel()
+  }
+
+  const handleArchive = async () => {
     if (onTrash) {
       onTrash()
     } else {
-      dispatch(archiveBookThunk(bookId))
+      await updateBook({
+        id: bookId,
+        changes: { flags: { isArchived: true } },
+      }).unwrap()
     }
     onCancel()
   }
 
- 
-  const handleDelete = () => {
+  const handleRestore = async () => {
     if (onConfirm) {
       onConfirm()
     } else {
-      dispatch(deleteBookForeverThunk(bookId))
-    }
-    onCancel()
-  }
-
-
-  const handleRestore = () => {
-    if (onConfirm) {
-      onConfirm()
-    } else {
-      dispatch(restoreBookThunk(bookId))
+      await updateBook({
+        id: bookId,
+        changes: { flags: { isArchived: false } },
+      }).unwrap()
     }
     onCancel()
   }
@@ -119,7 +128,7 @@ const ConfirmModal = ({
               <Button $variant="button_secondary" onClick={handleArchive}>
                 Archive
               </Button>
-              <Button $variant="button_primary" onClick={handleDelete}>
+              <Button $variant="button_primary" onClick={handleDeleteForever}>
                 Delete
               </Button>
             </>
@@ -127,7 +136,7 @@ const ConfirmModal = ({
 
           {isPermanent && (
             <>
-              <Button $variant="button_primary" onClick={handleDelete}>
+              <Button $variant="button_primary" onClick={handleDeleteForever}>
                 Yes
               </Button>
               <Button $variant="button_secondary" onClick={onCancel}>
@@ -162,4 +171,9 @@ const ConfirmModal = ({
   )
 }
 
+//-----------------------------------------------------------------------------
+// Export
+//-----------------------------------------------------------------------------
+
+ConfirmModal.displayName = 'ConfirmModal'
 export default React.memo(ConfirmModal)

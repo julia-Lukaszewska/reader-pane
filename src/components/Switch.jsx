@@ -1,29 +1,23 @@
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button } from '@/components'
-
-import { setViewMode, toggleTheme } from '@/store'
+import { toggleTheme } from '@/store/slices/mainUiSlice'
+import { setPageViewMode } from '@/store/slices/readerSlice'
 import { LuSun, LuMoon } from 'react-icons/lu'
 import { RxReader } from 'react-icons/rx'
 import { CgEreader } from 'react-icons/cg'
 
-//-----------------------------------------------------------------------------
-//------ SwitchContent: layout for icons inside switch 
-//-----------------------------------------------------------------------------
-
+// Styled-components
 const SwitchContent = styled.div`
   display: flex;
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
   padding: 0 0.8rem;
   font-size: 1.4rem;
   color: var(--color-brand-100);
+  position: relative;
   z-index: 2;
 `
-
-//-----------------------------------------------------------------------------
-//------ Thumb: animated indicator inside switch 
-//-----------------------------------------------------------------------------
 
 const Thumb = styled.div`
   position: absolute;
@@ -39,58 +33,57 @@ const Thumb = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ Switch component: theme/view toggle button 
-//-----------------------------------------------------------------------------
-
+// Component: Switch
+// Handles theme toggle and reader viewMode toggle (single/double)
+//-----------------------------------------------------------------------------  
 const Switch = ({ variant = 'theme' }) => {
   const dispatch = useDispatch()
   const theme = useSelector((state) => state.ui.theme)
-  const viewMode = useSelector((state) => state.reader.viewMode)
+  const pageViewMode = useSelector((state) => state.reader.pageViewMode)
 
-  const isTheme = variant === 'theme' // Is theme switch? 
-  const isReader = variant === 'reader' // Is reader mode switch? 
+  const isTheme = variant === 'theme'
+  const isReader = variant === 'reader'
 
   const handleClick = () => {
     if (isTheme) {
       dispatch(toggleTheme())
     } else if (isReader) {
-      dispatch(setViewMode(viewMode === 'single' ? 'double' : 'single'))
+      const newMode = pageViewMode === 'single' ? 'double' : 'single'
+      dispatch(setPageViewMode(newMode))
     }
   }
 
   const icons = isTheme
     ? [<LuSun key="sun" />, <LuMoon key="moon" />]
     : [
-        viewMode === 'single' ? (
-          <RxReader key="single" />
-        ) : (
-          <CgEreader key="double" />
-        ),
+        pageViewMode === 'single'
+          ? <RxReader key="single" />
+          : <CgEreader key="double" />,
       ]
 
-  const thumbPosition = isTheme
+  const position = isTheme
     ? theme === 'light'
       ? '0.3rem'
       : 'calc(100% - 3.3rem)'
-    : viewMode === 'single'
-      ? '0.3rem'
-      : 'calc(100% - 3.3rem)'
+    : pageViewMode === 'single'
+    ? '0.3rem'
+    : 'calc(100% - 3.3rem)'
 
-  const thumbColor = isTheme
+  const color = isTheme
     ? theme === 'light'
       ? '#ffffffcc'
       : '#aad0ff'
-    : viewMode === 'single'
-      ? '#ffffffcc'
-      : '#aad0ff'
+    : pageViewMode === 'single'
+    ? '#ffffffcc'
+    : '#aad0ff'
 
   return (
     <Button
       $variant={`${variant}_switch_btn`}
       onClick={handleClick}
-      ariaLabel={`Switch ${variant}`}
+      aria-label={`Switch ${isTheme ? 'theme' : 'view mode'}`}
     >
-      <Thumb $position={thumbPosition} $color={thumbColor} />
+      <Thumb $position={position} $color={color} />
       <SwitchContent>{icons}</SwitchContent>
     </Button>
   )

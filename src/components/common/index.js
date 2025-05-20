@@ -1,7 +1,8 @@
-export * from './ProgressBar' 
+
 export * from './ModalWrapper' 
 
 export { default as LoadingSpinner } from './LoadingSpinner' 
-export { default as SelectCheckbox } from './SelectCheckbox' 
-export { default as ManageModeButton } from './ManageModeButton' 
-export { default as BooksManagementToolbar } from './BooksManagementToolbar' 
+
+export { default as ManageModeButton } from '../../modules/library/Layout/ManageModeButton' 
+
+export {default as StarRating} from './StarRating'
