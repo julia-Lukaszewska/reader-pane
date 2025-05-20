@@ -12,18 +12,16 @@ const MainLayout = lazy(() => import('@/layout/MainLayout'))
 const LibraryLayout = lazy(() => import('@/layout/LibraryLayout'))
 const ReaderLayout = lazy(() => import('@/layout/ReaderLayout'))
 
-// Views
-const HomeView = lazy(() => import('@/views/HomeView.jsx'))
-const SettingsView = lazy(() => import('@/views/SettingsView.jsx'))
-const PageNotFoundView = lazy(() => import('@/views/PageNotFoundView.jsx'))
-
-const MyLibraryView = lazy(() => import('@/views/library/MyLibraryView.jsx'))
-const ImportBooksView = lazy(() => import('@/views/library/ImportBooksView.jsx'))
-const ArchiveView = lazy(() => import('@/views/library/ArchiveView.jsx'))
-const FavoritesView = lazy(() => import('@/views/library/FavoritesView.jsx'))
-
-const ReaderView = lazy(() => import('@/views/reader/ReaderView.jsx'))
-
+import {
+  HomeView,
+  MyLibraryView,
+  ImportBooksView,
+  ArchiveView,
+  FavoritesView,
+  ReaderView,
+  SettingsView,
+  PageNotFoundView,
+} from '@/views'
 
 
 const router = createBrowserRouter([
@@ -61,9 +59,10 @@ const router = createBrowserRouter([
         element: <ReaderLayout />,
         children: [
           { index: true, element: <ReaderView /> },
-          { path: ':bookId', element: <ReaderView /> },
+          { path: ':read', element: <ReaderView /> },
         ],
       },
+      
       { path: 'settings', element: <SettingsView /> },
       { path: '*', element: <PageNotFoundView /> },
     ],
