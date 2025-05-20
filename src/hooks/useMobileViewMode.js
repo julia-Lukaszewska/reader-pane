@@ -1,27 +1,39 @@
-//-----------------------------------------------------------------------------
-//------ useMobileViewMode: Force single-page mode on small screens 
-//-----------------------------------------------------------------------------
+// //-----------------------------------------------------------------------------
+// // useMobileViewMode: adjust book viewMode based on window width
+// //-----------------------------------------------------------------------------
 
-import { useEffect } from 'react' // React effect hook 
-import { useDispatch } from 'react-redux' // Redux dispatch hook 
-import { setViewMode } from '@/store' // Redux action to set view mode 
+// import { useEffect } from 'react'
+// import { useParams } from 'react-router-dom'
+// import { useUpdateBookMutation } from '@/store/api/booksApi'
+// import { useGetBookQuery } from '@/store/api/booksApi'
 
-const useMobileViewMode = () => {
-  // const hook declaration 
-  const dispatch = useDispatch() // Get Redux dispatch 
+// export default function useMobileViewMode() {
+//   const { bookId } = useParams()
+//   const validId = typeof bookId === 'string' && bookId !== 'undefined'
 
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth // Get viewport width 
-      if (width < 768) {
-        dispatch(setViewMode('single')) // Force single view 
-      }
-    }
+//   const { data: book } = useGetBookQuery(validId ? bookId : skipToken)
+//   const [updateBook] = useUpdateBookMutation()
 
-    handleResize() // Initial check 
-    window.addEventListener('resize', handleResize) // Listen for resize 
-    return () => window.removeEventListener('resize', handleResize) // Cleanup listener 
-  }, [dispatch]) // Run on mount and when dispatch changes 
-}
+//   useEffect(() => {
+//     if (!book) return
 
-export default useMobileViewMode // Export hook 
+//     const handleResize = () => {
+//       const width = window.innerWidth
+//       const desiredMode = width < 768 ? 'single' : 'continuous'
+//       const currentMode = book?.flags?.viewMode
+
+//       if (desiredMode !== currentMode) {
+//         updateBook({
+//           id: bookId,
+//           changes: {
+//             flags: { ...(book.flags || {}), viewMode: desiredMode },
+//           },
+//         })
+//       }
+//     }
+
+//     handleResize()
+//     window.addEventListener('resize', handleResize)
+//     return () => window.removeEventListener('resize', handleResize)
+//   }, [bookId, book, updateBook])
+// }
