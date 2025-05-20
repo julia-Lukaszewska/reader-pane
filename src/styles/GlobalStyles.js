@@ -8,15 +8,41 @@ import resetBaseStyles from './resetBaseStyles'
 const GlobalStyles = createGlobalStyle`
 
 :root {
-
   // ---------------------------------------------------------------------------
-  //------ Basic colors: light and dark shades 
+  //------BookCard styles
+  // ---------------------------------------------------------------------------
+      --tile-size: 14rem;
+      --tile-aspect-ratio: 4 / 3;
+  //----------------------------------------------------------------------------
+  //------ BookPreviewModal styles
+  // ---------------------------------------------------------------------------
+      --modal-width: 60vw;
+      --modal-aspect-ratio: 3/2; 
+      --modal-height: calc(var(--modal-width) / (var(--modal-aspect-ratio)));
+      --modal-font-size: calc(var(--modal-width) * 0.013); 
+        /* Universal 5-level scale (em) */
+      --modal-xs: 0.4em;   /* very small (spacing / tiny font) */
+      --modal-sm: 0.6em;   /* small */
+      --modal-md: 0.8em;   /* standard */
+      --modal-lg: 1.0em;   /* moderately large */
+      --modal-xl: 1.2em;   /* largest */
+      --modal-xxl: 1.4em;
+      [data-editable="true"] {
+      /* highlight for editable elements */
+       box-shadow: 0 0 0 2px var(--color-blue-400) inset;
+       }
+      // ---------------------------------------------------------------------------
+  //------ Basic colors: light and dark shades
   // ---------------------------------------------------------------------------
        --color-light-0:   #ffffff;
        --color-light-100: #f7faff;
        --color-light-200: #eaf3fb;
        --color-dark-900:  #0b1626;
 
+
+
+       --color-yellow-400: #ffbb00;
+       --color-yellow-300: #ffbb00;
   // ---------------------------------------------------------------------------
   //------ Accent blue shades 
   // ---------------------------------------------------------------------------
