@@ -1,14 +1,22 @@
-//-----------------------------------------------------------------------------
-// LibraryLayout – wrapper for /library routes: fetch, sort, filter + toolbar + Outlet context 
-//-----------------------------------------------------------------------------
+// src/layout/LibraryLayout/LibraryLayout.jsx
 import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
-import { Outlet, useMatch } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchBooks, setSortMode } from '@/store'
-import { sortBooks } from '@/utils/sortBooks'
-import { BooksManagementToolbar, LoadingSpinner } from '@/components'
-import { default as LibraryToolbar } from './LibraryToolbar'
+import { Outlet } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { useGetBooksQuery } from '@/store/api/booksApi'
+import {
+  selectSortMode,
+  selectIsManageMode,
+  selectSelectedBookIds,
+  selectIsPreviewOpen,
+  selectPreviewBookId,
+} from '@/store/selectors'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
+import { sortBooks } from '@book/utils'
+import { LoadingSpinner } from '@/components'
+import { LibraryToolbar } from '@library/Layout'
+import { BooksManagementToolbar } from '@library/components/BooksManagement'
+import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
 
 const Container = styled.div`
   display: flex;
@@ -18,62 +26,87 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   background: var(--gradient-blue-clear);
-` 
+`
 
-
-// Layout component — must be default export for React.lazy to work
-
-const LibraryLayout = () => {
+export default function LibraryLayout() {
   const dispatch = useDispatch()
-  const books = useSelector((state) => state.library.list)
-  const loading = useSelector((state) => state.library.loading)
-  const sortMode = useSelector((state) => state.library.sortMode)
-  const viewMode = useSelector((state) => state.library.libraryViewMode)
-  const isManaging = useSelector((state) => state.library.isManaging)
-  const selected = useSelector((state) => state.library.selectedBooks)
 
-  // Fetch books on mount
-  useEffect(() => {
-    dispatch(fetchBooks())
-  }, [dispatch])
+  // Redux state
+  const sortMode     = useSelector(selectSortMode)
+  const isManageMode = useSelector(selectIsManageMode)
+  const selectedIds  = useSelector(selectSelectedBookIds)
+  const isOpen       = useSelector(selectIsPreviewOpen)
+  const previewId    = useSelector(selectPreviewBookId)
 
-  // Restore sortMode
-  useEffect(() => {
-    const saved = localStorage.getItem('sortMode')
-    if (saved) dispatch(setSortMode(saved))
-  }, [dispatch])
+  // Load books
+  const {
+    data: booksRaw = [],
+    refetch,
+    isLoading,
+    isError,
+  } = useGetBooksQuery(undefined, { refetchOnMountOrArgChange: true })
 
-  // Persist sortMode
+  // Filter out books with missing data
+  const validBooks = useMemo(
+    () =>
+      booksRaw.filter(
+        (b) =>
+          b &&
+          b._id &&
+          b.meta?.fileUrl &&
+          typeof b.meta.fileUrl === 'string'
+      ),
+    [booksRaw]
+  )
+
+  const booksWithUrl = useMemo(
+    () =>
+      validBooks.map((b) => ({
+        ...b,
+        meta: { ...b.meta, url: `http://localhost:3001${b.meta.fileUrl}` },
+      })),
+    [validBooks]
+  )
+
+  // Sort books
+  const sortedBooks = useMemo(
+    () => sortBooks(booksWithUrl, sortMode),
+    [booksWithUrl, sortMode]
+  )
+
+  const books = sortedBooks
+
+  // Persist sortMode to localStorage
   useEffect(() => {
     localStorage.setItem('sortMode', sortMode)
   }, [sortMode])
 
-  // Sort books
-  const sorted = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
+  // Refetch books on mount
+  useEffect(() => {
+    refetch()
+  }, [refetch])
 
-  // Determine filter
-  const isFavorites = useMatch('/library/favorites')
-  const isArchive = useMatch('/library/archive')
-  const filtered = useMemo(() => {
-    if (isFavorites) return sorted.filter((b) => b.isFavorite && !b.isArchived)
-    if (isArchive) return sorted.filter((b) => b.isArchived)
-    return sorted.filter((b) => !b.isArchived)
-  }, [sorted, isFavorites, isArchive])
+  // Find book for preview modal
+  const previewBook = books.find((b) => b._id === previewId)
+
+  if (isLoading) return <LoadingSpinner />
+  if (isError) return <div>Error loading books.</div>
 
   return (
     <Container>
       <LibraryToolbar />
+      <Outlet />
 
-      {loading ? (
-        <LoadingSpinner />
-      ) : (
-        // Pass filtered books via context to children views
-        <Outlet context={{ books: filtered, viewMode }} />
+      {isManageMode && selectedIds.length > 0 && (
+        <BooksManagementToolbar />
       )}
-      {isManaging && selected.length > 0 && <BooksManagementToolbar />}
+
+      {isOpen && previewBook && (
+        <BookCardPreviewModal
+          book={previewBook}
+          onClose={() => dispatch(clearPreviewBook())}
+        />
+      )}
     </Container>
   )
 }
-
-export default LibraryLayout // Do not use `export const`, or React.lazy will fail
-

@@ -4,7 +4,7 @@
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 
-import { toggleTheme, toggleSidebar } from '@/store'
+import { toggleTheme, toggleSidebar } from '@/store/slices/mainUiSlice'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Switch, Button } from '@/components'
 import { SlHome, SlMenu } from 'react-icons/sl'

@@ -4,8 +4,8 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Header, Sidebar } from '@/layout/MainLayout'
-import { setSidebar } from '@/store'
-
+import { setSidebar } from '@/store/slices/mainUiSlice'
+import { useInitializeBooks } from '@/hooks'
 // -----------------------------------------------------------------------------
 // LayoutWrapper: Main grid container 
 // -----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ const MainContent = styled.main`
 const MainLayout = () => {
   const dispatch = useDispatch()
   const location = useLocation()
-
+useInitializeBooks()
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
 
   // Always close sidebar when route changes 
