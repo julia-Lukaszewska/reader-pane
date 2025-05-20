@@ -2,90 +2,119 @@
 //------ Progress routes for books 
 //------------------------------------------------------------------
 
-import express from 'express' 
-import Book from '../models/Book.js' 
+import express from 'express';
+import Book from '../models/Book.js';
 
-const router = express.Router() 
+const router = express.Router();
 
 //------------------------------------------------------------------
-//------ Get reading progress from DB 
+// GET /api/books/:id/progress — Get reading progress from DB 
 //------------------------------------------------------------------
 
 router.get('/:id/progress', async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id)  
+    const book = await Book.findById(req.params.id);
     if (!book) {
-      return res.status(404).json({ error: 'Book not found' })  
+      return res.status(404).json({ error: 'Book not found' });
     }
-    res.json({ currentPage: book.currentPage || 1 })  
+
+    res.json({
+      currentPage: book.stats.currentPage || 1,
+      maxVisitedPage: book.stats.maxVisitedPage || 1,
+  
+    });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Error while fetching progress' })  
+    console.error('[GET PROGRESS] Error:', err);
+    res.status(500).json({ error: 'Error while fetching progress' });
   }
-})
+});
 
 //------------------------------------------------------------------
-//------ Save reading progress to DB 
+// PATCH /api/books/:id/progress — Save reading progress manually 
 //------------------------------------------------------------------
 
 router.patch('/:id/progress', async (req, res) => {
   try {
-    const { currentPage, totalPages } = req.body  
-    const update =   
-
-    if (currentPage && currentPage >= 1) update.currentPage = currentPage
-    if (totalPages && totalPages >= 1) update.totalPages = totalPages
-
-    const book = await Book.findByIdAndUpdate(req.params.id, update, {
-      new: true,  
-    })
-
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' })  
+    const { currentPage } = req.body;
+    if (!currentPage || currentPage < 1) {
+      return res.status(400).json({ error: 'Invalid currentPage value' });
     }
 
-    res.json({ currentPage: book.currentPage, totalPages: book.totalPages })  
+    const book = await Book.findById(req.params.id);
+    if (!book) return res.status(404).json({ error: 'Book not found' });
+
+    // ✅ Jeśli nie ma stats — utwórz puste
+    if (!book.stats) book.stats = {};
+
+    book.stats.currentPage = currentPage;
+    book.stats.maxVisitedPage = Math.max(currentPage, book.stats.maxVisitedPage || 1);
+
+    await book.save();
+
+    res.json({
+      currentPage: book.stats.currentPage,
+      maxVisitedPage: book.stats.maxVisitedPage,
+    });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Error while saving progress' })  
+    console.error('[PATCH PROGRESS] Error:', err);
+    res.status(500).json({ error: 'Error while saving progress' });
   }
-})
+});
 
 //------------------------------------------------------------------
-//------ Auto-save progress with percentage 
+// PATCH /api/books/:id/progress/auto — Auto-save reading progress 
 //------------------------------------------------------------------
 
 router.patch('/:id/progress/auto', async (req, res) => {
   try {
-    const { currentPage, totalPages } = req.body  
+    const currentPage = req.body?.changes?.stats?.currentPage;
 
-    if (!currentPage || !totalPages || currentPage < 1 || totalPages < 1) {
-      return res
-        .status(400)
-        .json({ error: 'Invalid currentPage or totalPages' })  
+    if (!currentPage || currentPage < 1) {
+      return res.status(400).json({ error: 'Invalid currentPage value' });
     }
 
-    const progress = Math.min(Math.round((currentPage / totalPages) * 100), 100)  
+    const book = await Book.findById(req.params.id);
+    if (!book) return res.status(404).json({ error: 'Book not found' });
 
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
-      { currentPage, totalPages, progress },  
-      { new: true }  
-    )
+    if (!book.stats) book.stats = {};
 
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' })  
-    }
+    book.stats.currentPage = currentPage;
+    book.stats.maxVisitedPage = Math.max(currentPage, book.stats.maxVisitedPage || 1);
+
+    await book.save();
 
     res.json({
-      currentPage: book.currentPage,
-      totalPages: book.totalPages,
-      progress: book.progress,
-    })  
+      currentPage: book.stats.currentPage,
+      maxVisitedPage: book.stats.maxVisitedPage,
+    });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Error while updating progress' })  
+    console.error('[PATCH AUTO PROGRESS] Error:', err);
+    res.status(500).json({ error: 'Error while saving progress automatically' });
   }
-})
+});
 
-export default router 
+//------------------------------------------------------------------
+// PATCH /api/books/:id/last-opened — Save last opened book timestamp
+//------------------------------------------------------------------
+
+router.patch('/:id/last-opened', async (req, res) => {
+  try {
+    const now = new Date();
+    const book = await Book.findByIdAndUpdate(
+      req.params.id,
+      { 'stats.lastOpenedAt': now },
+      { new: true }
+    );
+
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.json({ lastOpenedAt: book.stats.lastOpenedAt });
+  } catch (err) {
+    console.error('[LAST OPENED] Error:', err);
+    res.status(500).json({ error: 'Error while updating lastOpenedAt' });
+  }
+});
+
+export default router;

@@ -2,81 +2,79 @@
 //------ Main server setup 
 //------------------------------------------------------------------
 
-import express from 'express' 
-import mongoose from 'mongoose' 
-import cors from 'cors' 
-import dotenv from 'dotenv' 
-import booksRoutes from './routes/index.js' 
-import path from 'path' 
-import fs from 'fs' 
-import { fileURLToPath } from 'url' 
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const app = express()
-dotenv.config() 
+import booksRoutes, { uploadsDir } from './routes/index.js'; 
+
+const app = express();
+dotenv.config();
+
+//------------------------------------------------------------------
+//------ Resolve __dirname for ES Modules 
+//------------------------------------------------------------------
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //------------------------------------------------------------------
 //------ MongoDB connection and server start 
 //------------------------------------------------------------------
 
 mongoose
-  .connect(process.env.MONGO_URI) 
+  .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(
-      process.env.PORT,
-      () => console.log(`Server running on port ${process.env.PORT}`)  
-    )
+    app.listen(process.env.PORT);
   })
-  .catch((err) => console.error('Database connection error:', err))  
-
-//------------------------------------------------------------------
-//------ Resolve __dirname for ES Modules 
-//------------------------------------------------------------------
-
-const __filename = fileURLToPath(import.meta.url) 
-const __dirname = path.dirname(__filename) 
+  .catch((err) => console.error('❌ Database connection error:', err));
 
 //------------------------------------------------------------------
 //------ Middleware configuration  
 //------------------------------------------------------------------
 
+app.use(helmet());                 // security headers
+app.use(morgan('dev'));           // logging
+app.use(express.json());          // body parser
+
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'], 
-    credentials: true, 
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    credentials: true,
   })
-)
-
-app.use(express.json()) 
+);
 
 //------------------------------------------------------------------
-//------ Static file serving (PDFs) 
+// Static files (PDF-y, okładki)
 //------------------------------------------------------------------
-
 app.use(
   '/files',
-  (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*') 
-    next()
-  },
-  express.static(path.join(__dirname, 'uploads'))
-)
+  express.static(uploadsDir, {
+    setHeaders: (res) =>
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'),
+  })
+);
 
 //------------------------------------------------------------------
 //------ API routes 
 //------------------------------------------------------------------
-app.use('/api/books', booksRoutes) 
+
+app.use('/api/books', booksRoutes);
+
+
+
 
 //------------------------------------------------------------------
-//------ Serve single PDF file by filename 
+//------ Global error handler 
 //------------------------------------------------------------------
 
-app.get('/files/:filename', (req, res) => {
-  const filePath = path.join(__dirname, 'uploads', req.params.filename) 
-
-  if (fs.existsSync(filePath)) {
-    res.setHeader('Content-Type', 'application/pdf') // Set PDF content type 
-    res.sendFile(filePath) // Send the file to the client 
-  } else {
-    res.status(404).json({ message: 'File not found' })  
-  }
-})
+app.use((err, _req, res, _next) => {
+  console.error('❌ Global error handler:', err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
