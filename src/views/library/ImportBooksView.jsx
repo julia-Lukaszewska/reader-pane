@@ -1,5 +1,5 @@
 
-import { ImportFromWolneLektury } from '@/components'
+import { ImportFromWolneLektury } from '@/modules/library/components'
 
 const ImportBooksView = () => <ImportFromWolneLektury />
 
