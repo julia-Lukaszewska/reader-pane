@@ -61,7 +61,7 @@ if (files.length === 0) {
   process.exit(0)
 }
 
-const backup = 
+const backup = {}
 let changesMade = false
 
 for (const file of files) {

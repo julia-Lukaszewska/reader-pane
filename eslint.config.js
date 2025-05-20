@@ -16,6 +16,13 @@ export default [
       'public/pdf.worker.min.js',
       'docs',
       'united*',
+      '**/*.pl.md',
+      '*.docx',
+      '**/*.pl.*',
+      'uploads/**',
+      'coverage/**',
+      'build/**',
+      'out/**',
     ],
   },
   {
@@ -65,9 +72,15 @@ export default [
         version: 'detect',
       },
       'import/resolver': {
-  
         alias: {
-          map: [['@', './src']],
+   map: [
+  ['@', './src'],
+  ['@book', './src/modules/book'],
+  ['@reader', './src/modules/reader'],
+  ['@upload', './src/modules/uploadPDF'],
+  ['@library', './src/modules/library'],
+],
+
           extensions: ['.js', '.jsx'],
         },
       },

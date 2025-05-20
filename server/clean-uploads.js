@@ -41,15 +41,12 @@ const cleanUploads = async () => {
     for (const file of unusedFiles) {
       const filePath = path.join(uploadsDir, file)  
       fs.unlinkSync(filePath)  
-      console.log(' Deleted unused file:', file)  
     }
 
-    console.log(' Scan complete. Unused files removed.')  
     process.exit(0)  
   } catch (err) {
-    console.error(' Error during cleanup:', err)  
     process.exit(1)  
   }
 }
 
-cleanUploads() 
+cleanUploads()

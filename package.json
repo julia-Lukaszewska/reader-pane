@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@react-hook/debounce": "^4.0.0",
     "@reduxjs/toolkit": "^2.7.0",
     "axios": "^1.9.0",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
     "mongoose": "^8.13.2",
@@ -30,7 +32,10 @@
     "react-redux": "^9.2.0",
     "react-router": "^7.4.1",
     "react-router-dom": "^7.4.1",
-    "styled-components": "^6.1.16"
+    "react-select": "^5.10.1",
+    "redux-persist": "^6.0.0",
+    "styled-components": "^6.1.16",
+    "use-debounce": "^10.0.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",

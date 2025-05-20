@@ -50,6 +50,7 @@ Btn.gitignore
 # Documentation (optional, comment out if needed)
 docs/
 *.md
+*.pl.md
 
 # Tests and coverage
 test/output/

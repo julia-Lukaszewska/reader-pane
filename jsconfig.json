@@ -2,7 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@book/*": ["src/modules/book/*"],
+      "@reader/*": ["src/modules/reader/*"],
+      "@upload/*": ["src/modules/uploadPDF/*"],
+      "@library/*": ["src/modules/library/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

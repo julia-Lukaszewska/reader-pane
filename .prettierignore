@@ -4,9 +4,15 @@ dist
 build
 coverage
 .vite
-
+**/*.pl.md
+**/*.pl.*,
+*.pl.md
 # Lock files
 *.lock
+*.pdf
+*.docx
+
+
 
 # PDF worker
 public/pdf.worker.min.js
