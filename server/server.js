@@ -18,7 +18,7 @@ import booksRoutes, { uploadsDir } from './routes/index.js'
  
 const app = express()
 dotenv.config()
- 
+
 //------------------------------------------------------------------
 // Resolve __dirname for ES modules
 //------------------------------------------------------------------
@@ -26,13 +26,19 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 //------------------------------------------------------------------
+// Port configuration
+//------------------------------------------------------------------
+const PORT = process.env.PORT || 5000
+
+//------------------------------------------------------------------
 // MongoDB connection and server start
 //------------------------------------------------------------------
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(process.env.PORT)
-    console.log(`✅ Server running on port ${process.env.PORT}`)
+    app.listen(PORT, () =>
+      console.log(`✅ Server running on port ${PORT}`)
+    )
   })
   .catch((err) => console.error('❌ Database connection error:', err))
 
@@ -40,8 +46,8 @@ mongoose
 // Middleware configuration
 //------------------------------------------------------------------
 app.use(helmet())                // security headers
-app.use(morgan('dev'))          // HTTP request logger
-app.use(express.json())         // JSON body parser
+app.use(morgan('dev'))           // HTTP request logger
+app.use(express.json())          // JSON body parser
 
 app.use(
   cors({
