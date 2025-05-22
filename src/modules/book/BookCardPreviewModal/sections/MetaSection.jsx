@@ -6,7 +6,7 @@
 import styled from 'styled-components'
 import { BookField } from '../fields/BookField'
 import { Input } from '../fields/TextInput'
-import { CustomSelectInput } from '../fields/CustomSelectInput' // NEW!
+import  CustomSelectInput  from '@book/BookCardPreviewModal/fields/CustomSelectInput' 
 import { TagsInput } from '../fields/TagsInput'
 import TagsSection from './TagsSection'
 
