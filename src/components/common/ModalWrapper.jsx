@@ -1,12 +1,14 @@
-//-----------------------------------------------------------------------------
-//------ ModalWrapper: Reusable overlay modal container
-//-----------------------------------------------------------------------------
+/**
+ * @file ModalWrapper.jsx
+ * @description Reusable fullscreen modal container with blurred overlay.
+ * Closes when the user clicks outside the content box.
+ */
 
 import React from 'react'
 import styled from 'styled-components'
 
 //-----------------------------------------------------------------------------
-//------ Styles
+// Styles
 //-----------------------------------------------------------------------------
 
 const Overlay = styled.div`
@@ -34,9 +36,16 @@ const ModalBox = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ Component
+// Component
 //-----------------------------------------------------------------------------
 
+/**
+ * Modal container with overlay.
+ *
+ * @param {Object} props
+ * @param {*} props.children - Content to display inside the modal
+ * @param {Function} props.onClose - Callback called when clicking outside
+ */
 const ModalWrapper = ({ children, onClose }) => {
   const handleClickOutside = (e) => {
     if (e.target === e.currentTarget) {
@@ -50,7 +59,5 @@ const ModalWrapper = ({ children, onClose }) => {
     </Overlay>
   )
 }
-
-
 
 export default ModalWrapper

@@ -1,4 +1,8 @@
-import React from 'react'
+/**
+ * @file ListItem.jsx
+ * @description Displays a single book row in list view, with optional actions and manage mode.
+ */
+
 import styled from 'styled-components'
 import { IoCloseOutline } from 'react-icons/io5'
 import SelectCheckbox from './SelectCheckbox'
@@ -6,20 +10,21 @@ import CardButtons from './CardButtons'
 import { useSelector } from 'react-redux'
 import { selectIsManageMode } from '@/store/selectors'
 
-/* --------------------------------------------- */
-/*                   Styled                      */
-/* --------------------------------------------- */
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
 
+//--- Wrapper for the entire item
 const ItemWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   margin-bottom: 1.2rem;
 `
-
+//--- Row for the item, with grid layout
 const Row = styled.div`
   display: grid;
-  grid-template-columns: 5% 55% 20% 15% 5%; /* Cover / Info / Date / Buttons / Delete/Checkbox */
+  grid-template-columns: 5% 55% 20% 15% 5%;
   align-items: center;
   padding: 1.2rem 2rem;
   background: var(--glass-bg);
@@ -54,7 +59,6 @@ const Info = styled.div`
   min-width: 0;
 `
 
-
 const Title = styled.div`
   font-weight: 600;
   font-size: 1.1rem;
@@ -62,8 +66,8 @@ const Title = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 50%;  
-  `
+  width: 50%;
+`
 
 const Author = styled.div`
   color: var(--text-secondary);
@@ -93,18 +97,20 @@ const Remove = styled.div`
   font-size: 1rem;
   color: var(--text-secondary);
   cursor: pointer;
+
   &:hover {
     color: var(--color-accent);
   }
 `
 
-/* --------------------------------------------- */
-/*                    Component                  */
-/* --------------------------------------------- */
+//-----------------------------------------------------------------------------
+// Component: ListItem
+//-----------------------------------------------------------------------------
 
 const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
   const isManageMode = useSelector(selectIsManageMode)
 
+  //--- Format date string from metadata
   const dateRaw = book?.meta?.createdAt
   const formattedDate = dateRaw
     ? new Date(dateRaw).toLocaleDateString('pl-PL', {
@@ -113,6 +119,12 @@ const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
         year: 'numeric',
       })
     : '—'
+
+  //--- Handle remove button click
+  const handleRemoveClick = (e) => {
+    e.stopPropagation()
+    onRemoveClick()
+  }
 
   return (
     <ItemWrapper>
@@ -136,12 +148,7 @@ const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
         {isManageMode ? (
           <SelectCheckbox bookId={book._id} />
         ) : (
-          <Remove
-            onClick={(e) => {
-              e.stopPropagation()
-              onRemoveClick()
-            }}
-          >
+          <Remove onClick={handleRemoveClick}>
             <IoCloseOutline />
           </Remove>
         )}

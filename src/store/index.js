@@ -1,4 +1,7 @@
-// src/store/index.js
+/**
+ * @file index.js
+ * @description Configures and exports the Redux store with persistence and RTK Query middleware.
+ */
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import {
@@ -11,7 +14,7 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // uses localStorage
+import storage from 'redux-persist/lib/storage'
 
 import { booksApi, externalApi } from './api'
 import bookReducer from './slices/bookSlice'
@@ -19,14 +22,18 @@ import readerReducer from './slices/readerSlice'
 import pdfCacheReducer from './slices/pdfCacheSlice'
 import mainUiReducer from './slices/mainUiSlice'
 
-//------------------------------------------------------------------------------
-// Persistence configuration – book state
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Persistence Configurations
+//-----------------------------------------------------------------------------  
 
+/**
+ * Persistence configuration for book slice
+ */
 const bookPersistConfig = {
   key: 'book',
   storage,
   whitelist: [
+    'byId',
     'activeBookId',
     'previewBookId',
     'libraryViewMode',
@@ -36,38 +43,34 @@ const bookPersistConfig = {
   ],
 }
 
-//------------------------------------------------------------------------------
-// Persistence configuration – reader state
-//------------------------------------------------------------------------------
-
+/**
+ * Persistence configuration for reader slice
+ */
 const readerPersistConfig = {
   key: 'reader',
   storage,
   whitelist: [
-    'pagesByBook',
     'scaleIndex',
     'pageViewMode',
   ],
 }
 
-//------------------------------------------------------------------------------
-// Root reducer
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Root Reducer
+//-----------------------------------------------------------------------------  
 
 const rootReducer = combineReducers({
   ui: mainUiReducer,
   book: persistReducer(bookPersistConfig, bookReducer),
   reader: persistReducer(readerPersistConfig, readerReducer),
   pdfCache: pdfCacheReducer,
-
-  // RTK Query
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
 })
 
-//------------------------------------------------------------------------------
-// Global persist config (optional root wrapper)
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Global Persist Config
+//-----------------------------------------------------------------------------  
 
 const persistConfig = {
   key: 'root',
@@ -77,12 +80,12 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
-//------------------------------------------------------------------------------
-// Middleware configuration
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Middleware
+//-----------------------------------------------------------------------------  
 
-const middleware = (getDefault) =>
-  getDefault({
+const middleware = (getDefaultMiddleware) =>
+  getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
@@ -91,21 +94,27 @@ const middleware = (getDefault) =>
     externalApi.middleware
   )
 
-//------------------------------------------------------------------------------
-// Store configuration
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Store Configuration
+//-----------------------------------------------------------------------------  
 
+/**
+ * The Redux store with persistence and middleware set up
+ */
 export const store = configureStore({
   reducer: persistedReducer,
   middleware,
-  devTools: import.meta.env.MODE !== 'production',
+  devTools: process.env.NODE_ENV !== 'production',
 })
 
+/**
+ * Persistor for persisting store
+ */
 export const persistor = persistStore(store)
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Exports
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------  
 
 export * from './api'
 export * from './slices'

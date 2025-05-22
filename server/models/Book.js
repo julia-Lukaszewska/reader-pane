@@ -1,4 +1,13 @@
-//  models/Book.js
+/**
+ * @file Book.js
+ * @description Mongoose model for Book documents.
+ * Defines schema structure for:
+ * - meta: static metadata from PDF or user input
+ * - flags: user-controlled states and data (favorites, bookmarks, notes, etc.)
+ * - stats: system-generated usage data (progress, last opened, etc.)
+ * Used in book upload, querying, progress tracking, and UI display.
+ */
+
 import mongoose from 'mongoose'
 
 const bookSchema = new mongoose.Schema(

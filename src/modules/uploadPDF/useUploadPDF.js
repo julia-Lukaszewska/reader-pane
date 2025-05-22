@@ -1,30 +1,51 @@
+/**
+ * @file useUploadPDF.js
+ * @description React hook that validates, extracts metadata, renders cover, and uploads a PDF book to the backend.
+ */
+
+import { useState } from 'react'
+import { useUploadBookMutation } from '@/store/api/booksApi'
+import usePDFValidation from './usePDFValidation'
+import { extractPDFMetadata } from './extractPDFMetadata'
+import { renderPDFCover } from './renderPDFCover'
+
 //-----------------------------------------------------------------------------
-// useUploadPDF: Extracts metadata & uploads a PDF book to backend
+// Hook: useUploadPDF
 //-----------------------------------------------------------------------------
 
-import { useState } from 'react';
-import { useUploadBookMutation } from '@/store/api/booksApi';
-import usePDFValidation from './usePDFValidation';
-import { extractPDFMetadata } from './extractPDFMetadata';
-import { renderPDFCover } from './renderPDFCover';
-
+/**
+ * Provides `handleUpload` for processing and uploading a PDF file,
+ * along with an `uploading` state flag.
+ *
+ * @returns {Object} An object with:
+ *   - handleUpload: async (file: File) => Promise<{ success: boolean, savedBook?: any }>
+ *   - uploading: boolean
+ */
 const useUploadPDF = () => {
-  //-----------------------------------------------------------------------------
-  //  Setup: RTK mutation, validation hook, loading state
-  //-----------------------------------------------------------------------------
-  const [uploadBook] = useUploadBookMutation();
-  const { validate } = usePDFValidation();
-  const [uploading, setUploading] = useState(false);
+  //---
+  // Setup: RTK mutation, validation hook, loading state
+  //---
+  const [uploadBook] = useUploadBookMutation()
+  const { validate } = usePDFValidation()
+  const [uploading, setUploading] = useState(false)
 
-  //-----------------------------------------------------------------------------
-  //  Upload handler
-  //-----------------------------------------------------------------------------
+  //---
+  // Upload handler
+  //---
+  /**
+   * Validates the file, extracts PDF metadata and cover image, builds FormData,
+   * and uploads to the backend.
+   *
+   * @param {File} file - PDF file to upload
+   * @returns {Promise<{ success: boolean, savedBook?: any }>}
+   */
   const handleUpload = async (file) => {
-    if (!validate(file)) return;
+    // Validate PDF
+    if (!validate(file)) return { success: false }
 
-    setUploading(true);
+    setUploading(true)
     try {
-      //  Extract metadata from PDF
+      // Extract metadata from PDF
       const {
         title,
         author,
@@ -34,33 +55,33 @@ const useUploadPDF = () => {
         publicationDate,
         publishedYear,
         totalPages,
-      } = await extractPDFMetadata(file);
+      } = await extractPDFMetadata(file)
 
-      //  Generate cover image
-      const cover = await renderPDFCover(file);
+      // Generate cover image
+      const cover = await renderPDFCover(file)
 
-      //  Build FormData to send to backend
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('title', title);
-      formData.append('author', author);
-      formData.append('subject', subject);
-      if (keywords.length) formData.append('keywords', keywords.join(','));
-      if (language) formData.append('language', language);
-      if (publicationDate) formData.append('publicationDate', publicationDate);
-      if (publishedYear) formData.append('publishedYear', publishedYear);
-      formData.append('totalPages', totalPages);
-      formData.append('cover', cover);
+      // Build FormData
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('title', title)
+      formData.append('author', author)
+      formData.append('subject', subject)
+      if (keywords.length) formData.append('keywords', keywords.join(','))
+      if (language) formData.append('language', language)
+      if (publicationDate) formData.append('publicationDate', publicationDate)
+      if (publishedYear) formData.append('publishedYear', publishedYear)
+      formData.append('totalPages', totalPages)
+      formData.append('cover', cover)
 
-      //  Upload via API
-      const savedBook = await uploadBook(formData).unwrap();
-      return { success: true, savedBook };
+      // Upload via API
+      const savedBook = await uploadBook(formData).unwrap()
+      return { success: true, savedBook }
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
   }
 
-  return { handleUpload, uploading };
-};
+  return { handleUpload, uploading }
+}
 
-export default useUploadPDF;
+export default useUploadPDF

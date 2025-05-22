@@ -1,17 +1,23 @@
-//-----------------------------------------------------------------------------
-//------ AppRoutes 
-//-----------------------------------------------------------------------------
+/**
+ * @file AppRoutes.jsx
+ * @description Defines application routes and layouts using React Router v6 with lazy loading.
+ */
 
 import React, { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { LoadingSpinner } from '@/components'
 
-// Layouts – simple lazy-loaded imports
+//-----------------------------------------------------------------------------
+// Lazy-loaded Layouts
+//-----------------------------------------------------------------------------
 const HomeLayout = lazy(() => import('@/layout/HomeLayout'))
 const MainLayout = lazy(() => import('@/layout/MainLayout'))
 const LibraryLayout = lazy(() => import('@/layout/LibraryLayout'))
 const ReaderLayout = lazy(() => import('@/layout/ReaderLayout'))
 
+//-----------------------------------------------------------------------------
+// Views
+//-----------------------------------------------------------------------------
 import {
   HomeView,
   MyLibraryView,
@@ -23,7 +29,9 @@ import {
   PageNotFoundView,
 } from '@/views'
 
-
+//-----------------------------------------------------------------------------
+// Route Configuration
+//-----------------------------------------------------------------------------
 const router = createBrowserRouter([
   {
     path: '/',
@@ -34,7 +42,6 @@ const router = createBrowserRouter([
     ),
     children: [{ index: true, element: <HomeView /> }],
   },
-
   {
     path: '/',
     element: (
@@ -59,16 +66,26 @@ const router = createBrowserRouter([
         element: <ReaderLayout />,
         children: [
           { index: true, element: <ReaderView /> },
+          { path: ':bookId', element: <ReaderView /> },
           { path: ':read', element: <ReaderView /> },
         ],
       },
-      
       { path: 'settings', element: <SettingsView /> },
       { path: '*', element: <PageNotFoundView /> },
     ],
   },
 ])
 
+//-----------------------------------------------------------------------------
+// Component: AppRoutes
+//-----------------------------------------------------------------------------
+
+/**
+ * Wraps the router configuration into a RouterProvider.
+ *
+ * @component
+ * @returns {JSX.Element}
+ */
 export default function AppRoutes() {
   return <RouterProvider router={router} />
 }

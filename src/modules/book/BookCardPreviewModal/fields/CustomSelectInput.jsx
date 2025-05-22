@@ -1,22 +1,41 @@
-import Select from 'react-select';
-import styled from 'styled-components';
+/**
+ * @file CustomSelectInput.jsx
+ * @description Custom styled wrapper for react-select dropdown.
+ */
 
+import Select from 'react-select'
+import styled from 'styled-components'
+
+//-----------------------------------------------------------------------------
+// Styled container
+//-----------------------------------------------------------------------------
 const SelectContainer = styled.div`
   width: 100%;
   min-width: 0;
   font-size: inherit;
   display: flex;
   align-items: stretch;
-  overflow: hidden; 
-`;
+  overflow: hidden;
+`
 
-export function CustomSelectInput({ name, value, onChange, options = [] }) {
-  const selectOptions = options.map(opt => ({
+//-----------------------------------------------------------------------------
+// Component: CustomSelectInput
+//-----------------------------------------------------------------------------
+/**
+ * @component CustomSelectInput
+ * @param {string} name - Field name
+ * @param {string} value - Selected value
+ * @param {function} onChange - Change handler
+ * @param {string[]} options - List of selectable options
+ */
+const CustomSelectInput = ({ name, value, onChange, options = [] }) => {
+  const selectOptions = options.map((opt) => ({
     value: opt,
-    label: opt[0].toUpperCase() + opt.slice(1)
-  }));
+    label: opt[0].toUpperCase() + opt.slice(1),
+  }))
 
-  const selectedOption = selectOptions.find(opt => opt.value === value) || null;
+  const selectedOption =
+    selectOptions.find((opt) => opt.value === value) || null
 
   return (
     <SelectContainer>
@@ -24,21 +43,20 @@ export function CustomSelectInput({ name, value, onChange, options = [] }) {
         name={name}
         options={selectOptions}
         value={selectedOption}
-        onChange={selected => {
+        onChange={(selected) =>
           onChange({
             target: {
               name,
-              value: selected ? selected.value : ""
-            }
-          });
-        }}
+              value: selected ? selected.value : '',
+            },
+          })
+        }
         isClearable
-        placeholder="select..."
+        placeholder="Select..."
         styles={{
           control: (base, state) => ({
             ...base,
-            fontSize: 'inherit',       // dziedziczy
-          
+            fontSize: 'inherit',
             background: 'rgba(255,255,255,0.14)',
             color: '#f5f8ff',
             border: state.isFocused
@@ -47,62 +65,54 @@ export function CustomSelectInput({ name, value, onChange, options = [] }) {
             boxShadow: state.isFocused
               ? '0 0 0 2px var(--see-02), 0 2px 12px 0 rgba(60,170,255,0.09)'
               : '0 1px 8px 0 rgba(80,140,230,0.08)',
-           
             minHeight: 0,
             alignItems: 'center',
-            
           }),
-         valueContainer: (base) => ({
-  ...base,
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  height: '100%',
-
-  minWidth: 0,              
-  boxSizing: 'border-box',
-  overflow: 'hidden',       
-
+          valueContainer: (base) => ({
+            ...base,
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
+            minWidth: 0,
+            boxSizing: 'border-box',
+            overflow: 'hidden',
+          }),
           indicatorsContainer: (base) => ({
             ...base,
-            
             alignItems: 'center',
           }),
-         clearIndicator: (base) => ({
-  ...base,
-  fontSize: 'inherit',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  color: '#7fb0f8',
-  paddingRight: '0.5em',
-  '> svg': {
-    width: '1.3em',
-    height: '1.3em',
-    display: 'block',
-  
-  },
-  ':hover': { color: '#fff' },
-}),
-dropdownIndicator: (base) => ({
-  ...base,
-  fontSize: 'inherit',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  color: '#a7ceff',
-  paddingRight: '0.3em',
-  '> svg': {
-    width: '1.3em',
-    height: '1.3em',
-    display: 'block',
-   
-  },
-  ':hover': { color: '#fff' },
-}),
-
+          clearIndicator: (base) => ({
+            ...base,
+            fontSize: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            color: '#7fb0f8',
+            paddingRight: '0.5em',
+            '> svg': {
+              width: '1.3em',
+              height: '1.3em',
+              display: 'block',
+            },
+            ':hover': { color: '#fff' },
+          }),
+          dropdownIndicator: (base) => ({
+            ...base,
+            fontSize: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#a7ceff',
+            paddingRight: '0.3em',
+            '> svg': {
+              width: '1.3em',
+              height: '1.3em',
+              display: 'block',
+            },
+            ':hover': { color: '#fff' },
+          }),
           indicatorSeparator: () => ({
             display: 'none',
           }),
@@ -125,7 +135,7 @@ dropdownIndicator: (base) => ({
           }),
           placeholder: (base) => ({
             ...base,
-            alignItems:'center',
+            alignItems: 'center',
             color: 'var(--color-blue-200, #8cbaff)',
             opacity: 0.8,
           }),
@@ -134,8 +144,8 @@ dropdownIndicator: (base) => ({
             color: '#f5f8ff',
             fontSize: 'inherit',
           }),
-     
-        theme={theme => ({
+        }}
+        theme={(theme) => ({
           ...theme,
           borderRadius: '.42',
           colors: {
@@ -148,6 +158,7 @@ dropdownIndicator: (base) => ({
         })}
       />
     </SelectContainer>
-  );
+  )
 }
-export default CustomSelectInput;
+
+export default CustomSelectInput

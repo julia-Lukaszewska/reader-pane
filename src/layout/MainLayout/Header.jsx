@@ -1,16 +1,18 @@
-//-----------------------------------------------------------------------------
-//------ Header: Top navigation bar component 
-//-----------------------------------------------------------------------------
+/**
+ * @file Header.jsx
+ * @description Top navigation bar rendered across all views.
+ * Shows title and action buttons (home, sidebar toggle, theme switch).
+ */
+
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
-
-import { toggleTheme, toggleSidebar } from '@/store/slices/mainUiSlice'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { toggleTheme, toggleSidebar } from '@/store/slices/mainUiSlice'
 import { Switch, Button } from '@/components'
 import { SlHome, SlMenu } from 'react-icons/sl'
 
 //-----------------------------------------------------------------------------
-//------ Header styles 
+// Styled components
 //-----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
@@ -42,24 +44,17 @@ const HeaderStyled = styled.header`
       rgba(0, 0, 0, 0.02) 1px,
       rgba(0, 0, 0, 0.02) 2px
     );
-
   grid-row: 1;
-  grid-column: 1/3;
+  grid-column: 1 / 3;
   height: 10vh;
   width: 100vw;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 0 3rem;
   border-bottom: 0.2rem solid rgba(150, 232, 255, 0.315);
   z-index: 1;
 `
-
-//-----------------------------------------------------------------------------
-//------ Title styles 
-//-----------------------------------------------------------------------------
 
 const Title = styled.h1`
   font-size: 2.4rem;
@@ -75,10 +70,6 @@ const Title = styled.h1`
   transition: color 0.3s ease;
 `
 
-//-----------------------------------------------------------------------------
-//------ Button group styles 
-//-----------------------------------------------------------------------------
-
 const BtnGroup = styled.div`
   display: flex;
   align-items: center;
@@ -86,9 +77,16 @@ const BtnGroup = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ Header component definition 
+// Component: Header
 //-----------------------------------------------------------------------------
 
+/**
+ * Renders a header with title and action buttons depending on route.
+ * - On non-home pages shows menu and home buttons.
+ * - Always shows theme switch on the right.
+ *
+ * @returns {JSX.Element}
+ */
 const Header = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -130,9 +128,5 @@ const Header = () => {
     </HeaderStyled>
   )
 }
-
-//-----------------------------------------------------------------------------
-//------ Export Header component 
-//-----------------------------------------------------------------------------
 
 export default Header

@@ -1,6 +1,3 @@
-//-----------------------------------------------------------------------------
-//------ Barrel export for HomeMenu components 
-//-----------------------------------------------------------------------------
 
 export { default as HomeMenu } from './HomeMenu' //Start screen menu layout 
 export { default as MenuTile } from './MenuTile' //Single menu tile 

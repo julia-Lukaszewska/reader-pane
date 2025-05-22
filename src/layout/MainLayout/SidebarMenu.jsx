@@ -1,13 +1,18 @@
-// src/layout/Sidebar/SidebarMenu.jsx
+/**
+ * @file SidebarMenu.jsx
+ * @description Menu list displayed inside the Sidebar component.
+ * Includes navigation buttons for main app views.
+ */
 
 import styled from 'styled-components'
 import { Button } from '@/components'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux' // React Redux hook 
+import { useSelector } from 'react-redux'
 
-// -----------------------------------------------------------------------------
-//------- SidebarMenuStyled – wrapper for sidebar menu 
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Styled component: nav container with animation
+//-----------------------------------------------------------------------------
+
 const MenuNav = styled.nav`
   display: flex;
   flex-direction: column;
@@ -27,6 +32,11 @@ const MenuNav = styled.nav`
       filter 0.4s ease;
   }
 `
+
+//-----------------------------------------------------------------------------
+// Nav items definition
+//-----------------------------------------------------------------------------
+
 const items = [
   { label: 'Home', path: '/' },
   { label: 'Reader', path: '/read' },
@@ -37,9 +47,19 @@ const items = [
   { label: 'Settings', path: '/settings' },
 ]
 
+//-----------------------------------------------------------------------------
+// Component: SidebarMenu
+//-----------------------------------------------------------------------------
+
+/**
+ * Renders vertical list of navigation buttons.
+ * Buttons animate in/out based on sidebar state.
+ *
+ * @returns {JSX.Element}
+ */
 const SidebarMenu = () => {
   const navigate = useNavigate()
-  const isOpen = useSelector((state) => state.ui.sidebarOpen) 
+  const isOpen = useSelector((state) => state.ui.sidebarOpen)
 
   return (
     <MenuNav $isOpen={isOpen}>

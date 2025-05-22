@@ -1,4 +1,8 @@
-// src/modules/pdfView/components/PDFPageControls.jsx
+/**
+ * @file PDFPageControls.jsx
+ * @description Pagination controls for PDF viewer, allowing navigation between pages.
+ */
+
 import React from 'react'
 import styled from 'styled-components'
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
@@ -8,8 +12,12 @@ import { usePDFPagination } from '@reader/hooks'
 import {
   selectActiveBookId,
   selectPageViewMode,
-  selectBookStaticById
+  selectBookStaticById,
 } from '@/store/selectors'
+
+//-----------------------------------------------------------------------------
+// Styled Components
+//-----------------------------------------------------------------------------
 
 const StyledPagination = styled.div`
   display: flex;
@@ -23,6 +31,7 @@ const StyledPagination = styled.div`
     font-size: 1.5rem;
     color: white;
     cursor: pointer;
+
     &:disabled {
       opacity: 0.4;
       cursor: default;
@@ -35,12 +44,24 @@ const PageInfo = styled.span`
   color: #fff;
 `
 
+//-----------------------------------------------------------------------------
+// Component: PDFPageControls
+//-----------------------------------------------------------------------------
+
+/**
+ * Renders back/next buttons and current page info.
+ * Uses `usePDFPagination` to determine logic based on view mode and total pages.
+ *
+ * Hidden if not in /read route or missing book data.
+ */
 const PDFPageControls = () => {
+  console.log('PDFPageControls')
+
   const location = useLocation()
   const bookId = useSelector(selectActiveBookId)
   const viewMode = useSelector(selectPageViewMode)
 
-  // Pobieramy totalPages z cache statycznych danych
+  // Pobieramy totalPages z cache statycznych danych książki
   const staticBook = useSelector(selectBookStaticById(bookId))
   const totalPages = staticBook?.meta?.totalPages ?? 0
 
@@ -52,6 +73,7 @@ const PDFPageControls = () => {
     handleNext,
   } = usePDFPagination(bookId, totalPages, viewMode)
 
+  // Ukryj, jeśli poza /read, brak książki lub brak stron
   if (
     !location.pathname.startsWith('/read') ||
     !bookId ||

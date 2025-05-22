@@ -1,18 +1,21 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express.js backend API for ebook reader app",
   "main": "server.js",
-  "scripts": {
-    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "clean": "node clean-uploads.js"
-  },
-  "keywords": [],
-  "author": "",
+  "author": "Julia Łukaszewska",
   "license": "ISC",
   "type": "module",
+  "keywords": ["express", "mongodb", "api", "books", "nodejs"],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "clean": "node scripts/clean-uploads.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

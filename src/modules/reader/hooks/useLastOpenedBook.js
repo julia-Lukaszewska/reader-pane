@@ -1,36 +1,71 @@
-// src/modules/pdfView/hooks/useLastOpenedBook.js
+/**
+ * @file useLastOpenedBook.js
+ * @description Initializes or restores the last opened book based on route or persisted state.
+ */
+
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useUpdateLastOpenedMutation } from '@/store/api/booksApi'
+import {
+  setActiveBookId,
+  setLastOpenedBookId,
+} from '@/store/slices/bookSlice'
 
+//-----------------------------------------------------------------------------
+// Hook: useLastOpenedBook
+//-----------------------------------------------------------------------------
 
+/**
+ * Handles logic for:
+ * 1. Setting the active book based on `bookId` from route or lastOpened state
+ * 2. Redirecting if necessary
+ * 3. Updating `lastOpenedAt` timestamp in backend
+ *
+ * Called once in reader layout on mount.
+ */
 export default function useLastOpenedBook() {
+  console.log('[useLastOpenedBook]')
+
   const { bookId: routeBookId } = useParams()
   const navigate = useNavigate()
-  const activeBookId = useSelector(s => s.book.activeBookId)
+  const dispatch = useDispatch()
+
+  const lastOpenedBookId = useSelector((state) => state.book.lastOpenedBookId)
   const [updateLastOpened] = useUpdateLastOpenedMutation()
 
-  // Redirect to the active book or home if no :bookId is present
-  useEffect(() => {
-    if (routeBookId) return
+  //--- Prefer book from URL, fallback to last opened from state
+  const id = routeBookId ?? lastOpenedBookId
 
-    if (activeBookId) {
-      navigate(`/read/${activeBookId}`, { replace: true })
+  //-----------------------------------------------------------------------------
+  // Effect: Set active book and navigate if needed
+  //-----------------------------------------------------------------------------
+  useEffect(() => {
+    if (routeBookId) {
+      dispatch(setActiveBookId(routeBookId))
+      dispatch(setLastOpenedBookId(routeBookId))
+      return
+    }
+
+    if (lastOpenedBookId) {
+      dispatch(setActiveBookId(lastOpenedBookId))
+      navigate(`/read/${lastOpenedBookId}`, { replace: true })
     } else {
       navigate('/', { replace: true })
     }
-  }, [routeBookId, activeBookId, navigate])
+  }, [routeBookId, lastOpenedBookId, dispatch, navigate])
 
-  // If a book ID is available – update the lastOpenedAt field
+  //-----------------------------------------------------------------------------
+  // Effect: Update backend with lastOpenedAt timestamp
+  //-----------------------------------------------------------------------------
   useEffect(() => {
-    const id = routeBookId ?? activeBookId
     if (!id) return
 
+    dispatch(setLastOpenedBookId(id))
     updateLastOpened(id)
       .unwrap()
-      .catch(err =>
+      .catch((err) =>
         console.error('Failed to update lastOpenedAt', err)
       )
-  }, [routeBookId, activeBookId, updateLastOpened])
+  }, [id, dispatch, updateLastOpened])
 }

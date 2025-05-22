@@ -2,9 +2,6 @@
 //------ Barrel export for utility functions 
 //-----------------------------------------------------------------------------
 
-
-
-
 export {
   getLastBookId,
   saveLastBookId,
@@ -15,6 +12,6 @@ export {
   saveBookToArchiveStorage,
   removeBookFromArchiveStorage,
 } from './storage'
-// Storage utilities 
+
 
 

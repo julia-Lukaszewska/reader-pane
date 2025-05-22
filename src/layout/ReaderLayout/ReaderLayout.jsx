@@ -1,10 +1,17 @@
+/**
+ * @file ReaderLayout.jsx
+ * @description Layout wrapper for the reader view.
+ * Initializes reading session and renders the ReaderToolbar and nested routes.
+ */
+
 import styled from 'styled-components'
 import { Outlet } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import { ReaderToolbar } from '@reader'
-import {useSaveProgressOnUnmount, useInitReadingProgress } from '@reader/hooks'
-import { selectActiveBookId } from '@/store/selectors'
+import { useInitReaderSession } from '@reader/hooks'
 
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
 
 const Container = styled.div`
   display: flex;
@@ -12,15 +19,18 @@ const Container = styled.div`
   height: 100%;
 `
 
-// Layout component — must be default export for React.lazy to work
-const ReaderLayout = () => {
-  // Get current active book ID from Redux
-  const bookId = useSelector(selectActiveBookId)
+//-----------------------------------------------------------------------------
+// Component: ReaderLayout
+//-----------------------------------------------------------------------------
 
-  // Initialize reading progress on mount
-  useInitReadingProgress(bookId)
-  // Save reading progress on unmount
-  useSaveProgressOnUnmount(bookId)
+/**
+ * Layout used in the `/read` route.
+ * Initializes reader state and wraps nested pages.
+ *
+ * @returns {JSX.Element}
+ */
+const ReaderLayout = () => {
+  useInitReaderSession()
 
   return (
     <Container>

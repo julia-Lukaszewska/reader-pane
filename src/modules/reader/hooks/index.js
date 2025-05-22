@@ -11,8 +11,9 @@ export { default as usePreloadPDFPages } from './usePreloadPDFPages' //Preload s
 
 export { default as useLastOpenedBook } from './useLastOpenedBook' //Open book in reader
 
+export { default as useStartingPage } from './useStartingPage' //Set starting page for book
+export { default as useInitReaderSession } from './useInitReaderSession' //Initialize reader session
 
 
-
-export {default as useSaveProgressOnUnmount}from './useSaveProgressOnUnmount' //Save progress on unmount
-export {default as useInitReadingProgress} from './useInitReadingProgress' //Initialize reading progress
+// export {default as useSaveProgressOnUnmount}from './useSaveProgressOnUnmount' //Save progress on unmount
+// export {default as useInitReadingProgress} from './useInitReadingProgress' //Initialize reading progress

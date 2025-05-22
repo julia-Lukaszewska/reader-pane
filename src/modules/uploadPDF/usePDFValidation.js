@@ -1,19 +1,37 @@
+/**
+ * @file usePDFValidation.js
+ * @description React hook that provides PDF file validation.
+ */
+
+import { useCallback } from 'react'
+
 //-----------------------------------------------------------------------------
-// usePDFValidation: Validates if uploaded file is a PDF
+// Hook: usePDFValidation
 //-----------------------------------------------------------------------------
 
-import { useCallback } from 'react';
-
+/**
+ * Provides a `validate` function to check if a File object is a PDF.
+ * Shows an alert if validation fails.
+ *
+ * @returns {Object} An object with:
+ *   - validate: (file: File) => boolean
+ */
 const usePDFValidation = () => {
+  /**
+   * Validates that the provided file is a PDF.
+   *
+   * @param {File} file - The file to validate
+   * @returns {boolean} True if valid PDF, otherwise false
+   */
   const validate = useCallback((file) => {
     if (!file || file.type !== 'application/pdf') {
-      alert('Invalid file format. Please upload a PDF file.');
-      return false;
+      alert('Invalid file format. Please upload a PDF file.')
+      return false
     }
-    return true;
-  }, []);
+    return true
+  }, [])
 
-  return { validate };
-};
+  return { validate }
+}
 
-export default usePDFValidation;
+export default usePDFValidation

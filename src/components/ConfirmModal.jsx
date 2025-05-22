@@ -1,6 +1,7 @@
-//-----------------------------------------------------------------------------
-// ConfirmModal: modal used for archive, restore, or permanent delete actions
-//-----------------------------------------------------------------------------
+/**
+ * @file ConfirmModal.jsx
+ * @description Modal window used for confirming archive, restore, or permanent delete actions on books.
+ */
 
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
@@ -13,9 +14,9 @@ import {
 import { saveBookToArchiveStorage } from '@/utils'
 import { Button } from '@/components'
 
-//-----------------------------------------------------------------------------
-// Styles
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Styled components
+// -----------------------------------------------------------------------------
 
 const Overlay = styled.div`
   position: fixed;
@@ -54,10 +55,22 @@ const BtnRow = styled.div`
   flex-wrap: wrap;
 `
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Component
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
+/**
+ * Confirm modal used to confirm archiving, restoring, or deleting a book.
+ *
+ * @param {Object} props
+ * @param {string} props.bookId - ID of the book being modified
+ * @param {string} props.bookTitle - Title of the book displayed in the prompt
+ * @param {Function} props.onCancel - Callback when modal is cancelled
+ * @param {Function} [props.onConfirm] - Optional callback when action is confirmed
+ * @param {Function} [props.onTrash] - Optional callback for "archive" button override
+ * @param {'library'|'permanent-delete'|'restore'} [props.variant='library'] - Modal mode
+ * @returns {JSX.Element}
+ */
 const ConfirmModal = ({
   bookId,
   bookTitle,
@@ -171,9 +184,9 @@ const ConfirmModal = ({
   )
 }
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Export
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 ConfirmModal.displayName = 'ConfirmModal'
 export default React.memo(ConfirmModal)

@@ -1,31 +1,51 @@
-// src/modules/book/BookCardPreviewModal/useBookCardModal.js
+/**
+ * @file useBookCardModal.js
+ * @description Custom hook for managing book preview modal state and form logic.
+ */
+
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { saveLastBookId } from '@/utils'
-import { useUpdateBookMutation } from '@/store/api/booksApi'
-import { setActiveBookId } from '@/store/slices/bookSlice'
 import { useDispatch } from 'react-redux'
+import { useUpdateBookMutation } from '@/store/api/booksApi'
+import {
+  setActiveBookId,
+  updateBookLocally,
+} from '@/store/slices/bookSlice'
 
+//-----------------------------------------------------------------------------
+// Hook: useBookCardModal
+//-----------------------------------------------------------------------------
+
+/**
+ * Provides state and handlers for the book preview modal, including
+ * form state management, edit/save/cancel actions, and Redux/API sync.
+ *
+ * @param {Object} book - Book object to display/edit in modal
+ * @param {Function} onClose - Callback to close the modal
+ * @returns {UseBookCardModalResult}
+ */
 export function useBookCardModal(book, onClose) {
   const [updateBook] = useUpdateBookMutation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  // Local form state: mirrors the structure of the book object
   const [form, setForm] = useState({ meta: {}, flags: {}, stats: {} })
-
   const [isEditingMain, setIsEditingMain] = useState(false)
   const [isEditingNotes, setIsEditingNotes] = useState(false)
 
+  //--- Initialize form state from book object
   useEffect(() => {
     if (!book) return
-
-    setForm(structuredClone(book)) // Clone book data into form
+    setForm(structuredClone(book))
     setIsEditingMain(false)
     setIsEditingNotes(false)
   }, [book])
 
-  // Update meta, flags or stats depending on the field name
+  /**
+   * Updates the local form state based on input field changes.
+   * Supports nested updates for `meta`, `flags`, and `stats`.
+   * @param {Event} e - Input change event
+   */
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm((prev) => {
@@ -51,10 +71,7 @@ export function useBookCardModal(book, onClose) {
           ...prev,
           stats: {
             ...prev.stats,
-            [name]:
-              typeof prev.stats[name] === 'number'
-                ? Number(value)
-                : value,
+            [name]: typeof prev.stats[name] === 'number' ? Number(value) : value,
           },
         }
       }
@@ -62,34 +79,56 @@ export function useBookCardModal(book, onClose) {
     })
   }
 
+  /**
+   * Updates notes in the form and persists them via API and Redux.
+   * @param {Array} notesArray - Array of note objects
+   */
   const handleNotesChange = async (notesArray) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      flags: { ...prev.flags, notes: notesArray }
+      flags: { ...prev.flags, notes: notesArray },
     }))
 
     if (!book?._id) return
     try {
       await updateBook({
         id: book._id,
-        changes: { flags: { notes: notesArray } }
+        changes: { flags: { notes: notesArray } },
       }).unwrap()
+
+      dispatch(updateBookLocally({
+        id: book._id,
+        changes: { flags: { notes: notesArray } },
+      }))
     } catch (err) {
-      console.error(' Failed to update notes', err)
+      console.error('Failed to update notes', err)
     }
   }
 
+  /**
+   * Enables edit mode for the selected target section.
+   * @param {'main'|'notes'} target
+   */
   const handleEdit = (target) => {
     if (target === 'main') setIsEditingMain(true)
     if (target === 'notes') setIsEditingNotes(true)
   }
 
+  /**
+   * Cancels edit mode and resets form state.
+   * @param {'main'|'notes'} target
+   */
   const handleCancel = (target) => {
     if (book) setForm(structuredClone(book))
     if (target === 'main') setIsEditingMain(false)
     if (target === 'notes') setIsEditingNotes(false)
   }
 
+  /**
+   * Saves the form changes to the backend and updates Redux.
+   * Supports both main and notes sections.
+   * @param {'main'|'notes'} target
+   */
   const handleSave = async (target) => {
     if (!book) return
     try {
@@ -128,46 +167,46 @@ export function useBookCardModal(book, onClose) {
 
       await updateBook({
         id: book._id,
-        changes
+        changes,
       }).unwrap()
+
+      dispatch(updateBookLocally({ id: book._id, changes }))
 
       if (target === 'main') setIsEditingMain(false)
       if (target === 'notes') setIsEditingNotes(false)
     } catch (err) {
-      console.error(` Save error (${target}):`, err)
+      console.error(`Save error (${target}):`, err)
     }
   }
 
-  const handleRead = async () => {
+  /**
+   * Opens the selected book in reader view and closes modal.
+   */
+  const handleRead = () => {
     if (!book?._id) return
     dispatch(setActiveBookId(book._id))
-    saveLastBookId(book._id)
-
-    const now = new Date().toISOString()
-    try {
-      await updateBook({
-        id: book._id,
-        changes: {
-          stats: { ...book.stats, lastOpenedAt: now },
-        },
-      })
-      setForm(prev => ({
-        ...prev,
-        stats: { ...prev.stats, lastOpenedAt: now },
-      }))
-    } catch (err) {
-      console.error(' Failed to update lastOpenedAt', err)
-    }
-
     navigate(`/read/${book._id}`)
     onClose?.()
   }
 
+  /**
+   * @typedef {Object} UseBookCardModalResult
+   * @property {Object} form - Local editable copy of the book object (meta, flags, stats)
+   * @property {boolean} isEditingMain - Whether main form is currently being edited
+   * @property {boolean} isEditingNotes - Whether note field is currently being edited
+   * @property {Function} handleChange - Updates local form state based on input event
+   * @property {Function} handleEdit - Enables edit mode for target section ('main' or 'notes')
+   * @property {Function} handleCancel - Cancels editing and resets local form state
+   * @property {Function} handleSave - Persists changes to backend and updates Redux
+   * @property {Function} handleRead - Navigates to reader view for the current book
+   * @property {Function} handleNotesChange - Updates note array and saves to backend/Redux
+   */
+
+  /** @type {UseBookCardModalResult} */
   return {
     form,
     isEditingMain,
     isEditingNotes,
-
     handleChange,
     handleEdit,
     handleCancel,

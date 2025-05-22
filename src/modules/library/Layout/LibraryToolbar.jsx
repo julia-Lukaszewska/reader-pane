@@ -1,9 +1,14 @@
-// src/layout/LibraryLayout/LibraryToolbar.jsx
+/**
+ * @file LibraryToolbar.jsx
+ * @description Toolbar for switching views, sorting books, enabling management mode, and batch actions in library.
+ */
+
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { IoGrid, IoList, IoReorderThree, IoTrash } from 'react-icons/io5'
 import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+
 import { useUpdateBookMutation } from '@/store/api/booksApi'
 
 import {
@@ -23,6 +28,7 @@ import {
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
+
 const ToolbarWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -91,22 +97,34 @@ const Select = styled.select`
   color: var(--text-primary);
   font-size: 1rem;
   border: 1px solid var(--border-color);
-  &:focus { outline: none; border-color: var(--color-accent); }
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
 `
 
 //-----------------------------------------------------------------------------
 // Component: LibraryToolbar
 //-----------------------------------------------------------------------------
+
+/**
+ * Toolbar with view switches, sort menu, and batch actions for books in library mode.
+ *
+ * @component
+ * @returns {JSX.Element}
+ */
 const LibraryToolbar = () => {
   const { pathname } = useLocation()
   const dispatch = useDispatch()
   const [updateBook] = useUpdateBookMutation()
 
+  //--- Redux state
   const isManaging = useSelector(selectIsManageMode)
   const selected   = useSelector(selectSelectedBookIds)
   const viewMode   = useSelector(selectLibraryViewMode)
   const sortMode   = useSelector(selectSortMode)
 
+  //--- Determine current section name
   const section = useMemo(() => {
     if (pathname === '/library') return 'My Books'
     if (pathname === '/library/import') return 'Import Books'
@@ -117,10 +135,13 @@ const LibraryToolbar = () => {
 
   const inLibrary = pathname.startsWith('/library')
 
+  /**
+   * Archives all selected books and clears selection
+   */
   const handleBatchDelete = () => {
-    selected.forEach((id) =>
+    selected.forEach((id) => {
       updateBook({ id, changes: { flags: { isArchived: true } } })
-    )
+    })
     dispatch(clearSelected())
   }
 
@@ -130,7 +151,10 @@ const LibraryToolbar = () => {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {inLibrary && (
-          <ManageButton onClick={() => dispatch(toggleManageMode())} $active={isManaging}>
+          <ManageButton
+            onClick={() => dispatch(toggleManageMode())}
+            $active={isManaging}
+          >
             {isManaging ? 'Done' : 'Manage'}
           </ManageButton>
         )}
@@ -148,36 +172,36 @@ const LibraryToolbar = () => {
               value={sortMode}
               onChange={(e) => dispatch(setSortMode(e.target.value))}
             >
-              <option value="title-asc">Title A–Z</option>
-              <option value="title-desc">Title Z–A</option>
-              <option value="author-asc">Author A–Z</option>
-              <option value="author-desc">Author Z–A</option>
-              <option value="date-desc">Recently added</option>
-              <option value="date-asc">Oldest added</option>
-              <option value="updated-desc">Last edited</option>
-              <option value="rating-desc">Highest rating</option>
-              <option value="rating-asc">Lowest rating</option>
+              <option value='title-asc'>Title A–Z</option>
+              <option value='title-desc'>Title Z–A</option>
+              <option value='author-asc'>Author A–Z</option>
+              <option value='author-desc'>Author Z–A</option>
+              <option value='date-desc'>Recently added</option>
+              <option value='date-asc'>Oldest added</option>
+              <option value='updated-desc'>Last edited</option>
+              <option value='rating-desc'>Highest rating</option>
+              <option value='rating-asc'>Lowest rating</option>
             </Select>
 
             <ViewToggle>
               <IconButton
                 $active={viewMode === 'grid'}
                 onClick={() => dispatch(setLibraryViewMode('grid'))}
-                title="Grid view"
+                title='Grid view'
               >
                 <IoGrid />
               </IconButton>
               <IconButton
                 $active={viewMode === 'list'}
                 onClick={() => dispatch(setLibraryViewMode('list'))}
-                title="List view"
+                title='List view'
               >
                 <IoList />
               </IconButton>
               <IconButton
                 $active={viewMode === 'table'}
                 onClick={() => dispatch(setLibraryViewMode('table'))}
-                title="Table view"
+                title='Table view'
               >
                 <IoReorderThree />
               </IconButton>

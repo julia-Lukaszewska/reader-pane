@@ -1,16 +1,23 @@
-//-----------------------------------------------------------------------------
-//------ LoadingSpinner – Simple loading animation 
-//-----------------------------------------------------------------------------
+/**
+ * @file LoadingSpinner.jsx
+ * @description Simple full-size spinner used as a loading indicator.
+ * Displays a centered animated circular spinner.
+ */
 
-import React from 'react'
 import styled, { keyframes } from 'styled-components'
 
+//-----------------------------------------------------------------------------
+// Spinner animation
+//-----------------------------------------------------------------------------
 const spin = keyframes`
   to {
     transform: rotate(360deg);
   }
 `
 
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
 const Spinner = styled.div`
   width: 48px;
   height: 48px;
@@ -29,6 +36,14 @@ const SpinnerWrapper = styled.div`
   justify-content: center;
 `
 
+//-----------------------------------------------------------------------------
+// Component
+//-----------------------------------------------------------------------------
+/**
+ * Renders a centered spinner animation.
+ * Can be used to indicate loading state for full-page or section.
+ * @returns {JSX.Element}
+ */
 const LoadingSpinner = () => {
   return (
     <SpinnerWrapper>

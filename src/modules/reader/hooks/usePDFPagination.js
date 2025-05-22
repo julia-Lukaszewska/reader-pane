@@ -1,18 +1,39 @@
-// src/modules/pdfView/hooks/usePDFPagination.js
+/**
+ * @file usePDFPagination.js
+ * @description Custom hook for handling PDF pagination logic including double-page mode and state updates.
+ */
+
 import { useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { setCurrentPage } from '@/store/slices/readerSlice'
+import { setBookStats } from '@/store/slices/bookSlice'
+import { selectCurrentPageById } from '@/store/selectors'
 
+//-----------------------------------------------------------------------------
+// Hook: usePDFPagination
+//-----------------------------------------------------------------------------
+
+/**
+ * Returns pagination controls and state for a given book and view mode.
+ *
+ * @param {string} bookId - ID of the book
+ * @param {number} totalPages - Total number of pages in the PDF
+ * @param {string} viewMode - 'single' | 'double' | 'scroll' (default: 'single')
+ */
 export default function usePDFPagination(bookId, totalPages, viewMode = 'single') {
+  console.log('[usePDFPagination] bookId', bookId)
+
   const dispatch = useDispatch()
-  const isDouble = viewMode === 'double'
-  const step     = isDouble ? 2 : 1
 
-  //  Get currentPage from slice (default is 1)
-  const currentPage = useSelector(state => state.reader.currentPage) || 1
+  // Force 'single' mode for 1-page documents
+  const safeViewMode = totalPages <= 1 ? 'single' : viewMode
+  const isDouble = safeViewMode === 'double'
+  const step = isDouble ? 2 : 1
 
-  //  Normalize for double-page view
+  // Get current page from Redux
+  const currentPage = useSelector(state => selectCurrentPageById(state, bookId))
+
+  // Normalize page for double-page display (left-aligned)
   const normalized = isDouble && currentPage % 2 === 0
     ? currentPage - 1
     : currentPage
@@ -20,26 +41,27 @@ export default function usePDFPagination(bookId, totalPages, viewMode = 'single'
   const isPrevDisabled = normalized <= 1
   const isNextDisabled = normalized + step - 1 >= totalPages
 
-  //  Go to previous page
+  // Go to previous page(s)
   const handlePrev = useCallback(() => {
     if (isPrevDisabled) return
     const newPage = Math.max(1, normalized - step)
-    dispatch(setCurrentPage(newPage))
-  }, [dispatch, normalized, step, isPrevDisabled])
+    dispatch(setBookStats({ id: bookId, stats: { currentPage: newPage } }))
+  }, [dispatch, bookId, normalized, step, isPrevDisabled])
 
-  //  Go to next page
+  // Go to next page(s)
   const handleNext = useCallback(() => {
     if (isNextDisabled) return
     const newPage = Math.min(totalPages, normalized + step)
-    dispatch(setCurrentPage(newPage))
-  }, [dispatch, normalized, step, totalPages, isNextDisabled])
+    dispatch(setBookStats({ id: bookId, stats: { currentPage: newPage } }))
+  }, [dispatch, bookId, normalized, step, totalPages, isNextDisabled])
 
   return {
-    currentPage:   normalized,
+    currentPage: normalized,
     totalPages,
     isPrevDisabled,
     isNextDisabled,
     handlePrev,
     handleNext,
+    viewMode: safeViewMode,
   }
 }

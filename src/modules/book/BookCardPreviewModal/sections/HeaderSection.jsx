@@ -1,17 +1,24 @@
-// src/modules/book/BookCardPreviewModal/sections/HeaderSection.jsx
-import styled from "styled-components"
-import { FaHeart } from "react-icons/fa"
-import { BookField } from "../fields/BookField"
-import { Input } from "../fields/TextInput"
+/**
+ * @file HeaderSection.jsx
+ * @description Displays book title, author, year and favorite toggle in the preview modal header.
+ */
 
+import styled from 'styled-components'
+import { FaHeart } from 'react-icons/fa'
+import { BookField } from '../fields/BookField'
+import { Input } from '../fields/TextInput'
+
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
+
+//--- Main wrapper for the modal header
 const Wrapper = styled.div`
   display: grid;
-
   grid-area: header;
   background: rgba(46, 51, 80, 0.11);
   gap: 0.9em 1em;
   padding: 0.7em 0.9em;
-
   grid-template-columns: 1.7fr 1fr 2.2em;
   grid-template-rows: auto auto;
   grid-template-areas: 
@@ -19,17 +26,23 @@ const Wrapper = styled.div`
     "author author heart";
 `
 
+//--- Section for title field
 const TitleArea = styled.div` 
-display: -webkit-box;
-max-height: 9.1em ;
--webkit-line-clamp: 2;
--webkit-box-orient: vertical;
-grid-area: title;
-overflow: hidden;
-
+  display: -webkit-box;
+  max-height: 9.1em ;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  grid-area: title;
+  overflow: hidden;
 `
-const YearArea = styled.div` grid-area: year;`
-const AuthorArea = styled.div` grid-area: author;`
+
+//--- Section for year field
+const YearArea = styled.div` grid-area: year; `
+
+//--- Section for author field
+const AuthorArea = styled.div` grid-area: author; `
+
+//--- Section for favorite icon
 const HeartArea = styled.div`
   grid-area: heart;
   display: flex;
@@ -37,15 +50,15 @@ const HeartArea = styled.div`
   justify-content: flex-end;
   height: 100%;
 `
+
+//--- Favorite toggle button
 const HeartButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: ${({ $active }) => $active ? "rgb(214, 0, 64)" : "rgba(129, 129, 129, 0.39)"};
-  filter: drop-shadow(0 0 0.6em ${({ $active }) => $active ? "#de3683cc" : "transparent"});
+  color: ${({ $active }) => $active ? 'rgb(214, 0, 64)' : 'rgba(129, 129, 129, 0.39)'};
+  filter: drop-shadow(0 0 0.6em ${({ $active }) => $active ? '#de3683cc' : 'transparent'});
   transition: color .12s, filter .13s, transform .12s;
-
-
   margin-top: 0.13em;
 
   &:hover {
@@ -54,43 +67,52 @@ const HeartButton = styled.button`
   }
 `
 
+//--- Placeholder for empty values
 const Placeholder = styled.span`
   opacity: 0.9;
 `
 
+//-----------------------------------------------------------------------------
+// Component: HeaderSection
+//-----------------------------------------------------------------------------
+
+/**
+ * Header section of the book preview modal.
+ * Renders editable/non-editable fields for title, author, year and favorite toggle.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Object} props.form - Book data object with `meta` and `flags`
+ * @param {boolean} props.isEditing - Determines if fields are editable
+ * @param {Function} props.handleChange - Change handler for editable fields
+ */
 const HeaderSection = ({ form, isEditing, handleChange }) => {
   const { meta = {}, flags = {} } = form
   const isFavorited = flags.isFavorited ?? false
 
   const toggleFavorite = () =>
-    handleChange({ target: { name: "isFavorited", value: !isFavorited } })
+    handleChange({ target: { name: 'isFavorited', value: !isFavorited } })
 
   return (
     <Wrapper>
       <TitleArea>
-        <BookField label="Title" $editable={isEditing}>
-  {isEditing ? (
-    <Input name="title" value={meta.title || ""} onChange={handleChange} />
-  ) : (
-    meta.title || <Placeholder>—</Placeholder>
-  )}
-</BookField>
-      </TitleArea>
-
-      <YearArea>
-        <BookField label="Year of Publication" $editable={isEditing}>
+        <BookField label='Title' $editable={isEditing}>
           {isEditing ? (
-            <Input name="publishedYear" value={meta.publishedYear || ""} onChange={handleChange} />
+            <Input name='title' value={meta.title || ''} onChange={handleChange} />
           ) : (
-            meta.publishedYear || <Placeholder>—</Placeholder>
+            meta.title || <Placeholder>—</Placeholder>
           )}
         </BookField>
+      </TitleArea>
+
+      <YearArea label='Year of Publication'>
+        {meta.publishedYear || <Placeholder>—</Placeholder>}
       </YearArea>
 
       <AuthorArea>
-        <BookField label="Author" $editable={isEditing}>
+        <BookField label='Author' $editable={isEditing}>
           {isEditing ? (
-            <Input name="author" value={meta.author || ""} onChange={handleChange} />
+            <Input name='author' value={meta.author || ''} onChange={handleChange} />
           ) : (
             meta.author || <Placeholder>—</Placeholder>
           )}
@@ -99,9 +121,9 @@ const HeaderSection = ({ form, isEditing, handleChange }) => {
 
       <HeartArea>
         <HeartButton
-          type="button"
+          type='button'
           $active={isFavorited}
-          title={isFavorited ? "delete from favorites" : "add to favorites"}
+          title={isFavorited ? 'delete from favorites' : 'add to favorites'}
           onClick={toggleFavorite}
         >
           <FaHeart />

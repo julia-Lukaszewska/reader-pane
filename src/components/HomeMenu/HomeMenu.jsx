@@ -1,10 +1,16 @@
+/**
+ * @file HomeMenu.jsx
+ * @description Displays the main navigation tiles: Library, Reader, and Settings.
+ * Uses MenuTile components positioned in a grid layout.
+ */
+
 import { MenuTile } from '@/components'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { getLastBookId } from '@/utils'
 
 // -----------------------------------------------------------------------------
-//------ StyledHomeMenu – wrapper for main menu tiles 
+// Styled components
 // -----------------------------------------------------------------------------
 
 const StyledHomeMenu = styled.div`
@@ -21,11 +27,15 @@ const StyledHomeMenu = styled.div`
 `
 
 // -----------------------------------------------------------------------------
-//------ HomeMenu – displays main navigation tiles 
+// Component
 // -----------------------------------------------------------------------------
 
+/**
+ * Renders the main home menu with 3 tiles: Library, Reader, Settings.
+ * Routes are dynamic, and last read book ID is used if available.
+ */
 const HomeMenu = () => {
-  const activeItem = useSelector((state) => state.ui.activeItem) 
+  const activeItem = useSelector((state) => state.ui.activeItem)
   const isAnyTileActive = activeItem !== null
   const lastBookId = getLastBookId()
 

@@ -1,3 +1,8 @@
+/**
+ * @file BooksManagementController.jsx
+ * @description Main container for managing books in the library view – handles view modes, sorting, and bulk actions.
+ */
+
 import { useSelector, useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 
@@ -9,6 +14,7 @@ import {
 } from '@library'
 import { LibraryToolbar } from '@/modules/library/Layout'
 import { BooksManagementToolbar } from '@/modules/library'
+
 import {
   toggleManageMode,
   setManageMode,
@@ -16,6 +22,7 @@ import {
   setLibraryViewMode,
   setSortMode,
 } from '@/store/slices/bookSlice'
+
 import {
   selectIsManageMode,
   selectSelectedBookIds,
@@ -23,25 +30,38 @@ import {
   selectSortMode,
 } from '@/store/selectors'
 
+//-----------------------------------------------------------------------------
+// Component: BooksManagementController
+//-----------------------------------------------------------------------------
+
+/**
+ * Controls the library interface: view switching, sorting, bulk selection and toolbar.
+ *
+ * @component
+ * @returns {JSX.Element}
+ */
 const BooksManagementController = () => {
   const dispatch = useDispatch()
 
-  // Reset management mode on component mount
+  //--- Reset management mode when entering library
   useEffect(() => {
     dispatch(setManageMode(false))
   }, [dispatch])
 
-  const viewMode = useSelector(selectLibraryViewMode)
-  const sortMode = useSelector(selectSortMode)
+  //--- Selectors
+  const viewMode    = useSelector(selectLibraryViewMode)
+  const sortMode    = useSelector(selectSortMode)
   const isManaging  = useSelector(selectIsManageMode)
   const selectedIds = useSelector(selectSelectedBookIds)
-  const loading = useSelector((state) => state.library.status === 'loading')
+  const loading     = useSelector(state => state.library.status === 'loading')
 
+  //--- Actions
   const handleToggleManaging = () => dispatch(toggleManageMode())
   const handleClearSelected  = () => dispatch(clearSelected())
   const changeViewMode       = (mode) => dispatch(setLibraryViewMode(mode))
   const changeSortMode       = (mode) => dispatch(setSortMode(mode))
 
+  //--- Determine content layout
   let Content
   if (loading) {
     Content = <LoadingSpinner />

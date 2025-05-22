@@ -2,10 +2,14 @@
 //------ HomeView – main landing view with interactive menu tiles 
 //-----------------------------------------------------------------------------
 
+/**
+ * @file HomeView.jsx
+ * @description Main landing view displaying interactive menu tiles.
+ */
 import React from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import {HomeMenu} from '@/components' 
+import { HomeMenu } from '@/components'
 
 //-----------------------------------------------------------------------------
 //------ StyledHomeView – grid layout with center tiles 
@@ -18,7 +22,6 @@ const StyledHomeView = styled.div`
   grid-template-rows: 1fr auto 1fr;
   justify-content: center;
   align-items: center;
-
   width: 100vw;
   height: 100%;
   background: var(--gradient-metal-deepblue-v7);
@@ -32,11 +35,17 @@ const StyledHomeView = styled.div`
 `
 
 //-----------------------------------------------------------------------------
-//------ HomeView component definition 
+//------ Component: HomeView 
 //-----------------------------------------------------------------------------
 
+/**
+ * Renders the HomeView with a blurred background when a menu tile is active.
+ *
+ * @component
+ * @returns {JSX.Element}
+ */
 const HomeView = () => {
-  const activeItem = useSelector((state) => state.ui.activeItem)
+  const activeItem = useSelector(state => state.ui.activeItem)
   const isTileActive = activeItem !== null
 
   return (

@@ -1,3 +1,9 @@
+/**
+ * @file Switch.jsx
+ * @description Toggle switch component used for switching app theme or reader view mode.
+ * Supports 'theme' and 'reader' variants. Uses visual thumb indicator and icons.
+ */
+
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button } from '@/components'
@@ -7,7 +13,10 @@ import { LuSun, LuMoon } from 'react-icons/lu'
 import { RxReader } from 'react-icons/rx'
 import { CgEreader } from 'react-icons/cg'
 
-// Styled-components
+// -----------------------------------------------------------------------------
+// Styled components
+// -----------------------------------------------------------------------------
+
 const SwitchContent = styled.div`
   display: flex;
   justify-content: space-between;
@@ -32,12 +41,20 @@ const Thumb = styled.div`
   z-index: 1;
 `
 
-//-----------------------------------------------------------------------------
-// Component: Switch
-// Handles theme toggle and reader viewMode toggle (single/double)
-//-----------------------------------------------------------------------------  
+// -----------------------------------------------------------------------------
+// Component
+// -----------------------------------------------------------------------------
+
+/**
+ * Switch component for toggling app theme or reader view mode.
+ *
+ * @param {Object} props
+ * @param {'theme'|'reader'} props.variant - Switch mode variant
+ * @returns {JSX.Element}
+ */
 const Switch = ({ variant = 'theme' }) => {
   const dispatch = useDispatch()
+
   const theme = useSelector((state) => state.ui.theme)
   const pageViewMode = useSelector((state) => state.reader.pageViewMode)
 

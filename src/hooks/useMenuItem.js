@@ -1,11 +1,27 @@
-//-----------------------------------------------------------------------------
-// useMenuItem: hook for handling menu tile behavior
-//-----------------------------------------------------------------------------
+/**
+ * @file useMenuItem.js
+ * @description Hook for handling the logic of interactive menu tiles. 
+ * Controls active tile state, navigation and cleanup on route change.
+ *
+ * @param {string} name - Unique name of the tile
+ * @param {string} route - Route to navigate to on tile click
+ * @returns {{
+ *   $isActive: boolean,
+ *   handleClick: Function,
+ *   handleNavigate: Function,
+ *   handleClose: Function
+ * }}
+ */
 
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setActiveItem, clearActiveItem } from '@/store/slices/mainUiSlice'
+
+//-----------------------------------------------------------------------------
+// Hook: useMenuItem
+// Controls tile interaction, activation and navigation
+//-----------------------------------------------------------------------------
 
 const useMenuItem = (name, route) => {
   const navigate = useNavigate()

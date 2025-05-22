@@ -1,4 +1,14 @@
-// src/routes/books-flags.js
+/**
+ * @file books-flags.js
+ * @description Express router for updating book flags and deletion.
+ * Includes:
+ * - PATCH  /api/books/:id/archive     — archive book
+ * - PATCH  /api/books/:id/restore     — restore book
+ * - PATCH  /api/books/:id/favorite    — mark as favorite
+ * - PATCH  /api/books/:id/unfavorite  — unmark as favorite
+ * - DELETE /api/books/:id             — permanently delete book and file
+ */
+
 import express from 'express'
 import Book from '../models/Book.js'
 import path from 'path'
@@ -8,7 +18,7 @@ import { fileURLToPath } from 'url'
 const router = express.Router()
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/archive — Move book to archive
+// PATCH /api/books/:id/archive — archive book
 //------------------------------------------------------------------
 router.patch('/:id/archive', async (req, res) => {
   try {
@@ -26,7 +36,7 @@ router.patch('/:id/archive', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/restore — Restore book from archive
+// PATCH /api/books/:id/restore — restore book
 //------------------------------------------------------------------
 router.patch('/:id/restore', async (req, res) => {
   try {
@@ -44,7 +54,7 @@ router.patch('/:id/restore', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/favorite — Mark book as favorite
+// PATCH /api/books/:id/favorite — mark as favorite
 //------------------------------------------------------------------
 router.patch('/:id/favorite', async (req, res) => {
   try {
@@ -62,7 +72,7 @@ router.patch('/:id/favorite', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/unfavorite — Unmark book as favorite
+// PATCH /api/books/:id/unfavorite — unmark as favorite
 //------------------------------------------------------------------
 router.patch('/:id/unfavorite', async (req, res) => {
   try {
@@ -80,7 +90,7 @@ router.patch('/:id/unfavorite', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// DELETE /api/books/:id — Permanently delete book and file
+// DELETE /api/books/:id — permanently delete book and file
 //------------------------------------------------------------------
 router.delete('/:id', async (req, res) => {
   try {

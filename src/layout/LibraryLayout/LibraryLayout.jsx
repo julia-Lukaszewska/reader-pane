@@ -1,8 +1,13 @@
-// src/layout/LibraryLayout/LibraryLayout.jsx
+/**
+ * @file LibraryLayout.jsx
+ * @description Layout wrapper for the Library view. Loads books, manages sorting, preview modal, and toolbar states.
+ */
+
 import React, { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Outlet } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+
 import { useGetBooksQuery } from '@/store/api/booksApi'
 import {
   selectSortMode,
@@ -13,10 +18,15 @@ import {
 } from '@/store/selectors'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 import { sortBooks } from '@book/utils'
+
 import { LoadingSpinner } from '@/components'
 import { LibraryToolbar } from '@library/Layout'
 import { BooksManagementToolbar } from '@library/components/BooksManagement'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
+
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
 
 const Container = styled.div`
   display: flex;
@@ -28,17 +38,27 @@ const Container = styled.div`
   background: var(--gradient-blue-clear);
 `
 
+//-----------------------------------------------------------------------------
+// Component
+//-----------------------------------------------------------------------------
+
+/**
+ * Layout component for the Library page.
+ * Handles data loading, sorting, local state, and modal logic.
+ *
+ * @returns {JSX.Element}
+ */
 export default function LibraryLayout() {
   const dispatch = useDispatch()
 
   // Redux state
-  const sortMode     = useSelector(selectSortMode)
+  const sortMode = useSelector(selectSortMode)
   const isManageMode = useSelector(selectIsManageMode)
-  const selectedIds  = useSelector(selectSelectedBookIds)
-  const isOpen       = useSelector(selectIsPreviewOpen)
-  const previewId    = useSelector(selectPreviewBookId)
+  const selectedIds = useSelector(selectSelectedBookIds)
+  const isOpen = useSelector(selectIsPreviewOpen)
+  const previewId = useSelector(selectPreviewBookId)
 
-  // Load books
+  // Fetch books
   const {
     data: booksRaw = [],
     refetch,
@@ -46,7 +66,7 @@ export default function LibraryLayout() {
     isError,
   } = useGetBooksQuery(undefined, { refetchOnMountOrArgChange: true })
 
-  // Filter out books with missing data
+  // Filter out invalid entries
   const validBooks = useMemo(
     () =>
       booksRaw.filter(
@@ -59,6 +79,7 @@ export default function LibraryLayout() {
     [booksRaw]
   )
 
+  // Map fileUrl to full path (if needed)
   const booksWithUrl = useMemo(
     () =>
       validBooks.map((b) => ({
@@ -69,24 +90,22 @@ export default function LibraryLayout() {
   )
 
   // Sort books
-  const sortedBooks = useMemo(
+  const books = useMemo(
     () => sortBooks(booksWithUrl, sortMode),
     [booksWithUrl, sortMode]
   )
 
-  const books = sortedBooks
-
-  // Persist sortMode to localStorage
+  // Persist sort mode
   useEffect(() => {
     localStorage.setItem('sortMode', sortMode)
   }, [sortMode])
 
-  // Refetch books on mount
+  // Refetch on mount
   useEffect(() => {
     refetch()
   }, [refetch])
 
-  // Find book for preview modal
+  // Preview book
   const previewBook = books.find((b) => b._id === previewId)
 
   if (isLoading) return <LoadingSpinner />

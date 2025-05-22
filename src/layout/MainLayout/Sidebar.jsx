@@ -1,12 +1,16 @@
-// src/layout/Sidebar/Sidebar.jsx
+/**
+ * @file Sidebar.jsx
+ * @description Sidebar navigation container. Renders sidebar menu if enabled.
+ */
 
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { SidebarMenu } from '@/layout/MainLayout'
 
-// -----------------------------------------------------------------------------
-//-------SidebarStyled – wrapper for sidebar menu 
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Styled component
+//-----------------------------------------------------------------------------
+
 const SidebarStyled = styled.div`
   grid-column: 1;
   grid-row: 2 / 3;
@@ -21,9 +25,15 @@ const SidebarStyled = styled.div`
   transition: all 0.4s ease;
 `
 
-// -----------------------------------------------------------------------------
-//-------Sidebar – displays the sidebar menu 
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Component: Sidebar
+//-----------------------------------------------------------------------------
+
+/**
+ * Renders the sidebar layout when `sidebarOpen` is true in Redux state.
+ *
+ * @returns {JSX.Element}
+ */
 const Sidebar = () => {
   const isOpen = useSelector((state) => state.ui.sidebarOpen)
 

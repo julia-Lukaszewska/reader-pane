@@ -1,7 +1,17 @@
-import { useState, useRef, useEffect } from "react";
-import styled from "styled-components";
-import { BookField } from "../fields/BookField";  
+/**
+ * @file NoteItem.jsx
+ * @description Editable note component for book details with optional read-only mode.
+ */
 
+import { useState, useRef, useEffect } from 'react'
+import styled from 'styled-components'
+import { BookField } from '../fields/BookField'
+
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
+
+//--- Display-only note content
 const NoteContent = styled.div`
   min-height: 4em;
   padding: 0.8em 0.15em 0.8em 0.6em;
@@ -9,13 +19,14 @@ const NoteContent = styled.div`
   border-radius: 0.7em;
   background: ${({ $empty }) =>
     $empty
-      ? "rgba(28, 38, 68, 0.123)" 
-      : "rgba(28, 38, 68, 0.123)"}; 
+      ? 'rgba(28, 38, 68, 0.123)' 
+      : 'rgba(28, 38, 68, 0.123)'};
   flex: 1 1 100%;
   transition: background .16s;
   overflow-y: auto;
-`;
+`
 
+//--- Editable textarea for notes
 const StyledTextarea = styled.textarea`
   width: 100%;
   min-height: 0;
@@ -36,48 +47,63 @@ const StyledTextarea = styled.textarea`
     border-color: var(--color-blue-400, #579dff4c);
     box-shadow: 0 0 0 2px var(--color-blue-200, #9fc4c417);
   }
-`;
+`
 
+//--- Row displaying the date of last edit
 const DateRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.6em;
-`;
+`
 
-const DateLabel = styled.span``;
+//--- Static label for date
+const DateLabel = styled.span``
 
+//-----------------------------------------------------------------------------
+// Component: NoteItem
+//-----------------------------------------------------------------------------
+
+/**
+ * Displays a single note with optional edit mode.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Object} props.note - Note object containing `id`, `text`, and `createdAt`
+ * @param {Function} props.onSave - Callback to save updated text
+ * @param {boolean} props.readOnly - If true, disables editing
+ */
 export default function NoteItem({ note, onSave, readOnly }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState(note.text || "");
-  const textareaRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false)
+  const [value, setValue] = useState(note.text || '')
+  const textareaRef = useRef(null)
 
   useEffect(() => {
-    setValue(note.text || "");
-    setIsEditing(false);
-  }, [note.id, note.text]);
+    setValue(note.text || '')
+    setIsEditing(false)
+  }, [note.id, note.text])
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
-      textareaRef.current.focus();
-      textareaRef.current.select();
+      textareaRef.current.focus()
+      textareaRef.current.select()
     }
-  }, [isEditing]);
+  }, [isEditing])
 
   const handleBlur = () => {
-    setIsEditing(false);
-    if (value !== note.text) onSave(note.id, value);
-  };
+    setIsEditing(false)
+    if (value !== note.text) onSave(note.id, value)
+  }
 
   const handleKeyDown = e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      if (textareaRef.current) textareaRef.current.blur();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (textareaRef.current) textareaRef.current.blur()
     }
-  };
+  }
 
   return (
-    <BookField label="Note" $editable={isEditing && !readOnly}>
+    <BookField label='Note' $editable={isEditing && !readOnly}>
       {isEditing && !readOnly ? (
         <StyledTextarea
           ref={textareaRef}
@@ -85,7 +111,7 @@ export default function NoteItem({ note, onSave, readOnly }) {
           onChange={e => setValue(e.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          placeholder="add note"
+          placeholder='add note'
         />
       ) : (
         <NoteContent
@@ -99,14 +125,14 @@ export default function NoteItem({ note, onSave, readOnly }) {
         <DateLabel>Last edited:</DateLabel>
         <span>
           {note.createdAt
-            ? new Date(note.createdAt).toLocaleDateString("en-GB", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
+            ? new Date(note.createdAt).toLocaleDateString('en-GB', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
               })
-            : ""}
+            : ''}
         </span>
       </DateRow>
     </BookField>
-  );
+  )
 }

@@ -1,39 +1,53 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Tile from './Tile';
-import ListItem from './ListItem';
-import TableRow from './TableRow';
-import ConfirmModal from '@/components/ConfirmModal';
-import { selectIsManageMode } from '@/store/selectors';
-import { useDeleteBookMutation } from '@/store/api/booksApi';
+/**
+ * @file BookCard.jsx
+ * @description Displays a single book in the selected view mode (grid, list, table).
+ * Handles preview, selection, reader opening, and delete confirmation.
+ */
 
-import { toggleSelect, setPreviewBookId } from '@/store/slices/bookSlice';
-import useBookActions from '../hooks/useBookActions';
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import Tile from './Tile'
+import ListItem from './ListItem'
+import TableRow from './TableRow'
+import ConfirmModal from '@/components/ConfirmModal'
+import { selectIsManageMode } from '@/store/selectors'
+import { useDeleteBookMutation } from '@/store/api/booksApi'
+import { toggleSelect, setPreviewBookId } from '@/store/slices/bookSlice'
+import useBookActions from '../hooks/useBookActions'
+
+//-----------------------------------------------------------------------------
+// Component: BookCard
+//-----------------------------------------------------------------------------
 
 const BookCard = ({ book, viewType }) => {
-  const dispatch = useDispatch();
-  const [deleteBook] = useDeleteBookMutation();
+  const dispatch = useDispatch()
+  const [deleteBook] = useDeleteBookMutation()
+  const [isConfirmOpen, setConfirm] = useState(false)
 
-  const [isConfirmOpen, setConfirm] = useState(false);
+  const isManageMode = useSelector(selectIsManageMode)
+  const { openReader } = useBookActions(book)
 
+  //--- Toggle book selection
+  const handleSelect = () => dispatch(toggleSelect(book._id))
 
-  const { openReader } = useBookActions(book);
-  const isManageMode = useSelector(selectIsManageMode);
-
-  const handleSelect = () => dispatch(toggleSelect(book._id));
-
+  //--- Open preview modal
   const handleOpenPreview = () => {
-    if (isManageMode) return;
-    dispatch(setPreviewBookId(book._id));
-  };
+    if (!isManageMode) dispatch(setPreviewBookId(book._id))
+  }
 
-  const handleRemoveClick = () => setConfirm(true);
+  //--- Show confirmation modal
+  const handleRemoveClick = () => setConfirm(true)
+
+  //--- Confirm permanent delete
   const handleConfirmDelete = async () => {
-    await deleteBook(book._id);
-    setConfirm(false);
-  };
-  const handleCancelDelete = () => setConfirm(false);
+    await deleteBook(book._id)
+    setConfirm(false)
+  }
 
+  //--- Cancel delete
+  const handleCancelDelete = () => setConfirm(false)
+
+  //--- Common props for all view types
   const commonProps = {
     book,
     onSelect: handleSelect,
@@ -41,29 +55,14 @@ const BookCard = ({ book, viewType }) => {
     onOpenReader: openReader,
     onRemoveClick: handleRemoveClick,
     isManageMode,
-  };
+  }
 
   return (
     <>
-      {viewType === 'grid' && (
-        <Tile
-          {...commonProps}
-          onClick={handleOpenPreview}
-        />
-      )}
-      {viewType === 'list' && (
-        <ListItem
-          {...commonProps}
-          onClick={handleOpenPreview}
-        />
-      )}
-      {viewType === 'table' && (
-        <TableRow
-          {...commonProps}
-          onClick={handleOpenPreview}
-        />
-      )}
-     
+      {viewType === 'grid' && <Tile {...commonProps} onClick={handleOpenPreview} />}
+      {viewType === 'list' && <ListItem {...commonProps} onClick={handleOpenPreview} />}
+      {viewType === 'table' && <TableRow {...commonProps} onClick={handleOpenPreview} />}
+
       {isConfirmOpen && (
         <ConfirmModal
           bookId={book._id}
@@ -74,7 +73,7 @@ const BookCard = ({ book, viewType }) => {
         />
       )}
     </>
-  );
-};
+  )
+}
 
-export default BookCard;
+export default BookCard
