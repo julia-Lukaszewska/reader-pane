@@ -51,10 +51,15 @@ app.use(express.json())          // JSON body parser
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'https://reader-pane-frontend.onrender.com'
+    ],
     credentials: true,
   })
 )
+
 
 //------------------------------------------------------------------
 // Static file serving (PDFs, covers)
