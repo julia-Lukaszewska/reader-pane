@@ -13,7 +13,7 @@ import { GlobalStyles } from '@/styles'
 // Component: AppProvider
 //-----------------------------------------------------------------------------
 
-/**
+/**   
  * Provides Redux store context, state persistence via redux-persist,
  * and injects global styles for the app.
  *

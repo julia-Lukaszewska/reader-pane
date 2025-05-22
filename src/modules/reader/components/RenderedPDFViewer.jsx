@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components'   
 import { useSelector } from 'react-redux'
 import { useLoadPDFDocument, usePreloadPDFPages } from '@reader/hooks'
 

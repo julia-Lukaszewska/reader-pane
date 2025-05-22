@@ -4,7 +4,7 @@
  */
 
 //-----------------------------------------------------------------------------
-//------ ManageModeButton – Toggle managing mode button
+//------ ManageModeButton – Toggle managing mode button  
 //-----------------------------------------------------------------------------
 
 import React from 'react'

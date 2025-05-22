@@ -16,10 +16,10 @@ import { useSelector } from 'react-redux'
 const MenuNav = styled.nav`
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.2rem;  
   margin: 2rem 0;
   align-items: center;
-  grid-row: 2;
+  grid-row: 2;  
 
   & > * {
     transform: ${({ $isOpen }) =>

@@ -16,7 +16,7 @@ import { LoadingSpinner } from '@/components'
 
 const Container = styled.div`
   width: 100%;
-  flex: 1;
+  flex: 1;  
 `
 
 //-----------------------------------------------------------------------------

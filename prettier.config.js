@@ -7,3 +7,4 @@ export default {
   embeddedLanguageFormatting: 'auto', 
   plugins: ['prettier-plugin-css-order'], 
 }
+ 

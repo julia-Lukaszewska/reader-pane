@@ -13,7 +13,7 @@ import { usePDFZoom } from '@reader/hooks'
 
 //--- Container for zoom controls
 const StyledZoom = styled.div`
-  display: flex;
+  display: flex;  
   align-items: center;
   gap: 0.6rem;
 `

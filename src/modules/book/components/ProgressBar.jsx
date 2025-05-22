@@ -20,7 +20,7 @@ const Wrapper = styled.div`
   color: var(--color-blue-300);
   font-weight: 500;
   text-align: center;
-`
+`   
 
 //--- Row with label and percentage
 const LabelRow = styled.div`

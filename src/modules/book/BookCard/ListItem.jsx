@@ -20,7 +20,7 @@ const ItemWrapper = styled.div`
   flex-direction: column;
   gap: 0.2rem;
   margin-bottom: 1.2rem;
-`
+` 
 //--- Row for the item, with grid layout
 const Row = styled.div`
   display: grid;

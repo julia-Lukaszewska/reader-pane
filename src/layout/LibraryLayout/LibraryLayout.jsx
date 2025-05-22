@@ -79,7 +79,7 @@ export default function LibraryLayout() {
     [booksRaw]
   )
 
-  // Map fileUrl to full path (if needed)
+  // Map fileUrl to full path (if needed)  
   const booksWithUrl = useMemo(
     () =>
       validBooks.map((b) => ({

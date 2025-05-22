@@ -17,7 +17,7 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 0.5rem;
   opacity: ${({ $disabled }) => ($disabled ? 0.3 : 1)};
-`
+`  
 //----Icon button styles
 const IconButton = styled.button`
   background: none;

@@ -6,7 +6,7 @@
  * - flags: user-controlled states and data (favorites, bookmarks, notes, etc.)
  * - stats: system-generated usage data (progress, last opened, etc.)
  * Used in book upload, querying, progress tracking, and UI display.
- */
+ */ 
 
 import mongoose from 'mongoose'
 

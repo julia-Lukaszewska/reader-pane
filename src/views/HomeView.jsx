@@ -14,7 +14,7 @@ import { HomeMenu } from '@/components'
 //-----------------------------------------------------------------------------
 //------ StyledHomeView – grid layout with center tiles 
 //-----------------------------------------------------------------------------
-
+  
 const StyledHomeView = styled.div`
   position: relative;
   display: grid;

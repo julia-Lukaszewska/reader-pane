@@ -26,7 +26,7 @@ const TileBox = styled.div`
   justify-content: space-between;
   box-shadow: var(--glass-shadow);
   padding: 4%;
-  display: flex;
+  display: flex;   
   flex-direction: column;
   align-items: center;
   position: relative;

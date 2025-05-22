@@ -13,7 +13,7 @@ import { createEntityAdapter } from '@reduxjs/toolkit'
 const booksAdapter = createEntityAdapter({ selectId: (b) => b._id })
 export { booksAdapter }
 
-export const booksApi = createApi({
+export const booksApi = createApi({   
   reducerPath: 'booksApi',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api/books',

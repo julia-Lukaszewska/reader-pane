@@ -20,5 +20,5 @@ const useToggle = () => {
 
   return [isOpen, open, close]
 }
-
+  
 export default useToggle

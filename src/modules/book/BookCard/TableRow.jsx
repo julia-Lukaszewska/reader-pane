@@ -19,7 +19,7 @@ const Row = styled.tr`
     background: rgba(255, 255, 255, 0.05);
   }
 `
-
+   
 const Td = styled.td`
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-color);
@@ -30,7 +30,7 @@ const IconTd = styled(Td)`
   text-align: right;
   cursor: pointer;
 `
-
+   
 //-----------------------------------------------------------------------------
 // Component: TableRow
 //-----------------------------------------------------------------------------

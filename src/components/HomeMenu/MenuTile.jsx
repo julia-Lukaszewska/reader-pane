@@ -18,7 +18,7 @@ const StyledLabel = styled.span`
   font-size: clamp(0.8em, 2.5vh, 1.6em);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.3rem;
+  letter-spacing: 0.3rem; 
   color: white;
   text-align: center;
   white-space: nowrap;

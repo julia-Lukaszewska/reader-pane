@@ -3,7 +3,7 @@
  * @description Initializes or restores the last opened book based on route or persisted state.
  */
 
-import { useEffect } from 'react'
+import { useEffect } from 'react'   
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useUpdateLastOpenedMutation } from '@/store/api/booksApi'

@@ -13,7 +13,7 @@ import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRende
 // Styled components
 //----------------------------------------------------------------------------- 
 
-const Container = styled.div`
+const Container = styled.div`  
   width: 100%;
   flex: 1;
 `

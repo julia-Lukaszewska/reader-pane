@@ -2,7 +2,7 @@
  * @file usePDFPagination.js
  * @description Custom hook for handling PDF pagination logic including double-page mode and state updates.
  */
-
+   
 import { useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 

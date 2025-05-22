@@ -1,7 +1,7 @@
 /**
  * @file useLoadPDFDocument.js
  * @description Hook that loads a PDF document using pdf.js once `fileUrl` is ready for the active book.
- */
+ */  
 
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'

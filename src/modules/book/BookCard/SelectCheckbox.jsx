@@ -19,7 +19,7 @@ const StyledCheckbox = styled.input`
   accent-color: #4f46e5;
   cursor: pointer;
   transition: transform 0.2s ease;
-
+   
   &:hover {
     transform: scale(1.1);
   }
@@ -30,7 +30,7 @@ const StyledCheckbox = styled.input`
       position: absolute;
       top: 1rem;
       right: 1rem;
-    `}
+    `}  
 `
 
 //-----------------------------------------------------------------------------

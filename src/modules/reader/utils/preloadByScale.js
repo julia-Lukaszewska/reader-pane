@@ -6,7 +6,7 @@
 import renderPages from './renderPages'
 import {
   setRenderedPages,
-  setRenderedRanges,
+  setRenderedRanges,   
 } from '@/store/slices/pdfCacheSlice'
 
 //-----------------------------------------------------------------------------

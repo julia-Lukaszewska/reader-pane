@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 //------ sortBooks: Sort books by title, author, dates, rating, etc.
 //-----------------------------------------------------------------------------
-
+    
 /**
  * Sorts an array of books based on the given sort mode.
  *

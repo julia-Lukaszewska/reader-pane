@@ -17,7 +17,7 @@ const PositionedBtn = styled.div`
   rotate: 45deg;
   z-index: 2000;
   width: 80%;
-`
+` 
 
 const LabelText = styled.span`
   font-size: clamp(1rem, 2.5vh, 1.4rem);

@@ -7,7 +7,7 @@
 //------ createBook: Factory function (arrow) for creating a new book object
 //-----------------------------------------------------------------------------
 
-/**
+/**    
  * Creates a new book object with default metadata fields.
  *
  * @param {Object} [params={}] - Optional fields to override defaults

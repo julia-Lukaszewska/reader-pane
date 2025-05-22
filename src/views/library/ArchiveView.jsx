@@ -77,7 +77,7 @@ const ArchiveView = () => {
         onRestore={handleRestore}
         onDelete={book => setModalBook(book)}
         hideAddTile
-      />
+      />   
 
       {modalBook && (
         <ConfirmModal

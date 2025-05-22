@@ -10,7 +10,7 @@ import { createSlice } from '@reduxjs/toolkit'
 //-----------------------------------------------------------------------------
 
 const initialState = {
-  theme: 'light',       // 'light' | 'dark'
+  theme: 'light',       // 'light' | 'dark'   
   sidebarOpen: false,   // whether sidebar is expanded
   activeItem: null,     // identifier of the currently active navigation item
 }

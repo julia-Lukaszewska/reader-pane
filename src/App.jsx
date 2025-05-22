@@ -21,7 +21,7 @@ const StyledApp = styled.div`
   height: 100vh;
   overflow: hidden;
   width: 100vw;
-`
+`  
 
 // -----------------------------------------------------------------------------
 //------ Component: App

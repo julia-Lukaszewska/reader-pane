@@ -9,7 +9,7 @@
 // Function: renderPages
 //-----------------------------------------------------------------------------
 
-/**
+/**   
  * Renders pages from `from` to `to` using `pdf.getPage` and returns new images.
  *
  * Skips pages already present in `renderedPages`.

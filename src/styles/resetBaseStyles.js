@@ -14,7 +14,7 @@ const resetBaseStyles = css`
 
   html {
     height: 100%;
-    overflow: hidden;
+    overflow: hidden;  
     font-size: 62.5%;
   }
 

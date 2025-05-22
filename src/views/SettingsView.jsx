@@ -22,7 +22,7 @@ const SettingsContainer = styled.div`
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  background: var(--gradient-blue-clear);
+  background: var(--gradient-blue-clear); 
   box-shadow: var(--shadow-lg);
 `
 

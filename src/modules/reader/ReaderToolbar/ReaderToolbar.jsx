@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
-
+  
 //--- Main toolbar container
 const StyledToolbar = styled.nav`
   position: relative;

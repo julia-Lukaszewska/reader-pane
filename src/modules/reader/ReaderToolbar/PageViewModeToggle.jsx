@@ -20,7 +20,7 @@ import {
 const ToggleWrapper = styled.div`
   display: flex;
   gap: 1rem;
-`
+`  
 
 const IconBtn = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== '$active' && prop !== '$disabled',

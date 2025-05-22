@@ -15,7 +15,7 @@ import { SlHome, SlMenu } from 'react-icons/sl'
 // Styled components
 //-----------------------------------------------------------------------------
 
-const HeaderStyled = styled.header`
+const HeaderStyled = styled.header`  
   background:
     linear-gradient(
       37deg,

@@ -3,7 +3,7 @@
  * @description Table layout for rendering books with sortable headers and action columns.
  */
 
-import React from 'react'
+import React from 'react'  
 import styled from 'styled-components'
 import { BookCard } from '@book/BookCard'
 import { AddBookTile } from '@upload'

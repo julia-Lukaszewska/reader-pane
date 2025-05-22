@@ -30,7 +30,7 @@ export default [
       'build/**',
       'out/**',
     ],
-  },
+  }, 
 
   //------------------------------------------------------------------
   // Base rule overrides (e.g. semicolon preference)

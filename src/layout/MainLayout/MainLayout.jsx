@@ -21,7 +21,7 @@ const LayoutWrapper = styled.div`
   grid-template-rows: 10vh 1fr;
   grid-template-columns: ${({ $open }) => ($open ? '20rem 1fr' : '0rem 1fr')};
   width: 100vw;
-  height: 100vh;
+  height: 100vh;  
   transition: grid-template-columns 0.4s ease;
   background: var(--gradient-metal-deepblue-v7);
   color: var(--color-light-0);

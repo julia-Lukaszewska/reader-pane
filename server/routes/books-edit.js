@@ -7,7 +7,7 @@
  * - DELETE /:id/notes/:index — remove note by index
  * - PATCH /:id/bookmarks — add a bookmark
  * - DELETE /:id/bookmarks/:index — remove bookmark by index
- */
+ */ 
 
 import express from 'express'
 import Book from '../models/Book.js'

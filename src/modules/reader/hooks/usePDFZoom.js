@@ -4,7 +4,7 @@
  */
 
 import { useMemo, useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'  
 import { setScale } from '@/store/slices/readerSlice'
 
 //-----------------------------------------------------------------------------
