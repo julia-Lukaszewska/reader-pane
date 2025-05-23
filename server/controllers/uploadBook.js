@@ -66,6 +66,23 @@ export const UploadBook = async (req, res) => {
     //----------------------------------------------------------------
     // File URL
     //----------------------------------------------------------------
+    
+    /**
+     * //#TODO: Detect JPX/JBIG2 encoded pages and pre-convert to PNG
+     *
+     * Problem:
+     * - Some scanned PDFs use image encodings (JPX, JBIG2) that pdf.js cannot render
+     * - This causes render failures on frontend (e.g., "OpenJPEG failed to initialize")
+     *
+     * Goal:
+     * - Add optional conversion step on backend using `pdf2pic` or similar tool
+     * - Detect problematic pages during upload and pre-generate fallback images
+     *
+     * Future:
+     * - Create `/books/:id/page/:n/image` endpoint to serve fallback
+     * - Add fallback logic in frontend to show image when canvas rendering fails
+     */
+    
     const fileUrl = `${req.protocol}://${req.get('host')}/files/${req.file.filename}`
 
     //----------------------------------------------------------------
