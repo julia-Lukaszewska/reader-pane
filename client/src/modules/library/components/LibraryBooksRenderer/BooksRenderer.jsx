@@ -49,11 +49,11 @@ const LibraryBooksRenderer = ({ books, hideAddTile = false }) => {
     return sortBooks(books, sortMode)
   }, [books, sortMode])
 
-  //--- Render empty state
-  if (!books?.length) {
-    console.log('Renderer received books:', books)
-    return <EmptyMessage>No books — add your first one!</EmptyMessage>
-  }
+  // //--- Render empty state
+  // if (!books?.length) {
+  //   console.log('Renderer received books:', books)
+  //   return <EmptyMessage>No books — add your first one!</EmptyMessage>
+  // }
 
   //--- Render according to selected view mode
   switch (viewMode) {

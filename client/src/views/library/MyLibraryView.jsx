@@ -42,22 +42,14 @@ const MyLibraryView = () => {
     .filter(b => !b.flags?.isArchived)
     .filter(b => b.meta?.title && b.meta?.fileUrl)
 
-  if (!filteredBooks.length) {
-    return (
-      <Container>
-        <p style={{ padding: '2rem', opacity: 0.6 }}>No books in your library</p>
-      </Container>
-    )
-  }
-
   return (
-    <Container>
-      <LibraryBooksRenderer
-        books={filteredBooks}
-        viewMode={viewMode}
-      />
-    </Container>
-  )
+  <Container>
+    <LibraryBooksRenderer
+      books={filteredBooks}
+      viewMode={viewMode}
+    />
+  </Container>
+)
 }
 
 export default MyLibraryView

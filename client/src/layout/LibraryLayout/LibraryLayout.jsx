@@ -79,20 +79,11 @@ export default function LibraryLayout() {
     [booksRaw]
   )
 
-  // Map fileUrl to full path (if needed)  
-  const booksWithUrl = useMemo(
-    () =>
-      validBooks.map((b) => ({
-        ...b,
-        meta: { ...b.meta, url: `http://localhost:3001${b.meta.fileUrl}` },
-      })),
-    [validBooks]
-  )
 
   // Sort books
   const books = useMemo(
-    () => sortBooks(booksWithUrl, sortMode),
-    [booksWithUrl, sortMode]
+    () => sortBooks(validBooks, sortMode),
+    [validBooks, sortMode]
   )
 
   // Persist sort mode

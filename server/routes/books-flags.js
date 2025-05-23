@@ -90,7 +90,7 @@ router.patch('/:id/unfavorite', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// DELETE /api/books/:id — permanently delete book and file
+// DELETE /api/books/:id — permanently delete book + PDF + cover
 //------------------------------------------------------------------
 router.delete('/:id', async (req, res) => {
   try {
@@ -98,24 +98,29 @@ router.delete('/:id', async (req, res) => {
     if (!book) {
       return res.status(404).json({ error: 'Book not found' })
     }
-
-    // Delete file from disk
-    const fileUrl  = typeof book.meta.fileUrl === 'string' ? book.meta.fileUrl : null
-    const fileName = fileUrl ? path.basename(fileUrl) : null
     const __filename = fileURLToPath(import.meta.url)
-    const __dirname  = path.dirname(__filename)
-    const filePath   = path.join(__dirname, '../uploads', fileName)
+    const __dirname = path.dirname(__filename)
+    const uploadsDir = path.join(__dirname, '../uploads')
 
-    if (fileName && fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath)
-    }
+      // Delete PDF
+    const fileName = book.meta?.fileUrl ? path.basename(book.meta.fileUrl) : null
+    const filePath = fileName ? path.join(uploadsDir, fileName) : null
+    if (filePath && fs.existsSync(filePath)) fs.unlinkSync(filePath)
+
+      
+    // Delete cover PNG (if exists)
+    const coverName = book.meta?.cover ? path.basename(book.meta.cover) : null
+    const coverPath = coverName ? path.join(uploadsDir, coverName) : null
+    if (coverPath && fs.existsSync(coverPath)) fs.unlinkSync(coverPath)
+
 
     // Delete book from database
     await Book.findByIdAndDelete(req.params.id)
-    res.json({ message: 'Book and file permanently deleted.' })
+
+     res.json({ message: 'Book, PDF and cover deleted successfully.' })
   } catch (err) {
     console.error('[DELETE BOOK]', err)
-    res.status(500).json({ error: 'Failed to delete the book.' })
+    res.status(500).json({ error: 'Failed to delete book and files.' })
   }
 })
 

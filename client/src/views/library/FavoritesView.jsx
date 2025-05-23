@@ -43,6 +43,7 @@ const FavoritesView = () => {
       <LibraryBooksRenderer
         books={favoriteBooks}
         viewMode={viewMode}
+        hideAddTile
       />
     </Container>
   )
