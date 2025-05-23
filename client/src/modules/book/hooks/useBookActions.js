@@ -9,6 +9,7 @@ import {
   useArchiveBookMutation,
   useFavoriteBookMutation,
   useRestoreBookMutation,
+  useUnfavoriteBookMutation,
 } from '@/store/api/booksApi'
 import {
   setActiveBookId,   
@@ -35,6 +36,7 @@ export default function useBookActions(book) {
   const [archiveBook] = useArchiveBookMutation()
   const [restoreBook] = useRestoreBookMutation()
   const [favoriteBook] = useFavoriteBookMutation()
+  const [unfavoriteBook] = useUnfavoriteBookMutation()
 
   /**
    * Navigate to the reader view and set the book as active
@@ -68,17 +70,19 @@ export default function useBookActions(book) {
    * Toggle favorite status (favorited ↔ unfavorited) in backend and locally
    */
   const toggleFavorite = async () => {
-    try {
-      await favoriteBook(book._id).unwrap()
+    const isFavorited = book.flags?.isFavorited
+    const mutation = isFavorited ? unfavoriteBook : favoriteBook
 
+    try {
+      await mutation(book._id).unwrap()
       dispatch(updateBookLocally({
         id: book._id,
         changes: {
-          flags: { ...book.flags, isFavorited: !book.flags?.isFavorited },
+          flags: { ...book.flags, isFavorited: !isFavorited },
         },
       }))
     } catch (err) {
-      console.error('Failed to favorite book', err)
+      console.error('Failed to toggle favorite status', err)
     }
   }
 
