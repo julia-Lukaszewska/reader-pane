@@ -89,15 +89,26 @@ router.patch('/:id/unfavorite', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
+//--------------------------------------------------------------------------
 // DELETE /api/books/:id — permanently delete book + PDF + cover
-//------------------------------------------------------------------
-router.delete('/:id', async (req, res) => {
+//--------------------------------------------------------------------------
+/**
+ * @todo Investigate why multiple DELETE requests are sent for the same book.
+ * Currently handled by skipping deletion if book is not found.
+ * Consider logging origin or preventing double dispatch in UI.
+ */
+
+   router.delete('/:id', async (req, res) => {
+    
   try {
     const book = await Book.findById(req.params.id)
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' })
-    }
+
+   if (!book) {
+  console.warn(`[DELETE] Book not found: ${req.params.id}`)
+  return res.status(200).json({ message: 'Already deleted' })
+}
+
+    
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
     const uploadsDir = path.join(__dirname, '../uploads')
@@ -107,7 +118,7 @@ router.delete('/:id', async (req, res) => {
     const filePath = fileName ? path.join(uploadsDir, fileName) : null
     if (filePath && fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
-      
+
     // Delete cover PNG (if exists)
     const coverName = book.meta?.cover ? path.basename(book.meta.cover) : null
     const coverPath = coverName ? path.join(uploadsDir, coverName) : null

@@ -36,7 +36,9 @@ export const extractPDFMetadata = async (file) => {
   const author = info.Author || ''
   const subject = info.Subject || ''
   const keywords = info.Keywords ? info.Keywords.split(/\s*,\s*/) : []
-  const language = info.Language || ''
+ const language = info.Language?.trim() || 'unknown'
+
+
 
   // Parse CreationDate of format D:YYYYMMDDHHmmSS
   let publicationDate = null

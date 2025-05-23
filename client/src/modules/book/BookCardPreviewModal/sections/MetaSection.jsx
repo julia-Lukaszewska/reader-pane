@@ -41,6 +41,7 @@ const Wrapper = styled.div`
 `
 
 //--- Field wrappers
+
 const Language = styled(BookField)` grid-area: language; `
 const Genre = styled(BookField)` grid-area: genre; `
 const TotalPages = styled(BookField)` grid-area: totalPages; `
@@ -64,27 +65,39 @@ const TagsArea = styled(BookField)` grid-area: tags; `
  * @param {boolean} props.isEditing - Whether edit mode is active
  * @param {Function} props.handleChange - Handler for field changes
  */
+
+/**
+ * @todo Add editable dropdown for language selection
+ * 
+ * - If `meta.language` is empty or not extracted from PDF, show a <CustomSelectInput> when `isEditing` is true
+ * - Provide a list of common languages (e.g., English, Polish, German)
+ * - Allow user to manually select a language during book edit
+ * - Update value via `handleChange` and persist changes to backend
+ * - Fallback: if no language selected, default to 'unknown' or empty string
+ */
+
+/**
+ * @todo Reactivate tag editing after tag system is finalized
+ * - Temporarily disabled TagsInput
+ * - Tags are currently read-only via <TagsSection />
+ * - Re-enable editing once tag CRUD and UI logic is ready
+ */
+
 const MetaSection = ({ form, isEditing, handleChange }) => {
   const meta = form?.meta || {}
+  console.log('[MetaSection] meta:', meta)
+console.log('[MetaSection] meta.addedAt:', meta?.addedAt)
+
 
   return (
     <Wrapper>
-      <Language label='Language' $editable={isEditing}>
-        {isEditing ? (
-          <CustomSelectInput
-            name='language'
-            value={meta.language || ''}
-            onChange={handleChange}
-            options={['Polish', 'English', 'German', 'French', 'Spanish']}
-          />
-        ) : (
-          meta.language || <span style={{ opacity: 0.45 }}>—</span>
-        )}
+      <Language label='Language'>
+      {meta.language || <span style={{ opacity: 0.45 }}>—</span>}
       </Language>
 
       <AddedAt label='Added on'>
-        {meta.createdAt
-          ? new Date(meta.createdAt).toLocaleDateString()
+        {meta.addedAt        
+          ? new Date(meta.addedAt).toLocaleDateString()
           : <span style={{ opacity: 0.45 }}>—</span>}
       </AddedAt>
 
@@ -135,17 +148,20 @@ const MetaSection = ({ form, isEditing, handleChange }) => {
         )}
       </Genre>
 
-      <TagsArea label='Tags' $editable={isEditing}>
-        {isEditing ? (
-          <TagsInput
-            name='tags'
-            value={meta.tags || []}
-            onChange={handleChange}
-          />
-        ) : (
-          <TagsSection tags={meta.tags || []} />
-        )}
-      </TagsArea>
+      <TagsArea label='Tags' $editable={false}>
+      {/* 
+      {isEditing ? (
+        <TagsInput
+          name='tags'
+          value={meta.tags || []}
+          onChange={handleChange}
+        />
+      ) : ( 
+      */}
+        <TagsSection tags={meta.tags || []} />
+      {/* )} */}
+    </TagsArea>
+    
     </Wrapper>
   )
 }
