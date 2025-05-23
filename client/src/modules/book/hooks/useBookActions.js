@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux'
 import {
   useArchiveBookMutation,
   useFavoriteBookMutation,
+  useRestoreBookMutation,
 } from '@/store/api/booksApi'
 import {
   setActiveBookId,   
@@ -32,6 +33,7 @@ export default function useBookActions(book) {
   const dispatch = useDispatch()
 
   const [archiveBook] = useArchiveBookMutation()
+  const [restoreBook] = useRestoreBookMutation()
   const [favoriteBook] = useFavoriteBookMutation()
 
   /**
@@ -42,24 +44,26 @@ export default function useBookActions(book) {
     navigate(`/read/${book._id}`)
   }
 
-  /**
+   /**
    * Toggle archive status (archived ↔ unarchived) in backend and locally
    */
   const toggleArchive = async () => {
+    const isCurrentlyArchived = book.flags?.isArchived
+    const mutation = isCurrentlyArchived ? restoreBook : archiveBook
+
     try {
-      await archiveBook(book._id).unwrap()
+      await mutation(book._id).unwrap()
 
       dispatch(updateBookLocally({
         id: book._id,
         changes: {
-          flags: { ...book.flags, isArchived: !book.flags?.isArchived },
+          flags: { ...book.flags, isArchived: !isCurrentlyArchived },
         },
       }))
     } catch (err) {
-      console.error('Failed to archive book', err)
+      console.error('Failed to toggle archive status', err)
     }
   }
-
   /**
    * Toggle favorite status (favorited ↔ unfavorited) in backend and locally
    */
