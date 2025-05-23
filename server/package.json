@@ -12,6 +12,8 @@
   },
   "scripts": {
     "clean": "node scripts/clean-uploads.js",
+    "clean:dry": "node scripts/clean-uploads.js --dry-run",
+    "delete:orphans": "node scripts/delete-orphaned-books.js",
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js"
