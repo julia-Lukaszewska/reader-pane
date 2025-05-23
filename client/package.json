@@ -1,5 +1,5 @@
 {
-  "name": "reader-app",
+  "name": "reader-pane-client",
   "private": true,
   "version": "0.0.0",
   "type": "module",

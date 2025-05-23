@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "reader-pane-server",
   "version": "1.0.0",
   "description": "Express.js backend API for ebook reader app",
   "main": "server.js",
