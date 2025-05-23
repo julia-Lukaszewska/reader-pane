@@ -1,7 +1,7 @@
 /**
  * @file uploadBook.js
  * @description Controller for uploading a book with PDF, metadata and optional cover image.
- * Exports: handleUploadBook (used in POST /api/books)
+ * Exports: UploadBook (used in POST /api/books)
  */
 
 import fs from 'fs'
@@ -17,12 +17,12 @@ import { uploadsDir } from '../routes/books-upload.js'
 /**
  * POST /api/books — Upload PDF + meta + optional base64 cover.
  * @async
- * @function handleUploadBook
+ * @function UploadBook
  * @param {import('express').Request} req - Express request object
  * @param {import('express').Response} res - Express response object
  * @returns {Promise<void>} Sends status 201 with book JSON or error
  */
-export const handleUploadBook = async (req, res) => {
+export const UploadBook = async (req, res) => {
   try {
     //----------------------------------------------------------------
     // Validation
@@ -112,7 +112,7 @@ export const handleUploadBook = async (req, res) => {
     const saved = await newBook.save()
     res.status(201).json(saved)
   } catch (err) {
-    console.error('[UPLOAD]', err)
+    console.error('[UPLOAD ERROR]', err.message, err.stack)
     res.status(500).json({ error: 'Upload failed due to server error' })
   }
 }

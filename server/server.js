@@ -1,7 +1,19 @@
 /**
  * @file server.js
- * @description Main server entry point for the Express backend.
+ * @description
+ * Main server entry point for the Express backend.
  * Connects to MongoDB, sets up middleware, static file serving, routes, and global error handling.
+ * 
+ * Includes:
+ * - Middleware setup for security, CORS, logging, and JSON parsing
+ * - Static file serving from /uploads via /files route
+ * - Route handling for /api/books endpoints
+ * - Global error handler for uncaught exceptions
+ * 
+ * Note:
+ * The JSON and URL-encoded body size limit is explicitly set to 50MB.
+ * Without this setting, Express defaults to 100KB for JSON payloads.
+ * This increase is required to support large base64-encoded cover images or detailed metadata during book uploads.
  */
 
 import express from 'express'
@@ -47,7 +59,9 @@ mongoose
 //------------------------------------------------------------------
 app.use(helmet())                // security headers
 app.use(morgan('dev'))           // HTTP request logger
-app.use(express.json())          // JSON body parser
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+
 
 app.use(
   cors({
