@@ -57,7 +57,8 @@ mongoose
 //------------------------------------------------------------------
 // Middleware configuration
 //------------------------------------------------------------------
-app.use(helmet())                // security headers
+app.use(helmet({
+    crossOriginResourcePolicy: false }))                // security headers
 app.use(morgan('dev'))           // HTTP request logger
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
