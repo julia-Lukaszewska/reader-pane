@@ -37,26 +37,6 @@ const envPath = NODE_ENV === 'development'
 dotenv.config({ path: envPath })
 
 const app = express()
-
-//------------------------------------------------------------------
-// Resolve __dirname for ES modules
-//------------------------------------------------------------------
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-//------------------------------------------------------------------
-// Ensure uploads directory exists
-//------------------------------------------------------------------
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true }) // creates subdirectories if needed
-  console.log(`📁 Created uploads directory at: ${uploadsDir}`)
-}
-
-//------------------------------------------------------------------
-// Port configuration
-//------------------------------------------------------------------
-const PORT = process.env.PORT || 5000
-
 //------------------------------------------------------------------
 // CORS configuration – moved to top
 //------------------------------------------------------------------
@@ -78,6 +58,25 @@ app.use(
     credentials: true,
   })
 )
+
+//------------------------------------------------------------------
+// Resolve __dirname for ES modules
+//------------------------------------------------------------------
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+//------------------------------------------------------------------
+// Ensure uploads directory exists
+//------------------------------------------------------------------
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true }) // creates subdirectories if needed
+  console.log(`📁 Created uploads directory at: ${uploadsDir}`)
+}
+
+//------------------------------------------------------------------
+// Port configuration
+//------------------------------------------------------------------
+const PORT = process.env.PORT || 5000
 //------------------------------------------------------------------
 // API routes
 //------------------------------------------------------------------
@@ -93,6 +92,7 @@ app.get(
 )
 
 app.use('/api/books', booksRoutes)
+
 
 //------------------------------------------------------------------
 // Middleware configuration
