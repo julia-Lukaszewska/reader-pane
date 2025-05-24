@@ -90,13 +90,14 @@ app.use(
   '/files',
   express.static(uploadsDir, {
    setHeaders: (res, req) => {
-      const origin = req.headers.origin
-   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
-   res.setHeader('Access-Control-Allow-Origin', origin || '*')
-   res.setHeader('Access-Control-Allow-Credentials', 'true')
-   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')
-   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
- }
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+  res.setHeader('Access-Control-Allow-Origin', 'https://reader-pane.vercel.app')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+}
+
  })
 )
 
