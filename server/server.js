@@ -26,17 +26,18 @@ import helmet from 'helmet'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
-import corsMiddleware from 'cors'
 import booksRoutes, { uploadsDir } from './routes/index.js'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
-const envPath = NODE_ENV === 'development'
-  ? './server/env/.env'
-  : `./server/env/.env.${NODE_ENV}`
+const envPath =
+  NODE_ENV === 'development'
+    ? './server/env/.env'
+    : `./server/env/.env.${NODE_ENV}`
 
 dotenv.config({ path: envPath })
 
 const app = express()
+
 //------------------------------------------------------------------
 // CORS configuration – moved to top
 //------------------------------------------------------------------
@@ -69,7 +70,7 @@ const __dirname = path.dirname(__filename)
 // Ensure uploads directory exists
 //------------------------------------------------------------------
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true }) // creates subdirectories if needed
+  fs.mkdirSync(uploadsDir, { recursive: true })
   console.log(`📁 Created uploads directory at: ${uploadsDir}`)
 }
 
@@ -77,22 +78,15 @@ if (!fs.existsSync(uploadsDir)) {
 // Port configuration
 //------------------------------------------------------------------
 const PORT = process.env.PORT || 5000
+
 //------------------------------------------------------------------
 // API routes
 //------------------------------------------------------------------
-app.get(
-  '/',
-  corsMiddleware({
-    origin: process.env.CLIENT_ORIGIN,
-    credentials: true,
-  }),
-  (req, res) => {
-    res.send('📚 Reader-Pane backend is running.')
-  }
-)
+app.get('/', (req, res) => {
+  res.send('📚 Reader-Pane backend is running.')
+})
 
 app.use('/api/books', booksRoutes)
-
 
 //------------------------------------------------------------------
 // Middleware configuration
@@ -117,16 +111,13 @@ app.use('/files', (req, res, next) => {
 
 app.use('/files', express.static(uploadsDir))
 
-
 //------------------------------------------------------------------
 // MongoDB connection and server start
 //------------------------------------------------------------------
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`✅ Server running on port ${PORT}`)
-    )
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`))
   })
   .catch((err) => console.error('❌ Database connection error:', err))
 
