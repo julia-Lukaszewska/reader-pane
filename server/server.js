@@ -78,18 +78,14 @@ app.use(
 //------------------------------------------------------------------
 // Static file serving (PDFs, covers)
 //------------------------------------------------------------------
-app.use(
-  '/files',
-  express.static(uploadsDir, {
-   setHeaders: (res) => {
+app.use('/files', (req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
   res.setHeader('Access-Control-Allow-Origin', 'https://reader-pane.vercel.app')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-}
-
- })
-)
+  next()
+})
+app.use('/files', express.static(uploadsDir))
 
 //------------------------------------------------------------------
 // API routes
