@@ -83,7 +83,7 @@ export const UploadBook = async (req, res) => {
      * - Add fallback logic in frontend to show image when canvas rendering fails
      */
     
-    const fileUrl = `${req.protocol}://${req.get('host')}/files/${req.file.filename}`
+    const fileUrl = `https://${req.get('host')}/files/${req.file.filename}`
 
     //----------------------------------------------------------------
     // Cover (base64 → PNG), if provided
@@ -96,7 +96,7 @@ export const UploadBook = async (req, res) => {
       const coverPath = path.join(uploadsDir, coverName)
 
       fs.writeFileSync(coverPath, buffer)
-      coverUrl = `${req.protocol}://${req.get('host')}/files/${coverName}`
+     coverUrl = `https://${req.get('host')}/files/${coverName}`
     }
 
     //----------------------------------------------------------------
