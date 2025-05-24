@@ -65,12 +65,19 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 app.use(
   cors({
-    origin: [
+   origin: (origin, callback) => {
+    const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
       'https://reader-pane-frontend.onrender.com',
       'https://reader-pane.vercel.app',
-    ],
+    ]
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+   },
     credentials: true,
   })
 )
@@ -82,9 +89,10 @@ app.use(
 app.use(
   '/files',
   express.static(uploadsDir, {
-    setHeaders: (res) =>
+    setHeaders: (res) =>{
       res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'),
-  })
+      res.setHeader('Access-Control-Allow-Origin', '*')
+  }})
 )
 
 //------------------------------------------------------------------
