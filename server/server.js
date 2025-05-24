@@ -36,7 +36,6 @@ const envPath = NODE_ENV === 'development'
 
 dotenv.config({ path: envPath })
 
-
 const app = express()
 
 //------------------------------------------------------------------
@@ -59,25 +58,8 @@ if (!fs.existsSync(uploadsDir)) {
 const PORT = process.env.PORT || 5000
 
 //------------------------------------------------------------------
-// MongoDB connection and server start
+// CORS configuration – moved to top
 //------------------------------------------------------------------
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    app.listen(PORT, () =>
-      console.log(`✅ Server running on port ${PORT}`)
-    )
-  })
-  .catch((err) => console.error('❌ Database connection error:', err))
-
-//------------------------------------------------------------------
-// Middleware configuration
-//------------------------------------------------------------------
-app.use(helmet({ crossOriginResourcePolicy: false }))
-app.use(morgan('dev')) // HTTP request logger
-app.use(express.json({ limit: '50mb' }))
-app.use(express.urlencoded({ extended: true, limit: '50mb' }))
-
 const allowedOrigins = [
   process.env.CLIENT_ORIGIN,
   'http://localhost:5173',
@@ -96,6 +78,14 @@ app.use(
     credentials: true,
   })
 )
+
+//------------------------------------------------------------------
+// Middleware configuration
+//------------------------------------------------------------------
+app.use(helmet({ crossOriginResourcePolicy: false }))
+app.use(morgan('dev')) // HTTP request logger
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 //------------------------------------------------------------------
 // Static file serving (PDFs, covers)
@@ -120,6 +110,18 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/books', booksRoutes)
+
+//------------------------------------------------------------------
+// MongoDB connection and server start
+//------------------------------------------------------------------
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () =>
+      console.log(`✅ Server running on port ${PORT}`)
+    )
+  })
+  .catch((err) => console.error('❌ Database connection error:', err))
 
 //------------------------------------------------------------------
 // Global error handler
