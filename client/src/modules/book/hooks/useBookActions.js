@@ -15,7 +15,7 @@ import {
   setActiveBookId,   
   updateBookLocally,
 } from '@/store/slices/bookSlice'
-import { clearPDFDocument } from '@/store/slices/readerSlice' 
+
 
 //-----------------------------------------------------------------------------
 // Hook: useBookActions
@@ -44,7 +44,7 @@ export default function useBookActions(book) {
    */
   const openReader = () => {
     dispatch(setActiveBookId(book._id))
-    dispatch(clearPDFDocument?.())
+
     navigate(`/read/${book._id}`)
   }
 
