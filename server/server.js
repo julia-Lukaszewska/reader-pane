@@ -23,13 +23,12 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import path from 'path'
-import fs from 'fs'
 import { fileURLToPath } from 'url'
 
 import booksRoutes, { uploadsDir } from './routes/index.js'
  
-const app = express()
 dotenv.config()
+const app = express()
 
 //------------------------------------------------------------------
 // Resolve __dirname for ES modules
@@ -57,8 +56,7 @@ mongoose
 //------------------------------------------------------------------
 // Middleware configuration
 //------------------------------------------------------------------
-app.use(helmet({
-    crossOriginResourcePolicy: false }))                // security headers
+app.use(helmet({crossOriginResourcePolicy: false }))           
 app.use(morgan('dev'))           // HTTP request logger
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
@@ -66,19 +64,12 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 
 app.use(
   cors({
-   origin: (origin, callback) => {
-    const allowedOrigins = [
+    origin: [
       'http://localhost:5173',
       'http://localhost:5174',
       'https://reader-pane-frontend.onrender.com',
       'https://reader-pane.vercel.app',
-    ]
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-   },
+    ],
     credentials: true,
   })
 )

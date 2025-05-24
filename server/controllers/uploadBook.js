@@ -13,6 +13,8 @@ import Book from '../models/Book.js'
 // Constant for upload directory – imported from books-upload.js
 // ------------------------------------------------------------------
 import { uploadsDir } from '../routes/books-upload.js'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname  = path.dirname(__filename)
 
 /**
  * POST /api/books — Upload PDF + meta + optional base64 cover.
@@ -27,12 +29,12 @@ export const UploadBook = async (req, res) => {
     //----------------------------------------------------------------
     // Validation
     //----------------------------------------------------------------
-    if (!req.file) {
+    if (!req.file) 
       return res.status(400).json({ error: 'Missing PDF file' })
-    }
-    if (!req.file.mimetype.includes('pdf')) {
+    
+    if (!req.file.mimetype.includes('pdf')) 
       return res.status(415).json({ error: 'Only PDF files are accepted' })
-    }
+    
 
     const totalPagesRaw = parseInt(req.body.totalPages, 10)
     if (!Number.isInteger(totalPagesRaw) || totalPagesRaw < 1) {
@@ -66,7 +68,7 @@ export const UploadBook = async (req, res) => {
     //----------------------------------------------------------------
     // File URL
     //----------------------------------------------------------------
-    
+
     /**
      * //#TODO: Detect JPX/JBIG2 encoded pages and pre-convert to PNG
      *
@@ -83,7 +85,8 @@ export const UploadBook = async (req, res) => {
      * - Add fallback logic in frontend to show image when canvas rendering fails
      */
     
-    const fileUrl = `https://${req.get('host')}/files/${req.file.filename}`
+    const protocol = req.protocol === 'http' ? 'https' : req.protocol
+    const fileUrl = `${protocol}://${req.get('host')}/files/${req.file.filename}`
 
     //----------------------------------------------------------------
     // Cover (base64 → PNG), if provided
@@ -96,7 +99,7 @@ export const UploadBook = async (req, res) => {
       const coverPath = path.join(uploadsDir, coverName)
 
       fs.writeFileSync(coverPath, buffer)
-     coverUrl = `https://${req.get('host')}/files/${coverName}`
+      coverUrl = `${protocol}://${req.get('host')}/files/${coverName}`
     }
 
     //----------------------------------------------------------------
