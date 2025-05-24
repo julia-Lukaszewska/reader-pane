@@ -35,7 +35,7 @@ export default function useStartingPage(bookId) {
   // Effect: apply saved progress if available
   //-----------------------------------------------------------------------------  
   useEffect(() => {
-    if (!bookId || !progressData || currentPage !== 1) return
+    if (!bookId || !progressData || currentPage <= 1) return
 
     console.log('[useStartingPage] setting start page to', progressData.currentPage)
 

@@ -22,16 +22,16 @@ import { renderPDFCover } from './renderPDFCover'
  *   - uploading: boolean
  */
 const useUploadPDF = () => {
-  //---
+  //-------------------------------------------------------------------
   // Setup: RTK mutation, validation hook, loading state
-  //---
+  //-------------------------------------------------------------------
   const [uploadBook] = useUploadBookMutation()
   const { validate } = usePDFValidation()
   const [uploading, setUploading] = useState(false)
 
-  //---
+  //---------------------------------------------------------------------
   // Upload handler
-  //---
+  //----------------------------------------------------------------------
   /**
    * Validates the file, extracts PDF metadata and cover image, builds FormData,
    * and uploads to the backend.
@@ -39,7 +39,7 @@ const useUploadPDF = () => {
    * @param {File} file - PDF file to upload
    * @returns {Promise<{ success: boolean, savedBook?: any }>}
    */
-  const handleUpload = async (file) => {
+    const handleUpload = async (file) => {
     // Validate PDF
     if (!validate(file)) return { success: false }
 
@@ -75,7 +75,19 @@ const useUploadPDF = () => {
 
       // Upload via API
       const savedBook = await uploadBook(formData).unwrap()
-      return { success: true, savedBook }
+
+ // Ensure fileUrl is set inside meta for immediate use
+      const fileUrl = savedBook.meta?.fileUrl || savedBook.fileUrl || ''
+      return {
+        success: true,
+        savedBook: {
+          ...savedBook,
+          meta: {
+            ...savedBook.meta,
+            fileUrl,
+          },
+        },
+      }
     } finally {
       setUploading(false)
     }
@@ -83,5 +95,6 @@ const useUploadPDF = () => {
 
   return { handleUpload, uploading }
 }
+
 
 export default useUploadPDF
