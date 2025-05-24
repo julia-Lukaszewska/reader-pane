@@ -4,16 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite && start chrome http://localhost:3000",
-    "build": "vite build",
-    "lint": "eslint . --ext .js,.jsx",
-    "lint:fix": "eslint . --ext .js,.jsx --fix",
-    "safe-commit": "node safe-commit/safe-commit.js",
-    "sc": "node safe-commit/safe-commit.js",
-    "sc:dry": "node safe-commit/safe-commit.js --dry-run",
-    "format": "prettier --write .",
-    "preview": "vite preview"
-  },
+  "dev": "vite && start chrome http://localhost:3000",
+  "build": "vite build",
+  "build:prod": "vite build --mode prod",
+  "build:preview": "vite build --mode preview",
+  "lint": "eslint . --ext .js,.jsx",
+  "lint:fix": "eslint . --ext .js,.jsx --fix",
+  "safe-commit": "node safe-commit/safe-commit.js",
+  "sc": "node safe-commit/safe-commit.js",
+  "sc:dry": "node safe-commit/safe-commit.js --dry-run",
+  "format": "prettier --write .",
+  "preview": "vite preview"
+},
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@react-hook/debounce": "^4.0.0",

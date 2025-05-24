@@ -22,19 +22,16 @@ export default defineConfig({
   },
 },
   optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: 'globalThis',
-        'process.env': JSON.stringify({}),
-      },
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          process: true,
-          buffer: true,
-        }),
-      ],
-    },
-  },  
+  esbuildOptions: {
+    plugins: [
+      NodeGlobalsPolyfillPlugin({
+        process: true,
+        buffer: true,
+      }),
+    ],
+  },
+},
+
   server: {
     proxy: {
       '/api': 'http://localhost:5000',

@@ -1,19 +1,20 @@
 /**
  * @file server.js
  * @description
- * Main server entry point for the Express backend.
- * Connects to MongoDB, sets up middleware, static file serving, routes, and global error handling.
+ * Main entry point for the Express backend.
+ * Connects to MongoDB, configures middleware, serves static files,
+ * handles routes, and applies global error handling.
  * 
- * Includes:
- * - Middleware setup for security, CORS, logging, and JSON parsing
+ * Features:
+ * - Security (Helmet), CORS, HTTP request logging, JSON/body parsing
  * - Static file serving from /uploads via /files route
- * - Route handling for /api/books endpoints
- * - Global error handler for uncaught exceptions
+ * - API routing for /api/books endpoints
+ * - Centralized error handler for uncaught exceptions
  * 
  * Note:
- * The JSON and URL-encoded body size limit is explicitly set to 50MB.
- * Without this setting, Express defaults to 100KB for JSON payloads.
- * This increase is required to support large base64-encoded cover images or detailed metadata during book uploads.
+ * JSON and URL-encoded body size limits are set to 50MB.
+ * This is required for uploading large base64-encoded cover images
+ * or detailed metadata during book upload.
  */
 
 import express from 'express'
@@ -27,8 +28,15 @@ import fs from 'fs'
 import { fileURLToPath } from 'url'
 
 import booksRoutes, { uploadsDir } from './routes/index.js'
- 
-dotenv.config()
+
+const NODE_ENV = process.env.NODE_ENV || 'development'
+const envPath = NODE_ENV === 'development'
+  ? './server/env/.env'
+  : `./server/env/.env.${NODE_ENV}`
+
+dotenv.config({ path: envPath })
+
+
 const app = express()
 
 //------------------------------------------------------------------
@@ -41,7 +49,7 @@ const __dirname = path.dirname(__filename)
 // Ensure uploads directory exists
 //------------------------------------------------------------------
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true }) // obsługuje podfoldery
+  fs.mkdirSync(uploadsDir, { recursive: true }) // creates subdirectories if needed
   console.log(`📁 Created uploads directory at: ${uploadsDir}`)
 }
 
@@ -65,11 +73,10 @@ mongoose
 //------------------------------------------------------------------
 // Middleware configuration
 //------------------------------------------------------------------
-app.use(helmet({crossOriginResourcePolicy: false }))           
-app.use(morgan('dev'))           // HTTP request logger
+app.use(helmet({ crossOriginResourcePolicy: false }))
+app.use(morgan('dev')) // HTTP request logger
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
-
 
 app.use(
   cors({
@@ -82,7 +89,6 @@ app.use(
     credentials: true,
   })
 )
-
 
 //------------------------------------------------------------------
 // Static file serving (PDFs, covers)
@@ -103,8 +109,8 @@ app.use('/files', express.static(uploadsDir))
 // API routes
 //------------------------------------------------------------------
 app.get('/', (req, res) => {
-  res.send('📚 Reader-Pane backend is running.');
-});
+  res.send('📚 Reader-Pane backend is running.')
+})
 
 app.use('/api/books', booksRoutes)
 
