@@ -89,10 +89,14 @@ app.use(
 app.use(
   '/files',
   express.static(uploadsDir, {
-    setHeaders: (res) =>{
-      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'),
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
-  }})
+   setHeaders: (res, req) => {
+   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
+   res.setHeader('Access-Control-Allow-Credentials', 'true')
+   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')
+   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+ }
+ })
 )
 
 //------------------------------------------------------------------
