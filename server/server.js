@@ -26,7 +26,7 @@ import helmet from 'helmet'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
-
+import corsMiddleware from 'cors'
 import booksRoutes, { uploadsDir } from './routes/index.js'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
@@ -105,9 +105,16 @@ app.use('/files', express.static(uploadsDir))
 //------------------------------------------------------------------
 // API routes
 //------------------------------------------------------------------
-app.get('/', (req, res) => {
-  res.send('📚 Reader-Pane backend is running.')
-})
+app.get(
+  '/',
+  corsMiddleware({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  }),
+  (req, res) => {
+    res.send('📚 Reader-Pane backend is running.')
+  }
+)
 
 app.use('/api/books', booksRoutes)
 
