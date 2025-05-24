@@ -68,7 +68,8 @@ app.use(
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://reader-pane-frontend.onrender.com'
+      'https://reader-pane-frontend.onrender.com',
+      'https://reader-pane.vercel.app',
     ],
     credentials: true,
   })
