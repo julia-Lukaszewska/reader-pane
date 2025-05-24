@@ -91,7 +91,7 @@ app.use(
   express.static(uploadsDir, {
     setHeaders: (res) =>{
       res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'),
-      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
   }})
 )
 
