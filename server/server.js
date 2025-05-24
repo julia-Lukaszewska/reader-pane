@@ -78,6 +78,21 @@ app.use(
     credentials: true,
   })
 )
+//------------------------------------------------------------------
+// API routes
+//------------------------------------------------------------------
+app.get(
+  '/',
+  corsMiddleware({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  }),
+  (req, res) => {
+    res.send('📚 Reader-Pane backend is running.')
+  }
+)
+
+app.use('/api/books', booksRoutes)
 
 //------------------------------------------------------------------
 // Middleware configuration
@@ -102,21 +117,6 @@ app.use('/files', (req, res, next) => {
 
 app.use('/files', express.static(uploadsDir))
 
-//------------------------------------------------------------------
-// API routes
-//------------------------------------------------------------------
-app.get(
-  '/',
-  corsMiddleware({
-    origin: process.env.CLIENT_ORIGIN,
-    credentials: true,
-  }),
-  (req, res) => {
-    res.send('📚 Reader-Pane backend is running.')
-  }
-)
-
-app.use('/api/books', booksRoutes)
 
 //------------------------------------------------------------------
 // MongoDB connection and server start
