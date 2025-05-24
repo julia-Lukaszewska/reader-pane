@@ -89,11 +89,14 @@ app.use(
 //------------------------------------------------------------------
 app.use('/files', (req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
-  res.setHeader('Access-Control-Allow-Origin', 'https://reader-pane.vercel.app')
+  res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Expose-Headers', '*')
+  res.setHeader('Cache-Control', 'public, max-age=3600')
   next()
 })
+
 app.use('/files', express.static(uploadsDir))
 
 //------------------------------------------------------------------
