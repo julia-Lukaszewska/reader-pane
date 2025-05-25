@@ -103,7 +103,8 @@ export const UploadBook = async (req, res) => {
       const coverPath = path.join(uploadsDir, coverName)
 
       fs.writeFileSync(coverPath, buffer)
-      coverUrl = `${protocol}://${req.get('host')}/files/${coverName}`
+      coverUrl = `${urlProto}://${host}/files/${coverName}`
+
     }
 
     //----------------------------------------------------------------
