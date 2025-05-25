@@ -40,7 +40,7 @@ dotenv.config({ path: join(__dirname, '..', 'env', envFile) });
 console.log(` Loaded ${envFile}`);
 
 const app = express();
-
+app.set('trust proxy', true); 
 //------------------------------------------------------------------  
 //---- CORS configuration                                                
 //------------------------------------------------------------------  
