@@ -85,8 +85,12 @@ export const UploadBook = async (req, res) => {
      * - Add fallback logic in frontend to show image when canvas rendering fails
      */
     
-    const protocol = req.protocol
-    const fileUrl = `${protocol}://${req.get('host')}/files/${req.file.filename}`
+    const host = req.get('host')
+    const isProd = host.includes('onrender.com') || host.includes('vercel.app')
+    const urlProto = isProd ? 'https' : req.protocol
+
+    const fileUrl = `${urlProto}://${host}/files/${req.file.filename}`
+
 
     //----------------------------------------------------------------
     // Cover (base64 → PNG), if provided
