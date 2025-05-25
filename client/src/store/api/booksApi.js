@@ -36,6 +36,7 @@ export const booksApi = createApi({
     getBooksStatic: builder.query({
       query: () => '/static',
       keepUnusedDataFor: 86400,
+      providesTags: [{ type: 'BooksStatic', id: 'LIST' }],
       transformResponse: (response) =>
         booksAdapter.setAll(booksAdapter.getInitialState(), response),
     }),
@@ -161,7 +162,10 @@ export const booksApi = createApi({
 
     uploadBook: builder.mutation({
       query: (formData) => ({ url: '/upload', method: 'POST', body: formData }),
-      invalidatesTags: [{ type: 'Books', id: 'LIST' }],
+      invalidatesTags: [
+        { type: 'Books', id: 'LIST' },
+        { type: 'BooksStatic', id: 'LIST' },
+    ],
     }),
 
     getProgress: builder.query({
