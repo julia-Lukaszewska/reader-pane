@@ -12,9 +12,8 @@
  * - Centralized error handler for uncaught exceptions
  *
  * Note:
- * JSON and URL-encoded body size limits are set to 50 MB.
- * This is required for uploading large base64-encoded cover images
- * or detailed metadata during book upload.
+ * JSON and URL-encoded body size limits are set to 50 MB – required for
+ * uploading large base64 cover images or detailed metadata.
  */
 
 import express from 'express';
@@ -23,46 +22,54 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import helmet from 'helmet';
-import path from 'path';
+import path, { dirname, join } from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import booksRoutes, { uploadsDir } from './routes/index.js';
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const envPath =
-  NODE_ENV === 'development'
-    ? './server/env/.env'
-    : `./server/env/.env.${NODE_ENV}`;
+/* ------------------------------------------------------------------ */
+/* Load correct .env file – works no matter where you run `npm run`   */
+/* ------------------------------------------------------------------ */
+const NODE_ENV  = process.env.NODE_ENV || 'development';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
+const envFile = `.env.server.${process.env.BRANCH || 'dev'}`
+dotenv.config({ path: join(__dirname, '..', 'env', envFile) })
+console.log(`✅ Loaded ${envFile}`)
 
-dotenv.config({ path: envPath });
 
 const app = express();
 
 /* ------------------------------------------------------------------ */
-/* CORS configuration – first middleware                              */
+/* CORS – allowed origins                                             */
 /* ------------------------------------------------------------------ */
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://reader-pane-preview.vercel.app',
+  'https://reader-pane-prod.vercel.app',
+  process.env.CLIENT_ORIGIN,
+].filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (
-        !origin || // Postman / curl
-        origin.startsWith('http://localhost:517') || // local Vite dev
-        origin.endsWith('.vercel.app') || // any Vercel preview/prod URL
-        origin === process.env.CLIENT_ORIGIN // explicit origin from .env
-      ) {
+      if (!origin || ALLOWED_ORIGINS.some((o) => origin.startsWith(o))) {
         return cb(null, true);
       }
       cb(new Error('Not allowed by CORS'));
     },
     credentials: true,
-  }),
+  })
 );
 
 /* ------------------------------------------------------------------ */
-/* Resolve __dirname for ES modules                                   */
+/* Common middleware                                                  */
 /* ------------------------------------------------------------------ */
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(morgan('dev'));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 /* ------------------------------------------------------------------ */
 /* Ensure uploads directory exists                                    */
@@ -73,51 +80,38 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Port configuration                                                 */
+/* Static file serving                                                */
 /* ------------------------------------------------------------------ */
-const PORT = process.env.PORT || 5000;
+app.use(
+  '/files',
+  cors({ origin: ALLOWED_ORIGINS, credentials: true }),
+  (req, res, next) => {
+    /* keep your custom headers */
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Expose-Headers', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    next();
+  },
+  express.static(uploadsDir)
+);
 
 /* ------------------------------------------------------------------ */
-/* API routes                                                         */
+/* Routes                                                             */
 /* ------------------------------------------------------------------ */
-app.get('/', (_req, res) => {
-  res.send('Reader-Pane backend is running.');
-});
-
+app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'));
 app.use('/api/books', booksRoutes);
 
 /* ------------------------------------------------------------------ */
-/* Middleware configuration                                           */
+/* Start server                                                       */
 /* ------------------------------------------------------------------ */
-app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(morgan('dev'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+const PORT = process.env.PORT || 5000;
 
-/* ------------------------------------------------------------------ */
-/* Static file serving (PDFs, covers)                                 */
-/* ------------------------------------------------------------------ */
-app.use('/files', (req, res, next) => {
-  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Expose-Headers', '*');
-  res.setHeader('Cache-Control', 'public, max-age=3600');
-  next();
-});
-
-app.use('/files', express.static(uploadsDir));
-
-/* ------------------------------------------------------------------ */
-/* MongoDB connection and server start                                */
-/* ------------------------------------------------------------------ */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`Server running on port ${PORT}`),
-    );
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => console.error('Database connection error:', err));
 

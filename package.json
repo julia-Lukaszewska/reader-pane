@@ -2,10 +2,11 @@
   "name": "reader-pane",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "dev": "concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "dev:preview": "concurrently -n server,client -c green,cyan \"cross-env NODE_ENV=preview npm run dev --prefix server\" \"npm run dev --prefix client\""
-  },
+"scripts": {
+  "dev:dev": "cross-env BRANCH=dev concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+  "dev:main": "cross-env BRANCH=main concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+  "dev:build": "cross-env BRANCH=build concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+},
   "devDependencies": {
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3"

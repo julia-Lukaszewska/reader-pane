@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite && start chrome http://localhost:3000",
+  "dev":  "vite --open",
   "build": "vite build",
   "build:prod": "vite build --mode prod",
   "build:preview": "vite build --mode preview",
