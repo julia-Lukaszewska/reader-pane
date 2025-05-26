@@ -1,0 +1,52 @@
+/**
+ * @file eslint.config.js
+ * @description ESLint configuration for Node.js backend using ES Modules.
+ * Ignores test files, uploads, and local documentation. Warns on unused vars,
+ * and errors on undefined variables.
+ */
+
+export default [
+  //------------------------------------------------------------------
+  // Main ESLint config for all .js files
+  //------------------------------------------------------------------
+  {
+    files: ['**/*.js'],
+    ignores: [
+      'uploads/**',
+      '*.pl.md',
+      '*.docx',
+      '*.test.js',
+      '*.test.jsx',
+      '*.test.ts',
+      '*.test.tsx',
+      'docs/',
+    ],
+
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        Buffer: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        test: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
+
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+
+    rules: {
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-undef': 'error',
+    },
+  },
+]
