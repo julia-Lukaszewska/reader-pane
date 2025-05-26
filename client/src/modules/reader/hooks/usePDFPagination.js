@@ -7,7 +7,7 @@ import { useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { setBookStats } from '@/store/slices/bookSlice'
-import { selectCurrentPageById } from '@/store/selectors'
+import { selectCurrentPageById } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Hook: usePDFPagination

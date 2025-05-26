@@ -23,7 +23,7 @@ import {
   selectSelectedBookIds,
   selectLibraryViewMode,
   selectSortMode,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled Components

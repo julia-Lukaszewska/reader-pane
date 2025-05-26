@@ -15,7 +15,7 @@ import {
   selectCurrentPageById,
   selectCurrentScale,
   selectPageViewMode,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 
 const EMPTY_PAGES = {}
 const EMPTY_RANGES = []

@@ -10,7 +10,7 @@ import {
   useUpdateBookMutation,
   useDeleteBookMutation,
 } from '@/store/api/booksApi'
-import { selectLibraryViewMode } from '@/store/selectors'
+import { selectLibraryViewMode } from '@/store/selectors/selectors'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import ConfirmModal from '@/components/ConfirmModal'
 

@@ -6,7 +6,7 @@
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { useGetProgressQuery } from '@/store/api/booksApi'
-import { selectProgressMode } from '@/store/selectors'
+import { selectProgressMode } from '@/store/selectors/selectors'
 
 // -----------------------------------------------------------------------------
 //------ STYLES
