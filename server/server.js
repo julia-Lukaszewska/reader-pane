@@ -25,11 +25,11 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const envFile = `.env.server.${process.env.BRANCH || 'dev'}`
 dotenv.config({ path: join(__dirname, '..', 'env', envFile) })
-console.log('JWT_ACCESS_KEY =', process.env.JWT_ACCESS_KEY);
+console.log('JWT_ACCESS_KEY =', process.env.JWT_ACCESS_KEY)
 console.log(` Loaded ${envFile}`)
-import { configurePassport } from './config/passport.js';
-configurePassport();
 
+import { configurePassport } from './config/passport.js'
+configurePassport()
 
 import express from 'express'
 import mongoose from 'mongoose'
@@ -47,26 +47,24 @@ import { corsOptions, allowedOrigins } from './config/cors.config.js'
 const app = express()
 
 // -----------------------------------------------------------------------------
-// AUTHENTICATION ROUTES
-// -----------------------------------------------------------------------------
-
-app.use(cookieParser())
-app.use('/auth', authRoutes)
-
-// -----------------------------------------------------------------------------
-// CORS CONFIGURATION
-// -----------------------------------------------------------------------------
-
-app.use(cors(corsOptions))
-
-// -----------------------------------------------------------------------------
 // COMMON MIDDLEWARE
 // -----------------------------------------------------------------------------
 
 app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(morgan('dev'))
+
+// 1. Body parsers
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+
+// 2. Cookie parser
+app.use(cookieParser())
+
+// 3. CORS
+app.use(cors(corsOptions))
+
+// 4. Auth routes (after CORS and cookieParser)
+app.use('/auth', authRoutes)
 
 // -----------------------------------------------------------------------------
 // ENSURE UPLOADS DIRECTORY EXISTS
