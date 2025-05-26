@@ -8,7 +8,7 @@ import { booksApi, booksAdapter } from '@/store/api/booksApi'
 
 //-----------------------------------------------------------------------------
 // Static Data Selectors (RTK Query normalized)
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 // Select result of getBooksStatic query
 const selectStaticResult = booksApi.endpoints.getBooksStatic.select()
@@ -60,7 +60,7 @@ export const selectActiveItem = (state) => state.ui.activeItem
 
 //-----------------------------------------------------------------------------
 // Book State Selectors (bookSlice)
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 /** @returns {string|null} active book ID */
 export const selectActiveBookId = (state) => state.book.activeBookId
@@ -116,9 +116,17 @@ export const selectCurrentPageById = (state, bookId) =>
 export const selectMaxVisitedPageById = (state, bookId) =>
   state.book.byId?.[bookId]?.stats?.maxVisitedPage ?? 1
 
+/**
+ * @returns {number} current page of active book (or 1)
+ */
+export const selectCurrentPage = (state) => {
+  const activeId = selectActiveBookId(state)
+  return activeId ? selectCurrentPageById(state, activeId) : 1
+}
+
 //-----------------------------------------------------------------------------
 // Reader State Selectors (readerSlice)
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 /** @returns {number} index into zoom levels */
 export const selectScaleIndex = (state) => state.reader.scaleIndex
@@ -140,7 +148,7 @@ export const selectPageTurnRate = (state) => state.reader.pageTurnRate
 
 //-----------------------------------------------------------------------------
 // Computed Selectors
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 /**
  * Computes progress value based on mode, current page, and max visited.
@@ -155,7 +163,7 @@ export const selectProgressValue = createSelector(
 
 //-----------------------------------------------------------------------------
 // PDF Cache Selectors (pdfCacheSlice)
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 /**
  * Get a cached page data by book, scale, and page number
