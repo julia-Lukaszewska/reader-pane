@@ -8,7 +8,7 @@ import { IoCloseOutline } from 'react-icons/io5'
 import SelectCheckbox from './SelectCheckbox'
 import CardButtons from './CardButtons'
 import { useSelector } from 'react-redux'
-import { selectIsManageMode } from '@/store/selectors'
+import { selectIsManageMode } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled components

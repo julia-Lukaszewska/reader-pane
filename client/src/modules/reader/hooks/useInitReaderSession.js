@@ -6,7 +6,7 @@
 import useStartingPage from './useStartingPage'
 import useLastOpenedBook from './useLastOpenedBook'
 import { useSelector } from 'react-redux'
-import { selectActiveBookId } from '@/store/selectors'
+import { selectActiveBookId } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Hook: useInitReaderSession

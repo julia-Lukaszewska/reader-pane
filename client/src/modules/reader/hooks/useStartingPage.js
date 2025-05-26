@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useGetProgressQuery } from '@/store/api/booksApi'
 import { setBookStats } from '@/store/slices/bookSlice'
-import { selectCurrentPageById } from '@/store/selectors'
+import { selectCurrentPageById } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Hook: useStartingPage

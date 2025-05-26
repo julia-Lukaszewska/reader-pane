@@ -7,7 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleSelect } from '@/store/slices/bookSlice'
-import { selectIsManageMode, selectSelectedBookIds } from '@/store/selectors'
+import { selectIsManageMode, selectSelectedBookIds } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled components

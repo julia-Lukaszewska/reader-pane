@@ -19,7 +19,7 @@ import {
 import {
   selectCurrentPage,
   selectPageViewMode,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 
 // -----------------------------------------------------------------------------
 //------ Styled Components

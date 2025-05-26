@@ -6,7 +6,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { useGetBooksQuery } from '@/store/api/booksApi'
-import { selectLibraryViewMode } from '@/store/selectors'
+import { selectLibraryViewMode } from '@/store/selectors/selectors'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner } from '@/components'
 

@@ -100,18 +100,13 @@ router.get(
 // -----------------------------------------------------------------------------
 
 router.post('/logout', (_req, res) => {
-  res.clearCookie('rt', { httpOnly: true, secure: true, sameSite: 'Strict' })
+  res.clearCookie('rt', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict',
+  })
   res.sendStatus(204)
 })
-
-// -----------------------------------------------------------------------------
-// ROUTE – redirect to Google for OAuth login
-// -----------------------------------------------------------------------------
-
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-)
 
 // -----------------------------------------------------------------------------
 // ROUTE – refresh access token using valid refresh token (from cookie)
@@ -125,34 +120,40 @@ router.post('/refresh', (req, res) => {
   }
 
   try {
-    const payload = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
+    const { id } = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
 
-    const accessToken = jwt.sign(
-      { id: payload.id },
+    const access = jwt.sign(
+      { id },
       process.env.JWT_ACCESS_KEY,
       { expiresIn: '15m' }
     )
 
-    // re-issue a new refresh token (rotation)
-    const newRefreshToken = jwt.sign(
-      { id: payload.id },
-      process.env.JWT_REFRESH_KEY,
-      { expiresIn: '30d' }
-    )
-
-    res.cookie('rt', newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'Strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    })
-
-    res.json({ access: accessToken })
-  } catch (err) {
-    console.error('Refresh token error:', err)
-    res.status(403).json({ error: 'Invalid or expired refresh token' })
+    return res.json({ access })
+  } catch {
+    return res.sendStatus(401)
   }
 })
 
+// -----------------------------------------------------------------------------
+// ROUTE – redirect to Google for OAuth login
+// -----------------------------------------------------------------------------
+
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+)
+
+// -----------------------------------------------------------------------------
+// ROUTE – Google OAuth callback
+// -----------------------------------------------------------------------------
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  (req, res) => {
+    issueTokens(req.user, res)
+    res.redirect('/')
+  }
+)
 
 export default router

@@ -15,7 +15,7 @@ import {
   selectSelectedBookIds,
   selectIsPreviewOpen,
   selectPreviewBookId,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 import { sortBooks } from '@book/utils'
 

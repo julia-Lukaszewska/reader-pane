@@ -28,7 +28,7 @@ import {
   selectSelectedBookIds,
   selectLibraryViewMode,
   selectSortMode,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Component: BooksManagementController
