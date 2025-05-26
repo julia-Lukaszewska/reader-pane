@@ -16,18 +16,18 @@
   "engines": {
     "node": ">=18"
   },
-  "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js",
-    "test": "cross-env NODE_ENV=test jest",
-    "clean": "node scripts/clean-uploads.js",
-    "clean:dry": "node scripts/clean-uploads.js --dry-run",
-    "delete:orphans": "node scripts/delete-orphaned-books.js",
-    "sync": "node scripts/sync-helpers.js",
-    "lint": "eslint . --ext .js",
-    "lint:fix": "eslint . --ext .js --fix",
-    "format": "prettier --write ."
-  },
+"scripts": {
+  "dev": "nodemon server.js",
+  "start": "node server.js",
+  "test": "cross-env NODE_ENV=test jest",
+  "clean": "node scripts/clean-uploads.js",
+  "clean:dry": "node scripts/clean-uploads.js --dry-run",
+  "delete:orphans": "node scripts/delete-orphaned-books.js",
+  "sync": "node scripts/sync-helpers.js",
+  "lint": "eslint . --ext .js --config config/eslint.config.js --ignore-path ../../config/.eslintignore",
+  "lint:fix": "eslint . --ext .js --config config/eslint.config.js --ignore-path ../../config/.eslintignore --fix",
+  "format": "prettier . --write --config ../../config/prettier.config.js --ignore-path ../../config/.prettierignore"
+},
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",

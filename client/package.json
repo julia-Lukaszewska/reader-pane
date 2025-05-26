@@ -3,20 +3,21 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "dev:open": "vite --open",
-    "build": "vite build",
-    "build:main": "vite build --mode main",
-    "build:build": "vite build --mode build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .js,.jsx",
-    "lint:fix": "eslint . --ext .js,.jsx --fix",
-    "format": "prettier --write .",
-    "safe-commit": "node safe-commit/safe-commit.js",
-    "sc": "node safe-commit/safe-commit.js",
-    "sc:dry": "node safe-commit/safe-commit.js --dry-run"
-  },
+"scripts": {
+  "dev": "vite --config config/vite.config.js",
+  "dev:open": "vite --config config/vite.config.js --open",
+  "build": "vite build --config config/vite.config.js",
+  "build:main": "vite build --mode main --config config/vite.config.js",
+  "build:build": "vite build --mode build --config config/vite.config.js",
+  "preview": "vite preview --config config/vite.config.js",
+  "lint": "eslint . --ext .js,.jsx --config config/eslint.config.js --ignore-path ../../config/.eslintignore",
+  "lint:fix": "eslint . --ext .js,.jsx --config config/eslint.config.js --ignore-path ../../config/.eslintignore --fix",
+  "format": "prettier . --write --config ../../config/prettier.config.js --ignore-path ../../config/.prettierignore",
+  "safe-commit": "node safe-commit/safe-commit.js",
+  "sc": "node safe-commit/safe-commit.js",
+  "sc:dry": "node safe-commit/safe-commit.js --dry-run"
+},
+
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@react-hook/debounce": "^4.0.0",
