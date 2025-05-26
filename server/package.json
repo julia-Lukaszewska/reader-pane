@@ -1,50 +1,26 @@
 {
   "name": "reader-pane-server",
+  "private": true,
   "version": "1.0.0",
-  "description": "Express.js backend API for ebook reader app",
-  "author": "Julia Łukaszewska",
-  "license": "ISC",
   "type": "module",
   "main": "server.js",
-  "keywords": [
-    "express",
-    "mongodb",
-    "api",
-    "books",
-    "nodejs"
-  ],
-  "engines": {
-    "node": ">=18"
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "lint": "eslint . --ext .js"
   },
-"scripts": {
-  "dev": "nodemon server.js",
-  "start": "node server.js",
-  "test": "cross-env NODE_ENV=test jest",
-  "clean": "node scripts/clean-uploads.js",
-  "clean:dry": "node scripts/clean-uploads.js --dry-run",
-  "delete:orphans": "node scripts/delete-orphaned-books.js",
-  "sync": "node scripts/sync-helpers.js",
-  "lint": "eslint . --ext .js --config config/eslint.config.js --ignore-path ../../config/.eslintignore",
-  "lint:fix": "eslint . --ext .js --config config/eslint.config.js --ignore-path ../../config/.eslintignore --fix",
-  "format": "prettier . --write --config ../../config/prettier.config.js --ignore-path ../../config/.prettierignore"
-},
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
+    "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "express-rate-limit": "^7.5.0",
-    "helmet": "^8.1.0",
-    "mongodb": "^6.15.0",
-    "mongoose": "^8.15.0",
+    "helmet": "^7.0.0",
+    "mongoose": "^8.13.2",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.2"
+    "multer": "^1.4.5-lts.2",
+    "reader-pane": "file:.."
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.1.0",
     "eslint": "^9.23.0",
-    "prettier": "^3.5.3"
+    "nodemon": "^3.1.0"
   }
 }
