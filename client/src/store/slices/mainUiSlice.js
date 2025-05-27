@@ -10,9 +10,13 @@ import { createSlice } from '@reduxjs/toolkit'
 //-----------------------------------------------------------------------------
 
 const initialState = {
-  theme: 'light',       // 'light' | 'dark'   
-  sidebarOpen: false,   // whether sidebar is expanded
-  activeItem: null,     // identifier of the currently active navigation item
+  theme: 'light',            // 'light' | 'dark'   
+  sidebarOpen: false,        // whether sidebar is expanded
+  activeItem: null,          // identifier of the currently active navigation item
+  loginModalOpen: false,     // whether login modal is open
+  registerModalOpen: false,  // whether register modal is open
+  authModalMode: null,  // 'login' | 'register' | null
+
 }
 
 //-----------------------------------------------------------------------------
@@ -69,6 +73,36 @@ const mainUiSlice = createSlice({
     clearActiveItem(state) {
       state.activeItem = null
     },
+
+    /**
+     * Sets login modal open state.
+     *
+     * @param {Object} state - Current slice state
+     * @param {{ payload: boolean }} action - true = open, false = close
+     */
+    setLoginModalOpen(state, action) {
+      state.loginModalOpen = action.payload
+    },
+
+    /**
+     * Sets register modal open state.
+     *
+     * @param {Object} state - Current slice state
+     * @param {{ payload: boolean }} action - true = open, false = close
+     */
+    setRegisterModalOpen(state, action) {
+      state.registerModalOpen = action.payload
+    },
+    /**
+ * Sets the auth modal mode (login/register/null).
+ *
+ * @param {Object} state - Current slice state
+ * @param {{ payload: 'login'|'register'|null }} action
+ */
+setAuthModalMode(state, action) {
+  state.authModalMode = action.payload
+},
+
   },
 })
 
@@ -82,6 +116,9 @@ export const {
   setSidebar,
   setActiveItem,
   clearActiveItem,
+  setLoginModalOpen,
+  setRegisterModalOpen,
+    setAuthModalMode,
 } = mainUiSlice.actions
 
 export default mainUiSlice.reducer

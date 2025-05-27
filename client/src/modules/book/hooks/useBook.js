@@ -12,6 +12,7 @@ import {
   useGetBooksQuery,
   useGetBookQuery,
 } from '@/store/api/booksApi'
+import { useAuth } from '@/modules/user/hooks'
 
 //-----------------------------------------------------------------------------
 // Hook: useBook
@@ -25,9 +26,12 @@ import {
  */
 const useBook = (bookId) => {
   const dispatch = useDispatch()
+  const { isLoggedIn } = useAuth()
 
-  //--- Fetch all books
-  const { data: books = [], isLoading: booksLoading } = useGetBooksQuery()
+  //--- Fetch all books if logged in
+  const { data: books = [], isLoading: booksLoading } = useGetBooksQuery(undefined, {
+    skip: !isLoggedIn,
+  })
 
   //--- Fetch a single book (conditionally)
   const { data: bookById, isLoading: bookLoading } = useGetBookQuery(bookId, {

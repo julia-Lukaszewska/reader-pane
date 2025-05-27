@@ -1,3 +1,4 @@
+// src/layout/LibraryLayout/LibraryLayout.jsx
 /**
  * @file LibraryLayout.jsx
  * @description Layout wrapper for the Library view. Loads books, manages sorting, preview modal, and toolbar states.
@@ -15,10 +16,12 @@ import {
   selectSelectedBookIds,
   selectIsPreviewOpen,
   selectPreviewBookId,
+  selectIsLoggedIn,
 } from '@/store/selectors/selectors'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 import { sortBooks } from '@book/utils'
 
+import EmptyLibraryGuestMessage from '@/views/library/EmptyLibraryGuestMessage'
 import { LoadingSpinner } from '@/components'
 import { LibraryToolbar } from '@library/Layout'
 import { BooksManagementToolbar } from '@library/components/BooksManagement'
@@ -50,27 +53,28 @@ const Container = styled.div`
  */
 export default function LibraryLayout() {
   const dispatch = useDispatch()
-
-  // Redux state
+  const isLoggedIn = useSelector(selectIsLoggedIn)
   const sortMode = useSelector(selectSortMode)
   const isManageMode = useSelector(selectIsManageMode)
   const selectedIds = useSelector(selectSelectedBookIds)
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
 
-  // Fetch books
+  // Fetch books (skip if not logged in)
   const {
     data: booksRaw = [],
-    refetch,
     isLoading,
     isError,
-  } = useGetBooksQuery(undefined, { refetchOnMountOrArgChange: true })
+  } = useGetBooksQuery(undefined, {
+    skip: !isLoggedIn,
+    refetchOnMountOrArgChange: true,
+  })
 
   // Filter out invalid entries
   const validBooks = useMemo(
     () =>
       booksRaw.filter(
-        (b) =>
+        b =>
           b &&
           b._id &&
           b.meta?.fileUrl &&
@@ -79,8 +83,7 @@ export default function LibraryLayout() {
     [booksRaw]
   )
 
-
-  // Sort books
+  // Sort according to mode
   const books = useMemo(
     () => sortBooks(validBooks, sortMode),
     [validBooks, sortMode]
@@ -91,16 +94,13 @@ export default function LibraryLayout() {
     localStorage.setItem('sortMode', sortMode)
   }, [sortMode])
 
-  // Refetch on mount
-  useEffect(() => {
-    refetch()
-  }, [refetch])
+  // Find book for preview modal
+  const previewBook = books.find(b => b._id === previewId)
 
-  // Preview book
-  const previewBook = books.find((b) => b._id === previewId)
-
+  // Render states
   if (isLoading) return <LoadingSpinner />
   if (isError) return <div>Error loading books.</div>
+  if (!isLoggedIn) return <EmptyLibraryGuestMessage />
 
   return (
     <Container>

@@ -1,16 +1,16 @@
 /**
- * @file LoginForm.jsx
- * @description Styled login form using RTK Query and Redux auth slice.
+ * @file RegisterForm.jsx
+ * @description Styled register form using RTK Query and Redux auth slice.
  */
 
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useLoginMutation } from '@/store/api/authApi'
+import { useRegisterMutation } from '@/store/api/authApi'
 import { setCredentials } from '@/store/slices/authSlice'
 import styled from 'styled-components'
 
 //-----------------------------------------------------------------------------
-// Styled components
+// Styled components (shared with LoginForm)
 //-----------------------------------------------------------------------------
 
 const Form = styled.form`
@@ -65,26 +65,38 @@ const ErrorText = styled.p`
 // Component
 //-----------------------------------------------------------------------------
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const dispatch = useDispatch()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [login, { isLoading, error }] = useLoginMutation()
+  const [register, { isLoading, error }] = useRegisterMutation()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const result = await login({ email, password }).unwrap()
+      const result = await register({ name, email, password }).unwrap()
       dispatch(setCredentials({ access: result.access }))
+      setName('')
       setEmail('')
       setPassword('')
     } catch (err) {
-      console.error('Login failed:', err)
+      console.error('Register failed:', err)
     }
   }
 
   return (
     <Form onSubmit={handleSubmit}>
+      <Label>
+        Name
+        <Input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </Label>
+
       <Label>
         Email
         <Input
@@ -106,10 +118,10 @@ export default function LoginForm() {
       </Label>
 
       <SubmitButton type="submit" disabled={isLoading}>
-        {isLoading ? 'Logging in...' : 'Log In'}
+        {isLoading ? 'Registering...' : 'Register'}
       </SubmitButton>
 
-      {error && <ErrorText>Login failed. Check your credentials.</ErrorText>}
+      {error && <ErrorText>Registration failed. Please try again.</ErrorText>}
     </Form>
   )
 }

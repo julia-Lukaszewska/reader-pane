@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store/slices/mainUiSlice'
 import { useInitializeBooks } from '@/hooks'
+import { useAuth } from '@/modules/user/hooks'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -51,8 +52,15 @@ const MainLayout = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
+  const { isLoggedIn } = useAuth()
 
-  useInitializeBooks()
+  const { initialize } = useInitializeBooks()
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      initialize()
+    }
+  }, [isLoggedIn, initialize])
 
   useEffect(() => {
     dispatch(setSidebar(false))

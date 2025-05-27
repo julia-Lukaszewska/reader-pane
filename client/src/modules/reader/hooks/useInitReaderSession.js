@@ -31,6 +31,9 @@ export default function useInitReaderSession() {
   console.log('[useInitReaderSession] activeBookId:', activeBookId)
 
   //--- Set the initial page for this book
+if (activeBookId) {
   useStartingPage(activeBookId)
   console.log('[useInitReaderSession] called useStartingPage() with:', activeBookId)
+}
+
 }

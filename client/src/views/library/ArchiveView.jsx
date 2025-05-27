@@ -1,7 +1,9 @@
 /**
  * @file ArchiveView.jsx
- * @description Renders archived books with options to restore or permanently delete.
+ * @description Renders archived books with support for restoring and permanent deletion.
+ * Shows a guest message if user is not logged in.
  */
+
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
@@ -11,6 +13,8 @@ import {
   useDeleteBookMutation,
 } from '@/store/api/booksApi'
 import { selectLibraryViewMode } from '@/store/selectors/selectors'
+import { useAuth } from '@/modules/user/hooks'
+import EmptyLibraryGuestMessage from './EmptyLibraryGuestMessage'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import ConfirmModal from '@/components/ConfirmModal'
 
@@ -30,20 +34,32 @@ const Container = styled.div`
 //-----------------------------------------------------------------------------
 
 /**
- * Displays archived books in the selected view mode (grid, list, table).
- * Allows restoring or permanently deleting items.
+ * Displays archived books in the selected view mode.
+ * Allows users to restore or permanently delete each book.
+ * If not logged in, shows a guest message.
  *
  * @component
  * @returns {JSX.Element|null}
  */
 const ArchiveView = () => {
+  const { isLoggedIn } = useAuth()
   const [modalBook, setModalBook] = useState(null)
   const viewMode = useSelector(selectLibraryViewMode)
-  const { data: books = [], isLoading } = useGetBooksQuery()
+
+  //--- First check login status
+  if (!isLoggedIn) return <EmptyLibraryGuestMessage />
+
+  //--- Only fetch data if logged in
+  const { data: books = [], isLoading } = useGetBooksQuery(undefined, {
+    skip: !isLoggedIn,
+  })
+
   const [updateBook] = useUpdateBookMutation()
   const [deleteBook] = useDeleteBookMutation()
 
-  const archivedBooks = books.filter(b => b.flags?.isArchived)
+  if (isLoading) return null
+
+  const archivedBooks = books.filter(book => book.flags?.isArchived)
 
   const handleRestore = id =>
     updateBook({ id, changes: { flags: { isArchived: false } } })
@@ -59,12 +75,10 @@ const ArchiveView = () => {
     }
   }
 
-  if (isLoading) return null
-
   if (!archivedBooks.length) {
     return (
       <Container>
-        <p style={{ padding: '2rem', opacity: 0.6 }}>No books in archive</p>
+        <p style={{ padding: '2rem', opacity: 0.6 }}>No books in archive.</p>
       </Container>
     )
   }
@@ -77,7 +91,7 @@ const ArchiveView = () => {
         onRestore={handleRestore}
         onDelete={book => setModalBook(book)}
         hideAddTile
-      />   
+      />
 
       {modalBook && (
         <ConfirmModal

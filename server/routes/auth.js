@@ -72,11 +72,19 @@ router.post('/register', async (req, res) => {
 
 router.post(
   '/login',
-  passport.authenticate('local', { session: false }),
+  passport.authenticate('local', {
+    session: false,
+    failWithError: true, 
+  }),
   (req, res) => {
     issueTokens(req.user, res)
+  },
+  (err, req, res, _next) => {
+    console.error('Login error:', err?.message || err)
+    res.status(401).json({ error: 'Invalid email or password' }) 
   }
 )
+
 
 // -----------------------------------------------------------------------------
 // ROUTE – get current authenticated user

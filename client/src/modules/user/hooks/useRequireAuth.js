@@ -6,7 +6,7 @@
 
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from './useAuth'
+import  useAuth  from './useAuth'
 
 /**
  * Hook that redirects unauthenticated users to a login page

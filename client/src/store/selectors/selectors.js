@@ -6,6 +6,7 @@
 import { createSelector } from 'reselect'
 import { booksApi, booksAdapter } from '@/store/api/booksApi'
 
+
 //-----------------------------------------------------------------------------
 // Static Data Selectors (RTK Query normalized)
 //-----------------------------------------------------------------------------
@@ -58,6 +59,20 @@ export const selectSidebarOpen = (state) => state.ui.sidebarOpen
  */
 export const selectActiveItem = (state) => state.ui.activeItem
 
+/**
+ * @returns {boolean} login modal open state
+ */
+export const selectLoginModalOpen = (state) => state.ui.loginModalOpen
+
+/**
+ * @returns {boolean} register modal open state
+ */
+export const selectRegisterModalOpen = (state) => state.ui.registerModalOpen
+
+/**
+ * @returns {'login' | 'register' | null} current auth modal mode
+ */
+export const selectAuthModalMode = (state) => state.ui.authModalMode
 //-----------------------------------------------------------------------------
 // Book State Selectors (bookSlice)
 //-----------------------------------------------------------------------------
@@ -176,3 +191,11 @@ export const selectCachedPage = (state, bookId, scale, page) =>
  */
 export const selectRenderedRanges = (state, bookId, scale) =>
   state.pdfCache?.[bookId]?.[scale]?.ranges ?? []
+//-----------------------------------------------------------------------------
+// Auth State Selectors (authSlice)
+//-----------------------------------------------------------------------------
+
+/**
+ * @returns {boolean} true if access token exists
+ */
+export const selectIsLoggedIn = (state) => Boolean(state.auth.access)

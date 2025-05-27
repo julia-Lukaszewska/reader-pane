@@ -21,7 +21,7 @@ import {
 // Styled components
 //-----------------------------------------------------------------------------
 
-//--- Message shown when library is empty
+//--- Message shown when library is empty or invalid
 const EmptyMessage = styled.p`
   padding: 2rem;
   text-align: center;
@@ -49,11 +49,10 @@ const LibraryBooksRenderer = ({ books, hideAddTile = false }) => {
     return sortBooks(books, sortMode)
   }, [books, sortMode])
 
-  // //--- Render empty state
-  // if (!books?.length) {
-  //   console.log('Renderer received books:', books)
-  //   return <EmptyMessage>No books — add your first one!</EmptyMessage>
-  // }
+  //--- Show message if no books and add tile is hidden
+  if (!sortedBooks?.length && hideAddTile) {
+    return <EmptyMessage>No books found.</EmptyMessage>
+  }
 
   //--- Render according to selected view mode
   switch (viewMode) {
@@ -64,7 +63,7 @@ const LibraryBooksRenderer = ({ books, hideAddTile = false }) => {
     case 'table':
       return <LibraryTableLayout books={sortedBooks} hideAddTile={hideAddTile} />
     default:
-      return <AddBookTile hideAddTile={hideAddTile} />
+      return <EmptyMessage>Invalid view mode: {viewMode}</EmptyMessage>
   }
 }
 

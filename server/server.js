@@ -64,7 +64,7 @@ app.use(cookieParser())
 app.use(cors(corsOptions))
 
 // 4. Auth routes (after CORS and cookieParser)
-app.use('/auth', authRoutes)
+app.use('/api/auth', authRoutes)
 
 // -----------------------------------------------------------------------------
 // ENSURE UPLOADS DIRECTORY EXISTS
