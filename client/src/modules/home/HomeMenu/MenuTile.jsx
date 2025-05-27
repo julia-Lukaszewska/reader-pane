@@ -6,9 +6,9 @@
 
 import React from 'react'
 import { IoCloseOutline } from 'react-icons/io5'
-import { useMenuItem } from '@/hooks'
+import  useMenuItem  from './useMenuItem'
 import styled from 'styled-components'
-import { MenuTileBtn } from '@/components'
+import  MenuSubTile  from './MenuSubTile'
 
 // -----------------------------------------------------------------------------
 // Styled components
@@ -35,11 +35,12 @@ const StyleMenuTile = styled.div`
   width: ${({ $isActive }) => ($isActive ? '40vh' : '30vh')};
   height: ${({ $isActive }) => ($isActive ? '40vh' : '30vh')};
   display: flex;
+  /* padding: ${({ $isActive }) => ($isActive ? '40%' : '2%')}; */
   justify-content: center;
   align-items: center;
   transform: ${({ $isActive, $position }) =>
     $isActive
-      ? 'translate(0%, -20%)'
+      ? 'translate(20%, -30%)'
       : `translate(${$position?.x || '0%'}, ${$position?.y || '0%'})`};
   rotate: ${({ $isActive }) => ($isActive ? '-45deg' : '45deg')};
   scale: ${({ $isActive }) => ($isActive ? 1.5 : 1)};
@@ -88,6 +89,21 @@ const StyleMenuTile = styled.div`
   backdrop-filter: ${({ $isActive }) =>
     $isActive ? 'var(--tile-blur-active)' : 'var(--tile-blur-inactive)'};
 `
+const SubTilesContainer = styled.div`
+  position: absolute;
+  display: grid;
+  padding: 3%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-areas:
+  "LT RT"
+  "LB RB";
+ 
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-items: center;
+`
 
 const CloseButton = styled.button`
   position: absolute;
@@ -131,7 +147,8 @@ const MenuTile = ({
   position,
   label,
   isAnyTileActive,
-  buttonLabel,
+  invertRotation = false,
+  subTiles = [],
 }) => {
   const { $isActive, handleClick, handleClose } = useMenuItem(name, route)
 
@@ -144,30 +161,40 @@ const MenuTile = ({
 
   return (
     <StyleMenuTile
+      data-name={name}
       $isActive={$isActive}
-      onClick={!$isActive ? handleTileClick : undefined}
-      color={color}
       $position={position}
+      color={color}
+      $invertRotation={invertRotation}
+      onClick={!$isActive ? handleTileClick : undefined}
     >
       {!$isActive && !isAnyTileActive && <StyledLabel>{label}</StyledLabel>}
 
-      {$isActive && (
-        <>
-          <CloseButton
-            onClick={(e) => {
-              e.stopPropagation()
-              handleClose()
-            }}
-          >
-            <IoCloseOutline size={30} color="white" />
-          </CloseButton>
+       {$isActive && (
+         <>
+           <CloseButton
+             onClick={(e) => {
+               e.stopPropagation()
+               handleClose()
+             }}
+           >
+             <IoCloseOutline size={30} color="white" />
+           </CloseButton>
+       
+       <SubTilesContainer>
+            {subTiles.map(({ label, route, area }) => (
+              <MenuSubTile
+                key={label}
+                label={label}
+                route={route}
+                style={{ gridArea: area }}
+              />
+            ))}
+          </SubTilesContainer>
+         </>
+       )}
 
-          <MenuTileBtn
-            label={buttonLabel || `Go to ${label.toLowerCase()}`}
-            route={route}
-          />
-        </>
-      )}
+      
     </StyleMenuTile>
   )
 }

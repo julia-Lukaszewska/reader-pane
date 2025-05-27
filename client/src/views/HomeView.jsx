@@ -9,7 +9,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { HomeMenu } from '@/components'
+import { HomeMenu } from '@home/HomeMenu'
 
 //-----------------------------------------------------------------------------
 //------ StyledHomeView – grid layout with center tiles 
@@ -18,11 +18,12 @@ import { HomeMenu } from '@/components'
 const StyledHomeView = styled.div`
   position: relative;
   display: grid;
+  align-items: center;
   grid-template-columns: 1fr auto 1fr;
   grid-template-rows: 1fr auto 1fr;
   justify-content: center;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   height: 100%;
   background: var(--gradient-metal-deepblue-v7);
   color: var(--color-light-0);

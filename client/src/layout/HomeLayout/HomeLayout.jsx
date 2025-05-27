@@ -14,8 +14,8 @@ import { Header } from '@/layout/MainLayout'
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;  
-  width: 100vw;
+  height: 100%;  
+  width: 100%;
   background: var(--gradient-blue-clear);
 `
 
