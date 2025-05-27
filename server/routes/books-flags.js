@@ -7,7 +7,7 @@
  * - PATCH  /api/books/:id/favorite    — mark as favorite
  * - PATCH  /api/books/:id/unfavorite  — unmark as favorite
  * - DELETE /api/books/:id             — permanently delete book and file
- */ 
+ */
 
 import express from 'express'
 import Book from '../models/Book.js'
@@ -22,8 +22,8 @@ const router = express.Router()
 //------------------------------------------------------------------
 router.patch('/:id/archive', async (req, res) => {
   try {
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
       { 'flags.isArchived': true },
       { new: true }
     )
@@ -40,8 +40,8 @@ router.patch('/:id/archive', async (req, res) => {
 //------------------------------------------------------------------
 router.patch('/:id/restore', async (req, res) => {
   try {
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id },
       { 'flags.isArchived': false },
       { new: true }
     )
@@ -58,8 +58,8 @@ router.patch('/:id/restore', async (req, res) => {
 //------------------------------------------------------------------
 router.patch('/:id/favorite', async (req, res) => {
   try {
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id },
       { 'flags.isFavorited': true },
       { new: true }
     )
@@ -76,8 +76,8 @@ router.patch('/:id/favorite', async (req, res) => {
 //------------------------------------------------------------------
 router.patch('/:id/unfavorite', async (req, res) => {
   try {
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id },
       { 'flags.isFavorited': false },
       { new: true }
     )
@@ -92,43 +92,39 @@ router.patch('/:id/unfavorite', async (req, res) => {
 //--------------------------------------------------------------------------
 // DELETE /api/books/:id — permanently delete book + PDF + cover
 //--------------------------------------------------------------------------
+
 /**
  * @todo Investigate why multiple DELETE requests are sent for the same book.
  * Currently handled by skipping deletion if book is not found.
  * Consider logging origin or preventing double dispatch in UI.
  */
-
-   router.delete('/:id', async (req, res) => {
-    
+router.delete('/:id', async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id)
+    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id }) // 🔒 enforce ownership
 
-   if (!book) {
-  console.warn(`[DELETE] Book not found: ${req.params.id}`)
-  return res.status(200).json({ message: 'Already deleted' })
-}
+    if (!book) {
+      console.warn(`[DELETE] Book not found or already deleted: ${req.params.id}`)
+      return res.status(200).json({ message: 'Already deleted' })
+    }
 
-    
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
     const uploadsDir = path.join(__dirname, '../uploads')
 
-      // Delete PDF
+    // Delete PDF
     const fileName = book.meta?.fileUrl ? path.basename(book.meta.fileUrl) : null
     const filePath = fileName ? path.join(uploadsDir, fileName) : null
     if (filePath && fs.existsSync(filePath)) fs.unlinkSync(filePath)
-
 
     // Delete cover PNG (if exists)
     const coverName = book.meta?.cover ? path.basename(book.meta.cover) : null
     const coverPath = coverName ? path.join(uploadsDir, coverName) : null
     if (coverPath && fs.existsSync(coverPath)) fs.unlinkSync(coverPath)
 
-
     // Delete book from database
-    await Book.findByIdAndDelete(req.params.id)
+    await Book.findOneAndDelete({ _id: req.params.id, owner: req.user.id }) // enforce ownership
 
-     res.json({ message: 'Book, PDF and cover deleted successfully.' })
+    res.json({ message: 'Book, PDF and cover deleted successfully.' })
   } catch (err) {
     console.error('[DELETE BOOK]', err)
     res.status(500).json({ error: 'Failed to delete book and files.' })

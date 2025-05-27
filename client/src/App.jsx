@@ -11,7 +11,8 @@ import React from 'react'
 import styled from 'styled-components'
 import AppRoutes from '@/routes/AppRoutes'
 import GlobalStyles from '@/styles/GlobalStyles'
-
+import useUserSessionManager from './modules/user/hooks/useUserSessionManager'
+import useAuthBootstrap from './modules/user/hooks/useAuthBootstrap'
 // -----------------------------------------------------------------------------
 //------ Styled components – App container
 //----------------------------------------------------------------------------- 
@@ -31,6 +32,8 @@ const StyledApp = styled.div`
  * Wraps the application with global styles and renders the main route component.
  */
 const App = () => {
+  useAuthBootstrap()   
+   useUserSessionManager()
   return (
     <>
       <GlobalStyles />

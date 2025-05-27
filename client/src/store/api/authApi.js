@@ -18,7 +18,7 @@ export const authApi = createApi({
      */
     login: builder.mutation({
       query: (credentials) => ({
-        url: 'api/auth/login',
+        url: '/auth/login',
         method: 'POST',
         body: credentials,
       }),
@@ -30,7 +30,7 @@ export const authApi = createApi({
      */
     logout: builder.mutation({
       query: () => ({
-        url: 'api/auth/logout',
+        url: '/auth/logout',
         method: 'POST',
       }),
     }),
@@ -41,7 +41,7 @@ export const authApi = createApi({
      */
     refresh: builder.mutation({
       query: () => ({
-        url: 'api/auth/refresh',
+        url: '/auth/refresh',
         method: 'POST',
       }),
     }),
@@ -51,7 +51,7 @@ export const authApi = createApi({
      * Returns current authenticated user info
      */
     getMe: builder.query({
-      query: () => 'api/auth/me',
+      query: () => '/auth/me',
     }),
 
     /**
@@ -60,7 +60,7 @@ export const authApi = createApi({
      */
     register: builder.mutation({
       query: (userData) => ({
-        url: 'api/auth/register',
+        url: '/auth/register',
         method: 'POST',
         body: userData,
       }),

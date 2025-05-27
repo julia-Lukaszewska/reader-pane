@@ -1,25 +1,22 @@
 /**
  * @file useLogout.js
- * @description Custom hook for handling user logout. 
- * Sends logout request to the backend, clears credentials from store, and redirects to login page.
+ * @description Custom hook for handling user logout.
+ * Sends logout request to backend, clears credentials, and redirects to homepage.
  */
+
+//-----------------------------------------------------------------------------
+// Hook: useLogout
+//-----------------------------------------------------------------------------
 
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useLogoutMutation } from '@/store/api/authApi'
 import { clearCredentials } from '@/store/slices/authSlice'
 
-//-----------------------------------------------------------------------------
-// Hook: useLogout
-//-----------------------------------------------------------------------------
-
 /**
- * Handles user logout:
- * - Sends POST /logout request
- * - Clears auth state
- * - Redirects to /login
+ * Returns an async function to log out the user.
  *
- * @returns {Function} async function to trigger logout
+ * @returns {Function}
  */
 export const useLogout = () => {
   const [logoutRequest] = useLogoutMutation()
@@ -33,7 +30,7 @@ export const useLogout = () => {
       console.error('Logout error:', err)
     } finally {
       dispatch(clearCredentials())
-      navigate('/login')
+      navigate('/') // Redirect to homepage
     }
   }
 }

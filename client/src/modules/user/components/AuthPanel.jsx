@@ -29,7 +29,7 @@ const Wrapper = styled.div`
 const AuthPanel = () => {
   const navigate = useNavigate()
   const logout = useLogout()
-  const { user, isLoggedIn } = useAuth()
+  const { isLoggedIn } = useAuth()
 
   if (!isLoggedIn) {
     return (
@@ -42,7 +42,6 @@ const AuthPanel = () => {
 
   return (
     <Wrapper>
-      <span>Hello, {user?.name || user?.email}</span>
       <button onClick={logout}>Log out</button>
     </Wrapper>
   )

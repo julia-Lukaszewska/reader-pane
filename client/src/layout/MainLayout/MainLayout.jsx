@@ -2,17 +2,17 @@
  * @file MainLayout.jsx
  * @description Global layout for all authenticated views.
  * Renders the Header, Sidebar and page content in a responsive grid.
+ * Displays login modal automatically when user is not authenticated.
  */
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store/slices/mainUiSlice'
-import { useInitializeBooks } from '@/hooks'
 import { useAuth } from '@/modules/user/hooks'
-
+import AuthModal from '@/modules/user/components/AuthModal'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ const MainContent = styled.main`
 /**
  * Layout component used across all app routes except home.
  * Automatically closes the sidebar on route change.
- * Loads static book data on mount.
+ * Displays login modal if user is not authenticated.
  *
  * @returns {JSX.Element}
  */
@@ -54,15 +54,8 @@ const MainLayout = () => {
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
   const { isLoggedIn } = useAuth()
 
-  const { initialize } = useInitializeBooks()
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      initialize()
-    }
-  }, [isLoggedIn, initialize])
-
-  useEffect(() => {
+  // Automatically close sidebar on route change
+  React.useEffect(() => {
     dispatch(setSidebar(false))
   }, [location.pathname, dispatch])
 
@@ -73,12 +66,10 @@ const MainLayout = () => {
       <MainContent>
         <Outlet />
       </MainContent>
+
+      {!isLoggedIn && <AuthModal onClose={() => {}} />}
     </LayoutWrapper>
   )
 }
-
-//-----------------------------------------------------------------------------
-// Export (must be default for React.lazy to work)
-//-----------------------------------------------------------------------------
 
 export default MainLayout

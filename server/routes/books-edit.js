@@ -7,7 +7,7 @@
  * - DELETE /:id/notes/:index — remove note by index
  * - PATCH /:id/bookmarks — add a bookmark
  * - DELETE /:id/bookmarks/:index — remove bookmark by index
- */ 
+ */
 
 import express from 'express'
 import Book from '../models/Book.js'
@@ -43,8 +43,8 @@ router.patch('/:id', async (req, res) => {
       return res.status(400).json({ error: 'No meta, flags, or stats provided.' })
     }
 
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
       { $set: updates },
       { new: true }
     )
@@ -67,8 +67,8 @@ router.patch('/:id/notes', async (req, res) => {
       return res.status(400).json({ error: 'Note must include text and page.' })
     }
 
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
       { $push: { 'flags.notes': { text, page, createdAt: new Date() } } },
       { new: true }
     )
@@ -90,8 +90,15 @@ router.delete('/:id/notes/:index', async (req, res) => {
     const pullExpr = { $unset: { [`flags.notes.${idx}`]: 1 } }
     const compact = { $pull: { 'flags.notes': null } }
 
-    await Book.updateOne({ _id: req.params.id }, pullExpr)
-    const book = await Book.findByIdAndUpdate(req.params.id, compact, { new: true })
+    await Book.updateOne(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
+      pullExpr
+    )
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
+      compact,
+      { new: true }
+    )
 
     if (!book) return res.status(404).json({ error: 'Book not found.' })
     res.json(book.flags.notes)
@@ -111,8 +118,8 @@ router.patch('/:id/bookmarks', async (req, res) => {
       return res.status(400).json({ error: 'Bookmark must include page number.' })
     }
 
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
       { $push: { 'flags.bookmarks': { page, label } } },
       { new: true }
     )
@@ -134,8 +141,15 @@ router.delete('/:id/bookmarks/:index', async (req, res) => {
     const pullExpr = { $unset: { [`flags.bookmarks.${idx}`]: 1 } }
     const compact = { $pull: { 'flags.bookmarks': null } }
 
-    await Book.updateOne({ _id: req.params.id }, pullExpr)
-    const book = await Book.findByIdAndUpdate(req.params.id, compact, { new: true })
+    await Book.updateOne(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
+      pullExpr
+    )
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, //  enforce ownership
+      compact,
+      { new: true }
+    )
 
     if (!book) return res.status(404).json({ error: 'Book not found.' })
     res.json(book.flags.bookmarks)

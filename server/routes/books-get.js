@@ -10,7 +10,7 @@
  * - GET /:id/cache – get rendered pages and ranges
  * - GET /:id/file-url – get PDF file URL
  */
- 
+
 import express from 'express'
 import Book from '../models/Book.js'
 
@@ -21,16 +21,19 @@ const router = express.Router()
 //------------------------------------------------------------------
 router.get('/static', async (req, res) => {
   try {
-    const staticBooks = await Book.find({}, {
-      'meta.title':       1,
-      'meta.author':      1,
-      'meta.totalPages':  1,
-      'meta.cover':       1,
-      'meta.tags':        1,
-      'meta.language':    1,
-      'meta.collection':  1,
-    }).lean()
-    res.status(200).json(staticBooks)
+    const books = await Book.find(
+      { owner: req.user.id },
+      {
+        'meta.title': 1,
+        'meta.author': 1,
+        'meta.totalPages': 1,
+        'meta.cover': 1,
+        'meta.tags': 1,
+        'meta.language': 1,
+        'meta.collection': 1,
+      }
+    ).lean()
+    res.status(200).json(books)
   } catch (err) {
     console.error('[STATIC]', err)
     res.status(500).json({ error: 'Error while fetching static books' })
@@ -42,12 +45,12 @@ router.get('/static', async (req, res) => {
 //------------------------------------------------------------------
 router.get('/:id/live', async (req, res) => {
   try {
-    const live = await Book.findById(
-      req.params.id,
+    const book = await Book.findOne(
+      { _id: req.params.id, owner: req.user.id },
       { flags: 1, stats: 1 }
     ).lean()
-    if (!live) return res.status(404).json({ error: 'Book not found' })
-    res.status(200).json(live)
+    if (!book) return res.status(404).json({ error: 'Book not found' })
+    res.status(200).json(book)
   } catch (err) {
     console.error('[LIVE GET]', err)
     res.status(500).json({ error: 'Error while fetching live data' })
@@ -67,8 +70,8 @@ router.patch('/:id/live', async (req, res) => {
       return res.status(400).json({ error: 'No flags or stats provided' })
     }
 
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id },
       { $set: changes },
       { new: true, runValidators: true }
     )
@@ -85,7 +88,7 @@ router.patch('/:id/live', async (req, res) => {
 //------------------------------------------------------------------
 router.get('/', async (req, res) => {
   try {
-    const books = await Book.find().sort({ 'meta.addedAt': -1 })
+    const books = await Book.find({ owner: req.user.id }).sort({ 'meta.addedAt': -1 })
     res.status(200).json(books)
   } catch (err) {
     console.error('[GET ALL]', err)
@@ -98,7 +101,7 @@ router.get('/', async (req, res) => {
 //------------------------------------------------------------------
 router.get('/:id', async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id)
+    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id })
     if (!book) return res.status(404).json({ error: 'Book not found' })
     res.status(200).json(book)
   } catch (err) {
@@ -112,13 +115,13 @@ router.get('/:id', async (req, res) => {
 //------------------------------------------------------------------
 router.get('/:id/cache', async (req, res) => {
   try {
-    const book = await Book.findById(
-      req.params.id,
+    const book = await Book.findOne(
+      { _id: req.params.id, owner: req.user.id },
       'flags.renderedPages flags.renderedRanges'
     )
     if (!book) return res.status(404).json({ error: 'Book not found' })
     res.status(200).json({
-      renderedPages:  book.flags.renderedPages,
+      renderedPages: book.flags.renderedPages,
       renderedRanges: book.flags.renderedRanges,
     })
   } catch (err) {
@@ -132,9 +135,10 @@ router.get('/:id/cache', async (req, res) => {
 //------------------------------------------------------------------
 router.get('/:id/file-url', async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id)
-      .select('meta.fileUrl fileUrl')
-      .lean()
+    const book = await Book.findOne(
+      { _id: req.params.id, owner: req.user.id },
+      'meta.fileUrl fileUrl'
+    ).lean()
     if (!book) return res.status(404).json({ message: 'Book not found' })
     const raw = book.meta?.fileUrl ?? book.fileUrl
     res.status(200).json({ fileUrl: raw })
@@ -144,4 +148,4 @@ router.get('/:id/file-url', async (req, res) => {
   }
 })
 
-export default router
+export default router;

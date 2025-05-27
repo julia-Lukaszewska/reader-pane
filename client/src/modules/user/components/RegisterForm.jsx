@@ -1,12 +1,10 @@
 /**
  * @file RegisterForm.jsx
- * @description Styled register form using RTK Query and Redux auth slice.
+ * @description Styled register form using RTK Query. Switches to login tab after success.
  */
 
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useRegisterMutation } from '@/store/api/authApi'
-import { setCredentials } from '@/store/slices/authSlice'
 import styled from 'styled-components'
 
 //-----------------------------------------------------------------------------
@@ -62,11 +60,17 @@ const ErrorText = styled.p`
 `
 
 //-----------------------------------------------------------------------------
-// Component
+// Component: RegisterForm
 //-----------------------------------------------------------------------------
 
-export default function RegisterForm() {
-  const dispatch = useDispatch()
+/**
+ * Renders a styled registration form.
+ * On success, switches modal tab to Log In without auto-login.
+ *
+ * @param {{ onSuccess: () => void }} props
+ * @returns {JSX.Element}
+ */
+export default function RegisterForm({ onSuccess }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -75,11 +79,11 @@ export default function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const result = await register({ name, email, password }).unwrap()
-      dispatch(setCredentials({ access: result.access }))
+      await register({ name, email, password }).unwrap()
       setName('')
       setEmail('')
       setPassword('')
+      onSuccess?.() // Switch to login tab
     } catch (err) {
       console.error('Register failed:', err)
     }
@@ -89,32 +93,17 @@ export default function RegisterForm() {
     <Form onSubmit={handleSubmit}>
       <Label>
         Name
-        <Input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <Input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
       </Label>
 
       <Label>
         Email
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </Label>
 
       <Label>
         Password
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </Label>
 
       <SubmitButton type="submit" disabled={isLoading}>

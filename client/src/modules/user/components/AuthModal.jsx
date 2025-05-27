@@ -5,6 +5,9 @@
 
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { setAuthModalMode } from '@/store/slices/mainUiSlice'
 import { FiX } from 'react-icons/fi'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
@@ -89,6 +92,8 @@ const Tab = styled.button`
  */
 const AuthModal = ({ onClose }) => {
   const [mode, setMode] = useState('login')
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   return (
     <Overlay onClick={onClose}>
@@ -106,7 +111,16 @@ const AuthModal = ({ onClose }) => {
           </Tab>
         </Tabs>
 
-        {mode === 'login' ? <LoginForm /> : <RegisterForm />}
+        {mode === 'login' ? (
+          <LoginForm
+            onSuccess={() => {
+              dispatch(setAuthModalMode(null)) // close modal
+              navigate('/library') // go to library
+            }}
+          />
+        ) : (
+          <RegisterForm onSuccess={() => setMode('login')} />
+        )}
       </ModalBox>
     </Overlay>
   )

@@ -10,7 +10,7 @@
 
 import express from 'express'
 import Book from '../models/Book.js'
- 
+
 const router = express.Router()
 
 //------------------------------------------------------------------
@@ -18,10 +18,8 @@ const router = express.Router()
 //------------------------------------------------------------------
 router.get('/:id/progress', async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id)
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' })
-    }
+    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id }) 
+    if (!book) return res.status(404).json({ error: 'Book not found' })
 
     res.json({
       currentPage: book.stats.currentPage || 1,
@@ -43,7 +41,7 @@ router.patch('/:id/progress', async (req, res) => {
       return res.status(400).json({ error: 'Invalid currentPage value' })
     }
 
-    const book = await Book.findById(req.params.id)
+    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id }) 
     if (!book) return res.status(404).json({ error: 'Book not found' })
 
     if (!book.stats) book.stats = {}
@@ -69,12 +67,11 @@ router.patch('/:id/progress', async (req, res) => {
 router.patch('/:id/progress/auto', async (req, res) => {
   try {
     const currentPage = req.body?.changes?.stats?.currentPage
-
     if (!currentPage || currentPage < 1) {
       return res.status(400).json({ error: 'Invalid currentPage value' })
     }
 
-    const book = await Book.findById(req.params.id)
+    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id }) // 🔒
     if (!book) return res.status(404).json({ error: 'Book not found' })
 
     if (!book.stats) book.stats = {}
@@ -98,17 +95,14 @@ router.patch('/:id/progress/auto', async (req, res) => {
 // PATCH /api/books/:id/last-opened — update lastOpenedAt timestamp
 //------------------------------------------------------------------
 router.patch('/:id/last-opened', async (req, res) => {
-  try {
-    const now = new Date()
-    const book = await Book.findByIdAndUpdate(
-      req.params.id,
+  try {    const now = new Date()
+    const book = await Book.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user.id }, 
       { 'stats.lastOpenedAt': now },
       { new: true }
     )
 
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' })
-    }
+    if (!book) return res.status(404).json({ error: 'Book not found' })
 
     res.json({ lastOpenedAt: book.stats.lastOpenedAt })
   } catch (err) {

@@ -65,7 +65,7 @@ const ErrorText = styled.p`
 // Component
 //-----------------------------------------------------------------------------
 
-export default function LoginForm() {
+export default function LoginForm({ onSuccess }) {
   const dispatch = useDispatch()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -78,6 +78,7 @@ export default function LoginForm() {
       dispatch(setCredentials({ access: result.access }))
       setEmail('')
       setPassword('')
+      onSuccess?.() 
     } catch (err) {
       console.error('Login failed:', err)
     }
@@ -87,22 +88,12 @@ export default function LoginForm() {
     <Form onSubmit={handleSubmit}>
       <Label>
         Email
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </Label>
 
       <Label>
         Password
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       </Label>
 
       <SubmitButton type="submit" disabled={isLoading}>

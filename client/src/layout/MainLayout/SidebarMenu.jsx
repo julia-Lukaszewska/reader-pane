@@ -103,7 +103,7 @@ const SidebarMenu = () => {
         ) : (
           <>
             <div style={{ fontSize: '0.85rem', opacity: 0.7 }}>
-              Hello, {user?.name || user?.email}
+             
             </div>
             <Button $variant="sidebar_btn" onClick={logout}>
               Log out

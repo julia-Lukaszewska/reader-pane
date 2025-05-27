@@ -19,7 +19,7 @@ export default function useInitializeBooks() {
   
   // initialize() will dispatch the RTK Query endpoint to fetch static books
   const initialize = () => {
-    dispatch(booksApi.endpoints.getBooksStatic.initiate(undefined))
+    dispatch(booksApi.endpoints.getBooks.initiate(undefined, { forceRefetch: false }))
   }
 
   return { initialize }

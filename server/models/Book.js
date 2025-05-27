@@ -32,6 +32,13 @@ const bookSchema = new mongoose.Schema(
       addedAt:         { type: Date, default: Date.now },
       collection:      { type: String, default: '' },
     },
+     // models/Book.js
+     owner: {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: 'User',
+       required: true,
+       index: true,
+     },
 
     // 2) FLAGS – user-defined states and settings
     flags: {
