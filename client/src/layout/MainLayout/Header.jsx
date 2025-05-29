@@ -16,6 +16,7 @@ import { SlHome, SlMenu } from 'react-icons/sl'
 //-----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`  
+  position: relative;
   background:
     linear-gradient(
       37deg,
@@ -57,13 +58,14 @@ const HeaderStyled = styled.header`
 `
 
 const Title = styled.h1`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 2.4rem;
   font-weight: 300;
   text-transform: uppercase;
   letter-spacing: 0.4rem;
-  flex-grow: 1;
-  text-align: center;
-  margin-left: -4rem;
   font-family: 'Poppins', sans-serif;
   color: white;
   text-shadow: var(--color-);

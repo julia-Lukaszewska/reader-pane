@@ -15,18 +15,21 @@ import { AddBookTile } from '@/modules/uploadPDF'
 //--- Main wrapper for the list layout
 const ListWrapper = styled.div`
   width: 100%;
+  height: 80%;                             
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
-  overflow: hidden;
+  overflow-y: auto;                        
+  display: flex;
+  flex-direction: column;
 `
-
 //--- Header row for list labels
 const HeaderRow = styled.div`
   display: grid;
   grid-template-columns: 5% 45% 30% 15% 5%;
   padding: 1rem 2rem;
   font-weight: bold;
+  position: sticky;
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-color);
 `
@@ -48,16 +51,17 @@ const HeaderRow = styled.div`
  */
 const LibraryListLayout = ({ books, hideAddTile, onRestore, onDelete }) => {
   return (
-    <ListWrapper>
-      <HeaderRow>
+    <>
+    <HeaderRow>
         <span></span>
         <span>Title</span>
         <span>Author</span>
         <span>Date added</span>
         <span>Actions</span>
-      </HeaderRow>
-
       {!hideAddTile && <AddBookTile viewMode='list' />}
+      </HeaderRow>
+<ListWrapper>
+
 
       {books.map((book) =>
         book ? (
@@ -71,6 +75,7 @@ const LibraryListLayout = ({ books, hideAddTile, onRestore, onDelete }) => {
         ) : null
       )}
     </ListWrapper>
+    </>
   )
 }
 

@@ -14,7 +14,7 @@ import { useUploadPDF } from '@/modules/uploadPDF'
 // Styled Components
 //-----------------------------------------------------------------------------
 
-//--- Upload tile, styled differently by viewMode
+//--- Tile wrapper (changes style depending on current view mode)
 const AddTile = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'viewMode',
 })`
@@ -25,6 +25,8 @@ const AddTile = styled.div.withConfig({
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   color: var(--text-primary);
+
+  //------ Grid view styling
 
   ${({ viewMode }) =>
     viewMode === 'grid' &&
@@ -38,17 +40,21 @@ const AddTile = styled.div.withConfig({
     padding: 0.5rem;
   `}
 
+  //------ List view styling
+
   ${({ viewMode }) =>
     viewMode === 'list' &&
     `
     grid-column: 1 / -1;
     width: 100%;
-    height: 8vh;
+    height: 90%;
     background: var(--gradient-main);
     backdrop-filter: blur(6px);
     border-radius: var(--border-radius);
     box-shadow: var(--glass-shadow);
   `}
+
+  //------ Table view styling
 
   ${({ viewMode }) =>
     viewMode === 'table' &&
@@ -59,6 +65,8 @@ const AddTile = styled.div.withConfig({
     border-bottom: 1px solid var(--border-color);
   `}
 
+  //------ Hover effect
+  
   &:hover {
     transform: translateY(-2px);
     background-color: ${({ viewMode }) =>
@@ -68,7 +76,7 @@ const AddTile = styled.div.withConfig({
   }
 `
 
-//--- Hidden file input
+//--- Hidden input for file selection
 const HiddenInput = styled.input`
   display: none;
 `
@@ -78,10 +86,10 @@ const HiddenInput = styled.input`
 //-----------------------------------------------------------------------------
 
 /**
- * Renders a tile that opens a file picker to upload a PDF.
- * Shows a spinner text while uploading.
+ * @function AddBookTile
+ * @description Renders an interactive tile that allows users to upload a PDF file.
+ * When clicked, opens the file picker. Displays a spinner while uploading.
  *
- * @component
  * @returns {JSX.Element}
  */
 const AddBookTile = () => {
@@ -91,23 +99,25 @@ const AddBookTile = () => {
   const { handleUpload } = useUploadPDF()
 
   /**
-   * Trigger file input click
+   * Triggers the hidden file input
    */
   const handleClick = () => {
     inputRef.current?.click()
   }
 
   /**
-   * Handles file selection and upload
+   * Handles file selection and upload process
    *
-   * @param {Event} e - File input change event
+   * @param {React.ChangeEvent<HTMLInputElement>} e - File input change event
    */
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
+
     setUploading(true)
     await handleUpload(file)
     setUploading(false)
+
     e.target.value = null
   }
 
@@ -116,9 +126,10 @@ const AddBookTile = () => {
       <AddTile viewMode={viewMode} onClick={handleClick}>
         {!uploading ? <FiPlus size={32} /> : <span>Uploading...</span>}
       </AddTile>
+
       <HiddenInput
-        type='file'
-        accept='application/pdf'
+        type="file"
+        accept="application/pdf"
         ref={inputRef}
         onChange={handleFileChange}
       />

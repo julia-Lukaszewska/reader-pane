@@ -20,7 +20,10 @@ import { LoadingSpinner } from '@/components'
 
 const Container = styled.div`
   width: 100%;
+  height: 100%;  
   flex: 1;
+  flex-direction: column;
+  overflow: hidden;
 `
 
 //-----------------------------------------------------------------------------

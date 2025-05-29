@@ -1,19 +1,22 @@
-// -----------------------------------------------------------------------------
-//------ ReaderView – displays PDF reader interface
-//-----------------------------------------------------------------------------
-
 /**
  * @file ReaderView.jsx
  * @description Renders the PDF reader view using RenderedPDFViewer component.
  */
+
+//-----------------------------------------------------
+//------ ReaderView – displays PDF reader interface
+//-----------------------------------------------------
+
 import React from 'react'
 import styled from 'styled-components'
 import { RenderedPDFViewer } from '@/modules/reader'
 
-// -----------------------------------------------------------------------------
-//------ Styled components for ReaderView
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Styled Components
+//-----------------------------------------------------
 
+//------ StyledReaderView
+//-----------------------------------------------------
 const StyledReaderView = styled.div`
   display: flex;
   flex-direction: column;
@@ -22,12 +25,15 @@ const StyledReaderView = styled.div`
   background: var(--bg-default);
 `
 
-// -----------------------------------------------------------------------------
-//------ Component: ReaderView
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Component
+//-----------------------------------------------------
 
 /**
- * Displays the PDF viewer within a styled container.
+ * @function ReaderView
+ * @description Displays the PDF viewer within a styled container.
+ *
+ * @returns {JSX.Element}
  */
 const ReaderView = () => {
   return (
