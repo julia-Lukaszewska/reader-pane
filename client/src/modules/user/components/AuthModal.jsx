@@ -60,27 +60,28 @@ const CloseButton = styled.button`
 
 const Tabs = styled.div`
   display: flex;
+
   justify-content: center;
-  gap: 2rem;
+  gap: 1em;
   font-weight: bold;
 `
 
 const Tab = styled.button`
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 0.9em;
   color: ${({ $active }) => ($active ? 'white' : 'var(--color-light-600)')};
   border-bottom: ${({ $active }) =>
     $active ? '2px solid white' : '2px solid transparent'};
   cursor: pointer;
-  padding: 0.4rem 0;
+  padding: 0.4em 0;
   transition: all 0.2s ease;
 
   &:hover {
     color: white;
     filter: brightness(1.2);
   }
-`
+`;
 
 //-----------------------------------------------------------------------------
 // Component

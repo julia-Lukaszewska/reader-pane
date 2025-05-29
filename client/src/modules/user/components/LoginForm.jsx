@@ -16,32 +16,35 @@ import styled from 'styled-components'
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
+  gap: 1.4em;
 `
 
 const Label = styled.label`
   display: flex;
   flex-direction: column;
-  font-size: 0.95rem;
+  font-size: 0.75em;
 `
 
 const Input = styled.input`
-  padding: 0.6rem 1rem;
-  border-radius: 0.6rem;
+  padding: 0.6em 1em;
+  border-radius: 0.6em;
+  font-size: 1em;
+  font-weight: 500;
   border: 1px solid var(--color-dark-600);
   background: var(--glass-bg);
+  filter: brightness(1.35) ;
   color: var(--color-light-0);
   outline: none;
-  margin-top: 0.4rem;
+  margin-top: 0.4em;
 `
 
 const SubmitButton = styled.button`
-  padding: 0.8rem 1.2rem;
+  padding: 0.8em 1.2em;
   background: var(--gradient-blue);
   color: white;
   font-weight: bold;
   border: none;
-  border-radius: 0.8rem;
+  border-radius: 0.8em;
   cursor: pointer;
   transition: 0.3s ease;
 
@@ -57,8 +60,8 @@ const SubmitButton = styled.button`
 
 const ErrorText = styled.p`
   color: #ff6b6b;
-  font-size: 0.9rem;
-  margin-top: -0.5rem;
+  font-size: 0.9em;
+  margin-top: 0.5em;
 `
 
 //-----------------------------------------------------------------------------
