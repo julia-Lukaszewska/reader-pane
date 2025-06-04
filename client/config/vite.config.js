@@ -11,11 +11,11 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const branch = process.env.BRANCH || 'dev'
 const envFile = `.env.client.${branch}`
-const envPath = resolve(__dirname, '..', 'env', envFile)
+const envPath = resolve(__dirname, '../../env', envFile)
 
-
+// Load environment variables
 if (fs.existsSync(envPath)) {
-  const env = loadEnv('', resolve(__dirname, '..', 'env'), `.env.client.${branch}`)
+  const env = loadEnv('', resolve(__dirname, '../../env'), `.env.client.${branch}`)
   process.env = { ...process.env, ...env }
   console.log(`Loaded ${envFile}`)
 }
@@ -23,31 +23,31 @@ if (fs.existsSync(envPath)) {
 export default defineConfig({
   plugins: [react()],
   resolve: {
-  alias: {
-    global: 'globalThis',
-    '@': resolve(__dirname, '..', 'src'),
-    '@book': resolve(__dirname, '..' , 'src/modules/book'),
-    '@reader': resolve(__dirname,'..', 'src/modules/reader'),
-    '@upload': resolve(__dirname,'..', 'src/modules/uploadPDF'),
-    '@library': resolve(__dirname,'..', 'src/modules/library'),
-    '@user': resolve(__dirname,'..', 'src/modules/user'),
-    '@home': resolve(__dirname,'..', 'src/modules/home'),
-  },
-},
-  optimizeDeps: {
-  esbuildOptions: {
-    define: {
-      global: 'globalThis', 
+    alias: {
+      global: 'globalThis',
+      '@': resolve(__dirname, '../../client/src'),
+      '@book': resolve(__dirname, '../../client/src/modules/book'),
+      '@reader': resolve(__dirname, '../../client/src/modules/reader'),
+      '@upload': resolve(__dirname, '../../client/src/modules/uploadPDF'),
+      '@library': resolve(__dirname, '../../client/src/modules/library'),
+      '@user': resolve(__dirname, '../../client/src/modules/user'),
+      '@home': resolve(__dirname, '../../client/src/modules/home'),
     },
-    plugins: [
-      NodeGlobalsPolyfillPlugin({
-        process: true,
-        buffer: true,
-      }),
-    ],
   },
-},
-server: {
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          process: true,
+          buffer: true,
+        }),
+      ],
+    },
+  },
+  server: {
     proxy: {
       '/api': 'http://localhost:5000',
     },
