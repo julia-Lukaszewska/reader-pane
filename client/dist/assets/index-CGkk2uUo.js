@@ -1,9 +1,0 @@
-import{u as N,a,s as x,b as h,c as v,e as g,f as j,g as k,r as s,h as E,j as e,L as M,i as C,O as B,B as D,k as R,l as w,d as A}from"./index-CbYdQxyi.js";const I=A.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 3rem;
-  height: 100%;
-  width: 100%;
-  background: var(--gradient-blue-clear);
-`;function O(){const c=N(),o=a(x),d=a(h),y=a(v),m=a(g),b=a(j),{data:t=[],refetch:i,isLoading:L,isError:f}=k(void 0,{refetchOnMountOrArgChange:!0}),l=s.useMemo(()=>t.filter(r=>{var u;return r&&r._id&&((u=r.meta)==null?void 0:u.fileUrl)&&typeof r.meta.fileUrl=="string"}),[t]),p=s.useMemo(()=>E(l,o),[l,o]);s.useEffect(()=>{localStorage.setItem("sortMode",o)},[o]),s.useEffect(()=>{i()},[i]);const n=p.find(r=>r._id===b);return L?e.jsxDEV(M,{},void 0,!1,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:102,columnNumber:25},this):f?e.jsxDEV("div",{children:"Error loading books."},void 0,!1,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:103,columnNumber:23},this):e.jsxDEV(I,{children:[e.jsxDEV(C,{},void 0,!1,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:107,columnNumber:7},this),e.jsxDEV(B,{},void 0,!1,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:108,columnNumber:7},this),d&&y.length>0&&e.jsxDEV(D,{},void 0,!1,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:111,columnNumber:9},this),m&&n&&e.jsxDEV(R,{book:n,onClose:()=>c(w())},void 0,!1,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:115,columnNumber:9},this)]},void 0,!0,{fileName:"C:/Reader-App/client/src/layout/LibraryLayout/LibraryLayout.jsx",lineNumber:106,columnNumber:5},this)}export{O as default};
