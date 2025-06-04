@@ -1,6 +1,9 @@
 /**
  * @file PDFPageControls.jsx
- * @description Pagination controls for PDF viewer, allowing navigation between pages.
+ * @description
+ * Pagination controls for PDF viewer, allowing navigation between pages.
+ * Includes back/next buttons and current page display.
+ * Hidden outside of `/read` route or if book/page data is missing.
  */
 
 import React from 'react'
@@ -15,10 +18,10 @@ import {
   selectBookStaticById,
 } from '@/store/selectors/selectors'
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Styled Components
-//-----------------------------------------------------------------------------
-  
+// -----------------------------------------------------------------------------
+
 const StyledPagination = styled.div`
   display: flex;
   align-items: center;
@@ -44,24 +47,21 @@ const PageInfo = styled.span`
   color: #fff;
 `
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Component: PDFPageControls
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 /**
- * Renders back/next buttons and current page info.
- * Uses `usePDFPagination` to determine logic based on view mode and total pages.
+ * Pagination controls shown in the PDF reader.
+ * Includes navigation buttons and current page indicator.
  *
- * Hidden if not in /read route or missing book data.
+ * @returns {JSX.Element|null}
  */
 const PDFPageControls = () => {
-  console.log('PDFPageControls')
-
   const location = useLocation()
   const bookId = useSelector(selectActiveBookId)
   const viewMode = useSelector(selectPageViewMode)
 
-  // Pobieramy totalPages z cache statycznych danych książki
   const staticBook = useSelector(selectBookStaticById(bookId))
   const totalPages = staticBook?.meta?.totalPages ?? 0
 
@@ -73,7 +73,7 @@ const PDFPageControls = () => {
     handleNext,
   } = usePDFPagination(bookId, totalPages, viewMode)
 
-  // Ukryj, jeśli poza /read, brak książki lub brak stron
+  // Hide if not in /read route or book/page data is missing
   if (
     !location.pathname.startsWith('/read') ||
     !bookId ||

@@ -1,173 +1,99 @@
-/**
- * @file selectors.js
- * @description Reselect selectors for static data, UI state, book state, reader state, and PDF cache.
- */
 
 import { createSelector } from 'reselect'
 import { booksApi, booksAdapter } from '@/store/api/booksApi'
 
+//-----------------------------------------------------------------------------//
+// Dynamic Data Selectors (RTK Query: getBooks)
+//-----------------------------------------------------------------------------//
 
-//-----------------------------------------------------------------------------
-// Static Data Selectors (RTK Query normalized)
-//-----------------------------------------------------------------------------
+export const selectBooksResult = booksApi.endpoints.getBooks.select()
 
-// Select result of getBooksStatic query
+export const selectAllBooks = createSelector(
+  selectBooksResult,
+  result => result?.data ?? []
+)
+
+export const selectBookByIdFromCache = bookId =>
+  createSelector(selectBooksResult, result =>
+    result?.data?.find(book => book._id === bookId)
+  )
+
+//-----------------------------------------------------------------------------//
+//  Static Data Selectors (RTK Query: getBooksStatic)
+//-----------------------------------------------------------------------------//
+
 const selectStaticResult = booksApi.endpoints.getBooksStatic.select()
 
-/**
- * Select all static books as an array
- * @type {Selector}
- */
 export const selectAllBooksStatic = createSelector(
   selectStaticResult,
-  (staticResult) =>
-    staticResult.data
-      ? booksAdapter.getSelectors().selectAll(staticResult.data)
+  result =>
+    result?.data
+      ? booksAdapter.getSelectors().selectAll(result.data)
       : []
 )
 
-/**
- * Select a static book by ID
- * @param {string} bookId
- * @returns {Selector}
- */
-export const selectBookStaticById = (bookId) =>
-  createSelector(
-    selectStaticResult,
-    (staticResult) =>
-      staticResult.data
-        ? booksAdapter.getSelectors().selectById(staticResult.data, bookId)
-        : undefined
+export const selectBookStaticById = bookId =>
+  createSelector(selectStaticResult, result =>
+    result?.data
+      ? booksAdapter.getSelectors().selectById(result.data, bookId)
+      : undefined
   )
 
-//-----------------------------------------------------------------------------
-// UI State Selectors (mainUiSlice)
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------//
+//  UI State Selectors (mainUiSlice)
+//-----------------------------------------------------------------------------//
 
-/**
- * @returns {string} current theme ('light' | 'dark')
- */
-export const selectTheme = (state) => state.ui.theme
+export const selectTheme = state => state.ui.theme
+export const selectSidebarOpen = state => state.ui.sidebarOpen
+export const selectActiveItem = state => state.ui.activeItem
+export const selectLoginModalOpen = state => state.ui.loginModalOpen
+export const selectRegisterModalOpen = state => state.ui.registerModalOpen
+export const selectAuthModalMode = state => state.ui.authModalMode
 
-/**
- * @returns {boolean} sidebar open state
- */
-export const selectSidebarOpen = (state) => state.ui.sidebarOpen
+//-----------------------------------------------------------------------------//
+//  Book State Selectors (bookSlice – tylko UI)
+//-----------------------------------------------------------------------------//
 
-/**
- * @returns {string|null} active navigation item
- */
-export const selectActiveItem = (state) => state.ui.activeItem
+export const selectActiveBookId = state => state.book.activeBookId
+export const selectIsManageMode = state => state.book.isManageMode
+export const selectPreviewBookId = state => state.book.previewBookId
+export const selectIsPreviewOpen = state => Boolean(state.book.previewBookId)
+export const selectSelectedBookIds = state => state.book.selectedIds
+export const selectLibraryViewMode = state => state.book.libraryViewMode
+export const selectSortMode = state => state.book.sortMode
+export const selectProgressMode = state => state.book.progressMode
+export const selectLastOpenedBookId = state => state.book.lastOpenedBookId
 
-/**
- * @returns {boolean} login modal open state
- */
-export const selectLoginModalOpen = (state) => state.ui.loginModalOpen
+export const selectCurrentPageById = (state, bookId) => {
+  const book = selectBookByIdFromCache(bookId)(state)
+  return book?.stats?.currentPage ?? 1
+}
 
-/**
- * @returns {boolean} register modal open state
- */
-export const selectRegisterModalOpen = (state) => state.ui.registerModalOpen
+export const selectMaxVisitedPageById = (state, bookId) => {
+  const book = selectBookByIdFromCache(bookId)(state)
+  return book?.stats?.maxVisitedPage ?? 1
+}
 
-/**
- * @returns {'login' | 'register' | null} current auth modal mode
- */
-export const selectAuthModalMode = (state) => state.ui.authModalMode
-//-----------------------------------------------------------------------------
-// Book State Selectors (bookSlice)
-//-----------------------------------------------------------------------------
-
-/** @returns {string|null} active book ID */
-export const selectActiveBookId = (state) => state.book.activeBookId
-
-/** @returns {boolean} manage mode flag */
-export const selectIsManageMode = (state) => state.book.isManageMode
-
-/** @returns {string|null} preview book ID */
-export const selectPreviewBookId = (state) => state.book.previewBookId
-
-/** @returns {boolean} whether preview is open */
-export const selectIsPreviewOpen = (state) => Boolean(state.book.previewBookId)
-
-/** @returns {string[]} selected book IDs */
-export const selectSelectedBookIds = (state) => state.book.selectedIds
-
-/** @returns {'grid'|'list'|'table'} library view mode */
-export const selectLibraryViewMode = (state) => state.book.libraryViewMode
-
-/** @returns {string} sort mode */
-export const selectSortMode = (state) => state.book.sortMode
-
-/** @returns {'current'|'max'} progress mode */
-export const selectProgressMode = (state) => state.book.progressMode
-
-/** @returns {string|null} last opened book ID */
-export const selectLastOpenedBookId = (state) => state.book.lastOpenedBookId
-
-/**
- * Select book entry by ID from normalized byId map
- * @param {string} bookId
- */
-export const selectBookById = (state, bookId) =>
-  state.book.byId?.[bookId] ?? null
-
-/** @returns {Object} stats for book */
-export const selectBookStatsById = (state, bookId) =>
-  state.book.byId?.[bookId]?.stats ?? {}
-
-/** @returns {Object} flags for book */
-export const selectBookFlagsById = (state, bookId) =>
-  state.book.byId?.[bookId]?.flags ?? {}
-
-/** @returns {Object} preload cache for book */
-export const selectBookPreloadById = (state, bookId) =>
-  state.book.byId?.[bookId]?.preload ?? {}
-
-/** @returns {number} current page or 1 */
-export const selectCurrentPageById = (state, bookId) =>
-  state.book.byId?.[bookId]?.stats?.currentPage ?? 1
-
-/** @returns {number} max visited page or 1 */
-export const selectMaxVisitedPageById = (state, bookId) =>
-  state.book.byId?.[bookId]?.stats?.maxVisitedPage ?? 1
-
-/**
- * @returns {number} current page of active book (or 1)
- */
-export const selectCurrentPage = (state) => {
+export const selectCurrentPage = state => {
   const activeId = selectActiveBookId(state)
   return activeId ? selectCurrentPageById(state, activeId) : 1
 }
 
-//-----------------------------------------------------------------------------
-// Reader State Selectors (readerSlice)
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------//
+//  Reader State Selectors (readerSlice)
+//-----------------------------------------------------------------------------//
 
-/** @returns {number} index into zoom levels */
-export const selectScaleIndex = (state) => state.reader.scaleIndex
+export const selectScaleIndex = state => state.reader.scaleIndex
+export const selectCurrentScale = state => state.reader.currentScale
+export const selectFitScaleFactor = state => state.reader.fitScaleFactor
+export const selectFullPageFitScale = state => state.reader.fullPageFitScale
+export const selectPageViewMode = state => state.reader.pageViewMode
+export const selectPageTurnRate = state => state.reader.pageTurnRate
 
-/** @returns {number} current zoom scale */
-export const selectCurrentScale = (state) => state.reader.currentScale
+//-----------------------------------------------------------------------------//
+//  Computed Selectors
+//-----------------------------------------------------------------------------//
 
-/** @returns {number} fit scale factor */
-export const selectFitScaleFactor = (state) => state.reader.fitScaleFactor
-
-/** @returns {number|null} full page fit scale */
-export const selectFullPageFitScale = (state) => state.reader.fullPageFitScale
-
-/** @returns {'single'|'spread'|'scroll'} page view mode */
-export const selectPageViewMode = (state) => state.reader.pageViewMode
-
-/** @returns {*} page turn rate */
-export const selectPageTurnRate = (state) => state.reader.pageTurnRate
-
-//-----------------------------------------------------------------------------
-// Computed Selectors
-//-----------------------------------------------------------------------------
-
-/**
- * Computes progress value based on mode, current page, and max visited.
- */
 export const selectProgressValue = createSelector(
   selectProgressMode,
   (state, bookId) => selectCurrentPageById(state, bookId),
@@ -176,26 +102,18 @@ export const selectProgressValue = createSelector(
     mode === 'max' ? maxVisited : currentPage
 )
 
-//-----------------------------------------------------------------------------
-// PDF Cache Selectors (pdfCacheSlice)
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------//
+//  PDF Cache Selectors (pdfCacheSlice)
+//-----------------------------------------------------------------------------//
 
-/**
- * Get a cached page data by book, scale, and page number
- */
 export const selectCachedPage = (state, bookId, scale, page) =>
   state.pdfCache?.[bookId]?.[scale]?.pages?.[page] ?? null
 
-/**
- * Get cached rendered ranges for book and scale
- */
 export const selectRenderedRanges = (state, bookId, scale) =>
   state.pdfCache?.[bookId]?.[scale]?.ranges ?? []
-//-----------------------------------------------------------------------------
-// Auth State Selectors (authSlice)
-//-----------------------------------------------------------------------------
 
-/**
- * @returns {boolean} true if access token exists
- */
-export const selectIsLoggedIn = (state) => Boolean(state.auth.access)
+//-----------------------------------------------------------------------------//
+//  Auth State Selectors (authSlice)
+//-----------------------------------------------------------------------------//
+
+export const selectIsLoggedIn = state => Boolean(state.auth.access)

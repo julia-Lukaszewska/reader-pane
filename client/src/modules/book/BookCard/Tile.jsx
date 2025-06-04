@@ -1,21 +1,23 @@
 /**
  * @file Tile.jsx
- * @description Book tile component for grid view, supports preview, select, and actions.
+ * @description
+ * Book tile component used in grid view. 
+ * Supports preview, manage mode selection, and action buttons.
  */
 
 import React from 'react'
 import styled from 'styled-components'
 import { IoCloseOutline } from 'react-icons/io5'
+import { useSelector } from 'react-redux'
+
 import SelectCheckbox from './SelectCheckbox'
 import CardButtons from './CardButtons'
-import { useSelector } from 'react-redux'
 import { selectIsManageMode } from '@/store/selectors/selectors'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Styled Components
+// -----------------------------------------------------------------------------
 
-//--- Wrapper for the entire tile
 const TileBox = styled.div`
   width: var(--tile-size);
   aspect-ratio: 2 / 3;
@@ -26,7 +28,7 @@ const TileBox = styled.div`
   justify-content: space-between;
   box-shadow: var(--glass-shadow);
   padding: 4%;
-  display: flex;   
+  display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
@@ -41,7 +43,6 @@ const TileBox = styled.div`
   }
 `
 
-//--- Close button wrapper
 const CloseWrapper = styled.div`
   position: absolute;
   top: 0.4em;
@@ -50,7 +51,6 @@ const CloseWrapper = styled.div`
   pointer-events: auto;
 `
 
-//--- Close icon
 const Close = styled.span`
   font-size: 1.1em;
   color: var(--text-secondary);
@@ -61,20 +61,15 @@ const Close = styled.span`
   }
 `
 
-//--- Title wrapper
 const TitleWrapper = styled.div`
   height: 15%;
   width: 80%;
-  padding-top: 6%;
-  padding-bottom: 20%;
-  padding-left: 8%;
-  padding-right: 8%;
+  padding: 6% 8% 20% 8%;
   display: flex;
   align-items: start;
   justify-content: center;
 `
 
-//--- Book title
 const Title = styled.h3`
   font-size: 0.65em;
   font-weight: 600;
@@ -87,7 +82,6 @@ const Title = styled.h3`
   line-height: 1.2;
 `
 
-//--- Cover container
 const CoverWrapper = styled.div`
   width: 100%;
   height: 65%;
@@ -100,7 +94,6 @@ const CoverWrapper = styled.div`
   padding: 0 6%;
 `
 
-//--- Cover image
 const Cover = styled.img`
   height: 100%;
   width: auto;
@@ -108,7 +101,6 @@ const Cover = styled.img`
   object-position: center;
 `
 
-//--- Footer section for buttons
 const Footer = styled.div`
   height: 12%;
   width: 100%;
@@ -119,10 +111,19 @@ const Footer = styled.div`
   padding-top: 2%;
 `
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Component: Tile
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
+/**
+ * Renders a single book tile in grid view.
+ *
+ * @param {Object} props
+ * @param {Object} props.book - Book data object
+ * @param {Function} props.onOpenPreview - Called when tile is clicked
+ * @param {Function} props.onRemoveClick - Called when remove icon is clicked
+ * @returns {JSX.Element}
+ */
 const Tile = ({ book, onOpenPreview, onRemoveClick }) => {
   const isManageMode = useSelector(selectIsManageMode)
 
@@ -156,7 +157,7 @@ const Tile = ({ book, onOpenPreview, onRemoveClick }) => {
       </CoverWrapper>
 
       <Footer>
-        <CardButtons book={book} />
+        <CardButtons bookId={book._id} />
       </Footer>
     </TileBox>
   )

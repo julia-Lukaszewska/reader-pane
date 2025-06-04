@@ -14,7 +14,7 @@ const initialState = {
   currentScale: 1.0,       // current zoom scale
   fitScaleFactor: 1.0,     // scale factor when fitting width or height
   fullPageFitScale: null,  // scale to fit full page in viewport
-  pageViewMode: 'single',  // 'single' | 'spread' | 'scroll'
+  pageViewMode: 'single',  // 'single' | 'double' | 'scroll'
   pageTurnRate: null,      // pages per turn or scroll speed
 }
 

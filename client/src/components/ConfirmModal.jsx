@@ -1,6 +1,8 @@
 /**
  * @file ConfirmModal.jsx
- * @description Modal window used for confirming archive, restore, or permanent delete actions on books.
+ * @description
+ * Modal window used for confirming archive, restore, or permanent delete actions on books.
+ * Supports three modes: archive from library, permanent delete, or restore to library.
  */
 
 import React, { useEffect } from 'react'
@@ -15,13 +17,13 @@ import { saveBookToArchiveStorage } from '@/utils'
 import { Button } from '@/components'
 
 // -----------------------------------------------------------------------------
-// Styled components
+// Styled Components
 // -----------------------------------------------------------------------------
 
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: var(--backdrop-color); 
+  background: var(--backdrop-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,19 +58,19 @@ const BtnRow = styled.div`
 `
 
 // -----------------------------------------------------------------------------
-// Component
+// Component: ConfirmModal
 // -----------------------------------------------------------------------------
 
 /**
- * Confirm modal used to confirm archiving, restoring, or deleting a book.
+ * Modal component for confirming actions related to a book.
  *
  * @param {Object} props
- * @param {string} props.bookId - ID of the book being modified
- * @param {string} props.bookTitle - Title of the book displayed in the prompt
- * @param {Function} props.onCancel - Callback when modal is cancelled
- * @param {Function} [props.onConfirm] - Optional callback when action is confirmed
- * @param {Function} [props.onTrash] - Optional callback for "archive" button override
- * @param {'library'|'permanent-delete'|'restore'} [props.variant='library'] - Modal mode
+ * @param {string} props.bookId - Target book ID
+ * @param {string} props.bookTitle - Book title displayed in the modal
+ * @param {Function} props.onCancel - Handler for cancel/close
+ * @param {Function} [props.onConfirm] - Optional handler for confirming
+ * @param {Function} [props.onTrash] - Optional override for archive action
+ * @param {'library'|'permanent-delete'|'restore'} [props.variant='library'] - Modal type
  * @returns {JSX.Element}
  */
 const ConfirmModal = ({
@@ -83,7 +85,7 @@ const ConfirmModal = ({
   const [deleteBook] = useDeleteBookMutation()
 
   const book = useSelector((state) =>
-    booksApi.endpoints.getBook.select(bookId)(state)?.data
+    booksApi.endpoints.getBookById.select(bookId)(state)?.data
   )
 
   useEffect(() => {

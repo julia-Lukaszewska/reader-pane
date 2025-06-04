@@ -6,11 +6,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { useUpdateBookMutation } from '@/store/api/booksApi'
-import {
-  setActiveBookId,
-  updateBookLocally,
-} from '@/store/slices/bookSlice'
+import { useUpdateBookMutation, booksApi } from '@/store/api/booksApi'
+import { setActiveBookId } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------
 // Hook: useBookCardModal
@@ -80,7 +77,7 @@ export function useBookCardModal(book, onClose) {
   }
 
   /**
-   * Updates notes in the form and persists them via API and Redux.
+   * Updates notes in the form and persists them via API and RTK Query cache.
    * @param {Array} notesArray - Array of note objects
    */
   const handleNotesChange = async (notesArray) => {
@@ -96,10 +93,7 @@ export function useBookCardModal(book, onClose) {
         changes: { flags: { notes: notesArray } },
       }).unwrap()
 
-      dispatch(updateBookLocally({
-        id: book._id,
-        changes: { flags: { notes: notesArray } },
-      }))
+      patchBookCache(book._id, { flags: { notes: notesArray } })
     } catch (err) {
       console.error('Failed to update notes', err)
     }
@@ -125,7 +119,7 @@ export function useBookCardModal(book, onClose) {
   }
 
   /**
-   * Saves the form changes to the backend and updates Redux.
+   * Saves the form changes to the backend and updates RTK Query cache.
    * Supports both main and notes sections.
    * @param {'main'|'notes'} target
    */
@@ -170,7 +164,7 @@ export function useBookCardModal(book, onClose) {
         changes,
       }).unwrap()
 
-      dispatch(updateBookLocally({ id: book._id, changes }))
+      patchBookCache(book._id, changes)
 
       if (target === 'main') setIsEditingMain(false)
       if (target === 'notes') setIsEditingNotes(false)
@@ -187,6 +181,26 @@ export function useBookCardModal(book, onClose) {
     dispatch(setActiveBookId(book._id))
     navigate(`/read/${book._id}`)
     onClose?.()
+  }
+
+  /**
+   * Updates book data in RTK Query cache (both list and detail views).
+   * @param {string} bookId - ID of the book
+   * @param {Object} changes - Partial update to apply
+   */
+  const patchBookCache = (bookId, changes) => {
+    dispatch(
+      booksApi.util.updateQueryData('getBooks', undefined, draft => {
+        const b = draft.find(b => b._id === bookId)
+        if (b) Object.assign(b, changes)
+      })
+    )
+
+    dispatch(
+      booksApi.util.updateQueryData('getBookById', bookId, draft => {
+        Object.assign(draft, changes)
+      })
+    )
   }
 
   /**

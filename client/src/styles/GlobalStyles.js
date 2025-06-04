@@ -8,7 +8,53 @@ import resetBaseStyles from './resetBaseStyles'
 const GlobalStyles = createGlobalStyle`
 
 :root {
-   /* ${gradients} */
+//------------------------------------------------------------------
+//--------ListItemLibrary
+//------------------------------------------------------------------
+
+  --row-width: 83.333vw;
+  --row-height: calc(var(--row-width) / 9);
+  --row-font-size: calc(var(--row-width) * 0.015);
+
+
+
+//------------------------------------------------------------------
+//--------Toolbar styles (glass-metal modern look)
+//------------------------------------------------------------------
+
+/* Sizing & spacing */
+--toolbar-button-padding: 0.3em 0.9em;
+--toolbar-button-gap: 0.5em;
+--toolbar-button-font-size: 0.85em;
+--toolbar-button-font-weight: 500;
+--toolbar-button-border-width: 0.12em;
+--toolbar-button-border-radius: 0.4em;
+--toolbar-button-blur: blur(0.4em);
+--toolbar-select-padding-right: 1.5em;
+
+/* Default state */
+--toolbar-button-bg-default: rgba(255, 255, 255, 0.08);
+--toolbar-button-bg-hover: rgba(255, 255, 255, 0.332);
+--toolbar-button-text-color: #f4f4f4;
+--toolbar-button-border-color: rgba(255, 255, 255, 0.22);
+
+/* Focus state */
+--toolbar-button-focus-border-color: rgba(228, 236, 254, 0.8);
+--toolbar-button-focus-shadow: 0 0 0 0.12em rgba(90, 145, 255, 0.25);
+
+/* Active (selected/clicked) state */
+--toolbar-button-bg-active: linear-gradient(145deg, #fffffffb, #092c5ed2);
+--toolbar-button-bg-active-hover: linear-gradient(145deg, #6e98cc, #305c94);
+--toolbar-button-text-active: #ffffff;
+--toolbar-button-border-active: transparent;
+
+/* Danger (delete/alert) state */
+--toolbar-button-bg-danger: linear-gradient(145deg, #8a2e2e, #a33b3b);
+--toolbar-button-bg-danger-hover: linear-gradient(145deg, #932e2e, #b64545);
+--toolbar-button-text-danger: #ffffff;
+--toolbar-button-border-danger: transparent;
+
+
   // -----------------------------------------------------------------
   //------MenuTile styles
   // ------------------------------------------------------------------

@@ -25,7 +25,7 @@ const StyledToolbar = styled.nav`
   height: 7vh;
   width: 100%;
   padding: 2rem 3rem;
-  background: var(--gradient-metal-blue-light);
+  background: var(--gradient-main-v2);
   border-bottom: 1rem solid var(--color-metal-100);
   overflow: hidden;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.384);

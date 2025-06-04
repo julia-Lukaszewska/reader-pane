@@ -4,8 +4,8 @@
  */
 
 import { useDispatch } from 'react-redux'
-import { useUpdateBookMutation } from '@/store/api/booksApi'
-import { updateBookLocally } from '@/store/slices/bookSlice'
+import { useUpdateBookMutation, booksApi } from '@/store/api/booksApi'
+
 
 //-----------------------------------------------------------------------------
 // Hook: useEditBook
@@ -29,20 +29,25 @@ export default function useEditBook() {
    */
   const editBook = async (bookId, updates) => {
     try {
-      await updateBook({ id: bookId, changes: updates }).unwrap()
-      dispatch(updateBookLocally({ id: bookId, changes: updates }))
+     dispatch(
+        booksApi.util.updateQueryData('getBooks', undefined, draft => {
+          const book = draft.find(b => b._id === bookId)
+          if (book) Object.assign(book, updates)
+        })
+      )
+ dispatch(
+        booksApi.util.updateQueryData('getBookById', bookId, draft => {
+          Object.assign(draft, updates)
+        })
+      )
+await updateBook({ id: bookId, changes: updates }).unwrap()
+
     } catch (err) {
       console.error('[EDIT BOOK ERROR]', err)
+
     }
   }
 
-  /**
-   * @typedef {Object} UseEditBookResult
-   * @property {Function} editBook - Edits a book (API + Redux update)
-   * @property {boolean} isLoading - Indicates if update is in progress
-   * @property {any} error - Error object returned by mutation (if any)
-   */
-
-  /** @type {UseEditBookResult} */
+  
   return { editBook, isLoading, error }
 }

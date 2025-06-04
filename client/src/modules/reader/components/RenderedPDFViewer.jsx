@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------------
-//------ RenderedPDFViewer – displays PDF pages from preload
-//-----------------------------------------------------------------------------
+// RenderedPDFViewer – displays PDF pages from preload
+// -----------------------------------------------------------------------------
 
 /**
  * @file RenderedPDFViewer.jsx
@@ -9,7 +9,7 @@
  * Supports single and double page view modes and auto-scrolls to the current page.
  */
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import {
@@ -19,13 +19,13 @@ import {
 import {
   selectCurrentPage,
   selectPageViewMode,
+  selectBookStaticById,
 } from '@/store/selectors/selectors'
 
 // -----------------------------------------------------------------------------
-//------ Styled Components
-//-----------------------------------------------------------------------------
+// Styled Components
+// -----------------------------------------------------------------------------
 
-//--- Scrollable wrapper with dynamic width based on sidebar state
 const ScrollWrapper = styled.div`
   width: ${({ $isSidebarOpen }) =>
     $isSidebarOpen ? 'calc(100vw - 20rem)' : '100vw'};
@@ -35,7 +35,6 @@ const ScrollWrapper = styled.div`
   position: relative;
 `
 
-//--- Centered horizontal container for one or two pages
 const PagesContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -44,7 +43,6 @@ const PagesContainer = styled.div`
   gap: 0.3rem;
 `
 
-//--- Single PDF page image
 const PDFPage = styled.img`
   object-fit: contain;
   margin: 1rem;
@@ -52,35 +50,52 @@ const PDFPage = styled.img`
 `
 
 // -----------------------------------------------------------------------------
-//------ Component: RenderedPDFViewer
-//-----------------------------------------------------------------------------
+// Component: RenderedPDFViewer
+// -----------------------------------------------------------------------------
 
-/**
- * Renders preloaded PDF pages from the visible range as images (data URLs).
- * Handles PDF loading lifecycle, scrolls to the current page,
- * and centers pages depending on the view mode.
- *
- * @component
- * @returns {JSX.Element}
- */
 const RenderedPDFViewer = () => {
   console.log('[RenderedPDFViewer] RenderedPDFViewer() called')
 
-  //--- Redux state
   const sidebarOpen = useSelector((s) => s.ui.sidebarOpen)
-  const currentPage = useSelector(selectCurrentPage)
+
+  const rawCurrentPage = useSelector(selectCurrentPage)
+  const currentPage =
+    Number.isFinite(rawCurrentPage) && rawCurrentPage > 0 ? rawCurrentPage : 1
+
   const viewMode = useSelector(selectPageViewMode)
 
-  //--- Hooks: preload logic
+  const bookId = useSelector(state => state.book.activeBookId)
+  const selectStaticBook = useMemo(
+    () => selectBookStaticById(bookId),
+    [bookId]
+  )
+  const staticBook = useSelector(selectStaticBook)
+
+  const totalPages = staticBook?.meta?.totalPages ?? 0
+
   const { pdfRef, preload, visiblePages, setPdfReady } = usePreloadPDFPages()
 
-  //--- Load PDF and trigger preload once it's available
-  const handleLoaded = useCallback(() => setPdfReady(true), [setPdfReady])
-  useLoadPDFDocument({ pdfRef, preload, onLoaded: handleLoaded })
+ const handleLoaded = useCallback((pdf) => {
+  console.log('[RenderedPDFViewer] handleLoaded called', pdf)
 
-  //--- Refs for scroll-to-page
+  const pages = totalPages || pdf?.numPages || 0
+  console.log('[RenderedPDFViewer] handleLoaded pages:', pages)
+
+  if (pages > 0 && currentPage > 0) {
+    console.log('[RenderedPDFViewer] Setting pdfReady to true')
+    setPdfReady(true)
+  } else {
+    console.log('[RenderedPDFViewer] Waiting: pages/currentPage', {
+      pages,
+      currentPage,
+    })
+  }
+}, [totalPages, currentPage, setPdfReady])
+
+
+  useLoadPDFDocument({ pdfRef, onLoaded: handleLoaded })
+
   const pageRefs = useRef({})
-
   useEffect(() => {
     const el = pageRefs.current[currentPage]
     if (el) {
@@ -88,7 +103,6 @@ const RenderedPDFViewer = () => {
     }
   }, [currentPage, visiblePages])
 
-  //--- Determine pages to render based on viewMode
   let pagesToRender = []
 
   if (viewMode === 'single') {
@@ -99,7 +113,6 @@ const RenderedPDFViewer = () => {
     )
   }
 
-  //--- Show loader if no pages are ready yet
   if (pagesToRender.length === 0) {
     return <p>Loading…</p>
   }

@@ -1,7 +1,3 @@
-/**
- * @file index.js
- * @description Configures and exports the Redux store with persistence and RTK Query middleware.
- */
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import {
@@ -29,19 +25,19 @@ import authReducer from './slices/authSlice'
 //-----------------------------------------------------------------------------  
 
 /**
- * Persistence configuration for book slice
+ * Persistence configuration for book slice (UI only)
  */
 const bookPersistConfig = {
   key: 'book',
   storage,
   whitelist: [
-    'byId',
     'activeBookId',
     'previewBookId',
     'libraryViewMode',
     'sortMode',
     'selectedIds',
     'progressMode',
+    'lastOpenedBookId',
   ],
 }
 
@@ -51,10 +47,7 @@ const bookPersistConfig = {
 const readerPersistConfig = {
   key: 'reader',
   storage,
-  whitelist: [
-    'scaleIndex',
-    'pageViewMode',
-  ],   
+  whitelist: ['scaleIndex', 'pageViewMode'],
 }
 
 //----------------------------------------------------------------------------- 
@@ -79,7 +72,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['book', 'reader'],
+  whitelist: ['auth', 'book', 'reader', 'mainUi', booksApi.reducerPath],
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -88,33 +81,23 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 // Middleware
 //-----------------------------------------------------------------------------  
 
-const middleware = (getDefaultMiddleware) =>
+const middleware = getDefaultMiddleware =>
   getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
-  }).concat(
-    booksApi.middleware,
-    externalApi.middleware,
-    authApi.middleware
-  )
+  }).concat(booksApi.middleware, externalApi.middleware, authApi.middleware)
 
 //----------------------------------------------------------------------------- 
 // Store Configuration
 //-----------------------------------------------------------------------------  
 
-/**
- * The Redux store with persistence and middleware set up
- */
 export const store = configureStore({
   reducer: persistedReducer,
   middleware,
   devTools: process.env.NODE_ENV !== 'production',
 })
 
-/**
- * Persistor for persisting store
- */
 export const persistor = persistStore(store)
 
 //----------------------------------------------------------------------------- 

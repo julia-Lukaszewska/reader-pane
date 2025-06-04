@@ -15,5 +15,3 @@ export { default as useStartingPage } from './useStartingPage' //Set starting pa
 export { default as useInitReaderSession } from './useInitReaderSession' //Initialize reader session
 
 
-// export {default as useSaveProgressOnUnmount}from './useSaveProgressOnUnmount' //Save progress on unmount
-// export {default as useInitReadingProgress} from './useInitReadingProgress' //Initialize reading progress

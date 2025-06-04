@@ -1,25 +1,28 @@
 /**
  * @file TableRow.jsx
- * @description Table view row for displaying a single book with actions and manage mode support.
+ * @description
+ * Table row used in tabular view of books.
+ * Displays title, author, creation date, action buttons, and manage mode checkbox.
  */
 
 import styled from 'styled-components'
 import { IoCloseOutline } from 'react-icons/io5'
+import { useSelector } from 'react-redux'
+
 import SelectCheckbox from './SelectCheckbox'
 import CardButtons from './CardButtons'
-import { useSelector } from 'react-redux'
 import { selectIsManageMode } from '@/store/selectors/selectors'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Styled Components
+// -----------------------------------------------------------------------------
 
 const Row = styled.tr`
   &:nth-child(even) {
     background: rgba(255, 255, 255, 0.05);
   }
 `
-   
+
 const Td = styled.td`
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-color);
@@ -30,18 +33,25 @@ const IconTd = styled(Td)`
   text-align: right;
   cursor: pointer;
 `
-   
-//-----------------------------------------------------------------------------
-// Component: TableRow
-//-----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+// Component: TableRow
+// -----------------------------------------------------------------------------
+
+/**
+ * Table row representing a single book in table view.
+ *
+ * @param {Object} props
+ * @param {Object} props.book - Book object to render
+ * @param {Function} props.onOpenPreview - Handler to open book preview
+ * @param {Function} props.onRemoveClick - Handler to remove book
+ * @returns {JSX.Element}
+ */
 const TableRow = ({ book, onOpenPreview, onRemoveClick }) => {
   const isManageMode = useSelector(selectIsManageMode)
 
-  //--- Format date
   const formattedDate = new Date(book.meta.createdAt).toLocaleDateString()
 
-  //--- Stop propagation for checkbox and remove button
   const stopClick = (e) => e.stopPropagation()
 
   return (
@@ -53,7 +63,7 @@ const TableRow = ({ book, onOpenPreview, onRemoveClick }) => {
       <Td>{book.meta.author}</Td>
       <Td>{formattedDate}</Td>
       <Td>
-        <CardButtons book={book} />
+        <CardButtons bookId={book._id} />
       </Td>
       <IconTd
         onClick={(e) => {

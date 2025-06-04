@@ -1,18 +1,24 @@
+
 /**
- * @file LibraryView.jsx
- * @description Renders the user's library. Shows guest message if not logged in.
- * Displays non-archived books with view mode support, handling loading and error states.
+ * @file MyLibraryView.jsx
+ * @description Displays non-archived books in the selected view mode.
  */
 
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import { useGetBooksQuery } from '@/store/api/booksApi'
-import { selectLibraryViewMode } from '@/store/selectors/selectors'
-import { useAuth } from '@/modules/user/hooks'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  selectAllBooks,
+  selectBooksResult,
+  selectLibraryViewMode,
+  selectIsPreviewOpen,
+  selectPreviewBookId,
+} from '@/store/selectors/selectors'
+
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
-import EmptyLibraryGuestMessage from './EmptyLibraryGuestMessage'
 import { LoadingSpinner } from '@/components'
+import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -20,49 +26,53 @@ import { LoadingSpinner } from '@/components'
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;  
+  height: 100%;
   flex: 1;
   flex-direction: column;
   overflow: hidden;
 `
 
 //-----------------------------------------------------------------------------
-// Component: LibraryView
+// Component: MyLibraryView
 //-----------------------------------------------------------------------------
 
-/**
- * Displays user's library view.
- * - Shows guest message if user is not logged in.
- * - Shows loading spinner or error state if fetching books.
- * - Displays filtered list of non-archived books in selected view mode.
- *
- * @component
- * @returns {JSX.Element}
- */
-const LibraryView = () => {
-  const { isLoggedIn } = useAuth()
+const MyLibraryView = () => {
+  const dispatch = useDispatch()
   const viewMode = useSelector(selectLibraryViewMode)
+  const isOpen = useSelector(selectIsPreviewOpen)
+  const previewId = useSelector(selectPreviewBookId)
 
-  //--- If user is not logged in, show guest message
-  if (!isLoggedIn) return <EmptyLibraryGuestMessage />
+  // 1) Read status and data from cache
+  const { status } = useSelector(selectBooksResult)
+  const allBooks = useSelector(selectAllBooks)
 
-  //--- Fetch books only if logged in
-  const { data: books = [], isLoading, isError } = useGetBooksQuery(undefined, {
-    skip: !isLoggedIn,
-  })
+  // 2) Spinner or error
+  if (status === 'pending' || status === 'uninitialized') {
+    return <LoadingSpinner />
+  }
+  if (status === 'rejected') {
+    return <div>Error loading books.</div>
+  }
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <div>Error loading books.</div>
+  // 3) status === 'fulfilled', so filter non-archived valid books
+  const nonArchived = allBooks.filter(
+    b => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
+  )
 
-  const filteredBooks = books
-    .filter(b => !b.flags?.isArchived)
-    .filter(b => b.meta?.title && b.meta?.fileUrl)
+  const previewBook = nonArchived.find(b => b._id === previewId)
 
   return (
     <Container>
-      <LibraryBooksRenderer books={filteredBooks} viewMode={viewMode} />
+      <LibraryBooksRenderer books={nonArchived} viewMode={viewMode} />
+
+      {isOpen && previewBook && (
+        <BookCardPreviewModal
+          book={previewBook}
+          onClose={() => dispatch(clearPreviewBook())}
+        />
+      )}
     </Container>
   )
 }
 
-export default LibraryView
+export default MyLibraryView

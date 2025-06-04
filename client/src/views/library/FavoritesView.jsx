@@ -1,17 +1,22 @@
 /**
  * @file FavoritesView.jsx
  * @description Renders favorited, non-archived books in the selected view mode (grid, list, table).
- * Shows a guest message if user is not logged in.
  */
 
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import { useGetBooksQuery } from '@/store/api/booksApi'
-import { selectLibraryViewMode } from '@/store/selectors/selectors'
-import { useAuth } from '@/modules/user/hooks'
-import EmptyLibraryGuestMessage from './EmptyLibraryGuestMessage'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  selectAllBooks,
+  selectBooksResult,
+  selectLibraryViewMode,
+  selectIsPreviewOpen,
+  selectPreviewBookId,
+} from '@/store/selectors/selectors'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
+import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
+import { LoadingSpinner } from '@/components'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -26,30 +31,27 @@ const Container = styled.div`
 // Component: FavoritesView
 //-----------------------------------------------------------------------------
 
-/**
- * Displays favorited books that are not archived.
- * If not logged in, shows a guest message.
- *
- * @component
- * @returns {JSX.Element|null}
- */
 const FavoritesView = () => {
-  const { isLoggedIn } = useAuth()
+  const dispatch = useDispatch()
   const viewMode = useSelector(selectLibraryViewMode)
+  const isOpen = useSelector(selectIsPreviewOpen)
+  const previewId = useSelector(selectPreviewBookId)
 
-  //--- Only allow access if user is logged in
-  if (!isLoggedIn) return <EmptyLibraryGuestMessage />
+  // 1) Read status and data from cache
+  const { status } = useSelector(selectBooksResult)
+  const allBooks = useSelector(selectAllBooks)
 
-  //--- Fetch books conditionally
-  const { data: books = [], isLoading } = useGetBooksQuery(undefined, {
-    skip: !isLoggedIn,
-  })
+  // 2) Spinner or empty while loading
+  if (status === 'pending' || status === 'uninitialized') {
+    return <LoadingSpinner />
+  }
 
-  if (isLoading) return null
-
-  const favoriteBooks = books.filter(
-    book => book.flags?.isFavorited && !book.flags?.isArchived
+  // 3) status === 'fulfilled', so filter favorited, non-archived books
+  const favoriteBooks = allBooks.filter(
+    book => book.flags?.isFavorited && !book.flags?.isArchived && book.meta?.title && book.meta?.fileUrl
   )
+
+  const previewBook = favoriteBooks.find(b => b._id === previewId)
 
   return (
     <Container>
@@ -58,6 +60,13 @@ const FavoritesView = () => {
         viewMode={viewMode}
         hideAddTile
       />
+
+      {isOpen && previewBook && (
+        <BookCardPreviewModal
+          book={previewBook}
+          onClose={() => dispatch(clearPreviewBook())}
+        />
+      )}
     </Container>
   )
 }

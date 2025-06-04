@@ -15,23 +15,14 @@ import { AddBookTile } from '@/modules/uploadPDF'
 //--- Main wrapper for the list layout
 const ListWrapper = styled.div`
   width: 100%;
-  height: 80%;                             
+  height: 99%;
+  padding: 2%; 
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
   overflow-y: auto;                        
   display: flex;
   flex-direction: column;
-`
-//--- Header row for list labels
-const HeaderRow = styled.div`
-  display: grid;
-  grid-template-columns: 5% 45% 30% 15% 5%;
-  padding: 1rem 2rem;
-  font-weight: bold;
-  position: sticky;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-color);
 `
 
 //-----------------------------------------------------------------------------
@@ -52,24 +43,14 @@ const HeaderRow = styled.div`
 const LibraryListLayout = ({ books, hideAddTile, onRestore, onDelete }) => {
   return (
     <>
-    <HeaderRow>
-        <span></span>
-        <span>Title</span>
-        <span>Author</span>
-        <span>Date added</span>
-        <span>Actions</span>
-      {!hideAddTile && <AddBookTile viewMode='list' />}
-      </HeaderRow>
-<ListWrapper>
-
-
-      {books.map((book) =>
-        book ? (
-          <BookCard
-            key={book._id}
-            book={book}
-            viewType='list'
-            onOpenPreview={() => onRestore && onRestore(book._id)}
+      <ListWrapper>
+        {books.map((book) =>
+          book ? (
+            <BookCard
+              key={book._id}
+              book={book}
+              viewType='list'
+              onOpenPreview={() => onRestore && onRestore(book._id)}
             onRemoveClick={() => onDelete && onDelete(book)}
           />
         ) : null

@@ -1,18 +1,30 @@
 /**
  * @file RatingSection.jsx
- * @description Displays the rating, reading progress, and "Read" button for a book.
+ * @description
+ * Section of the book modal that displays:
+ * - A "Read" button to open the book.
+ * - An interactive star rating input with optimistic cache updates.
+ * - A progress bar showing reading progress.
+ *
+ * Changing the star rating only patches the "rating" field in the cache,
+ * without invalidating or refetching other data (e.g., progress).
  */
 
+import React from 'react'
 import styled from 'styled-components'
+import { useSelector } from 'react-redux'
 import ProgressBar from '@book/components/ProgressBar'
-import { StarRatingInput } from '../fields/StarRatingInput'
-import { useGetBookQuery, useUpdateBookMutation } from '@/store'
+import RatingStars from '@/components/common/RatingStars'
+import {
+  useGetBookByIdQuery,
+  useUpdateBookRatingMutation,
+} from '@/store'
+import { selectBookByIdFromCache } from '@/store/selectors/selectors'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Styled Components
+// -----------------------------------------------------------------------------
 
-//--- Layout wrapper for the section
 const RatingGrid = styled.div`
   display: grid;
   grid-area: rating;
@@ -27,7 +39,6 @@ const RatingGrid = styled.div`
   height: 100%;
 `
 
-//--- "Read" action button
 const ReadButton = styled.button`
   grid-area: read;
   margin-top: 0.9em;
@@ -35,18 +46,21 @@ const ReadButton = styled.button`
   border-radius: 0.9em;
   border: none;
   font-weight: 600;
-  background: linear-gradient(90deg, rgba(40,130,255,0.32), rgba(100,190,255,0.18));
-  color: #fff;
-  box-shadow: 0 0 18px 1.5px rgba(34,124,255,0.12);
+  background: linear-gradient(
+    90deg,
+    rgba(40, 130, 255, 0.32),
+    rgba(100, 190, 255, 0.18)
+  );
+  color: #ffffff;
+  box-shadow: 0 0 18px 1.5px rgba(34, 124, 255, 0.12);
   cursor: pointer;
   transition: background 0.13s;
 
   &:hover {
-    background: rgba(40,130,255,0.44);
+    background: rgba(40, 130, 255, 0.44);
   }
 `
 
-//--- Row for star rating
 const Row = styled.div`
   grid-area: stars;
   display: grid;
@@ -56,7 +70,6 @@ const Row = styled.div`
   align-items: center;
 `
 
-//--- Wrapper for the progress bar
 const ProgressWrapper = styled.div`
   grid-area: progress;
   display: flex;
@@ -64,48 +77,45 @@ const ProgressWrapper = styled.div`
   width: 100%;
 `
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Component: RatingSection
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 /**
- * Displays the rating section of the preview modal, including:
- * - "Read" button
- * - Star rating input
- * - Progress bar based on total pages
+ * Displays book rating, reading progress, and a "Read" button.
  *
- * @component
  * @param {Object} props
- * @param {Object} props.form - Book data with `_id`, `flags`, and `meta`
- * @param {Function} props.onChange - Handler for updating local form state
- * @param {Function} props.handleRead - Action to trigger reading behavior
+ * @param {Object} props.form - Local form state for the book (includes flags.rating)
+ * @param {Function} props.onChange - Callback to update local form state
+ * @param {Function} props.handleRead - Callback when the "Read" button is clicked
+ * @returns {JSX.Element}
  */
 export default function RatingSection({ form, onChange, handleRead }) {
   const bookId = form._id
 
-  //--- Get latest book data from backend
-  const { data: bookData, isLoading } = useGetBookQuery(bookId, { skip: !bookId })
+  // Prefer cached book data to avoid unnecessary queries
+  const cachedBook = useSelector((state) =>
+    selectBookByIdFromCache(bookId)(state)
+  )
 
-  //--- Mutation for updating the book
-  const [updateBook] = useUpdateBookMutation()
+  const { data: bookData } = useGetBookByIdQuery(bookId, {
+    skip: !bookId || !!cachedBook,
+  })
+
+  const book = cachedBook ?? bookData
+  const [updateBookRating] = useUpdateBookRatingMutation()
 
   const rating = form.flags?.rating ?? 0
+  const totalPages = book?.meta?.totalPages ?? 0
 
-  //--- Get total pages from backend or fallback to local
-  const totalPages = isLoading
-    ? form.meta?.totalPages ?? 1
-    : bookData?.meta?.totalPages ?? 1
-
-  //--- Set rating both locally and in backend
-  const setRating = value => {
+  /**
+   * Optimistically updates book rating locally and in the cache.
+   *
+   * @param {number} value - New rating value
+   */
+  const setRating = (value) => {
     onChange({ target: { name: 'rating', value } })
-
-    updateBook({
-      id: bookId,
-      changes: {
-        flags: { rating: value }
-      }
-    })
+    updateBookRating({ id: bookId, rating: value })
   }
 
   return (
@@ -113,9 +123,11 @@ export default function RatingSection({ form, onChange, handleRead }) {
       <ReadButton onClick={handleRead}>Read</ReadButton>
 
       <Row>
-        <StarRatingInput
+        <RatingStars
           value={rating}
-          onChange={e => setRating(e.target.value)}
+          editable={true}
+          onChange={setRating}
+          size="2em"
         />
       </Row>
 

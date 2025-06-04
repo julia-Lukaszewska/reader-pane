@@ -1,17 +1,23 @@
+
 /**
  * @file SelectCheckbox.jsx
- * @description Checkbox used for selecting books in manage mode.
+ * @description
+ * Checkbox component used for selecting books in manage mode.
+ * Can be rendered as part of a list row or a grid tile (positioned absolutely).
  */
 
 import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleSelect } from '@/store/slices/bookSlice'
-import { selectIsManageMode, selectSelectedBookIds } from '@/store/selectors/selectors'
+import {
+  selectIsManageMode,
+  selectSelectedBookIds,
+} from '@/store/selectors/selectors'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Styled Components
+// -----------------------------------------------------------------------------
 
 const StyledCheckbox = styled.input`
   width: 1.3rem;
@@ -19,37 +25,40 @@ const StyledCheckbox = styled.input`
   accent-color: #4f46e5;
   cursor: pointer;
   transition: transform 0.2s ease;
-   
+
   &:hover {
     transform: scale(1.1);
   }
-//---Version for tile in grid layout
+
   ${({ $isTile }) =>
     $isTile &&
     `
       position: absolute;
       top: 1rem;
       right: 1rem;
-    `}  
+    `}
 `
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Component: SelectCheckbox
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-const SelectCheckbox = ({ bookId, isTile }) => {
+/**
+ * Checkbox for selecting a book in manage mode.
+ *
+ * @param {Object} props
+ * @param {string} props.bookId - ID of the book to toggle selection
+ * @param {boolean} [props.isTile=false] - If true, renders positioned for tile layout
+ * @returns {JSX.Element|null}
+ */
+const SelectCheckbox = ({ bookId, isTile = false }) => {
   const dispatch = useDispatch()
 
-  //--- Check if manage mode is active
   const isManageMode = useSelector(selectIsManageMode)
-
-  //--- Get selected book IDs
   const selectedIds = useSelector(selectSelectedBookIds)
 
-  //--- Don't render checkbox if not in manage mode
   if (!isManageMode) return null
 
-  //--- Handle checkbox click
   const handleClick = (e) => {
     e.stopPropagation()
     dispatch(toggleSelect(bookId))
@@ -67,3 +76,4 @@ const SelectCheckbox = ({ bookId, isTile }) => {
 }
 
 export default SelectCheckbox
+

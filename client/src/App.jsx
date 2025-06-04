@@ -34,6 +34,7 @@ const StyledApp = styled.div`
 const App = () => {
   useAuthBootstrap()   
    useUserSessionManager()
+   
   return (
     <>
       <GlobalStyles />

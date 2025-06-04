@@ -22,6 +22,7 @@ const StyledReaderView = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%; 
+  z-index: 9000;
   background: var(--bg-default);
 `
 

@@ -1,46 +1,54 @@
 /**
  * @file useUserSessionManager.js
- * @description Hook for managing user session side effects such as login and logout events.
+ * @description
+ * Hook for managing user session lifecycle.
+ * Handles side effects triggered by login and logout events.
+ *
+ * On login:
+ * - Waits for a valid user ID
+ * - Triggers initialization of full book objects (meta + flags + stats)
+ *
+ * On logout:
+ * - Resets session-related UI state
+ * - Clears internal flags to allow re-init on next login
  */
 
-//-----------------------------------------------------------------------------
-//------ useUserSessionManager – Handles effects after login/logout  
-//-----------------------------------------------------------------------------
-
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useAuth, useCurrentUser } from './'
 import { useInitializeBooks } from '@/hooks'
 import { setAuthModalMode } from '@/store/slices/mainUiSlice'
 
-//-----------------------------------------------------------------------------
-// Hook: useUserSessionManager
-//-----------------------------------------------------------------------------
-
 /**
- * Custom hook to handle user session changes.
- * Triggers actions after login and logout events.
- *
- * - On login: initializes user's books
- * - On logout: resets UI-related state (e.g. modal mode)
- *
- * @returns {void}
+ * Manages actions tied to user login/logout events.
+ * This hook should be used once at app root level.
  */
 export default function useUserSessionManager() {
   const dispatch = useDispatch()
-  const { accessToken, isLoggedIn } = useAuth()
+  const { isLoggedIn } = useAuth()
   const { user } = useCurrentUser()
   const { initialize } = useInitializeBooks()
 
+  const hasInitialized = useRef(false)
+
   useEffect(() => {
-    if (isLoggedIn && user?.id) {
+    console.log('[useUserSessionManager] Checking session state:', {
+      isLoggedIn,
+      userId: user?._id,
+    })
+
+    if (isLoggedIn && user?._id && !hasInitialized.current) {
+      console.log('[useUserSessionManager] Initializing book data...')
+      hasInitialized.current = true
       initialize()
     }
-  }, [isLoggedIn, user?.id, initialize])
+  }, [isLoggedIn, user?._id, initialize])
 
   useEffect(() => {
     if (!isLoggedIn) {
+      console.log('[useUserSessionManager] User logged out — resetting state')
       dispatch(setAuthModalMode(null))
+      hasInitialized.current = false
     }
   }, [isLoggedIn, dispatch])
 }
