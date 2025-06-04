@@ -2,7 +2,7 @@
  * @file usePreloadPDFPages.js
  * @description Hook that manages PDF preloading logic per book, scale and current page.
  * It ensures that only the necessary pages are rendered and memoizes visible pages for display.
- */   
+ */
 
 import { useEffect, useRef, useCallback, useMemo, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
@@ -15,7 +15,7 @@ import {
   selectCurrentPageById,
   selectCurrentScale,
   selectPageViewMode,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 
 const EMPTY_PAGES = {}
 const EMPTY_RANGES = []
@@ -42,14 +42,20 @@ const usePreloadPDFPages = () => {
 
   //--- Global state
   const bookId = useSelector(selectActiveBookId)
-  const currentPage = useSelector(state => selectCurrentPageById(state, bookId))
+
+  const selectStaticBook = useMemo(
+    () => selectBookStaticById(bookId),
+    [bookId]
+  )
+  const staticBook = useSelector(selectStaticBook)
+  const totalPages = staticBook?.meta?.totalPages ?? 0
+
+  const currentPage = useSelector(state =>
+    selectCurrentPageById(state, bookId)
+  )
   const scale = useSelector(selectCurrentScale) ?? 1.0
   const viewMode = useSelector(selectPageViewMode)
 
-  const staticBook = useSelector(selectBookStaticById(bookId))
-  const totalPages = staticBook?.meta?.totalPages ?? 0
-
-  //--- Rendered cache from Redux (for given scale)
   const renderedPages = useSelector(
     s => s.pdfCache[bookId]?.[String(scale)]?.pages ?? EMPTY_PAGES
   )
@@ -59,9 +65,9 @@ const usePreloadPDFPages = () => {
 
   const validCurrentPage = Math.min(currentPage, totalPages)
 
-  //-----------------------------------------------------------------------------  
-  // Effect: mount/unmount cleanup  
-  //-----------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------
+  // Effect: mount/unmount cleanup
+  //-----------------------------------------------------------------------------
   useEffect(() => {
     console.log('[usePreloadPDFPages] mounted')
     return () => {
@@ -71,16 +77,11 @@ const usePreloadPDFPages = () => {
     }
   }, [])
 
-  //-----------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------
   // Function: preload()
-  //-----------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------
   const preload = useCallback(() => {
-    console.log('[usePreloadPDFPages] preload() called', {
-      bookId,
-      currentPage: validCurrentPage,
-      scale,
-      ranges: renderedRanges,
-    })
+    console.log('[usePreloadPDFPages] preload() called, pdfRef.current exists:', !!pdfRef.current)
 
     if (
       !pdfRef.current ||
@@ -88,8 +89,8 @@ const usePreloadPDFPages = () => {
       !bookId ||
       !Number.isInteger(validCurrentPage)
     ) {
-      console.log('[usePreloadPDFPages] preload() → guard failed', {
-        pdf: !!pdfRef.current,
+      console.log('[usePreloadPDFPages] preload() guard failed', {
+        pdfLoaded: !!pdfRef.current,
         loading: loadingRef.current,
         bookId,
         currentPage: validCurrentPage,
@@ -106,12 +107,14 @@ const usePreloadPDFPages = () => {
       bookId,
       dispatch,
       loadingRef,
+    }).then(() => {
+      console.log('[usePreloadPDFPages] preloadByScale completed')
     })
   }, [bookId, validCurrentPage, scale, renderedPages, renderedRanges, dispatch])
 
-  //-----------------------------------------------------------------------------  
-  // Debug logs – state changes  
-  //-----------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------
+  // Debug logs – state changes
+  //-----------------------------------------------------------------------------
   useEffect(() => { console.log('[STATE CHANGE] currentPage:', currentPage) }, [currentPage])
   useEffect(() => { console.log('[STATE CHANGE] totalPages:', totalPages) }, [totalPages])
   useEffect(() => { console.log('[STATE CHANGE] scale:', scale) }, [scale])
@@ -121,9 +124,9 @@ const usePreloadPDFPages = () => {
   useEffect(() => { console.log('[STATE CHANGE] bookId:', bookId) }, [bookId])
   useEffect(() => { console.log('[STATE CHANGE] viewMode:', viewMode) }, [viewMode])
 
-  //-----------------------------------------------------------------------------  
-  // Effect: trigger preload when appropriate  
-  //-----------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------
+  // Effect: trigger preload when appropriate
+  //-----------------------------------------------------------------------------
   useEffect(() => {
     const should = pdfReady && totalPages > 0 &&
       shouldPreload(validCurrentPage, renderedRanges, totalPages)
@@ -140,9 +143,9 @@ const usePreloadPDFPages = () => {
     if (should) preload()
   }, [pdfReady, validCurrentPage, renderedRanges, preload, totalPages, bookId, scale])
 
-  //-----------------------------------------------------------------------------  
-  // Compute visible pages based on viewMode  
-  //-----------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------
+  // Compute visible pages based on viewMode
+  //-----------------------------------------------------------------------------
   const visiblePageNumbers = useMemo(() => {
     if (viewMode === 'double') {
       const nextPage = validCurrentPage + 1

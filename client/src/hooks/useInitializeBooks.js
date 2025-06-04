@@ -1,19 +1,19 @@
 /**
  * @file useInitializeBooks.js
  * @description Hook that preloads static book metadata on app start.
- * Uses RTK Query to trigger background request for title, totalPages, etc.
- *
- * @returns {{ isLoading: boolean, isError: boolean }}
  */
 
-import { useGetBooksStaticQuery } from '@/store/api/booksApi'
-
-//-----------------------------------------------------------------------------
-// Hook: useInitializeBooks
-// Triggers preload of static book data (cached for 24h by RTK Query)
-//-----------------------------------------------------------------------------
+import { useDispatch } from 'react-redux'
+import { booksApi } from '@/store/api/booksApi'
 
 export default function useInitializeBooks() {
-  const { isLoading, isError } = useGetBooksStaticQuery()
-  return { isLoading, isError }
+  const dispatch = useDispatch()
+
+const initialize = () => {
+   dispatch(
+     booksApi.endpoints.getBooks.initiate(undefined, { forceRefetch: true })
+   )
+  }
+
+  return { initialize }
 }

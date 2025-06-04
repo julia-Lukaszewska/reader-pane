@@ -30,6 +30,7 @@ const Container = styled.div`
  * @returns {JSX.Element}
  */
 const ReaderLayout = () => {
+  console.log('[ReaderLayout] rendered')
   useInitReaderSession()
 
   return (

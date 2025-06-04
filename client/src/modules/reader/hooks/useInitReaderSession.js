@@ -1,36 +1,36 @@
 /**
  * @file useInitReaderSession.js
- * @description Initializes reader session: sets last opened book and starting page.
+ * @description Initializes the reader session: restores the last opened book and sets the starting page.
  */
 
 import useStartingPage from './useStartingPage'
 import useLastOpenedBook from './useLastOpenedBook'
 import { useSelector } from 'react-redux'
-import { selectActiveBookId } from '@/store/selectors'
+import { selectActiveBookId } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Hook: useInitReaderSession
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------  
 
 /**
  * Initializes the reader session by:
- * - restoring the last opened book (if any)
+ * - restoring the last opened book
  * - setting the starting page for the active book
  *
- * Should be called once when mounting the PDF reader view.
+ * This hook must call custom hooks at the top level to comply with the Rules of Hooks.
  */
 export default function useInitReaderSession() {
-  console.log('[useInitReaderSession] mounted')
+  console.log('[useInitReaderSession] hook mounted')
 
-  //--- Restore last opened book
+  // Restore last opened book (always called at top level)
   useLastOpenedBook()
   console.log('[useInitReaderSession] called useLastOpenedBook()')
 
-  //--- Get active book ID from Redux
+  // Get active book ID from Redux
   const activeBookId = useSelector(selectActiveBookId)
   console.log('[useInitReaderSession] activeBookId:', activeBookId)
 
-  //--- Set the initial page for this book
+  // Set starting page (always call hook at top level)
   useStartingPage(activeBookId)
   console.log('[useInitReaderSession] called useStartingPage() with:', activeBookId)
 }

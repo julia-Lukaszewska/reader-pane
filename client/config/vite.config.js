@@ -25,11 +25,13 @@ export default defineConfig({
   resolve: {
   alias: {
     global: 'globalThis',
-    '@': resolve(__dirname, 'src'),
-    '@book': resolve(__dirname, 'src/modules/book'),
-    '@reader': resolve(__dirname, 'src/modules/reader'),
-    '@upload': resolve(__dirname, 'src/modules/uploadPDF'),
-    '@library': resolve(__dirname, 'src/modules/library'),
+    '@': resolve(__dirname, '..', 'src'),
+    '@book': resolve(__dirname, '..' , 'src/modules/book'),
+    '@reader': resolve(__dirname,'..', 'src/modules/reader'),
+    '@upload': resolve(__dirname,'..', 'src/modules/uploadPDF'),
+    '@library': resolve(__dirname,'..', 'src/modules/library'),
+    '@user': resolve(__dirname,'..', 'src/modules/user'),
+    '@home': resolve(__dirname,'..', 'src/modules/home'),
   },
 },
   optimizeDeps: {
@@ -45,4 +47,9 @@ export default defineConfig({
     ],
   },
 },
+server: {
+    proxy: {
+      '/api': 'http://localhost:5000',
+    },
+  },
 })

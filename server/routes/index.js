@@ -1,25 +1,32 @@
-//------------------------------------------------------------------
-// Main router that combines all book-related routes
-//------------------------------------------------------------------
+/**
+ * @file index.js
+ * @description Main router for /api/books.
+ * Applies global middleware:
+ * - Validates :id parameters
+ * - JWT authentication
+ * Mounts sub-routes:
+ * - GET routes for reading books and lists
+ * - Upload routes for PDF files
+ * - Flag routes (favorites, archive, delete)
+ * - Progress routes (last opened, current page)
+ * - Edit routes (meta, notes, bookmarks)
+ */
 
 import express from 'express'
 import mongoose from 'mongoose'
+import passport from 'passport'
 
-//------------------------------------------------------------------
-// Import sub-routes
-//------------------------------------------------------------------
- 
-import getRoutes       from './books-get.js'         // GET all, single, cache
-import flagRoutes      from './books-flags.js'       // favorite, archive, delete
-import progressRoutes  from './books-progress.js'    // reading progress
-import editRoutes      from './books-edit.js'        // meta, flags, notes, bookmarks
-import uploadRoutes, { uploadsDir } from './books-upload.js' // PDF upload + dir
+import getRoutes from './books-get.js'
+import flagRoutes from './books-flags.js'
+import progressRoutes from './books-progress.js'
+import editRoutes from './books-edit.js'
+import uploadRoutes, { uploadsDir } from './books-upload.js'
 
 const router = express.Router()
 
-//------------------------------------------------------------------
-// Validate :id param for all routes
-//------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// PARAM VALIDATION – validate :id in all routes
+// -----------------------------------------------------------------------------
 
 router.param('id', (req, res, next, id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -28,23 +35,30 @@ router.param('id', (req, res, next, id) => {
   next()
 })
 
-//------------------------------------------------------------------
-// Mount sub-routers (order matters)
-//------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// AUTHENTICATION – protect all routes with JWT
+// -----------------------------------------------------------------------------
 
-// Upload first — uses separate prefix
+router.use(passport.authenticate('jwt', { session: false }))
+
+// -----------------------------------------------------------------------------
+// SUB-ROUTES – mount all functional book-related routes
+// -----------------------------------------------------------------------------
+
+// Upload routes (PDF files)
+// If you want this route to be public, move it above JWT middleware
 router.use('/upload', uploadRoutes)
 
-// Read-only routes
+// Read-only routes (get books, search, etc.)
 router.use('/', getRoutes)
 
-// Book flags (favorite, archive, delete)
+// Flag routes (favorite, archive, delete)
 router.use(flagRoutes)
 
-// Reading progress and last opened
+// Progress routes (current page, last opened)
 router.use(progressRoutes)
 
-// Editable data: meta, notes, bookmarks
+// Edit routes (meta, notes, bookmarks)
 router.use(editRoutes)
 
 export default router

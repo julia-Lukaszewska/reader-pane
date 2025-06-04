@@ -1,16 +1,21 @@
 /**
  * @file LibraryToolbar.jsx
- * @description Toolbar for switching views, sorting books, enabling management mode, and batch actions in library.
+ * @description Toolbar with title, sorting, view toggle and batch actions.
  */
-   
+
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { IoGrid, IoList, IoReorderThree, IoTrash } from 'react-icons/io5'
 import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { useUpdateBookMutation } from '@/store/api/booksApi'
+import AddBookTile from '@upload/AddBookTile'
+import {
+  LibraryToolbarButton,
+  LibraryToolbarSelect,
+} from '@library/components/LibraryToolbarButton'
 
+import { useUpdateBookMutation } from '@/store/api/booksApi'
 import {
   toggleManageMode,
   clearSelected,
@@ -23,7 +28,7 @@ import {
   selectSelectedBookIds,
   selectLibraryViewMode,
   selectSortMode,
-} from '@/store/selectors'
+} from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled Components
@@ -34,16 +39,36 @@ const ToolbarWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background: var(--glass-bg);
+  padding: 0.4em 1.9em;
+  background: var(--gradient-main-v2);
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
-  margin-bottom: 1rem;
+  margin-bottom: 1em;
+  gap: 1.5em;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+`
+
+const SectionTitle = styled.h2`
+  font-size: 1.3em;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  flex-shrink: 0;
+`
+
+const ToolbarActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: nowrap;
 `
 
 const ViewToggle = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 0.5em;
 `
 
 const IconButton = styled.button.withConfig({
@@ -51,55 +76,13 @@ const IconButton = styled.button.withConfig({
 })`
   background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.5em;
   cursor: pointer;
   color: var(--text-primary);
   opacity: ${({ $active }) => ($active ? 1 : 0.4)};
   transition: opacity 0.2s;
-  &:hover { opacity: 0.8; }
-`
-
-const ManageButton = styled.button.withConfig({
-  shouldForwardProp: (prop) => prop !== '$active',
-})`
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
-  background: ${({ $active }) => ($active ? 'var(--color-accent)' : 'transparent')};
-  color: white;
-  border: 1px solid white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  &:hover { background: var(--color-accent-hover); }
-`
-
-const BatchDeleteButton = styled.button.withConfig({
-  shouldForwardProp: (prop) => prop !== '$visible',
-})`
-  display: ${({ $visible }) => ($visible ? 'inline-flex' : 'none')};
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
-  background: var(--color-danger);
-  color: white;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  &:hover { background: var(--color-danger-hover); }
-`
-
-const Select = styled.select`
-  padding: 0.4rem 1rem;
-  border-radius: 6px;
-  background: var(--background-color);
-  color: var(--text-primary);
-  font-size: 1rem;
-  border: 1px solid var(--border-color);
-  &:focus {
-    outline: none;
-    border-color: var(--color-accent);
+  &:hover {
+    opacity: 0.8;
   }
 `
 
@@ -107,24 +90,16 @@ const Select = styled.select`
 // Component: LibraryToolbar
 //-----------------------------------------------------------------------------
 
-/**
- * Toolbar with view switches, sort menu, and batch actions for books in library mode.
- *
- * @component
- * @returns {JSX.Element}
- */
 const LibraryToolbar = () => {
   const { pathname } = useLocation()
   const dispatch = useDispatch()
   const [updateBook] = useUpdateBookMutation()
 
-  //--- Redux state
   const isManaging = useSelector(selectIsManageMode)
-  const selected   = useSelector(selectSelectedBookIds)
-  const viewMode   = useSelector(selectLibraryViewMode)
-  const sortMode   = useSelector(selectSortMode)
+  const selected = useSelector(selectSelectedBookIds)
+  const viewMode = useSelector(selectLibraryViewMode)
+  const sortMode = useSelector(selectSortMode)
 
-  //--- Determine current section name
   const section = useMemo(() => {
     if (pathname === '/library') return 'My Books'
     if (pathname === '/library/import') return 'Import Books'
@@ -135,9 +110,6 @@ const LibraryToolbar = () => {
 
   const inLibrary = pathname.startsWith('/library')
 
-  /**
-   * Archives all selected books and clears selection
-   */
   const handleBatchDelete = () => {
     selected.forEach((id) => {
       updateBook({ id, changes: { flags: { isArchived: true } } })
@@ -147,68 +119,71 @@ const LibraryToolbar = () => {
 
   return (
     <ToolbarWrapper>
-      <h2>{section}</h2>
+      <SectionTitle>{section}</SectionTitle>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <ToolbarActions>
+        {inLibrary && viewMode === 'list' && !isManaging && (
+          <AddBookTile />
+        )}
+
         {inLibrary && (
-          <ManageButton
+          <LibraryToolbarButton
             onClick={() => dispatch(toggleManageMode())}
             $active={isManaging}
           >
             {isManaging ? 'Done' : 'Manage'}
-          </ManageButton>
+          </LibraryToolbarButton>
         )}
 
-        <BatchDeleteButton
-          $visible={isManaging && selected.length > 0}
-          onClick={handleBatchDelete}
-        >
-          <IoTrash /> Delete selected
-        </BatchDeleteButton>
+        {isManaging && selected.length > 0 && (
+          <LibraryToolbarButton onClick={handleBatchDelete} $danger>
+            <IoTrash /> Delete selected
+          </LibraryToolbarButton>
+        )}
 
         {inLibrary && (
           <>
-            <Select
+            <LibraryToolbarSelect
               value={sortMode}
               onChange={(e) => dispatch(setSortMode(e.target.value))}
             >
-              <option value='title-asc'>Title A–Z</option>
-              <option value='title-desc'>Title Z–A</option>
-              <option value='author-asc'>Author A–Z</option>
-              <option value='author-desc'>Author Z–A</option>
-              <option value='date-desc'>Recently added</option>
-              <option value='date-asc'>Oldest added</option>
-              <option value='updated-desc'>Last edited</option>
-              <option value='rating-desc'>Highest rating</option>
-              <option value='rating-asc'>Lowest rating</option>
-            </Select>
+              <option value="title-asc">Title A–Z</option>
+              <option value="title-desc">Title Z–A</option>
+              <option value="author-asc">Author A–Z</option>
+              <option value="author-desc">Author Z–A</option>
+              <option value="date-desc">Recently added</option>
+              <option value="date-asc">Oldest added</option>
+              <option value="updated-desc">Last edited</option>
+              <option value="rating-desc">Highest rating</option>
+              <option value="rating-asc">Lowest rating</option>
+            </LibraryToolbarSelect>
 
             <ViewToggle>
               <IconButton
                 $active={viewMode === 'grid'}
                 onClick={() => dispatch(setLibraryViewMode('grid'))}
-                title='Grid view'
+                title="Grid view"
               >
                 <IoGrid />
               </IconButton>
               <IconButton
                 $active={viewMode === 'list'}
                 onClick={() => dispatch(setLibraryViewMode('list'))}
-                title='List view'
+                title="List view"
               >
                 <IoList />
               </IconButton>
               <IconButton
                 $active={viewMode === 'table'}
                 onClick={() => dispatch(setLibraryViewMode('table'))}
-                title='Table view'
+                title="Table view"
               >
                 <IoReorderThree />
               </IconButton>
             </ViewToggle>
           </>
         )}
-      </div>
+      </ToolbarActions>
     </ToolbarWrapper>
   )
 }

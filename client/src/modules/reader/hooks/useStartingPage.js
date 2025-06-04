@@ -1,18 +1,14 @@
 /**
  * @file useStartingPage.js
- * @description Sets the reader's currentPage from backend progress,
- *              only if currentPage is still the default (1).
+ * @description
+ * Sets the reader's currentPage from backend progress,
+ * only if currentPage is still the default (1).
  */
 
 import { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useGetProgressQuery } from '@/store/api/booksApi'
-import { setBookStats } from '@/store/slices/bookSlice'
-import { selectCurrentPageById } from '@/store/selectors'
-
-//-----------------------------------------------------------------------------
-// Hook: useStartingPage
-//-----------------------------------------------------------------------------
+import { useSelector } from 'react-redux'
+import { useGetProgressQuery, useUpdateProgressMutation } from '@/store/api/booksApi'
+import { selectCurrentPageById } from '@/store/selectors/selectors'
 
 /**
  * Retrieves last saved reading position from backend
@@ -21,27 +17,30 @@ import { selectCurrentPageById } from '@/store/selectors'
  * @param {string} bookId - ID of the active book
  */
 export default function useStartingPage(bookId) {
-  console.log('[useStartingPage] bookId', bookId)
-
-  const dispatch = useDispatch()
   const currentPage = useSelector(state => selectCurrentPageById(state, bookId))
+  const isInitial = !bookId || currentPage !== 1
 
-  // Only fetch progress if current page is still 1 (initial state)
-  const { data: progressData } = useGetProgressQuery(bookId, {
-    skip: !bookId || currentPage !== 1,
-  })
+  const { data: progressData } = useGetProgressQuery(bookId, { skip: isInitial })
+  const [updateProgress] = useUpdateProgressMutation()
 
-  //-----------------------------------------------------------------------------  
-  // Effect: apply saved progress if available
-  //-----------------------------------------------------------------------------  
   useEffect(() => {
-    if (!bookId || !progressData || currentPage !== 1) return
+    if (!bookId) {
+      console.log('[useStartingPage] No bookId – skipping')
+      return
+    }
 
-    console.log('[useStartingPage] setting start page to', progressData.currentPage)
+    if (currentPage !== 1) {
+      console.log('[useStartingPage] currentPage !== 1 – no need to load progress')
+      return
+    }
 
-    dispatch(setBookStats({
-      id: bookId,
-      stats: { currentPage: progressData.currentPage }
-    }))
-  }, [bookId, currentPage, progressData, dispatch])
+    if (!progressData?.currentPage || progressData.currentPage === 1) {
+      console.log('[useStartingPage] No backend progress to apply')
+      return
+    }
+
+    console.log(`[useStartingPage] Setting currentPage from backend to ${progressData.currentPage}`)
+
+    updateProgress({ id: bookId, currentPage: progressData.currentPage })
+  }, [bookId, currentPage, progressData, updateProgress])
 }

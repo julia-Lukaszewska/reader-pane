@@ -7,14 +7,14 @@ import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import { FiPlus } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
-import { selectLibraryViewMode } from '@/store/selectors'
+import { selectLibraryViewMode } from '@/store/selectors/selectors'
 import { useUploadPDF } from '@/modules/uploadPDF'
+import {LibraryToolbarButton} from '@library/components/LibraryToolbarButton'
 
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
 
-//--- Upload tile, styled differently by viewMode
 const AddTile = styled.div.withConfig({
   shouldForwardProp: (prop) => prop !== 'viewMode',
 })`
@@ -39,18 +39,6 @@ const AddTile = styled.div.withConfig({
   `}
 
   ${({ viewMode }) =>
-    viewMode === 'list' &&
-    `
-    grid-column: 1 / -1;
-    width: 100%;
-    height: 8vh;
-    background: var(--gradient-main);
-    backdrop-filter: blur(6px);
-    border-radius: var(--border-radius);
-    box-shadow: var(--glass-shadow);
-  `}
-
-  ${({ viewMode }) =>
     viewMode === 'table' &&
     `
     width: 100%;
@@ -68,57 +56,57 @@ const AddTile = styled.div.withConfig({
   }
 `
 
-//--- Hidden file input
 const HiddenInput = styled.input`
   display: none;
 `
 
 //-----------------------------------------------------------------------------
-// Component: AddBookTile
+// Component
 //-----------------------------------------------------------------------------
 
-/**
- * Renders a tile that opens a file picker to upload a PDF.
- * Shows a spinner text while uploading.
- *
- * @component
- * @returns {JSX.Element}
- */
 const AddBookTile = () => {
   const inputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
   const viewMode = useSelector(selectLibraryViewMode)
   const { handleUpload } = useUploadPDF()
 
-  /**
-   * Trigger file input click
-   */
   const handleClick = () => {
     inputRef.current?.click()
   }
 
-  /**
-   * Handles file selection and upload
-   *
-   * @param {Event} e - File input change event
-   */
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
+
     setUploading(true)
     await handleUpload(file)
     setUploading(false)
+
     e.target.value = null
   }
 
   return (
     <>
-      <AddTile viewMode={viewMode} onClick={handleClick}>
-        {!uploading ? <FiPlus size={32} /> : <span>Uploading...</span>}
-      </AddTile>
+      {viewMode === 'list' ? (
+        <LibraryToolbarButton onClick={handleClick}>
+          {uploading ? (
+            <span>Uploading...</span>
+          ) : (
+            <>
+              <FiPlus size={18} />
+              <span>Upload file</span>
+            </>
+          )}
+        </LibraryToolbarButton>
+      ) : (
+        <AddTile viewMode={viewMode} onClick={handleClick}>
+          {uploading ? <span>Uploading...</span> : <FiPlus size={32} />}
+        </AddTile>
+      )}
+
       <HiddenInput
-        type='file'
-        accept='application/pdf'
+        type="file"
+        accept="application/pdf"
         ref={inputRef}
         onChange={handleFileChange}
       />

@@ -1,55 +1,78 @@
+
 /**
  * @file MyLibraryView.jsx
- * @description Renders the user's library with non-archived books, handling loading and error states.
+ * @description Displays non-archived books in the selected view mode.
  */
+
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import { useGetBooksQuery } from '@/store/api/booksApi'
-import { selectLibraryViewMode } from '@/store/selectors'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  selectAllBooks,
+  selectBooksResult,
+  selectLibraryViewMode,
+  selectIsPreviewOpen,
+  selectPreviewBookId,
+} from '@/store/selectors/selectors'
+
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner } from '@/components'
+import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------
 // Styled components
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 
 const Container = styled.div`
   width: 100%;
-  flex: 1;  
+  height: 100%;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
 `
 
 //-----------------------------------------------------------------------------
 // Component: MyLibraryView
 //-----------------------------------------------------------------------------
 
-/**
- * Displays the user's library of non-archived books in the selected view mode.
- * Shows a loading spinner while fetching and an error message on failure.
- * Filters out items without title or fileUrl.
- *
- * @component
- * @returns {JSX.Element}
- */
 const MyLibraryView = () => {
+  const dispatch = useDispatch()
   const viewMode = useSelector(selectLibraryViewMode)
-  const { data: books = [], isLoading, isError } = useGetBooksQuery()
+  const isOpen = useSelector(selectIsPreviewOpen)
+  const previewId = useSelector(selectPreviewBookId)
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <div>Error loading books.</div>
+  // 1) Read status and data from cache
+  const { status } = useSelector(selectBooksResult)
+  const allBooks = useSelector(selectAllBooks)
 
-  const filteredBooks = books
-    .filter(b => !b.flags?.isArchived)
-    .filter(b => b.meta?.title && b.meta?.fileUrl)
+  // 2) Spinner or error
+  if (status === 'pending' || status === 'uninitialized') {
+    return <LoadingSpinner />
+  }
+  if (status === 'rejected') {
+    return <div>Error loading books.</div>
+  }
+
+  // 3) status === 'fulfilled', so filter non-archived valid books
+  const nonArchived = allBooks.filter(
+    b => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
+  )
+
+  const previewBook = nonArchived.find(b => b._id === previewId)
 
   return (
-  <Container>
-    <LibraryBooksRenderer
-      books={filteredBooks}
-      viewMode={viewMode}
-    />
-  </Container>
-)
+    <Container>
+      <LibraryBooksRenderer books={nonArchived} viewMode={viewMode} />
+
+      {isOpen && previewBook && (
+        <BookCardPreviewModal
+          book={previewBook}
+          onClose={() => dispatch(clearPreviewBook())}
+        />
+      )}
+    </Container>
+  )
 }
 
 export default MyLibraryView

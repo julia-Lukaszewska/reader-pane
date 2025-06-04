@@ -6,8 +6,7 @@
 import { useCallback } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+
 
 //-----------------------------------------------------------------------------
 // Hook: usePDFPageCounter

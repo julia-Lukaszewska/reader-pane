@@ -19,14 +19,24 @@ export default [
       '*.test.jsx',
       '*.test.ts',
       '*.test.tsx',
+      'docs/',
     ],
 
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
+        Buffer: 'readonly',
         process: 'readonly',
         console: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        test: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
       },
     },
 
@@ -37,10 +47,6 @@ export default [
     rules: {
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-undef': 'error',
-    },
-
-    env: {
-      jest: true,
     },
   },
 ]

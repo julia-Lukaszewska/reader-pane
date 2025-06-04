@@ -1,13 +1,18 @@
 /**
  * @file SidebarMenu.jsx
  * @description Menu list displayed inside the Sidebar component.
- * Includes navigation buttons for main app views.
+ * Includes navigation buttons for main app views and the auth modal (login/register).
  */
 
 import styled from 'styled-components'
 import { Button } from '@/components'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { useAuth } from '@/modules/user/hooks'
+import { useLogout } from '@/modules/user/hooks/useLogout'
+import AuthModal from '@/modules/user/components/AuthModal'
+import { setAuthModalMode } from '@/store/slices/mainUiSlice'
+import { selectAuthModalMode, selectSidebarOpen } from '@/store/selectors/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled component: nav container with animation
@@ -54,25 +59,67 @@ const items = [
 /**
  * Renders vertical list of navigation buttons.
  * Buttons animate in/out based on sidebar state.
+ * Shows login/register if not logged in, or greeting + logout if logged in.
  *
  * @returns {JSX.Element}
  */
 const SidebarMenu = () => {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
-  const isOpen = useSelector((state) => state.ui.sidebarOpen)
+  const isOpen = useSelector(selectSidebarOpen)
+  const { isLoggedIn, user } = useAuth()
+  const logout = useLogout()
+
+  const authModalMode = useSelector(selectAuthModalMode)
 
   return (
-    <MenuNav $isOpen={isOpen}>
-      {items.map((item) => (
-        <Button
-          key={item.path}
-          $variant="sidebar_btn"
-          onClick={() => navigate(item.path)}
-        >
-          {item.label}
-        </Button>
-      ))}
-    </MenuNav>
+    <>
+      <MenuNav $isOpen={isOpen}>
+        {items.map((item) => (
+          <Button
+            key={item.path}
+            $variant="sidebar_btn"
+            onClick={() => navigate(item.path)}
+          >
+            {item.label}
+          </Button>
+        ))}
+
+        {!isLoggedIn ? (
+          <>
+            <Button
+              $variant="sidebar_btn"
+              onClick={() => dispatch(setAuthModalMode('login'))}
+            >
+              Log In
+            </Button>
+            <Button
+              $variant="sidebar_btn"
+              onClick={() => dispatch(setAuthModalMode('register'))}
+            >
+              Register
+            </Button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: '0.85rem', opacity: 0.7 }}>
+             
+            </div>
+            <Button $variant="sidebar_btn" onClick={logout}>
+              Log out
+            </Button>
+          </>
+        )}
+      </MenuNav>
+
+      {authModalMode && (
+        <AuthModal
+          mode={authModalMode}
+          onClose={() => dispatch(setAuthModalMode(null))}
+          enableTabs // enables tabbed interface
+        />
+      )}
+    </>
   )
 }
 

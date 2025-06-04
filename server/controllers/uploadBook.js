@@ -111,6 +111,7 @@ export const UploadBook = async (req, res) => {
     // Create book document
     //----------------------------------------------------------------
     const newBook = new Book({
+      owner: req.user.id,  
       meta: {
         title:           title || req.file.originalname,
         author:          author || '',
