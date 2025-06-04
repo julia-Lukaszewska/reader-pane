@@ -22,18 +22,19 @@ if (fs.existsSync(envPath)) {
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      global: 'globalThis',
-      '@': resolve(__dirname, '../../client/src'),
-      '@book': resolve(__dirname, '../../client/src/modules/book'),
-      '@reader': resolve(__dirname, '../../client/src/modules/reader'),
-      '@upload': resolve(__dirname, '../../client/src/modules/uploadPDF'),
-      '@library': resolve(__dirname, '../../client/src/modules/library'),
-      '@user': resolve(__dirname, '../../client/src/modules/user'),
-      '@home': resolve(__dirname, '../../client/src/modules/home'),
-    },
+resolve: {
+  alias: {
+    global: 'globalThis',
+    '@': resolve(process.cwd(), 'src'),
+    '@book': resolve(process.cwd(), 'src/modules/book'),
+    '@reader': resolve(process.cwd(), 'src/modules/reader'),
+    '@upload': resolve(process.cwd(), 'src/modules/uploadPDF'),
+    '@library': resolve(process.cwd(), 'src/modules/library'),
+    '@user': resolve(process.cwd(), 'src/modules/user'),
+    '@home': resolve(process.cwd(), 'src/modules/home'),
   },
+},
+
   optimizeDeps: {
     esbuildOptions: {
       define: {
