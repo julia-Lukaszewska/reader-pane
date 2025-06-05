@@ -5,13 +5,18 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import { useDispatch } from 'react-redux'
-import { useGetBooksQuery } from '@/store/api/booksApi'
-import { selectLibraryViewMode, selectIsPreviewOpen, selectPreviewBookId } from '@/store/selectors/selectors'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  selectAllBooks,
+  selectBooksResult,
+  selectLibraryViewMode,
+  selectIsPreviewOpen,
+  selectPreviewBookId,
+} from '@/store/selectors/selectors'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
 import { LoadingSpinner } from '@/components'
-import { clearPreviewBook } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -26,40 +31,24 @@ const Container = styled.div`
 // Component: FavoritesView
 //-----------------------------------------------------------------------------
 
-/**
- * FavoritesView component fetches all books via RTK Query,
- * filters favorited, non-archived ones, and renders them in the chosen view mode.
- * Shows a loading spinner while fetching.
- *
- * @component
- * @returns {JSX.Element}
- */
 const FavoritesView = () => {
   const dispatch = useDispatch()
   const viewMode = useSelector(selectLibraryViewMode)
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
 
-  // 1) Fetch all books with RTK Query
-  const {
-    data: allBooks = [],
-    isLoading: isFetching,
-    isError: isFetchError
-  } = useGetBooksQuery()
+  // 1) Read status and data from cache
+  const { status } = useSelector(selectBooksResult)
+  const allBooks = useSelector(selectAllBooks)
 
-  // 2) Show spinner while loading
-  if (isFetching) {
+  // 2) Spinner or empty while loading
+  if (status === 'pending' || status === 'uninitialized') {
     return <LoadingSpinner />
   }
-  // (No explicit error UI for favorites; empty state will show no cards)
 
-  // 3) Filter favorited, non-archived books
+  // 3) status === 'fulfilled', so filter favorited, non-archived books
   const favoriteBooks = allBooks.filter(
-    b =>
-      b.flags?.isFavorited &&
-      !b.flags?.isArchived &&
-      b.meta?.title &&
-      b.meta?.fileUrl
+    book => book.flags?.isFavorited && !book.flags?.isArchived && book.meta?.title && book.meta?.fileUrl
   )
 
   const previewBook = favoriteBooks.find(b => b._id === previewId)
