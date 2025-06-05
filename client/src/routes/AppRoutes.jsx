@@ -83,14 +83,10 @@ const router = createBrowserRouter([
               { path: 'favorites',     element: <FavoritesView /> },   // /library/favorites
             ],
           },
-          {
-            path: 'read',
-            element: <ReaderLayout />,
-            children: [
-              { index: true,     element: <ReaderView /> },          // /read
-              { path: ':bookId', element: <ReaderView /> },          // /read/:bookId
-            ],
-          },
+          
+            { path: 'read/:bookId?', element: <ReaderLayout />, children: [
+            { index: true, element: <ReaderView /> }, 
+          ]},
           { path: 'settings', element: <SettingsView /> },         // /settings
         ],
       },
