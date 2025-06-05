@@ -5,13 +5,9 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  selectLibraryViewMode,
-  selectIsPreviewOpen,
-  selectPreviewBookId,
-} from '@/store/selectors/selectors'
+import { useDispatch } from 'react-redux'
 import { useGetBooksQuery } from '@/store/api/booksApi'
+import { selectLibraryViewMode, selectIsPreviewOpen, selectPreviewBookId } from '@/store/selectors/selectors'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner } from '@/components'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
@@ -33,33 +29,41 @@ const Container = styled.div`
 // Component: MyLibraryView
 //-----------------------------------------------------------------------------
 
+/**
+ * MyLibraryView component fetches all books via RTK Query,
+ * filters out archived ones, and renders them in the chosen view mode.
+ * Shows a loading spinner while fetching, and displays an error message if fetch fails.
+ *
+ * @component
+ * @returns {JSX.Element}
+ */
 const MyLibraryView = () => {
   const dispatch = useDispatch()
   const viewMode = useSelector(selectLibraryViewMode)
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
 
-  // 1) Fetch all books via RTK Query
+  // 1) Fetch all books with RTK Query
   const {
     data: allBooks = [],
-    isLoading,
-    isError,
+    isLoading: isFetching,
+    isError: isFetchError
   } = useGetBooksQuery()
 
-  // 2) Spinner or error
-  if (isLoading) {
+  // 2) Handle loading and error states
+  if (isFetching) {
     return <LoadingSpinner />
   }
-  if (isError) {
+  if (isFetchError) {
     return <div>Error loading books.</div>
   }
 
-  // 3) status === 'fulfilled', so filter non-archived valid books
+  // 3) Filter out archived books and ensure required fields exist
   const nonArchived = allBooks.filter(
-    (b) => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
+    b => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
   )
 
-  const previewBook = nonArchived.find((b) => b._id === previewId)
+  const previewBook = nonArchived.find(b => b._id === previewId)
 
   return (
     <Container>
