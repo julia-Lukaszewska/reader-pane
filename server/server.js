@@ -18,6 +18,9 @@ import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 
 import { configurePassport } from './config/passport.js'
+import booksPublicRoutes from './routes/books-public.js'
+
+
 import authRoutes from './routes/auth.js'
 import booksRoutes from './routes/index.js'
 import { corsOptions } from './config/cors.config.js'
@@ -49,7 +52,7 @@ app.use(cors(corsOptions))
 // PASSPORT & ROUTES
 // -----------------------------------------------------------------------------
 configurePassport()
-
+app.use('/api/books', booksPublicRoutes)
 app.use('/api/auth',  authRoutes)
 app.use('/api/books', booksRoutes)            // all book-related routes (incl. file streaming)
 

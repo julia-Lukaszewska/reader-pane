@@ -20,6 +20,7 @@ import { pdfBucket } from '../setupGridFS.js'
 
 const router = express.Router()
 
+
 // ───────────────────────────────────────────────────────────
 // GET /api/books/static – lightweight metadata
 // ───────────────────────────────────────────────────────────

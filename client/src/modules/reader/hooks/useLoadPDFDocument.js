@@ -7,11 +7,11 @@
 
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import useEnsureBookFileUrl from './useEnsureBookFileUrl'
 import * as pdfjsLib from 'pdfjs-dist'
 
 /**
  * Loads a PDF document from the backend once bookId and access token are available.
- * - Only runs if bookId and access token are present
  * - Uses pdf.js to load and cache the document in pdfRef
  * - Calls onLoaded callback once document is fully loaded
  *
@@ -21,27 +21,26 @@ import * as pdfjsLib from 'pdfjs-dist'
  * @returns {{ isFetching: boolean, isError: boolean }}
  */
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
-  const bookId = useSelector(state => state.book.activeBookId)
-  const access = useSelector(state => state.auth.access)
+  const bookId = useSelector((state) => state.book.activeBookId)
+  const access = useSelector((state) => state.auth.access)
+  const fileUrl = useEnsureBookFileUrl(bookId)
 
-  const skip = !bookId || !access
   const [isFetching, setIsFetching] = useState(false)
   const [isError, setIsError] = useState(false)
 
   useEffect(() => {
-    if (skip) {
-      console.log('[useLoadPDFDocument] Skipping PDF load – no bookId or no access')
+    if (!bookId || !access || !fileUrl) {
+      console.log('[useLoadPDFDocument] Skipping PDF load – missing bookId, access, or fileUrl')
       return
     }
 
     if (!pdfRef) return
     if (pdfRef.current) {
-      console.log('[useLoadPDFDocument] PDF already loaded in memory – skipping fetch')
+      console.log('[useLoadPDFDocument] PDF already loaded – skipping')
       return
     }
 
-    const url = `${import.meta.env.VITE_API_URL}/books/${bookId}/file`
-    console.log('[useLoadPDFDocument] Loading PDF from:', url)
+    console.log('[useLoadPDFDocument] Loading PDF from:', fileUrl)
 
     let cancelled = false
     setIsFetching(true)
@@ -50,7 +49,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     ;(async () => {
       try {
         const loadingTask = pdfjsLib.getDocument({
-          url,
+          url: fileUrl,
           httpHeaders: { Authorization: `Bearer ${access}` },
         })
         const pdf = await loadingTask.promise
@@ -71,7 +70,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     return () => {
       cancelled = true
     }
-  }, [bookId, access, skip])
+  }, [bookId, access, fileUrl])
 
   return { isFetching, isError }
 }

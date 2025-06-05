@@ -93,7 +93,10 @@ const RenderedPDFViewer = () => {
 }, [totalPages, currentPage, setPdfReady])
 
 
-  useLoadPDFDocument({ pdfRef, onLoaded: handleLoaded })
+console.log('[RenderedPDFViewer] bookId from store:', bookId)
+
+useLoadPDFDocument({ pdfRef, onLoaded: handleLoaded })
+
 
   const pageRefs = useRef({})
   useEffect(() => {
