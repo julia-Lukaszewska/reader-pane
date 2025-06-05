@@ -16,7 +16,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import Book from "../models/Book.js";
-import { bucket } from "../setupGridFS.js";
+import { pdfBucket } from "../setupGridFS.js";
 
 const router = express.Router();
 const FILE_TOKEN_SECRET = process.env.FILE_TOKEN_SECRET ?? "CHANGE_ME_FILE_SECRET"; // < 256‑bit secret!
@@ -193,7 +193,7 @@ router.get("/file/:filename", async (req, res) => {
 
     // Stream from GridFS
     res.set("Content-Type", "application/pdf");
-    bucket.openDownloadStreamByName(req.params.filename).pipe(res);
+    pdfBucket.openDownloadStreamByName(req.params.filename).pipe(res);
   } catch (err) {
     console.error("[FILE STREAM]", err);
     res.status(500).json({ error: "Failed to stream file" });
