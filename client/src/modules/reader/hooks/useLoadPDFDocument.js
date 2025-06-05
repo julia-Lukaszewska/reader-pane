@@ -23,7 +23,9 @@ import useEnsureBookFileUrl from './useEnsureBookFileUrl'
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const bookId = useSelector((state) => state.book.activeBookId)
   const access = useSelector((state) => state.auth.access)
-  const fileUrl = useEnsureBookFileUrl(bookId)
+  const book = useSelector((state) => state.book.byId[bookId])
+const fileUrl = useEnsureBookFileUrl({ book })
+
 
   const [isFetching, setIsFetching] = useState(false)
   const [isError, setIsError] = useState(false)
