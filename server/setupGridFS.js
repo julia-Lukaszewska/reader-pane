@@ -10,6 +10,9 @@ import Grid from 'gridfs-stream'
 
 Grid.mongo = mongoose.mongo               // wire driver
 
+if (!Grid.mongo.ObjectID && Grid.mongo.ObjectId) {
+  Grid.mongo.ObjectID = Grid.mongo.ObjectId
+}
 let gfs = null
 
 mongoose.connection.once('open', () => {
