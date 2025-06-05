@@ -136,24 +136,24 @@ router.get("/:id/cache", async (req, res) => {
   }
 });
 
-//------------------------------------------------------------
-// GET /api/books/:id/file-url – return relative URL to PDF
-//------------------------------------------------------------
-router.get("/:id/file-url", async (req, res) => {
-  try {
-    const book = await Book.findOne(
-      { _id: req.params.id, owner: req.user.id },
-      "filename"
-    ).lean();
+// //------------------------------------------------------------
+// // GET /api/books/:id/file-url – return relative URL to PDF
+// //------------------------------------------------------------
+// router.get("/:id/file-url", async (req, res) => {
+//   try {
+//     const book = await Book.findOne(
+//       { _id: req.params.id, owner: req.user.id },
+//       "filename"
+//     ).lean();
 
-    if (!book) return res.status(404).json({ error: "Book not found" });
+//     if (!book) return res.status(404).json({ error: "Book not found" });
 
-    res.status(200).json({ fileUrl: `/api/books/${book._id}/file` });
-  } catch (err) {
-    console.error("[FILE URL]", err);
-    res.status(500).json({ error: "Failed to build file URL" });
-  }
-});
+//     res.status(200).json({ fileUrl: `/api/books/${book._id}/file` });
+//   } catch (err) {
+//     console.error("[FILE URL]", err);
+//     res.status(500).json({ error: "Failed to build file URL" });
+//   }
+// });
 
 //-----------------------------------------------------------
 // GET /api/books/:id/file – stream PDF from GridFS
@@ -177,7 +177,7 @@ router.get("/:id/file", async (req, res) => {
 //------------------------------------------------------------
 // GET /api/books/:id/file-url-abs – absolute URL to PDF
 //------------------------------------------------------------
-router.get("/:id/file-url-abs", async (req, res) => {
+router.get("/:id/file-url", async (req, res) => {
   try {
     const book = await Book.findOne(
       { _id: req.params.id, owner: req.user.id },
