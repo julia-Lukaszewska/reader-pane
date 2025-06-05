@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "lint": "eslint . --ext .js",
-    "auth": "cross-env BRANCH=dev nodemon server.js"
+    "auth": "cross-env BRANCH=dev nodemon server.js",
+     "delete:legacy": "node scripts/delete-legacy-uploaded-books.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
