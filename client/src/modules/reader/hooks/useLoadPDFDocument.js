@@ -41,15 +41,8 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
 
   useEffect(() => {
     console.log('[useLoadPDFDocument] bookId:', bookId)
-    console.log('[useLoadPDFDocument] isBookLoading:', isBookLoading)
-    console.log('[useLoadPDFDocument] isBookFetchError:', isBookFetchError)
     console.log('[useLoadPDFDocument] fileUrl:', fileUrl)
     console.log('[useLoadPDFDocument] access token present:', Boolean(access))
-
-    // If book data is still loading or fetch failed, do not attempt to load PDF
-    if (isBookLoading || isBookFetchError) {
-      return
-    }
 
     // If any required value is missing, skip loading
     if (!bookId || !access || !fileUrl) {
@@ -72,7 +65,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     setIsFetching(true)
     setIsError(false)
 
-    (async () => {
+    ;(async () => {
       try {
         // Initiate loading of the PDF document via pdf.js
         const loadingTask = pdfjsLib.getDocument({
@@ -101,10 +94,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     return () => {
       cancelled = true
     }
-  }, [bookId, access, fileUrl, isBookLoading, isBookFetchError])
+  }, [bookId, access, fileUrl])
 
-  return {
-    isFetching: isBookLoading || isFetching,
-    isError: isBookFetchError || isError,
-  }
+  return { isFetching, isError }
 }
