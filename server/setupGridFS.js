@@ -8,19 +8,28 @@
 import mongoose from 'mongoose'
 import Grid from 'gridfs-stream'
 
-Grid.mongo = mongoose.mongo               // wire driver
-
-if (!Grid.mongo.ObjectID && Grid.mongo.ObjectId) {
-  Grid.mongo.ObjectID = Grid.mongo.ObjectId
-}
+// gfs instance shared across app
 let gfs = null
 
 mongoose.connection.once('open', () => {
+  // Set correct Mongo driver reference AFTER connection is open
+  Grid.mongo = mongoose.mongo
+
+  // Fix for newer MongoDB drivers (ObjectId vs ObjectID)
+  if (!Grid.mongo.ObjectID && Grid.mongo.ObjectId) {
+    Grid.mongo.ObjectID = Grid.mongo.ObjectId
+  }
+
+  // Initialize GridFS
   gfs = Grid(mongoose.connection.db)
   gfs.collection('pdfs')
   console.log('[GridFS] Bucket "pdfs" initialised')
 })
 
+/**
+ * Returns initialized GridFS instance.
+ * @returns {Grid} gfs instance
+ */
 export { gfs }
 
 /**
@@ -29,4 +38,4 @@ export { gfs }
  * @returns {import('stream').Readable}
  */
 export const openDownloadStream = (filename) =>
-  gfs.createReadStream({ filename, root: 'pdfs' })
+  gfs?.createReadStream({ filename, root: 'pdfs' })
