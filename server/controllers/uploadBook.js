@@ -1,6 +1,7 @@
 /**
  * @file uploadBook.js
- * @description Controller for uploading a book with PDF, metadata and optional cover image.
+ * @description
+ * Controller for uploading a book with PDF, metadata and optional cover image.
  * Stores the PDF in GridFS (bucket "pdfs") and saves a Book document.
  */
 
@@ -8,6 +9,16 @@ import { pdfBucket } from '../setupGridFS.js'
 import Book from '../models/Book.js'
 import { Readable } from 'stream'
 
+/**
+ * Handles book upload:
+ * 1) Validates presence and MIME type of the PDF file
+ * 2) Streams the PDF into GridFS under a unique filename
+ * 3) Creates a new Book document with metadata, including fileUrl and fileKey
+ * 4) Responds with the saved Book object
+ *
+ * @param {Object} req - Express request, expecting multipart/form-data with "pdf" file
+ * @param {Object} res - Express response
+ */
 export const UploadBook = async (req, res) => {
   try {
     //----------------------------------------------------------------
@@ -66,7 +77,7 @@ export const UploadBook = async (req, res) => {
         tags,
         cover: '',                                  // cover handling not implemented here
         fileKey: filename,                          // raw GridFS filename
-        fileUrl: `/api/books/file/${filename}`,     // <- frontend can use this directly
+        fileUrl: `/api/books/file/${filename}`,     // frontend can use this directly
         totalPages,
         publicationDate: publicationDate ? new Date(publicationDate) : undefined,
         genre,

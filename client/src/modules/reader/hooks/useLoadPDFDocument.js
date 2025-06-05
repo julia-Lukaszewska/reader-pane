@@ -5,13 +5,12 @@
  * Stores the loaded PDF in pdfRef.current and triggers onLoaded when done.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import * as pdfjsLib from 'pdfjs-dist'
-import { useGetBookFileUrlQuery } from '@/store/api/booksApi'
 
 /**
- * Loads a PDF document from the backend once fileUrl is available.
+ * Loads a PDF document from the backend once bookId and access token are available.
  * - Only runs if bookId and access token are present
  * - Uses pdf.js to load and cache the document in pdfRef
  * - Calls onLoaded callback once document is fully loaded
@@ -26,15 +25,8 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const access = useSelector(state => state.auth.access)
 
   const skip = !bookId || !access
-
-  const {
-    data: fileUrl,
-    isFetching,
-    isError
-  } = useGetBookFileUrlQuery(bookId, {
-    skip,
-    refetchOnMountOrArgChange: true
-  })
+  const [isFetching, setIsFetching] = useState(false)
+  const [isError, setIsError] = useState(false)
 
   useEffect(() => {
     if (skip) {
@@ -42,36 +34,44 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
       return
     }
 
-    if (!fileUrl || !pdfRef) return
-
+    if (!pdfRef) return
     if (pdfRef.current) {
       console.log('[useLoadPDFDocument] PDF already loaded in memory – skipping fetch')
       return
     }
 
-    console.log('[useLoadPDFDocument] Loading PDF from:', fileUrl)
+    const url = `${import.meta.env.VITE_API_URL}/books/${bookId}/file`
+    console.log('[useLoadPDFDocument] Loading PDF from:', url)
 
     let cancelled = false
+    setIsFetching(true)
+    setIsError(false)
 
     ;(async () => {
       try {
-        const { promise } = pdfjsLib.getDocument(fileUrl)
-        const pdf = await promise
+        const loadingTask = pdfjsLib.getDocument({
+          url,
+          httpHeaders: { Authorization: `Bearer ${access}` },
+        })
+        const pdf = await loadingTask.promise
         if (cancelled) return
 
         console.log('[useLoadPDFDocument] PDF loaded successfully, pages:', pdf.numPages)
-
         pdfRef.current = pdf
         onLoaded?.(pdf)
       } catch (error) {
+        if (cancelled) return
         console.error('[useLoadPDFDocument] Error loading PDF:', error)
+        setIsError(true)
+      } finally {
+        if (!cancelled) setIsFetching(false)
       }
     })()
 
     return () => {
       cancelled = true
     }
-  }, [fileUrl, bookId, skip])
+  }, [bookId, access, skip])
 
   return { isFetching, isError }
 }
