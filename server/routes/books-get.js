@@ -15,7 +15,7 @@
 
 import express from "express";
 import Book from "../models/Book.js";
-import { bucket } from "../setupGridFS.js"; // GridFSBucket instance
+import { pdfBucket } from "../setupGridFS.js"; // GridFSBucket instance
 
 const router = express.Router();
 
