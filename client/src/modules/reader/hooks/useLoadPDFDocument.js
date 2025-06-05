@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import * as pdfjsLib from 'pdfjs-dist'
-import useEnsureBookFileUrl from './useEnsureBookFileUrl'
+import { useGetBookByIdQuery } from '@/store/api/booksApi'
 
 /**
  * Loads a PDF document from the backend once bookId, fileUrl, and access token are available.
@@ -21,24 +21,45 @@ import useEnsureBookFileUrl from './useEnsureBookFileUrl'
  * @returns {{ isFetching: boolean, isError: boolean }}
  */
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
+  // ---------------------------------------------------------------------------
+  // Retrieve necessary state from Redux
+  // ---------------------------------------------------------------------------
   const bookId = useSelector((state) => state.book.activeBookId)
   const access = useSelector((state) => state.auth.access)
-  const book = useSelector((state) => state.book.byId[bookId])
-const fileUrl = useEnsureBookFileUrl({ book })
+  const {
+    data: bookFromApi,
+    isLoading: isBookLoading,
+    isError: isBookFetchError,
+  } = useGetBookByIdQuery(bookId, { skip: !bookId })
 
+  // If the API returned book data, extract fileUrl from book.meta
+  const fileUrl = bookFromApi?.meta?.fileUrl || null
 
+  // Local state for loading and error flags
   const [isFetching, setIsFetching] = useState(false)
   const [isError, setIsError] = useState(false)
 
   useEffect(() => {
     console.log('[useLoadPDFDocument] bookId:', bookId)
+    console.log('[useLoadPDFDocument] isBookLoading:', isBookLoading)
+    console.log('[useLoadPDFDocument] isBookFetchError:', isBookFetchError)
     console.log('[useLoadPDFDocument] fileUrl:', fileUrl)
+    console.log('[useLoadPDFDocument] access token present:', Boolean(access))
 
-    if (!bookId || !access || !fileUrl) {
-      console.log('[useLoadPDFDocument] Skipping PDF load – missing bookId, access, or fileUrl')
+    // If book data is still loading or fetch failed, do not attempt to load PDF
+    if (isBookLoading || isBookFetchError) {
       return
     }
 
+    // If any required value is missing, skip loading
+    if (!bookId || !access || !fileUrl) {
+      console.log(
+        '[useLoadPDFDocument] Skipping PDF load – missing bookId, access, or fileUrl'
+      )
+      return
+    }
+
+    // If pdfRef is not provided or if it already contains a loaded document, skip
     if (!pdfRef) return
     if (pdfRef.current) {
       console.log('[useLoadPDFDocument] PDF already loaded – skipping')
@@ -51,16 +72,19 @@ const fileUrl = useEnsureBookFileUrl({ book })
     setIsFetching(true)
     setIsError(false)
 
-    ;(async () => {
+    (async () => {
       try {
+        // Initiate loading of the PDF document via pdf.js
         const loadingTask = pdfjsLib.getDocument({
           url: import.meta.env.VITE_API_URL + fileUrl,
-          
         })
         const pdf = await loadingTask.promise
         if (cancelled) return
 
-        console.log('[useLoadPDFDocument] PDF loaded successfully, pages:', pdf.numPages)
+        console.log(
+          '[useLoadPDFDocument] PDF loaded successfully, total pages:',
+          pdf.numPages
+        )
         pdfRef.current = pdf
         onLoaded?.(pdf)
       } catch (error) {
@@ -68,14 +92,19 @@ const fileUrl = useEnsureBookFileUrl({ book })
         console.error('[useLoadPDFDocument] Error loading PDF:', error)
         setIsError(true)
       } finally {
-        if (!cancelled) setIsFetching(false)
+        if (!cancelled) {
+          setIsFetching(false)
+        }
       }
     })()
 
     return () => {
       cancelled = true
     }
-  }, [bookId, access, fileUrl])
+  }, [bookId, access, fileUrl, isBookLoading, isBookFetchError])
 
-  return { isFetching, isError }
+  return {
+    isFetching: isBookLoading || isFetching,
+    isError: isBookFetchError || isError,
+  }
 }

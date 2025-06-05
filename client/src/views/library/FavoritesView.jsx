@@ -7,16 +7,15 @@ import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  selectAllBooks,
-  selectBooksResult,
   selectLibraryViewMode,
   selectIsPreviewOpen,
   selectPreviewBookId,
 } from '@/store/selectors/selectors'
-import { clearPreviewBook } from '@/store/slices/bookSlice'
+import { useGetBooksQuery } from '@/store/api/booksApi'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
 import { LoadingSpinner } from '@/components'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -37,21 +36,29 @@ const FavoritesView = () => {
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
 
-  // 1) Read status and data from cache
-  const { status } = useSelector(selectBooksResult)
-  const allBooks = useSelector(selectAllBooks)
+  // 1) Fetch all books via RTK Query
+  const {
+    data: allBooks = [],
+    isLoading,
+    isError,
+  } = useGetBooksQuery()
 
   // 2) Spinner or empty while loading
-  if (status === 'pending' || status === 'uninitialized') {
+  if (isLoading) {
     return <LoadingSpinner />
   }
+  // (No explicit error UI for favorites; empty state will show no cards)
 
   // 3) status === 'fulfilled', so filter favorited, non-archived books
   const favoriteBooks = allBooks.filter(
-    book => book.flags?.isFavorited && !book.flags?.isArchived && book.meta?.title && book.meta?.fileUrl
+    (book) =>
+      book.flags?.isFavorited &&
+      !book.flags?.isArchived &&
+      book.meta?.title &&
+      book.meta?.fileUrl
   )
 
-  const previewBook = favoriteBooks.find(b => b._id === previewId)
+  const previewBook = favoriteBooks.find((b) => b._id === previewId)
 
   return (
     <Container>

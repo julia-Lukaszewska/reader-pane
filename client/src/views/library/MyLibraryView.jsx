@@ -1,4 +1,3 @@
-
 /**
  * @file MyLibraryView.jsx
  * @description Displays non-archived books in the selected view mode.
@@ -8,13 +7,11 @@ import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  selectAllBooks,
-  selectBooksResult,
   selectLibraryViewMode,
   selectIsPreviewOpen,
   selectPreviewBookId,
 } from '@/store/selectors/selectors'
-
+import { useGetBooksQuery } from '@/store/api/booksApi'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner } from '@/components'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
@@ -42,24 +39,27 @@ const MyLibraryView = () => {
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
 
-  // 1) Read status and data from cache
-  const { status } = useSelector(selectBooksResult)
-  const allBooks = useSelector(selectAllBooks)
+  // 1) Fetch all books via RTK Query
+  const {
+    data: allBooks = [],
+    isLoading,
+    isError,
+  } = useGetBooksQuery()
 
   // 2) Spinner or error
-  if (status === 'pending' || status === 'uninitialized') {
+  if (isLoading) {
     return <LoadingSpinner />
   }
-  if (status === 'rejected') {
+  if (isError) {
     return <div>Error loading books.</div>
   }
 
   // 3) status === 'fulfilled', so filter non-archived valid books
   const nonArchived = allBooks.filter(
-    b => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
+    (b) => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
   )
 
-  const previewBook = nonArchived.find(b => b._id === previewId)
+  const previewBook = nonArchived.find((b) => b._id === previewId)
 
   return (
     <Container>
