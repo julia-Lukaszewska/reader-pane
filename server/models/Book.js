@@ -6,9 +6,13 @@
  * - flags: user-controlled states and data (favorites, bookmarks, notes, etc.)
  * - stats: system-generated usage data (progress, last opened, etc.)
  * Used in book upload, querying, progress tracking, and UI display.
- */ 
+ */
 
 import mongoose from 'mongoose'
+
+// -----------------------------------------------------------------------------
+// BOOK SCHEMA
+// -----------------------------------------------------------------------------
 
 const bookSchema = new mongoose.Schema(
   {
@@ -23,7 +27,6 @@ const bookSchema = new mongoose.Schema(
       description:     { type: String, default: '' },
       tags:            { type: [String], default: [] },
       cover:           { type: String, default: '' },
-      fileUrl:         { type: String, required: true },
       totalPages:      { type: Number, default: 1, min: 1 },
       publicationDate: { type: Date },
       publishedYear:   { type: Number, default: null },
@@ -38,6 +41,7 @@ const bookSchema = new mongoose.Schema(
       filename: { type: String, required: true },
     },
 
+    // 3) OWNER – user who uploaded the book
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -45,7 +49,7 @@ const bookSchema = new mongoose.Schema(
       index: true,
     },
 
-    // 3) FLAGS – user-defined states and settings
+    // 4) FLAGS – user-defined states and settings
     flags: {
       isArchived:   { type: Boolean, default: false },
       isFavorited:  { type: Boolean, default: false },
@@ -86,7 +90,7 @@ const bookSchema = new mongoose.Schema(
       },
     },
 
-    // 4) STATS – tracking and system-generated state
+    // 5) STATS – tracking and system-generated state
     stats: {
       lastOpenedAt:   { type: Date, default: null },
       currentPage:    { type: Number, default: 1 },
@@ -98,5 +102,9 @@ const bookSchema = new mongoose.Schema(
 )
 
 bookSchema.index({ 'meta.addedAt': -1 })
+
+// -----------------------------------------------------------------------------
+// EXPORT
+// -----------------------------------------------------------------------------
 
 export default mongoose.models.Book || mongoose.model('Book', bookSchema)

@@ -1,32 +1,22 @@
-/**
- * @file useEnsureBookFileUrl.js
- * @description
- * Hook that fetches the fileUrl of a book given its ID and logs the process.
- * Helps ensure the file URL is ready before attempting to load the PDF.
- */
-
 import { useEffect } from 'react'
-import { useGetBookFileUrlQuery } from '@/store/api/booksApi'
+import { useDispatch } from 'react-redux'
+import { setBookFileUrl } from '@/store/slices/readerSlice'
 
 /**
- * Hook to ensure `fileUrl` is fetched for a given `bookId`.
- * Logs the fetch process and returns the resulting fileUrl string (or null).
+ * Ensures fileUrl is available in Redux based on book data.
+ * Builds the correct public file URL using filename from GridFS.
  *
- * @param {string|null} bookId - The ID of the book to fetch fileUrl for.
- * @returns {string|null} fileUrl - The fetched file URL, or null if not available.
+ * @param {Object} params
+ * @param {Object} params.book - Book object containing .file.filename
  */
-const useEnsureBookFileUrl = (bookId) => {
-  const skip = !bookId
-  const { data, error, isLoading, isSuccess } = useGetBookFileUrlQuery(bookId, { skip })
+ const useEnsureBookFileUrl = ({ book }) => {
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    console.log('[useEnsureBookFileUrl] bookId:', bookId)
-    if (isLoading) console.log('[useEnsureBookFileUrl] Loading fileUrl...')
-    if (isSuccess) console.log('[useEnsureBookFileUrl] fileUrl fetched:', data)
-    if (error) console.warn('[useEnsureBookFileUrl] Error fetching fileUrl:', error)
-  }, [bookId, isLoading, isSuccess, data, error])
+    if (!book?.file?.filename) return
 
-  return data || null
+    const fileUrl = `/api/books/file/${book.file.filename}`
+    dispatch(setBookFileUrl(fileUrl))
+  }, [book, dispatch])
 }
-
 export default useEnsureBookFileUrl

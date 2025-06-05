@@ -9,6 +9,10 @@ import { pdfBucket } from '../setupGridFS.js'
 import Book from '../models/Book.js'
 import { Readable } from 'stream'
 
+// -----------------------------------------------------------------------------
+// UploadBook Controller
+// -----------------------------------------------------------------------------
+
 /**
  * Handles book upload:
  * 1) Validates presence and MIME type of the PDF file
@@ -76,7 +80,6 @@ export const UploadBook = async (req, res) => {
         description,
         tags,
         cover: '',
-        fileUrl: `/api/books/${filename}`,
         totalPages,
         publicationDate: publicationDate ? new Date(publicationDate) : undefined,
         genre,

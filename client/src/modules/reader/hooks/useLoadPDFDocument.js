@@ -53,7 +53,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
       try {
         const loadingTask = pdfjsLib.getDocument({
           url: import.meta.env.VITE_API_URL + fileUrl,
-          httpHeaders: { Authorization: `Bearer ${access}` },
+          
         })
         const pdf = await loadingTask.promise
         if (cancelled) return
