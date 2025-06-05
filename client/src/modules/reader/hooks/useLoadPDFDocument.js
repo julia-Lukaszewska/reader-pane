@@ -7,11 +7,11 @@
 
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import useEnsureBookFileUrl from './useEnsureBookFileUrl'
 import * as pdfjsLib from 'pdfjs-dist'
+import useEnsureBookFileUrl from './useEnsureBookFileUrl'
 
 /**
- * Loads a PDF document from the backend once bookId and access token are available.
+ * Loads a PDF document from the backend once bookId, fileUrl, and access token are available.
  * - Uses pdf.js to load and cache the document in pdfRef
  * - Calls onLoaded callback once document is fully loaded
  *
@@ -29,6 +29,9 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const [isError, setIsError] = useState(false)
 
   useEffect(() => {
+    console.log('[useLoadPDFDocument] bookId:', bookId)
+    console.log('[useLoadPDFDocument] fileUrl:', fileUrl)
+
     if (!bookId || !access || !fileUrl) {
       console.log('[useLoadPDFDocument] Skipping PDF load – missing bookId, access, or fileUrl')
       return
@@ -49,7 +52,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     ;(async () => {
       try {
         const loadingTask = pdfjsLib.getDocument({
-          url: fileUrl,
+          url: import.meta.env.VITE_API_URL + fileUrl,
           httpHeaders: { Authorization: `Bearer ${access}` },
         })
         const pdf = await loadingTask.promise

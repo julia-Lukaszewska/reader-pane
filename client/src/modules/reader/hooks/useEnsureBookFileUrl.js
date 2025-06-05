@@ -10,6 +10,7 @@ import { useGetBookFileUrlQuery } from '@/store/api/booksApi'
 
 /**
  * Hook to ensure `fileUrl` is fetched for a given `bookId`.
+ * Logs the fetch process and returns the resulting fileUrl string (or null).
  *
  * @param {string|null} bookId - The ID of the book to fetch fileUrl for.
  * @returns {string|null} fileUrl - The fetched file URL, or null if not available.
