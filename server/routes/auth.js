@@ -45,7 +45,8 @@ const issueTokens = (user, res) => {
   res.cookie('rt', refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: 'Strict',
+    sameSite: 'None', // Changed from Strict to None for cross-origin
+    path: '/api/auth',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   })
 
@@ -56,20 +57,6 @@ const issueTokens = (user, res) => {
 // ROUTE – user registration
 // -----------------------------------------------------------------------------
 
-/**
- * @route   POST /api/auth/register
- * @desc    Register a new user with email, password, and name
- * @access  Public
- *
- * @param {string} req.body.email    - User's email address
- * @param {string} req.body.password - User's plaintext password
- * @param {string} req.body.name     - User's name
- *
- * @returns {Object} 201 + { access } on success
- * @returns {Object} 400 + { error } if validation fails
- * @returns {Object} 409 + { error } if email already exists
- * @returns {Object} 500 + { error } on server error
- */
 router.post('/register', async (req, res) => {
   const { email, password, name } = req.body
 
@@ -95,18 +82,6 @@ router.post('/register', async (req, res) => {
 // ROUTE – local login (email + password)
 // -----------------------------------------------------------------------------
 
-/**
- * @route   POST /api/auth/login
- * @desc    Authenticate user using email and password, issue tokens on success
- * @access  Public
- *
- * @param {string} req.body.email    - User's email address
- * @param {string} req.body.password - User's plaintext password
- *
- * @returns {Object} 200 + { access } on success
- * @returns {Object} 401 + { error } if authentication fails
- * @returns {Object} 500 + { error } on server error
- */
 router.post(
   '/login',
   passport.authenticate('local', {
@@ -126,14 +101,6 @@ router.post(
 // ROUTE – get current authenticated user
 // -----------------------------------------------------------------------------
 
-/**
- * @route   GET /api/auth/me
- * @desc    Retrieve the currently authenticated user's information
- * @access  Private (JWT)
- *
- * @returns {Object} 200 + { user } on success
- * @returns {Object} 500 + { error } on server error
- */
 router.get(
   '/me',
   passport.authenticate('jwt', { session: false }),
@@ -153,18 +120,12 @@ router.get(
 // ROUTE – logout (clear refresh token cookie)
 // -----------------------------------------------------------------------------
 
-/**
- * @route   POST /api/auth/logout
- * @desc    Clear refresh token cookie to log out user
- * @access  Public
- *
- * @returns {204} No Content
- */
 router.post('/logout', (_req, res) => {
   res.clearCookie('rt', {
     httpOnly: true,
     secure: true,
-    sameSite: 'Strict',
+    sameSite: 'None',
+    path: '/api/auth',
   })
   return res.sendStatus(204)
 })
@@ -173,14 +134,6 @@ router.post('/logout', (_req, res) => {
 // ROUTE – refresh access token using valid refresh token (from cookie)
 // -----------------------------------------------------------------------------
 
-/**
- * @route   POST /api/auth/refresh
- * @desc    Use valid refresh token to issue a new access token
- * @access  Public
- *
- * @returns {Object} 200 + { access } on success
- * @returns {Object} 401 + { error } if refresh token missing/invalid
- */
 router.post('/refresh', (req, res) => {
   const { rt } = req.cookies
 
@@ -206,11 +159,6 @@ router.post('/refresh', (req, res) => {
 // ROUTE – redirect to Google for OAuth login
 // -----------------------------------------------------------------------------
 
-/**
- * @route   GET /api/auth/google
- * @desc    Redirect user to Google for OAuth authentication
- * @access  Public
- */
 router.get(
   '/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -220,13 +168,6 @@ router.get(
 // ROUTE – Google OAuth callback
 // -----------------------------------------------------------------------------
 
-/**
- * @route   GET /api/auth/google/callback
- * @desc    Google OAuth callback endpoint; issue tokens on success
- * @access  Public
- *
- * @returns {Redirect} Redirects to homepage on success
- */
 router.get(
   '/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/login' }),
