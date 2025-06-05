@@ -56,7 +56,7 @@ const MyLibraryView = () => {
 
   // 3) status === 'fulfilled', so filter non-archived valid books
   const nonArchived = allBooks.filter(
-    b => !b.flags?.isArchived && b.meta?.title && b.meta?.fileUrl
+    b => !b.flags?.isArchived && b.meta?.title 
   )
 
   const previewBook = nonArchived.find(b => b._id === previewId)

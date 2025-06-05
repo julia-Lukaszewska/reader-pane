@@ -48,7 +48,7 @@ const FavoritesView = () => {
 
   // 3) status === 'fulfilled', so filter favorited, non-archived books
   const favoriteBooks = allBooks.filter(
-    book => book.flags?.isFavorited && !book.flags?.isArchived && book.meta?.title && book.meta?.fileUrl
+    book => book.flags?.isFavorited && !book.flags?.isArchived && book.meta?.title 
   )
 
   const previewBook = favoriteBooks.find(b => b._id === previewId)

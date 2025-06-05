@@ -57,7 +57,7 @@ const ArchiveView = () => {
   }
 
   const archivedBooks = allBooks.filter(
-    book => book.flags?.isArchived && book.meta?.title && book.meta?.fileUrl
+    book => book.flags?.isArchived && book.meta?.title 
   )
 
   if (!archivedBooks.length) {
