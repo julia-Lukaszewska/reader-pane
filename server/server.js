@@ -2,121 +2,71 @@
  * @file server.js
  * @description
  * Main entry point for the Express backend.
- * Connects to MongoDB, configures middleware, serves static files,
- * handles routes, and applies global error handling.
- *
- * Features:
- * - Security (Helmet), CORS, HTTP request logging, JSON/body parsing
- * - Static file serving from /uploads via /files route
- * - API routing for /api/books endpoints
- * - Centralized error handler for uncaught exceptions
- *
- * Note:
- * JSON and URL-encoded body size limits are set to 50 MB – required for
- * uploading large base64 cover images or detailed metadata.
+ * Connects to MongoDB, configures middleware, serves API routes,
+ * and initialises GridFS.
  */
 
 import dotenv from 'dotenv'
+import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import path, { dirname, join } from 'path'
-
-// Load environment variables before anything else
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const envFile = `.env.server.${process.env.BRANCH || 'dev'}`
-dotenv.config({ path: join(__dirname, '..', 'env', envFile) })
-console.log('JWT_ACCESS_KEY =', process.env.JWT_ACCESS_KEY)
-console.log(` Loaded ${envFile}`)
-
-import { configurePassport } from './config/passport.js'
-configurePassport()
 
 import express from 'express'
-import mongoose from 'mongoose'
-import cors from 'cors'
-import morgan from 'morgan'
 import helmet from 'helmet'
-import fs from 'fs'
-
+import morgan from 'morgan'
+import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import mongoose from 'mongoose'
+
+import { configurePassport } from './config/passport.js'
 import authRoutes from './routes/auth.js'
+import booksRoutes from './routes/index.js'
+import { corsOptions } from './config/cors.config.js'
+import './setupGridFS.js'                     
 
-import booksRoutes, { uploadsDir } from './routes/index.js'
-import { corsOptions, allowedOrigins } from './config/cors.config.js'
+// -----------------------------------------------------------------------------
+// ENV & PATHS
+// -----------------------------------------------------------------------------
+const __filename = fileURLToPath(import.meta.url)
+const __dirname  = dirname(__filename)
+const BRANCH     = process.env.BRANCH || 'dev'
+dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) })
 
+console.log(`Loaded .env.server.${BRANCH}`)
+
+// -----------------------------------------------------------------------------
+// APP & COMMON MIDDLEWARE
+// -----------------------------------------------------------------------------
 const app = express()
-
-// -----------------------------------------------------------------------------
-// COMMON MIDDLEWARE
-// -----------------------------------------------------------------------------
 
 app.use(helmet({ crossOriginResourcePolicy: false }))
 app.use(morgan('dev'))
-
-// 1. Body parsers
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true, limit: '50mb' }))
-
-// 2. Cookie parser
 app.use(cookieParser())
-
-// 3. CORS
 app.use(cors(corsOptions))
 
-// 4. Auth routes (after CORS and cookieParser)
-app.use('/api/auth', authRoutes)
+// -----------------------------------------------------------------------------
+// PASSPORT & ROUTES
+// -----------------------------------------------------------------------------
+configurePassport()
 
-// -----------------------------------------------------------------------------
-// ENSURE UPLOADS DIRECTORY EXISTS
-// -----------------------------------------------------------------------------
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true })
-  console.log(`Created uploads directory at: ${uploadsDir}`)
-}
-
-// -----------------------------------------------------------------------------
-// STATIC FILE SERVING
-// -----------------------------------------------------------------------------
-
-app.use(
-  '/files',
-  cors({ origin: allowedOrigins, credentials: true }),
-  (req, res, next) => {
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    res.setHeader('Access-Control-Expose-Headers', '*')
-    res.setHeader('Cache-Control', 'public, max-age=3600')
-    next()
-  },
-  express.static(uploadsDir)
-)
-
-// -----------------------------------------------------------------------------
-// ROUTES
-// -----------------------------------------------------------------------------
+app.use('/api/auth',  authRoutes)
+app.use('/api/books', booksRoutes)            // all book-related routes (incl. file streaming)
 
 app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'))
-app.use('/api/books', booksRoutes)
 
 // -----------------------------------------------------------------------------
-// START SERVER
+// DATABASE & SERVER START
 // -----------------------------------------------------------------------------
-
 const PORT = process.env.PORT || 5000
-
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-  })
+  .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
   .catch((err) => console.error('Database connection error:', err))
 
 // -----------------------------------------------------------------------------
 // GLOBAL ERROR HANDLER
 // -----------------------------------------------------------------------------
-
 app.use((err, _req, res, _next) => {
   console.error('Global error handler:', err.stack)
   res.status(500).json({ error: 'Something went wrong!' })

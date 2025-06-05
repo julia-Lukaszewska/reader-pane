@@ -20,7 +20,7 @@ import getRoutes from './books-get.js'
 import flagRoutes from './books-flags.js'
 import progressRoutes from './books-progress.js'
 import editRoutes from './books-edit.js'
-import uploadRoutes, { uploadsDir } from './books-upload.js'
+import uploadRoutes from './books-upload.js'
 
 const router = express.Router()
 
@@ -62,4 +62,4 @@ router.use(progressRoutes)
 router.use(editRoutes)
 
 export default router
-export { uploadsDir }
+// export { uploadsDir }

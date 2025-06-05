@@ -131,21 +131,21 @@ router.get('/:id/cache', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// GET /api/books/:id/file-url — get file URL of uploaded PDF
+// GET /api/books/file/:filename — stream PDF from GridFS
 //------------------------------------------------------------------
-router.get('/:id/file-url', async (req, res) => {
+router.get('/file/:filename', async (req, res) => {
   try {
-    const book = await Book.findOne(
-      { _id: req.params.id, owner: req.user.id },
-      'meta.fileUrl fileUrl'
-    ).lean()
-    if (!book) return res.status(404).json({ message: 'Book not found' })
-    const raw = book.meta?.fileUrl ?? book.fileUrl
-    res.status(200).json({ fileUrl: raw })
+    const { filename } = req.params
+    const file = await gfs.files.findOne({ filename, root: 'pdfs' })
+    if (!file) return res.status(404).json({ error: 'File not found' })
+
+    res.set('Content-Type', file.contentType || 'application/pdf')
+    gfs.createReadStream({ filename, root: 'pdfs' }).pipe(res)
   } catch (err) {
-    console.error('[FILE URL]', err)
-    res.status(500).json({ message: 'Server error' })
+    console.error('[FILE STREAM]', err)
+    res.status(500).json({ error: 'Failed to stream file' })
   }
 })
+
 
 export default router;
