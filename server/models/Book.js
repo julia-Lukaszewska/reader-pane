@@ -32,21 +32,26 @@ const bookSchema = new mongoose.Schema(
       addedAt:         { type: Date, default: Date.now },
       collection:      { type: String, default: '' },
     },
-     // models/Book.js
-     owner: {
-       type: mongoose.Schema.Types.ObjectId,
-       ref: 'User',
-       required: true,
-       index: true,
-     },
 
-    // 2) FLAGS – user-defined states and settings
+    // 2) FILE – reference to file stored in GridFS
+    file: {
+      filename: { type: String, required: true },
+    },
+
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+
+    // 3) FLAGS – user-defined states and settings
     flags: {
       isArchived:   { type: Boolean, default: false },
       isFavorited:  { type: Boolean, default: false },
       isDownloaded: { type: Boolean, default: false },
 
-      renderedPages:  { type: [Number], default: [] }, // readonly
+      renderedPages:  { type: [Number], default: [] },
       renderedRanges: {
         type: [
           {
@@ -81,7 +86,7 @@ const bookSchema = new mongoose.Schema(
       },
     },
 
-    // 3) STATS – tracking and system-generated state
+    // 4) STATS – tracking and system-generated state
     stats: {
       lastOpenedAt:   { type: Date, default: null },
       currentPage:    { type: Number, default: 1 },
@@ -92,7 +97,6 @@ const bookSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-// Sorting used in GET /api/books
 bookSchema.index({ 'meta.addedAt': -1 })
 
 export default mongoose.models.Book || mongoose.model('Book', bookSchema)

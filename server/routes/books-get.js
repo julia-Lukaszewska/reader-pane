@@ -11,30 +11,14 @@
  * GET    /                      → list full book docs (owner-scoped)
  * GET    /:id                   → single full book
  * GET    /:id/cache             → rendered pages / ranges
- * GET    /:id/file-url          → signed absolute PDF URL
- * GET    /file/:filename        → stream PDF with JWT token in header
+ * GET    /:id/file              → stream PDF directly by bookId
  */
 
 import express from 'express'
-import jwt from 'jsonwebtoken'
 import Book from '../models/Book.js'
 import { pdfBucket } from '../setupGridFS.js'
 
 const router = express.Router()
-const FILE_TOKEN_SECRET = process.env.FILE_TOKEN_SECRET ?? 'CHANGE_ME_FILE_SECRET' // < 256-bit secret!
-const FILE_TOKEN_TTL = '15m' // signed URL lifetime
-
-/**
- * Build a short-lived JWT for a given book. The token is passed as a query
- * string so pdf.js can fetch the file cross-domain without cookies.
- */
-function createFileToken(book) {
-  return jwt.sign(
-    { filename: book.filename, owner: String(book.owner) },
-    FILE_TOKEN_SECRET,
-    { expiresIn: FILE_TOKEN_TTL }
-  )
-}
 
 // ───────────────────────────────────────────────────────────
 // GET /api/books/static – lightweight metadata
@@ -153,52 +137,17 @@ router.get('/:id/cache', async (req, res) => {
 })
 
 // ───────────────────────────────────────────────────────────
-// GET /api/books/:id/file-url – signed absolute URL
+// GET /api/books/:id/file – stream PDF directly by bookId
 // ───────────────────────────────────────────────────────────
-router.get('/:id/file-url', async (req, res) => {
+router.get('/:id/file', async (req, res) => {
   try {
-    const book = await Book.findOne(
-      { _id: req.params.id, owner: req.user.id },
-      'filename owner'
-    ).lean()
+    const book = await Book.findById(req.params.id)
+    if (!book?.file?.filename) return res.status(404).send('File not found')
 
-    if (!book) return res.status(404).json({ error: 'Book not found' })
-
-    const token = createFileToken(book)
-    const base = process.env.PUBLIC_API_URL ?? `${req.protocol}://${req.get('host')}`
-    res.json({ fileUrl: `${base}/api/books/file/${encodeURIComponent(book.filename)}?token=${token}` })
-  } catch (err) {
-    console.error('[FILE URL]', err)
-    res.status(500).json({ error: 'Failed to build file URL' })
-  }
-})
-
-// ───────────────────────────────────────────────────────────
-// GET /api/books/file/:filename – stream PDF with JWT header auth
-// ───────────────────────────────────────────────────────────
-router.get('/file/:filename', async (req, res) => {
-  try {
-    // 1) Extract token from Authorization header
-    const authHeader = req.headers.authorization || ''
-    const token = authHeader.split(' ')[1]
-    if (!token) return res.status(401).send('Unauthorized')
-
-    // 2) Verify token
-    let payload
-    try {
-      payload = jwt.verify(token, FILE_TOKEN_SECRET)
-    } catch (err) {
-      return res.status(401).send('Unauthorized')
-    }
-
-    // 3) Ensure filename matches token payload
-    if (payload.filename !== req.params.filename) {
-      return res.status(403).send('Forbidden')
-    }
-
-    // 4) Stream PDF from GridFS
+    const stream = pdfBucket.openDownloadStreamByName(book.file.filename)
+    stream.on('error', () => res.status(404).send('File not found'))
     res.set('Content-Type', 'application/pdf')
-    pdfBucket.openDownloadStreamByName(req.params.filename).pipe(res)
+    stream.pipe(res)
   } catch (err) {
     console.error('[FILE STREAM]', err)
     res.status(500).json({ error: 'Failed to stream file' })

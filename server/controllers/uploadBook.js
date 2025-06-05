@@ -13,7 +13,7 @@ import { Readable } from 'stream'
  * Handles book upload:
  * 1) Validates presence and MIME type of the PDF file
  * 2) Streams the PDF into GridFS under a unique filename
- * 3) Creates a new Book document with metadata, including fileUrl and fileKey
+ * 3) Creates a new Book document with metadata, including GridFS filename
  * 4) Responds with the saved Book object
  *
  * @param {Object} req - Express request, expecting multipart/form-data with "pdf" file
@@ -75,9 +75,8 @@ export const UploadBook = async (req, res) => {
         author,
         description,
         tags,
-        cover: '',                                  // cover handling not implemented here
-        fileKey: filename,                          // raw GridFS filename
-        fileUrl: `/api/books/file/${filename}`,     // frontend can use this directly
+        cover: '',
+        fileUrl: `/api/books/${filename}`,
         totalPages,
         publicationDate: publicationDate ? new Date(publicationDate) : undefined,
         genre,
@@ -85,6 +84,9 @@ export const UploadBook = async (req, res) => {
         collection,
         source: 'user',
         addedAt: Date.now(),
+      },
+      file: {
+        filename,
       },
       flags: {
         isArchived: false,
