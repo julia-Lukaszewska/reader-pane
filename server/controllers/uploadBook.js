@@ -4,8 +4,9 @@
  * Stores the PDF in GridFS (bucket "pdfs") and saves a Book document.
  */
 
-import { gfs } from '../setupGridFS.js'
-import Book     from '../models/Book.js'
+import { pdfBucket } from '../setupGridFS.js'
+import Book from '../models/Book.js'
+import { Readable } from 'stream'
 
 export const UploadBook = async (req, res) => {
   try {
@@ -13,10 +14,7 @@ export const UploadBook = async (req, res) => {
     // 1) Basic validation
     //----------------------------------------------------------------
     const pdfFile = req.files?.pdf?.[0]
-    if (!pdfFile) {
-      return res.status(400).json({ error: 'Missing PDF file' })
-    }
-
+    if (!pdfFile) return res.status(400).json({ error: 'Missing PDF file' })
     if (!pdfFile.mimetype.includes('pdf')) {
       return res.status(415).json({ error: 'Only PDF files are accepted' })
     }
@@ -32,31 +30,26 @@ export const UploadBook = async (req, res) => {
     const filename = `${req.user.id}_${Date.now()}_${pdfFile.originalname.replace(/[/\\]+/g, '_')}`
 
     await new Promise((resolve, reject) => {
-      const write = gfs.createWriteStream({
-        filename,
-        content_type: pdfFile.mimetype,
-        root: 'pdfs',
+      const readableStream = Readable.from(pdfFile.buffer)
+      const uploadStream = pdfBucket.openUploadStream(filename, {
+        contentType: pdfFile.mimetype,
       })
 
-      write.on('close', resolve)
-      write.on('error', err => {
-        console.error('[GridFS Write Error]', err)
-        reject(err)
-      })
-
-      write.end(pdfFile.buffer)
+      readableStream.pipe(uploadStream)
+      uploadStream.on('finish', resolve)
+      uploadStream.on('error', reject)
     })
 
     //----------------------------------------------------------------
     // 3) Build new Book document
     //----------------------------------------------------------------
     const {
-      title           = pdfFile.originalname,
-      author          = '',
-      description     = '',
+      title = pdfFile.originalname,
+      author = '',
+      description = '',
       publicationDate,
-      genre           = '',
-      collection      = '',
+      genre = '',
+      collection = '',
     } = req.body
 
     const tags = (req.body.tags || '')

@@ -2,35 +2,28 @@
  * @file setupGridFS.js
  * @description
  * Creates and exports a single GridFS bucket instance (bucketName: "pdfs").
- * The bucket is attached to global so any module can import { gfs }.
+ * The bucket is attached to global so any module can import { pdfBucket }.
  */
 
 import mongoose from 'mongoose'
-import Grid from 'gridfs-stream'
+import { GridFSBucket } from 'mongodb'
 
-// gfs instance shared across app
-let gfs = null
+// pdfBucket instance shared across app
+let pdfBucket = null
 
 mongoose.connection.once('open', () => {
-  // Set correct Mongo driver reference AFTER connection is open
-  Grid.mongo = mongoose.mongo
-
-  // Fix for newer MongoDB drivers (ObjectId vs ObjectID)
-  if (!Grid.mongo.ObjectID && Grid.mongo.ObjectId) {
-    Grid.mongo.ObjectID = Grid.mongo.ObjectId
-  }
-
-  // Initialize GridFS
-  gfs = Grid(mongoose.connection.db)
-  gfs.collection('pdfs')
+  // Create GridFS bucket once DB is ready
+  pdfBucket = new GridFSBucket(mongoose.connection.db, {
+    bucketName: 'pdfs',
+  })
   console.log('[GridFS] Bucket "pdfs" initialised')
 })
 
 /**
- * Returns initialized GridFS instance.
- * @returns {Grid} gfs instance
+ * Returns initialized GridFSBucket instance.
+ * @returns {GridFSBucket} pdfBucket instance
  */
-export { gfs }
+export { pdfBucket }
 
 /**
  * Convenience helper for streaming a file out of GridFS.
@@ -38,4 +31,4 @@ export { gfs }
  * @returns {import('stream').Readable}
  */
 export const openDownloadStream = (filename) =>
-  gfs?.createReadStream({ filename, root: 'pdfs' })
+  pdfBucket?.openDownloadStreamByName(filename)
