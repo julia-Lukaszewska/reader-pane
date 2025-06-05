@@ -174,5 +174,25 @@ router.get("/:id/file", async (req, res) => {
     res.status(500).json({ error: "Failed to stream file" });
   }
 });
+//------------------------------------------------------------
+// GET /api/books/:id/file-url-abs – absolute URL to PDF
+//------------------------------------------------------------
+router.get("/:id/file-url-abs", async (req, res) => {
+  try {
+    const book = await Book.findOne(
+      { _id: req.params.id, owner: req.user.id },
+      "filename"
+    ).lean();
+
+    if (!book) return res.status(404).json({ error: "Book not found" });
+
+
+    const base = process.env.PUBLIC_API_URL || `${req.protocol}://${req.get("host")}`;
+    res.status(200).json({ fileUrl: `${base}/api/books/${book._id}/file` });
+  } catch (err) {
+    console.error("[FILE URL ABS]", err);
+    res.status(500).json({ error: "Failed to build absolute file URL" });
+  }
+});
 
 export default router;
