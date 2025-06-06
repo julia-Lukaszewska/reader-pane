@@ -24,11 +24,7 @@ router.get('/file/:filename', async (req, res) => {
     const { filename } = req.params
     const range = req.headers.range
 
-    if (!range) {
-      console.warn('[PDF STREAM]  Missing Range header')
-      res.setHeader('Accept-Ranges', 'bytes')
-      return res.status(416).send('Range header required')
-    }
+ 
 
     const filesColl = pdfBucket.s.db.collection('pdfs.files')
     const fileDoc = await filesColl.findOne({ filename })
@@ -37,7 +33,15 @@ router.get('/file/:filename', async (req, res) => {
       console.warn(`[PDF STREAM]  File not found: ${filename}`)
       return res.status(404).send('File not found')
     }
-
+if (!range) {
+      console.log(`[PDF STREAM]  Sending full "${filename}" (${fileDoc.length} bytes)`)
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Length': fileDoc.length,
+        'Accept-Ranges': 'bytes',
+      })
+      return pdfBucket.openDownloadStreamByName(filename).pipe(res)
+    }
     const fileSize = fileDoc.length
     const [startStr, endStr] = range.replace(/bytes=/, '').split('-')
     const start = parseInt(startStr, 10)
