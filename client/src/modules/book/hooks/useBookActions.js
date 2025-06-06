@@ -12,7 +12,6 @@ import {
   useUnfavoriteBookMutation,
   booksApi,
 } from '@/store/api/booksApi'
-import { setActiveBookId } from '@/store/slices/bookSlice'
 
 // -----------------------------------------------------------------------------
 // Hook: useBookActions
@@ -36,10 +35,9 @@ export default function useBookActions(book) {
   const [unfavoriteBook] = useUnfavoriteBookMutation()
 
   /**
-   * Navigate to reader view and set the book as active
+   * Navigate to reader view using book._id
    */
   const openReader = () => {
-    dispatch(setActiveBookId(book._id))
     navigate(`/read/${book._id}`)
   }
 

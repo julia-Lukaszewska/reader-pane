@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import * as pdfjsLib from 'pdfjs-dist'
 import useEnsureBookFileUrl from './useEnsureBookFileUrl'
 
@@ -21,11 +22,9 @@ import useEnsureBookFileUrl from './useEnsureBookFileUrl'
  * @returns {{ isFetching: boolean, isError: boolean }}
  */
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
-  // const bookId = useSelector((state) => state.book.activeBookId)
-  // const access = useSelector((state) => state.auth.access)
-  const book = useSelector((state) => state.book.byId[bookId])
-const fileUrl = useEnsureBookFileUrl({ book })
-
+  const { bookId } = useParams()
+  const access = useSelector((state) => state.auth.access)
+  const fileUrl = useEnsureBookFileUrl({ bookId })
 
   const [isFetching, setIsFetching] = useState(false)
   const [isError, setIsError] = useState(false)
@@ -55,7 +54,6 @@ const fileUrl = useEnsureBookFileUrl({ book })
       try {
         const loadingTask = pdfjsLib.getDocument({
           url: import.meta.env.VITE_API_URL + fileUrl,
-          
         })
         const pdf = await loadingTask.promise
         if (cancelled) return
