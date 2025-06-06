@@ -18,7 +18,7 @@ const useEnsureBookFileUrl = (bookId) => {
   const book = cachedBook || fetchedBook
 
   if (!book?.file?.filename) return null
-  return `/api/books/file/${book.file.filename}`
+  return `/books/file/${book.file.filename}`
 }
 
 export default useEnsureBookFileUrl
