@@ -5,7 +5,7 @@
  * Stores the PDF in GridFS (bucket "pdfs") and saves a Book document.
  */
 
-import { pdfBucket } from '../setupGridFS.js'
+import { getPdfBucket } from '../setupGridFS.js'
 import Book from '../models/Book.js'
 import { Readable } from 'stream'
 
@@ -25,6 +25,7 @@ import { Readable } from 'stream'
  */
 export const UploadBook = async (req, res) => {
   let fileId = null
+  const pdfBucket = getPdfBucket()
   try {
     //----------------------------------------------------------------
     // 1) Basic validation
