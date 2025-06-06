@@ -33,4 +33,6 @@ export const corsOptions = {
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
+allowedHeaders: ['Content-Type', 'Authorization', 'Range'], 
+  exposedHeaders: ['Accept-Ranges', 'Content-Range'],       
 };
