@@ -16,6 +16,7 @@ const useEnsureBookFileUrl = (bookId) => {
   })
 
   const book = cachedBook || fetchedBook
+console.log('[useEnsureBookFileUrl] Final fileUrl:', `/books/public/file/${book?.file?.filename}`)
 
   if (!book?.file?.filename) return null
   return `/books/public/file/${book.file.filename}`

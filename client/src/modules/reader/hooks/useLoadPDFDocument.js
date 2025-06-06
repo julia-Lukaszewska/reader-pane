@@ -69,6 +69,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
         if (!cancelled) setIsFetching(false)
       }
     })()
+console.log('[useLoadPDFDocument] full URL:', import.meta.env.VITE_API_URL + fileUrl)
 
     return () => {
       cancelled = true
