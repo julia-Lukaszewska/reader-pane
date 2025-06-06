@@ -20,14 +20,14 @@ import mongoose from 'mongoose'
 import { configurePassport } from './config/passport.js'
 import { authRouter, booksPublicRouter, booksPrivateRouter } from './routes/index.js'
 import { corsOptions } from './config/cors.config.js'
-import './setupGridFS.js'
+import { pdfBucketReady } from './setupGridFS.js'
 
 // -----------------------------------------------------------------------------
 // ENV & PATHS
 // -----------------------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url)
-const __dirname  = dirname(__filename)
-const BRANCH     = process.env.BRANCH || 'dev'
+const __dirname = dirname(__filename)
+const BRANCH = process.env.BRANCH || 'dev'
 dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) })
 
 console.log(`Loaded .env.server.${BRANCH}`)
@@ -49,13 +49,8 @@ app.use(cors(corsOptions))
 // -----------------------------------------------------------------------------
 configurePassport()
 
-// Public routes: PDF streaming without authentication
 app.use('/api/books/public', booksPublicRouter)
-
-// Authentication routes
 app.use('/api/auth', authRouter)
-
-// All other book-related routes (JWT protected)
 app.use('/api/books', booksPrivateRouter)
 
 app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'))
@@ -64,9 +59,13 @@ app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'))
 // DATABASE & SERVER START
 // -----------------------------------------------------------------------------
 const PORT = process.env.PORT || 5000
+
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
+  .then(async () => {
+    await pdfBucketReady 
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+  })
   .catch((err) => console.error('Database connection error:', err))
 
 // -----------------------------------------------------------------------------

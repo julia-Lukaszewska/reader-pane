@@ -15,12 +15,16 @@ const router = express.Router()
 // ───────────────────────────────────────────────────────────
 router.get('/file/:filename', async (req, res) => {
   try {
+    if (!pdfBucket) {
+      return res.status(503).send('PDF bucket not ready')
+    }
+
     const { filename } = req.params
     const range = req.headers.range
-   if (!range) {
-  res.setHeader('Accept-Ranges', 'bytes') 
-  return res.status(416).send('Range header required')
-}
+    if (!range) {
+      res.setHeader('Accept-Ranges', 'bytes')
+      return res.status(416).send('Range header required')
+    }
 
     const filesColl = pdfBucket.s.db.collection('pdfs.files')
     const fileDoc = await filesColl.findOne({ filename })
@@ -39,11 +43,14 @@ router.get('/file/:filename', async (req, res) => {
       'Content-Type': 'application/pdf',
     })
 
-    pdfBucket.openDownloadStreamByName(filename, { start, end: end + 1 }).pipe(res)
+    pdfBucket
+      .openDownloadStreamByName(filename, { start, end: end + 1 })
+      .pipe(res)
   } catch (err) {
     console.error('[PDF STREAM ERROR]', err)
     res.status(500).send('Error streaming PDF')
   }
 })
+
 
 export default router
