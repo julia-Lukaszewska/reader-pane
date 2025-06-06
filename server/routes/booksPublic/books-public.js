@@ -6,7 +6,7 @@
  */
 
 import express from 'express'
-import { pdfBucket } from '../../setupGridFS.js'
+import { GetPdfBucket } from '../../setupGridFS.js'
 
 const router = express.Router()
 
@@ -14,6 +14,7 @@ const router = express.Router()
 // GET /api/books/file/:filename – PUBLIC access to PDF stream
 // ───────────────────────────────────────────────────────────
 router.get('/file/:filename', async (req, res) => {
+  const pdfBucket = getPdfBucket()
   try {
     if (!pdfBucket) {
       console.warn('[PDF STREAM]  pdfBucket not initialized')
