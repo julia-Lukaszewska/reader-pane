@@ -23,6 +23,7 @@ export const useLogout = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+   
   return async () => {
     try {
       await logoutRequest()

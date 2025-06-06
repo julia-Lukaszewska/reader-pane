@@ -7,7 +7,6 @@
 import { useRegisterMutation } from '@/store/api/authApi'
 import { useDispatch } from 'react-redux'
 import { setCredentials } from '@/store/slices/authSlice'
-
 /**
  * Hook to register a new user and store access token
  *
