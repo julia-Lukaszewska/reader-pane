@@ -17,13 +17,14 @@ import { Readable } from 'stream'
  * Handles book upload:
  * 1) Validates presence and MIME type of the PDF file
  * 2) Streams the PDF into GridFS under a unique filename
- * 3) Creates a new Book document with metadata, including GridFS filename
+ * 3) Creates a new Book document with metadata, including GridFS fileId and filename
  * 4) Responds with the saved Book object
  *
  * @param {Object} req - Express request, expecting multipart/form-data with "pdf" file
  * @param {Object} res - Express response
  */
 export const UploadBook = async (req, res) => {
+  let fileId = null
   try {
     //----------------------------------------------------------------
     // 1) Basic validation
@@ -49,6 +50,8 @@ export const UploadBook = async (req, res) => {
       const uploadStream = pdfBucket.openUploadStream(filename, {
         contentType: pdfFile.mimetype,
       })
+
+      fileId = uploadStream.id
 
       readableStream.pipe(uploadStream)
       uploadStream.on('finish', resolve)
@@ -79,7 +82,7 @@ export const UploadBook = async (req, res) => {
         author,
         description,
         tags,
-        cover: '',
+        cover: req.body.cover || '',
         totalPages,
         publicationDate: publicationDate ? new Date(publicationDate) : undefined,
         genre,
@@ -90,6 +93,7 @@ export const UploadBook = async (req, res) => {
       },
       file: {
         filename,
+        fileId,
       },
       flags: {
         isArchived: false,
@@ -106,6 +110,13 @@ export const UploadBook = async (req, res) => {
     const saved = await newBook.save()
     res.status(201).json(saved)
   } catch (err) {
+    if (fileId) {
+      try {
+        await pdfBucket.delete(fileId)
+      } catch (cleanupError) {
+        console.error('[ROLLBACK ERROR] Failed to delete orphaned file:', cleanupError)
+      }
+    }
     console.error('[UPLOAD ERROR]', err)
     res.status(500).json({ error: 'Upload failed' })
   }

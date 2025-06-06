@@ -18,13 +18,9 @@ import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 
 import { configurePassport } from './config/passport.js'
-import booksPublicRoutes from './routes/books-public.js'
-
-
-import authRoutes from './routes/auth.js'
-import booksRoutes from './routes/index.js'
+import { authRouter, booksPublicRouter, booksPrivateRouter } from './routes/index.js'
 import { corsOptions } from './config/cors.config.js'
-import './setupGridFS.js'                     
+import './setupGridFS.js'
 
 // -----------------------------------------------------------------------------
 // ENV & PATHS
@@ -52,9 +48,15 @@ app.use(cors(corsOptions))
 // PASSPORT & ROUTES
 // -----------------------------------------------------------------------------
 configurePassport()
-app.use('/api/books', booksPublicRoutes)
-app.use('/api/auth',  authRoutes)
-app.use('/api/books', booksRoutes)            // all book-related routes (incl. file streaming)
+
+// Public routes: PDF streaming without authentication
+app.use('/api/books/public', booksPublicRouter)
+
+// Authentication routes
+app.use('/api/auth', authRouter)
+
+// All other book-related routes (JWT protected)
+app.use('/api/books', booksPrivateRouter)
 
 app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'))
 

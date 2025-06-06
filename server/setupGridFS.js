@@ -2,17 +2,19 @@
  * @file setupGridFS.js
  * @description
  * Creates and exports a single GridFS bucket instance (bucketName: "pdfs").
- * The bucket is attached to global so any module can import { pdfBucket }.
+ * Exports helpers to stream and delete files from GridFS.
  */
 
 import mongoose from 'mongoose'
-import { GridFSBucket } from 'mongodb'
+import { GridFSBucket, ObjectId } from 'mongodb'
 
-// pdfBucket instance shared across app
+// -----------------------------------------------------------------------------
+// INIT BUCKET – One shared GridFS bucket across the app
+// -----------------------------------------------------------------------------
+
 let pdfBucket = null
 
 mongoose.connection.once('open', () => {
-  // Create GridFS bucket once DB is ready
   pdfBucket = new GridFSBucket(mongoose.connection.db, {
     bucketName: 'pdfs',
   })
@@ -25,10 +27,39 @@ mongoose.connection.once('open', () => {
  */
 export { pdfBucket }
 
+// -----------------------------------------------------------------------------
+// STREAMING UTILITIES
+// -----------------------------------------------------------------------------
+
 /**
- * Convenience helper for streaming a file out of GridFS.
+ * Streams a file by filename (usually not recommended for large apps).
  * @param {string} filename
  * @returns {import('stream').Readable}
  */
 export const openDownloadStream = (filename) =>
   pdfBucket?.openDownloadStreamByName(filename)
+
+/**
+ * Deletes a file from GridFS by _id or filename.
+ * @param {string|ObjectId} idOrName - GridFS file _id or filename
+ * @returns {Promise<boolean>} true if file deleted, false otherwise
+ */
+export const deleteFromBucket = async (idOrName) => {
+  if (!pdfBucket) throw new Error('GridFS bucket not initialized')
+  const filesColl = pdfBucket.s.db.collection('pdfs.files')
+
+  // Try to find by ObjectId
+  let fileDoc = null
+  if (ObjectId.isValid(idOrName)) {
+    fileDoc = await filesColl.findOne({ _id: new ObjectId(idOrName) })
+  }
+  // If not found, try by filename
+  if (!fileDoc) {
+    fileDoc = await filesColl.findOne({ filename: idOrName })
+  }
+
+  if (!fileDoc) return false
+  await pdfBucket.delete(fileDoc._id)
+  return true
+}
+
