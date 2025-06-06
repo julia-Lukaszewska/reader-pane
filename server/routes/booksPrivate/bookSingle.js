@@ -5,7 +5,7 @@
 
 import express from 'express'
 import Book from '../../models/Book.js'
-import { pdfBucket, deleteFromBucket } from '../../setupGridFS.js'
+import { getPdfBucket, deleteFromBucket } from '../../setupGridFS.js'
 
 const router = express.Router()
 
@@ -68,7 +68,7 @@ router.get('/:id/file', async (req, res) => {
   try {
     const book = await Book.findById(req.params.id)
     if (!book?.file?.filename) return res.status(404).send('File not found')
-
+const pdfBucket = getPdfBucket()
     const stream = pdfBucket.openDownloadStreamByName(book.file.filename)
     stream.on('error', () => res.status(404).send('File not found'))
     res.set('Content-Type', 'application/pdf')
