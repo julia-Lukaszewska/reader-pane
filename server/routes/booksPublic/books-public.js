@@ -16,25 +16,42 @@ const router = express.Router()
 router.get('/file/:filename', async (req, res) => {
   try {
     if (!pdfBucket) {
+      console.warn('[PDF STREAM]  pdfBucket not initialized')
       return res.status(503).send('PDF bucket not ready')
     }
 
     const { filename } = req.params
     const range = req.headers.range
+
     if (!range) {
+      console.warn('[PDF STREAM]  Missing Range header')
       res.setHeader('Accept-Ranges', 'bytes')
       return res.status(416).send('Range header required')
     }
 
     const filesColl = pdfBucket.s.db.collection('pdfs.files')
     const fileDoc = await filesColl.findOne({ filename })
-    if (!fileDoc) return res.status(404).send('File not found')
+
+    if (!fileDoc) {
+      console.warn(`[PDF STREAM]  File not found: ${filename}`)
+      return res.status(404).send('File not found')
+    }
 
     const fileSize = fileDoc.length
-    const parts = range.replace(/bytes=/, '').split('-')
-    const start = parseInt(parts[0], 10)
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
+    const [startStr, endStr] = range.replace(/bytes=/, '').split('-')
+    const start = parseInt(startStr, 10)
+    const end = endStr ? parseInt(endStr, 10) : fileSize - 1
+
+    //  Invalid range – return 416
+    if (isNaN(start) || start >= fileSize) {
+      console.warn(`[PDF STREAM]  Invalid Range: ${range}, fileSize: ${fileSize}`)
+      res.setHeader('Content-Range', `bytes */${fileSize}`)
+      return res.status(416).send('Requested Range Not Satisfiable')
+    }
+
     const chunkSize = end - start + 1
+
+    console.log(`[PDF STREAM]  Streaming "${filename}" [${start}-${end}] (${chunkSize} bytes)`)
 
     res.writeHead(206, {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -46,11 +63,11 @@ router.get('/file/:filename', async (req, res) => {
     pdfBucket
       .openDownloadStreamByName(filename, { start, end: end + 1 })
       .pipe(res)
+
   } catch (err) {
     console.error('[PDF STREAM ERROR]', err)
     res.status(500).send('Error streaming PDF')
   }
 })
-
 
 export default router
