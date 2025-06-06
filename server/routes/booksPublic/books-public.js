@@ -17,7 +17,10 @@ router.get('/file/:filename', async (req, res) => {
   try {
     const { filename } = req.params
     const range = req.headers.range
-    if (!range) return res.status(416).send('Range header required')
+   if (!range) {
+  res.setHeader('Accept-Ranges', 'bytes') 
+  return res.status(416).send('Range header required')
+}
 
     const filesColl = pdfBucket.s.db.collection('pdfs.files')
     const fileDoc = await filesColl.findOne({ filename })
