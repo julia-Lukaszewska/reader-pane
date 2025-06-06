@@ -6,7 +6,7 @@
  */
 
 import express from 'express'
-import { GetPdfBucket } from '../../setupGridFS.js'
+import { getPdfBucket } from '../../setupGridFS.js'
 
 const router = express.Router()
 
