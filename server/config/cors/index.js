@@ -19,10 +19,11 @@ const WHITELIST = {
   staging: [
     'https://reader-pane-staging.vercel.app',
   ],
-  production: [
-    'https://reader-pane.vercel.app',        // build branch
-    'https://reader-pane-main.vercel.app',  // main branch
-  ],
+production: [
+  'https://reader-pane.vercel.app',        // build
+  'https://reader-pane-main.vercel.app',   // main
+],
+
 };
 
 /**

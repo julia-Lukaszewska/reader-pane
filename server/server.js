@@ -48,7 +48,13 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
-app.use(cors(getCorsOptions(BRANCH)))
+const getEffectiveEnv = () => {
+  if (BRANCH === 'main' || BRANCH === 'build') return 'production'
+  if (BRANCH === 'staging') return 'staging'
+  return 'development'
+}
+app.use(cors(getCorsOptions(getEffectiveEnv())))
+
 
 
 // -----------------------------------------------------------------------------
