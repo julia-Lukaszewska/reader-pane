@@ -35,10 +35,16 @@ export function getCorsOptions(env = process.env.NODE_ENV) {
   const allowed = new Set(WHITELIST[env] || []);
 
   return {
-    origin(origin, cb) {
-      // Allow REST tools (no origin) and whitelisted origins
-      if (!origin || allowed.has(origin)) return cb(null, true);
-      cb(new Error('Not allowed by CORS'));
+  origin(origin, cb) {
+  console.log('[CORS] Request from:', origin)
+  if (!origin || allowed.has(origin)) {
+    console.log('[CORS] Allowed')
+    return cb(null, true)
+  }
+  console.warn('[CORS] Blocked origin:', origin)
+  cb(new Error('Not allowed by CORS'))
+
+
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

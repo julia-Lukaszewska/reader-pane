@@ -59,40 +59,38 @@ const issueTokens = (user, res) => {
 
 router.post('/register', async (req, res) => {
   const { email, password, name } = req.body
+  console.log('[REGISTER] Incoming data:', { email, name })
 
   try {
     const exists = await User.findOne({ email })
     if (exists) {
-      return res.status(409).json({ error: 'User already exists with that email.' })
+      console.warn('[REGISTER] Email already in use:', email)
+      return res.status(409).json({ error: 'User already exists' })
     }
 
     const user = await User.create({ email, password, name })
+    console.log('[REGISTER] User created:', user._id)
     return issueTokens(user, res)
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      const messages = Object.values(err.errors).map(e => e.message)
-      return res.status(400).json({ error: messages.join(' ') })
-    }
-    console.error('Register error:', err)
+    console.error('[REGISTER] Error:', err)
     return res.status(500).json({ error: 'Registration failed.' })
   }
 })
+
 
 // -----------------------------------------------------------------------------
 // ROUTE – local login (email + password)
 // -----------------------------------------------------------------------------
 
-router.post(
-  '/login',
-  passport.authenticate('local', {
-    session: false,
-    failWithError: true,
-  }),
+router.post('/login', 
+  passport.authenticate('local', { session: false, failWithError: true }),
   (req, res) => {
+    console.log('[LOGIN] Successful login for:', req.user.email)
     issueTokens(req.user, res)
   },
   (err, req, res, _next) => {
-    console.error('Login error:', err?.message || err)
+    console.warn('[LOGIN] Failed login for:', req.body.email)
+    console.error('[LOGIN ERROR]', err?.message || err)
     return res.status(401).json({ error: 'Invalid email or password.' })
   }
 )
@@ -100,21 +98,18 @@ router.post(
 // -----------------------------------------------------------------------------
 // ROUTE – get current authenticated user
 // -----------------------------------------------------------------------------
-
-router.get(
-  '/me',
-  passport.authenticate('jwt', { session: false }),
-  async (req, res) => {
-    try {
-      const user = await User.findById(req.user.id).select('-password -refreshTokens')
-      res.set('Cache-Control', 'no-store')
-      return res.status(200).json({ user })
-    } catch (err) {
-      console.error('Get user error:', err)
-      return res.status(500).json({ error: 'Failed to retrieve user.' })
-    }
+router.get('/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  console.log('[GET /me] Authenticated user:', req.user.id)
+  try {
+    const user = await User.findById(req.user.id).select('-password')
+    res.set('Cache-Control', 'no-store')
+    return res.status(200).json({ user })
+  } catch (err) {
+    console.error('[GET /me] Error fetching user:', err)
+    return res.status(500).json({ error: 'Failed to retrieve user.' })
   }
-)
+})
+
 
 // -----------------------------------------------------------------------------
 // ROUTE – logout (clear refresh token cookie)
@@ -136,24 +131,22 @@ router.post('/logout', (_req, res) => {
 
 router.post('/refresh', (req, res) => {
   const { rt } = req.cookies
+  console.log('[REFRESH] Cookie received:', !!rt)
 
-  if (!rt) {
-    return res.status(401).json({ error: 'Missing refresh token.' })
-  }
+  if (!rt) return res.status(401).json({ error: 'No refresh token.' })
 
   try {
     const { id } = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
-    const accessToken = jwt.sign(
-      { id },
-      process.env.JWT_ACCESS_KEY,
-      { expiresIn: '15m' }
-    )
+    console.log('[REFRESH] Token valid for user ID:', id)
+
+    const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, { expiresIn: '15m' })
     return res.json({ access: accessToken })
   } catch (err) {
-    console.error('Refresh token error:', err)
+    console.error('[REFRESH] Invalid refresh token:', err.message)
     return res.sendStatus(401)
   }
 })
+
 
 // -----------------------------------------------------------------------------
 // ROUTE – redirect to Google for OAuth login
