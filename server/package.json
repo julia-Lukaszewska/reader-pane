@@ -9,9 +9,9 @@
     "start": "node server.js",
     "lint": "eslint . --ext .js",
     "auth": "cross-env BRANCH=dev nodemon server.js",
-     "delete:legacy": "node scripts/delete-legacy-uploaded-books.js",
-      "clean:uploads": "node scripts/clean-uploads.js",
-      "clean:orphaned-books": "cross-env BRANCH=main node scripts/delete-books-missing-gridfs.js"
+    "delete:legacy": "node scripts/delete-legacy-uploaded-books.js",
+    "clean:uploads": "node scripts/clean-uploads.js",
+    "clean:orphaned-books": "cross-env BRANCH=main node scripts/delete-books-missing-gridfs.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -19,6 +19,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
+    "express-validator": "^7.2.1",
     "gridfs-stream": "^1.1.1",
     "helmet": "^7.0.0",
     "mongoose": "^8.15.1",
