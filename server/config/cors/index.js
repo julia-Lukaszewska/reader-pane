@@ -5,7 +5,7 @@
 const WHITELIST = {
   development: ['http://localhost:5173', 'http://127.0.0.1:5173'],
   staging:     ['https://reader-pane-staging.vercel.app'],
-  production:  ['https://reader-pane.vercel.app'],
+  production: ['https://reader-pane.vercel.app', 'https://reader-pane-main.vercel.app'],
 };
 
 export function getCorsOptions(env = process.env.NODE_ENV) {
