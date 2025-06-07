@@ -1,5 +1,3 @@
-
-
 /**
  * @file booksApi.js
  * @description
@@ -32,7 +30,7 @@ export const booksApi = createApi({
      * @returns {NormalizedState} Normalized state of all static books.
      */
     getBooksStatic: builder.query({
-      query: () => '/books/static',
+      query: () => '/books/private',
       keepUnusedDataFor: 86400,
       providesTags: [{ type: 'BooksStatic', id: 'LIST' }],
       transformResponse: (response) =>
@@ -45,7 +43,7 @@ export const booksApi = createApi({
      * @returns {Book} Live book data.
      */
     getBookLive: builder.query({
-      query: (id) => `/books/${id}/live`,
+      query: (id) => `/books/private/${id}/live`,
       providesTags: (_result, _error, id) => [{ type: 'Live', id }],
     }),
 
@@ -57,7 +55,7 @@ export const booksApi = createApi({
      */
     updateBookLive: builder.mutation({
       query: ({ id, changes }) => ({
-        url: `/books/${id}/live`,
+        url: `/books/private/${id}/live`,
         method: 'PATCH',
         body: changes,
       }),
@@ -70,7 +68,7 @@ export const booksApi = createApi({
      * @returns {Book[]} Array of book objects.
      */
     getBooks: builder.query({
-      query: () => '/books',
+      query: () => '/books/private',
       providesTags: (result) =>
         result
           ? [
@@ -86,7 +84,7 @@ export const booksApi = createApi({
      * @returns {Book} Single book object.
      */
     getBookById: builder.query({
-      query: (id) => `/books/${id}`,
+      query: (id) => `/books/private/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Books', id }],
     }),
 
@@ -96,7 +94,7 @@ export const booksApi = createApi({
      * @returns {Book} Cached book data.
      */
     getBookCache: builder.query({
-      query: (id) => `/books/${id}/cache`,
+      query: (id) => `/books/private/${id}/cache`,
       providesTags: (_result, _error, id) => [{ type: 'Books', id }],
     }),
 
@@ -107,7 +105,7 @@ export const booksApi = createApi({
      * @returns {string} File URL.
      */
     getBookFileUrl: builder.query({
-      query: (id) => `/books/${id}/file-url`,
+      query: (id) => `/books/private/${id}/file-url`,
       refetchOnMountOrArgChange: true,
       transformResponse: (response) => response.fileUrl,
     }),
@@ -118,7 +116,7 @@ export const booksApi = createApi({
      * @param {string} id - Book ID.
      */
     archiveBook: builder.mutation({
-      query: (id) => ({ url: `/books/${id}/archive`, method: 'PATCH' }),
+      query: (id) => ({ url: `/books/private/${id}/archive`, method: 'PATCH' }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'Books', id },
         { type: 'Books', id: 'LIST' },
@@ -131,7 +129,7 @@ export const booksApi = createApi({
      * @param {string} id - Book ID.
      */
     restoreBook: builder.mutation({
-      query: (id) => ({ url: `/books/${id}/restore`, method: 'PATCH' }),
+      query: (id) => ({ url: `/books/private/${id}/restore`, method: 'PATCH' }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'Books', id },
         { type: 'Books', id: 'LIST' },
@@ -144,7 +142,7 @@ export const booksApi = createApi({
      * @param {string} id - Book ID.
      */
     favoriteBook: builder.mutation({
-      query: (id) => ({ url: `/books/${id}/favorite`, method: 'PATCH' }),
+      query: (id) => ({ url: `/books/private/${id}/favorite`, method: 'PATCH' }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'Books', id },
         { type: 'Books', id: 'LIST' },
@@ -157,7 +155,7 @@ export const booksApi = createApi({
      * @param {string} id - Book ID.
      */
     unfavoriteBook: builder.mutation({
-      query: (id) => ({ url: `/books/${id}/unfavorite`, method: 'PATCH' }),
+      query: (id) => ({ url: `/books/private/${id}/unfavorite`, method: 'PATCH' }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'Books', id },
         { type: 'Books', id: 'LIST' },
@@ -171,7 +169,7 @@ export const booksApi = createApi({
      * @param {string} id - Book ID.
      */
     deleteBook: builder.mutation({
-      query: (id) => ({ url: `/books/${id}`, method: 'DELETE' }),
+      query: (id) => ({ url: `/books/private/${id}`, method: 'DELETE' }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'Books', id },
         { type: 'Books', id: 'LIST' },
@@ -200,7 +198,7 @@ export const booksApi = createApi({
      */
     updateBook: builder.mutation({
       query: ({ id, changes }) => ({
-        url: `/books/${id}`,
+        url: `/books/private/${id}`,
         method: 'PATCH',
         body: changes,
       }),
@@ -220,7 +218,7 @@ export const booksApi = createApi({
      */
     addNote: builder.mutation({
       query: ({ id, note }) => ({
-        url: `/books/${id}/notes`,
+        url: `/books/private/${id}/notes`,
         method: 'PATCH',
         body: note,
       }),
@@ -239,7 +237,7 @@ export const booksApi = createApi({
      */
     deleteNote: builder.mutation({
       query: ({ id, index }) => ({
-        url: `/books/${id}/notes/${index}`,
+        url: `/books/private/${id}/notes/${index}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, { id }) => [
@@ -257,7 +255,7 @@ export const booksApi = createApi({
      */
     addBookmark: builder.mutation({
       query: ({ id, bookmark }) => ({
-        url: `/books/${id}/bookmarks`,
+        url: `/books/private/${id}/bookmarks`,
         method: 'PATCH',
         body: bookmark,
       }),
@@ -276,7 +274,7 @@ export const booksApi = createApi({
      */
     deleteBookmark: builder.mutation({
       query: ({ id, index }) => ({
-        url: `/books/${id}/bookmarks/${index}`,
+        url: `/books/private/${id}/bookmarks/${index}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, { id }) => [
@@ -292,7 +290,7 @@ export const booksApi = createApi({
      */
     uploadBook: builder.mutation({
       query: (formData) => ({
-        url: '/books/storage/upload',
+        url: '/books/storage',
         method: 'POST',
         body: formData,
       }),
@@ -309,7 +307,7 @@ export const booksApi = createApi({
      * @returns {object} Progress data (e.g., currentPage, maxVisitedPage).
      */
     getProgress: builder.query({
-      query: (id) => `/books/${id}/progress`,
+      query: (id) => `/books/private/${id}/progress`,
       providesTags: (_result, _error, id) => [{ type: 'Progress', id }],
     }),
 
@@ -324,7 +322,7 @@ export const booksApi = createApi({
      */
     updateProgress: builder.mutation({
       query: ({ id, currentPage }) => ({
-        url: `/books/${id}/progress`,
+        url: `/books/private/${id}/progress`,
         method: 'PATCH',
         body: { currentPage },
       }),
@@ -373,7 +371,7 @@ export const booksApi = createApi({
      */
     updateProgressAuto: builder.mutation({
       query: ({ id, currentPage }) => ({
-        url: `/books/${id}/progress/auto`,
+        url: `/books/private/${id}/progress/auto`,
         method: 'PATCH',
         body: { changes: { stats: { currentPage } } },
       }),
@@ -404,7 +402,7 @@ export const booksApi = createApi({
      * @param {string} id - Book ID.
      */
     updateLastOpened: builder.mutation({
-      query: (id) => ({ url: `/books/${id}/last-opened`, method: 'PATCH' }),
+      query: (id) => ({ url: `/books/private/${id}/last-opened`, method: 'PATCH' }),
       invalidatesTags: (_result, _error, id) => [
         { type: 'Books', id },
         { type: 'Books', id: 'LIST' },
@@ -421,7 +419,7 @@ export const booksApi = createApi({
      */
     updateBookRating: builder.mutation({
       query: ({ id, rating }) => ({
-        url: `/books/${id}`,
+        url: `/books/private/${id}`,
         method: 'PATCH',
         body: { flags: { rating } },
       }),

@@ -6,9 +6,8 @@
  * - GoogleStrategy for OAuth login
  * - JwtStrategy for access token validation
  *
- * This module exports:
- * - `configurePassport()` to register the strategies
- * - a default-exported `passport` instance
+ * This module exports a function `configurePassport()` that should be called
+ * during server initialization to register the strategies.
  */
 
 import passport from 'passport'
@@ -87,20 +86,10 @@ export function configurePassport() {
           jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
           secretOrKey: process.env.JWT_ACCESS_KEY,
         },
-        async (payload, done) => {
-          try {
-            const user = await User.findById(payload.id)
-            return done(null, user || false)
-          } catch (err) {
-            return done(err, false)
-          }
-        }
+        (payload, done) => done(null, payload)
       )
     )
   } else {
     console.warn('JWT_ACCESS_KEY missing – JwtStrategy not initialized.')
   }
 }
-
-// default-export Passport instance (after calling configurePassport())
-export default passport
