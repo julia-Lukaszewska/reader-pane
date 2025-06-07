@@ -20,7 +20,7 @@ import User from '../models/User.js'
 // STRATEGY CONFIGURATION
 // -----------------------------------------------------------------------------
 
-export function configurePassport() {
+export default function configurePassport() {
   // ---------------------------------------------------------------------------
   // LOCAL STRATEGY – email and password login
   // ---------------------------------------------------------------------------
