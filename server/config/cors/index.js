@@ -1,23 +1,55 @@
 /**
  * @file config/cors/index.js
- * @description Whitelist CORS dla środowisk dev/staging/prod
+ * @description CORS whitelist per environment/branch.
+ *   - development → local Vite
+ *   - staging     → staging frontend on Vercel
+ *   - production  → build & main frontends on Vercel
+ *
+ * Usage:
+ *   import cors from 'cors';
+ *   import { getCorsOptions } from './config/cors/index.js';
+ *   app.use(cors(getCorsOptions()));
  */
+
 const WHITELIST = {
-  development: ['http://localhost:5173', 'http://127.0.0.1:5173'],
-  staging:     ['https://reader-pane-staging.vercel.app'],
-  production: ['https://reader-pane.vercel.app', 'https://reader-pane-main.vercel.app'],
+  development: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+  ],
+  staging: [
+    'https://reader-pane-staging.vercel.app',
+  ],
+  production: [
+    'https://reader-pane.vercel.app',        // build branch
+    'https://reader-pane-main.vercel.app',  // main branch
+  ],
 };
 
+/**
+ * Build CORS options for `cors()` middleware.
+ *
+ * @param {string} [env=process.env.NODE_ENV] - current NODE_ENV
+ * @returns {import('cors').CorsOptions}
+ */
 export function getCorsOptions(env = process.env.NODE_ENV) {
   const allowed = new Set(WHITELIST[env] || []);
+
   return {
     origin(origin, cb) {
+      // Allow REST tools (no origin) and whitelisted origins
       if (!origin || allowed.has(origin)) return cb(null, true);
       cb(new Error('Not allowed by CORS'));
     },
     credentials: true,
-    methods: ['GET','POST','PUT','DELETE'],
-    allowedHeaders: ['Content-Type','Authorization','Range'],
-    exposedHeaders: ['Accept-Ranges','Content-Range'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Range',
+    ],
+    exposedHeaders: [
+      'Accept-Ranges',
+      'Content-Range',
+    ],
   };
 }
