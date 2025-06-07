@@ -16,8 +16,10 @@ import * as pdfjsLib from 'pdfjs-dist'
  * @returns {Promise<string>} Base64-encoded PNG data URL of the rendered cover
  */
 export const renderPDFCover = async (file) => {
-  // Load the PDF document
-  const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise
+  
+const objectUrl = URL.createObjectURL(file)
+const pdf = await pdfjsLib.getDocument(objectUrl).promise
+URL.revokeObjectURL(objectUrl)
 
   // Get the first page
   const page = await pdf.getPage(1)

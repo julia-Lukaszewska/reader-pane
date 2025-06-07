@@ -4,7 +4,6 @@
  *              and uploads a PDF book to the backend (GridFS).
  */
 
-import { useState } from 'react'
 import { useUploadBookMutation } from '@/store/api/booksApi'
 import usePDFValidation from './usePDFValidation'
 import { extractPDFMetadata } from './extractPDFMetadata'
@@ -16,20 +15,19 @@ import { renderPDFCover } from './renderPDFCover'
 
 /**
  * Provides `handleUpload` for processing and uploading a PDF file,
- * along with an `uploading` state flag.
+ * along with an `uploading` state flag from RTK Query.
  *
  * @returns {Object} {
- *   handleUpload: async (file: File) => Promise<{ success: boolean, savedBook?: any }>,
+ *   handleUpload: async (file: File) => Promise<{ success: boolean, savedBook?: any, error?: string }>,
  *   uploading: boolean
  * }
  */
 const useUploadPDF = () => {
   //-------------------------------------------------------------------
-  // Setup: RTK mutation, validation hook, loading state
+  // Setup: RTK mutation + validation hook
   //-------------------------------------------------------------------
-  const [uploadBook] = useUploadBookMutation()
+  const [uploadBook, { isLoading: uploading }] = useUploadBookMutation()
   const { validate } = usePDFValidation()
-  const [uploading, setUploading] = useState(false)
 
   //-------------------------------------------------------------------
   // Upload handler
@@ -39,13 +37,12 @@ const useUploadPDF = () => {
    * FormData, and uploads it to the backend.
    *
    * @param {File} file - PDF file to upload
-   * @returns {Promise<{ success: boolean, savedBook?: any }>}
+   * @returns {Promise<{ success: boolean, savedBook?: any, error?: string }>}
    */
   const handleUpload = async (file) => {
-    // 1) Validate PDF
-    if (!validate(file)) return { success: false }
+    // 1) Validate PDF (type, size etc.)
+    if (!validate(file)) return { success: false, error: 'Invalid file' }
 
-    setUploading(true)
     try {
       //-----------------------------------------------------------------
       // 2) Extract metadata from PDF
@@ -67,10 +64,10 @@ const useUploadPDF = () => {
       const cover = await renderPDFCover(file)
 
       //-----------------------------------------------------------------
-      // 4) Build FormData – note: PDF goes under key "pdf"
+      // 4) Build FormData
       //-----------------------------------------------------------------
       const formData = new FormData()
-      formData.append('pdf', file)                     
+      formData.append('pdf', file)
       formData.append('title', title)
       formData.append('author', author)
       formData.append('subject', subject)
@@ -79,18 +76,17 @@ const useUploadPDF = () => {
       if (publicationDate)   formData.append('publicationDate', publicationDate)
       if (publishedYear)     formData.append('publishedYear', publishedYear)
       formData.append('totalPages', totalPages)
-      formData.append('cover', cover)                 
+      formData.append('cover', cover)
 
       //-----------------------------------------------------------------
       // 5) Upload via API
       //-----------------------------------------------------------------
       const savedBook = await uploadBook(formData).unwrap()
-
-      // `savedBook.meta.fileUrl` 
-      // `/api/books/file/<fileKey>`
       return { success: true, savedBook }
-    } finally {
-      setUploading(false)
+
+    } catch (error) {
+      console.error('[Upload Error]', error)
+      return { success: false, error: error.message || 'Upload failed' }
     }
   }
 

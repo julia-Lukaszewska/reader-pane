@@ -3,13 +3,13 @@
  * @description Tile component for uploading a new PDF book, styled per current library view mode.
  */
 
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { FiPlus } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
 import { selectLibraryViewMode } from '@/store/selectors/selectors'
 import { useUploadPDF } from '@/modules/uploadPDF'
-import {LibraryToolbarButton} from '@library/components/LibraryToolbarButton'
+import { LibraryToolbarButton } from '@library/components/LibraryToolbarButton'
 
 //-----------------------------------------------------------------------------
 // Styled Components
@@ -66,9 +66,8 @@ const HiddenInput = styled.input`
 
 const AddBookTile = () => {
   const inputRef = useRef(null)
-  const [uploading, setUploading] = useState(false)
   const viewMode = useSelector(selectLibraryViewMode)
-  const { handleUpload } = useUploadPDF()
+  const { handleUpload, uploading } = useUploadPDF()
 
   const handleClick = () => {
     inputRef.current?.click()
@@ -78,11 +77,12 @@ const AddBookTile = () => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    setUploading(true)
-    await handleUpload(file)
-    setUploading(false)
+    const result = await handleUpload(file)
+    if (!result.success) {
+      alert(result.error || 'Upload failed')
+    }
 
-    e.target.value = null
+    e.target.value = null // reset input
   }
 
   return (

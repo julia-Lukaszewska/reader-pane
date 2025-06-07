@@ -292,7 +292,7 @@ export const booksApi = createApi({
      */
     uploadBook: builder.mutation({
       query: (formData) => ({
-        url: '/books/upload',
+        url: '/books/storage/upload',
         method: 'POST',
         body: formData,
       }),

@@ -1,7 +1,17 @@
 /**
  * @file routes/booksPublic/index.js
- * @description Exports public book routes (no authentication required).
+ * @description Aggregates public book endpoints.
+ *
+ * Sub-routes:
+ *   • GET /api/books/public/file/:filename – stream public PDF files
  */
 
-import booksPublicRouter from './books-public.js'
-export default booksPublicRouter
+import express from 'express'
+import booksPublicRouter from './booksPublic.js'
+
+const router = express.Router()
+
+// Mount public book routes
+router.use('/', booksPublicRouter)
+
+export default router

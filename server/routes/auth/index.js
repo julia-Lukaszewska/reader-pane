@@ -1,7 +1,14 @@
 /**
  * @file routes/auth/index.js
- * @description Exports authentication-related router.
+ * @description Aggregates all authentication routers under /api/auth.
  */
 
-import authRouter from './auth.js'
-export default authRouter
+import express from 'express'
+import localAuth from './auth.js'
+
+const router = express.Router()
+
+// Mount local authentication endpoints
+router.use('/', localAuth)
+
+export default router

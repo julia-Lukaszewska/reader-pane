@@ -1,31 +1,48 @@
 /**
  * @file routes/booksPrivate/index.js
- * @description Barrel file for authenticated book-related routes.
+ * @description Express router for private book metadata and statistics.
  */
 
 import express from 'express'
 import passport from 'passport'
 
-import bookUpload     from './bookUpload.js'
-import bookCollection from './bookCollection.js'
-import bookSingle     from './bookSingle.js'
-import bookStats      from './bookStats.js'
-import bookForm       from './bookForm.js'
+import booksCollection from './booksCollection.js'
+import bookSingle      from './bookSingle.js'
+import bookStats       from './bookStats.js'
+import bookForm        from './bookForm.js'
 
 const router = express.Router()
 
-// -----------------------------------------------------------------------------
-// AUTHENTICATION – protect all /api/books routes with JWT
-// -----------------------------------------------------------------------------
+// Protect all private routes with JWT
 router.use(passport.authenticate('jwt', { session: false }))
 
-// -----------------------------------------------------------------------------
-// SUB-ROUTES – mount all book-related routes under /api/books
-// -----------------------------------------------------------------------------
-router.use('/',       bookUpload)      // POST   /api/books/upload
-router.use('/',       bookCollection)  // GET    /api/books, /api/books/static
-router.use('/',       bookSingle)      // GET/DELETE /api/books/:id, plus flags, cache, file
-router.use('/',       bookStats)       // GET/POST   /api/books/:id/live  and /progress, /last-opened
-router.use('/',       bookForm)        // PATCH  /api/books/:id, notes, bookmarks
+//------------------------------------------------------------------
+// GET  /api/books/private      – list all user’s books
+// DELETE /api/books/private    – (optional) delete all user’s books
+//------------------------------------------------------------------
+router.use('/', booksCollection)
+
+//------------------------------------------------------------------
+// GET /api/books/private/:id   – retrieve single book metadata
+//------------------------------------------------------------------
+router.use('/', bookSingle)
+
+//------------------------------------------------------------------
+// Stats endpoints:
+//   GET/PATCH  /api/books/private/:id/live
+//   GET        /api/books/private/:id/progress
+//   PATCH      /api/books/private/:id/progress
+//   PATCH      /api/books/private/:id/progress/auto
+//   PATCH      /api/books/private/:id/last-opened
+//------------------------------------------------------------------
+router.use('/', bookStats)
+
+//------------------------------------------------------------------
+// Metadata endpoints:
+//   POST  /api/books/private
+//   PATCH /api/books/private/:id
+//   Notes & bookmarks under /:id/notes and /:id/bookmarks
+//------------------------------------------------------------------
+router.use('/', bookForm)
 
 export default router

@@ -9,7 +9,7 @@ import Book from '../../models/Book.js'
 const router = express.Router()
 
 //------------------------------------------------------------------
-// GET /api/books/:id/live – get mutable stats (e.g., currentPage, maxVisitedPage, lastOpenedAt)
+// GET /api/books/private/:id/live    – get mutable stats (e.g., currentPage, maxVisitedPage, lastOpenedAt)
 //------------------------------------------------------------------
 router.get('/:id/live', async (req, res) => {
   try {
@@ -26,7 +26,7 @@ router.get('/:id/live', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/live – update mutable stats
+// PATCH /api/books/private/:id/live  – update mutable stats
 //------------------------------------------------------------------
 router.patch('/:id/live', async (req, res) => {
   try {
@@ -51,7 +51,7 @@ router.patch('/:id/live', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// GET /api/books/:id/progress – get reading progress (currentPage, maxVisitedPage)
+// GET /api/books/private/:id/progress – get reading progress (currentPage, maxVisitedPage)
 //------------------------------------------------------------------
 router.get('/:id/progress', async (req, res) => {
   try {
@@ -71,7 +71,7 @@ router.get('/:id/progress', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/progress – save progress manually
+// PATCH /api/books/private/:id/progress – save progress manually
 //------------------------------------------------------------------
 router.patch('/:id/progress', async (req, res) => {
   try {
@@ -98,7 +98,7 @@ router.patch('/:id/progress', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/progress/auto – auto-save progress
+// PATCH /api/books/private/:id/progress/auto – auto-save progress
 //------------------------------------------------------------------
 router.patch('/:id/progress/auto', async (req, res) => {
   try {
@@ -125,7 +125,7 @@ router.patch('/:id/progress/auto', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/last-opened – update lastOpenedAt timestamp
+// PATCH /api/books/private/:id/last-opened – update lastOpenedAt timestamp
 //------------------------------------------------------------------
 router.patch('/:id/last-opened', async (req, res) => {
   try {

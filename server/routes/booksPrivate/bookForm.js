@@ -1,6 +1,6 @@
 /**
  * @file routes/booksPrivate/bookForm.js
- * @description Express router for editing book metadata, notes, and bookmarks.
+ * @description Express router for creating and editing book metadata, notes, and bookmarks.
  */
 
 import express from 'express'
@@ -9,7 +9,27 @@ import Book from '../../models/Book.js'
 const router = express.Router()
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id – update meta fields (shallow merge)
+// POST   /api/books/private        – create new book metadata
+//------------------------------------------------------------------
+router.post('/', async (req, res) => {
+  try {
+    if (!req.body.meta) {
+      return res.status(400).json({ error: 'No meta provided.' })
+    }
+    const book = new Book({
+      meta: req.body.meta,
+      owner: req.user.id,
+    })
+    await book.save()
+    res.status(201).json(book)
+  } catch (err) {
+    console.error('[CREATE BOOK]', err)
+    res.status(500).json({ error: 'Failed to create book metadata' })
+  }
+})
+
+//------------------------------------------------------------------
+// PATCH  /api/books/private/:id    – update meta fields (shallow merge)
 //------------------------------------------------------------------
 router.patch('/:id', async (req, res) => {
   try {
@@ -34,7 +54,7 @@ router.patch('/:id', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/notes – add a note
+// PATCH  /api/books/private/:id/notes         – add a note
 //------------------------------------------------------------------
 router.patch('/:id/notes', async (req, res) => {
   try {
@@ -56,21 +76,18 @@ router.patch('/:id/notes', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// DELETE /api/books/:id/notes/:index – remove a note by index
+// DELETE /api/books/private/:id/notes/:index – remove a note by index
 //------------------------------------------------------------------
 router.delete('/:id/notes/:index', async (req, res) => {
   try {
     const idx = Number(req.params.index)
-    const pullExpr = { $unset: { [`flags.notes.${idx}`]: 1 } }
-    const compact  = { $pull: { 'flags.notes': null } }
-
     await Book.updateOne(
       { _id: req.params.id, owner: req.user.id },
-      pullExpr
+      { $unset: { [`flags.notes.${idx}`]: 1 } }
     )
     const book = await Book.findOneAndUpdate(
       { _id: req.params.id, owner: req.user.id },
-      compact,
+      { $pull: { 'flags.notes': null } },
       { new: true }
     )
     if (!book) return res.status(404).json({ error: 'Book not found' })
@@ -82,7 +99,7 @@ router.delete('/:id/notes/:index', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// PATCH /api/books/:id/bookmarks – add a bookmark (future use)
+// PATCH  /api/books/private/:id/bookmarks      – add a bookmark
 //------------------------------------------------------------------
 router.patch('/:id/bookmarks', async (req, res) => {
   try {
@@ -104,21 +121,18 @@ router.patch('/:id/bookmarks', async (req, res) => {
 })
 
 //------------------------------------------------------------------
-// DELETE /api/books/:id/bookmarks/:index – remove a bookmark by index
+// DELETE /api/books/private/:id/bookmarks/:index – remove a bookmark by index
 //------------------------------------------------------------------
 router.delete('/:id/bookmarks/:index', async (req, res) => {
   try {
     const idx = Number(req.params.index)
-    const pullExpr = { $unset: { [`flags.bookmarks.${idx}`]: 1 } }
-    const compact  = { $pull: { 'flags.bookmarks': null } }
-
     await Book.updateOne(
       { _id: req.params.id, owner: req.user.id },
-      pullExpr
+      { $unset: { [`flags.bookmarks.${idx}`]: 1 } }
     )
     const book = await Book.findOneAndUpdate(
       { _id: req.params.id, owner: req.user.id },
-      compact,
+      { $pull: { 'flags.bookmarks': null } },
       { new: true }
     )
     if (!book) return res.status(404).json({ error: 'Book not found' })

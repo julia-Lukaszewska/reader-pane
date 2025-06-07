@@ -1,37 +1,29 @@
 /**
- * @file uploadBook.js
+ * @file UploadBookController.js
  * @description
  * Controller for uploading a book with PDF, metadata and optional cover image.
- * Stores the PDF in GridFS (bucket "pdfs") and saves a Book document.
+ * 1) Validates incoming PDF and metadata
+ * 2) Streams PDF into GridFS (bucket "books_files")
+ * 3) Creates a Book document in MongoDB
  */
 
-import { getPdfBucket } from '../setupGridFS.js'
+import { getGridFsBucket } from '../config/gridfs.js'
 import Book from '../models/Book.js'
 import { Readable } from 'stream'
 
 // -----------------------------------------------------------------------------
 // UploadBook Controller
 // -----------------------------------------------------------------------------
-
-/**
- * Handles book upload:
- * 1) Validates presence and MIME type of the PDF file
- * 2) Streams the PDF into GridFS under a unique filename
- * 3) Creates a new Book document with metadata, including GridFS fileId and filename
- * 4) Responds with the saved Book object
- *
- * @param {Object} req - Express request, expecting multipart/form-data with "pdf" file
- * @param {Object} res - Express response
- */
-export const UploadBook = async (req, res) => {
+export const UploadBookController = async (req, res) => {
   let fileId = null
-  const pdfBucket = getPdfBucket()
+  const gridFsBucket = getGridFsBucket()
+
   try {
-    //----------------------------------------------------------------
     // 1) Basic validation
-    //----------------------------------------------------------------
     const pdfFile = req.files?.pdf?.[0]
-    if (!pdfFile) return res.status(400).json({ error: 'Missing PDF file' })
+    if (!pdfFile) {
+      return res.status(400).json({ error: 'Missing PDF file' })
+    }
     if (!pdfFile.mimetype.includes('pdf')) {
       return res.status(415).json({ error: 'Only PDF files are accepted' })
     }
@@ -41,27 +33,20 @@ export const UploadBook = async (req, res) => {
       return res.status(400).json({ error: 'totalPages must be > 0' })
     }
 
-    //----------------------------------------------------------------
     // 2) Upload PDF to GridFS
-    //----------------------------------------------------------------
     const filename = `${req.user.id}_${Date.now()}_${pdfFile.originalname.replace(/[/\\]+/g, '_')}`
-
     await new Promise((resolve, reject) => {
       const readableStream = Readable.from(pdfFile.buffer)
-      const uploadStream = pdfBucket.openUploadStream(filename, {
+      const uploadStream = gridFsBucket.openUploadStream(filename, {
         contentType: pdfFile.mimetype,
       })
-
       fileId = uploadStream.id
-
       readableStream.pipe(uploadStream)
       uploadStream.on('finish', resolve)
       uploadStream.on('error', reject)
     })
 
-    //----------------------------------------------------------------
     // 3) Build new Book document
-    //----------------------------------------------------------------
     const {
       title = pdfFile.originalname,
       author = '',
@@ -111,14 +96,15 @@ export const UploadBook = async (req, res) => {
     const saved = await newBook.save()
     res.status(201).json(saved)
   } catch (err) {
+    // rollback orphaned file
     if (fileId) {
       try {
-        await pdfBucket.delete(fileId)
-      } catch (cleanupError) {
-        console.error('[ROLLBACK ERROR] Failed to delete orphaned file:', cleanupError)
+        await gridFsBucket.delete(fileId)
+      } catch (cleanupErr) {
+        console.error('[ROLLBACK ERROR] Failed to delete orphaned file:', cleanupErr)
       }
     }
-    console.error('[UPLOAD ERROR]', err)
+    console.error('[UPLOAD BOOK ERROR]', err)
     res.status(500).json({ error: 'Upload failed' })
   }
 }
