@@ -36,7 +36,7 @@ const __dirname = dirname(__filename);
 const BRANCH = process.env.BRANCH || 'dev';
 dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) });
 
-console.log(`Loaded .env.server.${BRANCH}`);
+console.log(`Loaded.env.server.${BRANCH}`);
 
 // -----------------------------------------------------------------------------
 // APP & COMMON MIDDLEWARE
