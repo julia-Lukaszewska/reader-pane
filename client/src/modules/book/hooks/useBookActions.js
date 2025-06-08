@@ -5,6 +5,8 @@
 
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
+import { setActiveBookId } from '@/store/slices/bookSlice'
+
 import {
   useArchiveBookMutation,
   useFavoriteBookMutation,
@@ -38,6 +40,7 @@ export default function useBookActions(book) {
    * Navigate to reader view using book._id
    */
   const openReader = () => {
+     dispatch(setActiveBookId(book._id)) 
     navigate(`/read/${book._id}`)
   }
 
