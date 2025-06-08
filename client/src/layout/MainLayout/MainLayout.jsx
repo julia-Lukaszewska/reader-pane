@@ -56,22 +56,13 @@ const MainLayout = () => {
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
   const { isLoggedIn } = useAuth()
 
-  const initializedRef = useRef(false)
 
   // Automatically close sidebar on route change
   useEffect(() => {
     dispatch(setSidebar(false))
   }, [location.pathname, dispatch])
 
-  // Initialize books once after login
-  useEffect(() => {
-    if (isLoggedIn && !initializedRef.current) {
-      dispatch(
-        booksApi.endpoints.getBooks.initiate(undefined, { forceRefetch: true })
-      )
-      initializedRef.current = true
-    }
-  }, [isLoggedIn, dispatch])
+ 
 
   return (
     <LayoutWrapper $open={sidebarOpen}>

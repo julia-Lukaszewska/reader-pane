@@ -12,7 +12,7 @@ import parseRange from '../../middlewares/parseRange.js'
 import { StreamBookController } from '../../controllers/StreamBookController.js'
 
 const router = express.Router()
-
+console.log('[ROUTE] GET', req.originalUrl, 'range=', req.headers.range)
 //------------------------------------------------------------------
 // GET /api/books/storage/:filename – stream PDF by filename (protected)
 //------------------------------------------------------------------
