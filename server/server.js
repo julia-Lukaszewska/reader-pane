@@ -17,7 +17,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 
-import passport, { configurePassport } from './config/passport.js';
+import passport from passport ;
+import  configurePassport  from './config/passport.js';
  import {
    authRouter,
    booksPublicRouter,
