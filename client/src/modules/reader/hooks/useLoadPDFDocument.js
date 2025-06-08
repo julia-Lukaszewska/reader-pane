@@ -5,7 +5,7 @@
  * Fetches the file as blob (RTK Query) and loads it via ArrayBuffer.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import * as pdfjsLib from 'pdfjs-dist'
 import { useGetBookByIdQuery } from '@/store/api/booksApi'
