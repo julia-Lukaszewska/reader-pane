@@ -51,20 +51,20 @@ export default function StartupCoordinator() {
   useEffect(() => {
     if (isLoggedIn && user?._id && !startupReady) {
       console.log('[StartupCoordinator] Starting book preload after auth...')
+const result = dispatch(
+  booksApi.endpoints.getBooks.initiate(undefined, {
+    forceRefetch: true,
+  })
+)
 
-      dispatch(
-        booksApi.endpoints.getBooks.initiate(undefined, {
-          forceRefetch: true,
-        })
-      )
-        .then(() => {
-          console.log('[StartupCoordinator] Books loaded successfully')
-          dispatch(markStartupReady())
-        })
-        .catch((err) => {
-          console.error('[StartupCoordinator] Book loading failed:', err)
-          dispatch(setStartupReady(false))
-        })
+result.unwrap()
+  .then(() => {
+    console.log('[StartupCoordinator] Books loaded successfully')
+  })
+  .catch((err) => {
+    console.error('[StartupCoordinator] Book loading failed:', err)
+  })
+
     }
   }, [isLoggedIn, user?._id, startupReady, dispatch])
 
