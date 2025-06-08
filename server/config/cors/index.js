@@ -22,6 +22,7 @@ const WHITELIST = {
 production: [
   'https://reader-pane.vercel.app',        // build
   'https://reader-pane-main.vercel.app',   // main
+   /^https:\/\/reader-pane(-[\w-]+)?\.vercel\.app$/, 
 ],
 
 };
@@ -33,15 +34,17 @@ production: [
  * @returns {import('cors').CorsOptions}
  */
 export function getCorsOptions(env = process.env.NODE_ENV) {
-  const allowed = new Set(WHITELIST[env] || []);
+  const allowed = WHITELIST[env] || [];
 
   return {
   origin(origin, cb) {
   console.log('[CORS] Request from:', origin)
-  if (!origin || allowed.has(origin)) {
-    console.log('[CORS] Allowed')
-    return cb(null, true)
-  }
+  if (!origin || allowed.some(rule =>
+     typeof rule === 'string' ? rule === origin : rule.test(origin)
+    )) {
+         console.log('[CORS] Allowed');
+         return cb(null, true);
+       }
   console.warn('[CORS] Blocked origin:', origin)
   cb(new Error('Not allowed by CORS'))
 

@@ -22,22 +22,18 @@ export const selectBookByIdFromCache = bookId =>
 //  Static Data Selectors (RTK Query: getBooksStatic)
 //-----------------------------------------------------------------------------//
 
-const selectStaticResult = booksApi.endpoints.getBooksStatic.select()
+const adapterSelectors = booksAdapter.getSelectors((s) => s);
 
 export const selectAllBooksStatic = createSelector(
-  selectStaticResult,
-  result =>
-    result?.data
-      ? booksAdapter.getSelectors().selectAll(result.data)
-      : []
-)
+  booksApi.endpoints.getBooksStatic.select(),
+  (res) => (res?.data ? adapterSelectors.selectAll(res.data) : [])
+);
 
-export const selectBookStaticById = bookId =>
-  createSelector(selectStaticResult, result =>
-    result?.data
-      ? booksAdapter.getSelectors().selectById(result.data, bookId)
-      : undefined
-  )
+export const selectBookStaticById = (id) =>
+  createSelector(
+    booksApi.endpoints.getBooksStatic.select(),
+    (res) => (res?.data ? adapterSelectors.selectById(res.data, id) : undefined)
+  );
 
 //-----------------------------------------------------------------------------//
 //  UI State Selectors (mainUiSlice)

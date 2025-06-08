@@ -30,7 +30,7 @@ export const booksApi = createApi({
      * @returns {NormalizedState} Normalized state of all static books.
      */
     getBooksStatic: builder.query({
-      query: () => '/books/private',
+      query: () => '/books/private/${id}/static',
       keepUnusedDataFor: 86400,
       providesTags: [{ type: 'BooksStatic', id: 'LIST' }],
       transformResponse: (response) =>
