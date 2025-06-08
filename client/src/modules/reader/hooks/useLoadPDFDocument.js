@@ -5,40 +5,34 @@
  * Fetches the file as blob (RTK Query) and loads it via ArrayBuffer.
  */
 
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import * as pdfjsLib from 'pdfjs-dist'
+
 import { useGetBookByIdQuery } from '@/store/api/booksApi'
 import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
+import { selectIsLoggedIn } from '@/store/selectors/selectors'
 
-/**
- * Loads a PDF document using pdf.js with binary data from a secured endpoint.
- *
- * @param {Object} params
- * @param {React.MutableRefObject} params.pdfRef - Ref to store the loaded PDF document
- * @param {Function} [params.onLoaded] - Optional callback triggered after PDF is loaded
- * @returns {{ isFetching: boolean, isError: boolean }}
- */
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const { bookId } = useParams()
+  const isLoggedIn = useSelector(selectIsLoggedIn)
 
-  // Step 1: Fetch book metadata (includes filename)
-  const { data: book, isFetching: isFetchingBook } = useGetBookByIdQuery(bookId, {
-    skip: !bookId,
+  const {
+    data: book,
+    isFetching: isFetchingBook,
+  } = useGetBookByIdQuery(bookId, {
+    skip: !bookId || !isLoggedIn,
   })
-console.log('[useLoadPDFDocument] book from API:', book)
 
-const filename = useMemo(() => book?.file?.filename, [book])
+  const filename = book?.file?.filename
 
-
-  // Step 2: Fetch PDF blob stream
   const {
     data: fileBlob,
     isFetching: isFetchingPdf,
     isError,
   } = useGetPdfFileQuery(filename, {
-    skip: !filename || !book
-
+    skip: !filename || !isLoggedIn || isFetchingBook,
   })
 
   useEffect(() => {
@@ -46,20 +40,21 @@ const filename = useMemo(() => book?.file?.filename, [book])
       bookId,
       filename,
       fileBlob,
+      book,
       pdfRef: pdfRef?.current,
     })
 
- if (!fileBlob || !book || !filename || !pdfRef || pdfRef.current) {
-  console.log('[useLoadPDFDocument] skipping load', { fileBlob, book, filename, pdfRef })
-  return
-}
+    if (!book || !filename || !pdfRef || pdfRef.current) return
 
+    if (!fileBlob) {
+      console.log('[useLoadPDFDocument] waiting for blob...')
+      return
+    }
 
     let cancelled = false
 
     ;(async () => {
       try {
-        console.log('[useLoadPDFDocument] loading PDF...')
         const buffer = await fileBlob.arrayBuffer()
         if (cancelled) return
 
@@ -68,9 +63,9 @@ const filename = useMemo(() => book?.file?.filename, [book])
         if (cancelled) return
 
         pdfRef.current = pdf
-        console.log('[useLoadPDFDocument] PDF loaded successfully')
-
         if (onLoaded) onLoaded(pdf)
+
+        console.log('[useLoadPDFDocument] PDF loaded successfully')
       } catch (error) {
         console.error('[useLoadPDFDocument] Failed to load PDF:', error)
       }
@@ -78,7 +73,7 @@ const filename = useMemo(() => book?.file?.filename, [book])
 
     return () => {
       cancelled = true
-      console.log('[useLoadPDFDocument] cleanup, cancelled = true')
+      console.log('[useLoadPDFDocument] cleanup: cancelled')
     }
   }, [fileBlob, filename, book, pdfRef, onLoaded])
 

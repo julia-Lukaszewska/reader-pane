@@ -9,7 +9,10 @@ export const pdfStreamApi = createApi({
   endpoints: (builder) => ({
     getPdfFile: builder.query({
       query: (filename) => `/books/storage/${filename}`,
-      responseHandler: (response) => response.blob(), 
+      responseHandler: 'blob',
+extraOptions: {
+    maxRetries: 2, 
+  },
     }),
   }),
 })
