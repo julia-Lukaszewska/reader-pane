@@ -38,11 +38,11 @@ const BRANCH = process.env.BRANCH || 'dev';
 dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) });
 
 console.log(`Loaded.env.server.${BRANCH}`);
-app.set('trust proxy', 1);
 // -----------------------------------------------------------------------------
 // APP & COMMON MIDDLEWARE
 // -----------------------------------------------------------------------------
 const app = express();
+app.set('trust proxy', 1);
 
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(morgan('dev'));
