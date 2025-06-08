@@ -26,8 +26,10 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const { data: book, isFetching: isFetchingBook } = useGetBookByIdQuery(bookId, {
     skip: !bookId,
   })
+console.log('[useLoadPDFDocument] book from API:', book)
 
-  const filename = book?.file?.filename
+const filename = useMemo(() => book?.file?.filename, [book])
+
 
   // Step 2: Fetch PDF blob stream
   const {
@@ -35,7 +37,8 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     isFetching: isFetchingPdf,
     isError,
   } = useGetPdfFileQuery(filename, {
-    skip: !filename,
+    skip: !filename || !book
+
   })
 
   useEffect(() => {
@@ -46,10 +49,11 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
       pdfRef: pdfRef?.current,
     })
 
-    if (!fileBlob || !book || !filename || !pdfRef || pdfRef.current) {
-      console.log('[useLoadPDFDocument] skip loading due to missing data')
-      return
-    }
+ if (!fileBlob || !book || !filename || !pdfRef || pdfRef.current) {
+  console.log('[useLoadPDFDocument] skipping load', { fileBlob, book, filename, pdfRef })
+  return
+}
+
 
     let cancelled = false
 
