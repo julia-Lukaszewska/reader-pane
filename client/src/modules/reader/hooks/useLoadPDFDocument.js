@@ -2,19 +2,17 @@
  * @file useLoadPDFDocument.js
  * @description
  * React hook that loads a PDF document for the active book using pdf.js.
- * Stores the loaded PDF in pdfRef.current and triggers onLoaded when done.
+ * Fetches the file as blob (RTK Query) and loads it via ArrayBuffer.
  */
 
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import * as pdfjsLib from 'pdfjs-dist';
-import useEnsureBookFileUrl from './useEnsureBookFileUrl';
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import * as pdfjsLib from 'pdfjs-dist'
+import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
 
 /**
- * Loads a PDF document from the backend once bookId, book data, and access token are available.
- * - Uses pdf.js to load and cache the document in pdfRef
- * - Calls onLoaded callback once document is fully loaded
+ * Loads a PDF document using pdf.js with binary data from a secured endpoint.
  *
  * @param {Object} params
  * @param {React.MutableRefObject} params.pdfRef - Ref to store the loaded PDF document
@@ -22,51 +20,39 @@ import useEnsureBookFileUrl from './useEnsureBookFileUrl';
  * @returns {{ isFetching: boolean, isError: boolean }}
  */
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
-  const { bookId } = useParams();
-  const accessToken = useSelector((state) => state.auth.access);
-  const book = useSelector((state) => state.books.entities[bookId]);
-  const fileUrl = useEnsureBookFileUrl(book);
+  const { bookId } = useParams()
+  const book = useSelector((state) => state.books.entities?.[bookId])
+  const filename = book?.file?.filename
 
-  const [isFetching, setIsFetching] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const { data: fileBlob, isFetching, isError } = useGetPdfFileQuery(filename, {
+    skip: !filename,
+  })
 
   useEffect(() => {
-    if (!bookId || !accessToken || !fileUrl || !book) {
-      return;
-    }
+    if (!fileBlob || !book || !filename || !pdfRef || pdfRef.current) return
 
-    if (!pdfRef || pdfRef.current) {
-      return;
-    }
+    let cancelled = false
 
-    let cancelled = false;
-    setIsFetching(true);
-    setIsError(false);
-
-    (async () => {
+    ;(async () => {
       try {
-        const loadingTask = pdfjsLib.getDocument({
-          url: `${import.meta.env.VITE_API_URL}${fileUrl}`,
-          withCredentials: false,
-        });
-        const pdf = await loadingTask.promise;
-        if (cancelled) return;
+        const buffer = await fileBlob.arrayBuffer()
+        if (cancelled) return
 
-        pdfRef.current = pdf;
-        if (onLoaded) onLoaded(pdf);
+        const loadingTask = pdfjsLib.getDocument({ data: buffer })
+        const pdf = await loadingTask.promise
+        if (cancelled) return
+
+        pdfRef.current = pdf
+        if (onLoaded) onLoaded(pdf)
       } catch (error) {
-        if (cancelled) return;
-        console.error('[useLoadPDFDocument] Error loading PDF:', error);
-        setIsError(true);
-      } finally {
-        if (!cancelled) setIsFetching(false);
+        console.error('[useLoadPDFDocument] Failed to load PDF:', error)
       }
-    })();
+    })()
 
     return () => {
-      cancelled = true;
-    };
-  }, [bookId, accessToken, fileUrl, book, pdfRef, onLoaded]);
+      cancelled = true
+    }
+  }, [fileBlob, filename, book, pdfRef, onLoaded])
 
-  return { isFetching, isError };
+  return { isFetching, isError }
 }

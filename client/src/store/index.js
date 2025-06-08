@@ -19,6 +19,7 @@ import readerReducer from './slices/readerSlice'
 import pdfCacheReducer from './slices/pdfCacheSlice'
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
+import { pdfStreamApi } from './api/pdfStreamApi'
 
 //----------------------------------------------------------------------------- 
 // Persistence Configurations
@@ -63,6 +64,7 @@ const rootReducer = combineReducers({
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
+    [pdfStreamApi.reducerPath]: pdfStreamApi.reducer, 
 })
 
 //----------------------------------------------------------------------------- 
@@ -72,7 +74,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'book', 'reader', 'mainUi', booksApi.reducerPath],
+  whitelist: ['auth', 'book', 'reader', 'mainUi', booksApi.reducerPath, pdfStreamApi.reducerPath],
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -86,7 +88,7 @@ const middleware = getDefaultMiddleware =>
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
-  }).concat(booksApi.middleware, externalApi.middleware, authApi.middleware)
+  }).concat(booksApi.middleware, externalApi.middleware, authApi.middleware, pdfStreamApi.middleware  )
 
 //----------------------------------------------------------------------------- 
 // Store Configuration
