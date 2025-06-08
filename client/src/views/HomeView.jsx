@@ -9,7 +9,7 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import  {HomeMenu}  from '@home/HomeMenu/components/HomeMenu'
+import  HomeMenu  from '@home/HomeMenu/components/HomeMenu'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearActiveItem } from '@/store/slices/mainUiSlice'
 
