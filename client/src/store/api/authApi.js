@@ -38,6 +38,7 @@ export const authApi = createApi({
         url: '/auth/login',
         method: 'POST',
         body: credentials,
+        credentials: 'include', //  Important for setting refresh-token cookie
       }),
     }),
 
@@ -53,6 +54,7 @@ export const authApi = createApi({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
+        credentials: 'include', //  Needed to clear the cookie
       }),
     }),
 
@@ -69,6 +71,7 @@ export const authApi = createApi({
       query: () => ({
         url: '/auth/refresh',
         method: 'POST',
+        credentials: 'include', //  Needed to read the refresh-token cookie
       }),
     }),
 
@@ -98,6 +101,7 @@ export const authApi = createApi({
         url: '/auth/register',
         method: 'POST',
         body: userData,
+        credentials: 'include', //  Needed to set the refresh-token cookie
       }),
     }),
   }),

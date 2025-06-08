@@ -5,7 +5,7 @@
  * Displays login modal automatically when user is not authenticated.
  */
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
@@ -13,6 +13,8 @@ import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
+import useInitializeBooks from '@/features/book/hooks/useInitializeBooks'  // 🔹 Nowy import
+
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -53,11 +55,22 @@ const MainLayout = () => {
   const location = useLocation()
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
   const { isLoggedIn } = useAuth()
+  const { initialize } = useInitializeBooks()
+
+  const initializedRef = useRef(false) 
 
   // Automatically close sidebar on route change
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(setSidebar(false))
   }, [location.pathname, dispatch])
+
+  // Initialize books once after login
+  useEffect(() => {
+    if (isLoggedIn && !initializedRef.current) {
+      initialize()
+      initializedRef.current = true
+    }
+  }, [isLoggedIn, initialize])
 
   return (
     <LayoutWrapper $open={sidebarOpen}>
