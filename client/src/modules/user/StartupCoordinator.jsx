@@ -8,11 +8,15 @@
  * - Handling fallback cases and timing issues
  */
 
-import { useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useRefreshMutation } from '@/store/api/authApi'
 import { booksApi } from '@/store/api/booksApi'
-import { setCredentials } from '@/store/slices/authSlice'
+import {
+  setCredentials,
+  markStartupReady,
+  setStartupReady,
+} from '@/store/slices/authSlice'
 import { useAuth, useCurrentUser } from '@/modules/user/hooks'
 import { setAuthModalMode } from '@/store/slices/mainUiSlice'
 
@@ -27,8 +31,7 @@ export default function StartupCoordinator() {
   const [refresh] = useRefreshMutation()
   const { isLoggedIn } = useAuth()
   const { user } = useCurrentUser()
-
-  const hasInitialized = useRef(false)
+  const startupReady = useSelector((state) => state.auth.startupReady)
 
   // Step 1: Attempt token refresh
   useEffect(() => {
@@ -44,38 +47,35 @@ export default function StartupCoordinator() {
       })
   }, [refresh, dispatch])
 
-  // Step 2: Load books after token is valid and user is ready
+  // Step 2: Load books after auth is complete
   useEffect(() => {
-    if (isLoggedIn && user?._id && !hasInitialized.current) {
+    if (isLoggedIn && user?._id && !startupReady) {
       console.log('[StartupCoordinator] Starting book preload after auth...')
 
-      hasInitialized.current = true
-
-      // Optional delay to ensure token propagation
-      setTimeout(() => {
-        dispatch(
-          booksApi.endpoints.getBooks.initiate(undefined, {
-            forceRefetch: true,
-          })
-        )
-          .then(() => {
-            console.log('[StartupCoordinator] Books loaded successfully')
-          })
-          .catch((err) => {
-            console.error('[StartupCoordinator] Book loading failed:', err)
-          })
-      }, 200) // 200ms delay
+      dispatch(
+        booksApi.endpoints.getBooks.initiate(undefined, {
+          forceRefetch: true,
+        })
+      )
+        .then(() => {
+          console.log('[StartupCoordinator] Books loaded successfully')
+          dispatch(markStartupReady())
+        })
+        .catch((err) => {
+          console.error('[StartupCoordinator] Book loading failed:', err)
+          dispatch(setStartupReady(false))
+        })
     }
-  }, [isLoggedIn, user?._id, dispatch])
+  }, [isLoggedIn, user?._id, startupReady, dispatch])
 
-  // Step 3: Cleanup when user logs out
+  // Step 3: Reset startup flag when user logs out
   useEffect(() => {
-    if (!isLoggedIn) {
-      console.log('[StartupCoordinator] User is not logged in — resetting flags')
+    if (!isLoggedIn && startupReady) {
+      console.log('[StartupCoordinator] User is not logged in — resetting startupReady')
       dispatch(setAuthModalMode(null))
-      hasInitialized.current = false
+      dispatch(setStartupReady(false))
     }
-  }, [isLoggedIn, dispatch])
+  }, [isLoggedIn, startupReady, dispatch])
 
   return null
 }

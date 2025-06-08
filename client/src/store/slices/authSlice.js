@@ -17,6 +17,7 @@ import { createSlice } from '@reduxjs/toolkit'
  */
 const initialState = {
   access: null,
+   startupReady: false,
 }
 
 //----------------------------------------------------------------------------- 
@@ -48,11 +49,19 @@ const authSlice = createSlice({
       state.access = null
     },
   },
+  setStartupReady(state, action) {
+  state.startupReady = action.payload
+},
+
+markStartupReady(state) {
+  state.startupReady = true
+},
+
 })
 
 //----------------------------------------------------------------------------- 
 // Exports
 //-----------------------------------------------------------------------------  
 
-export const { setCredentials, clearCredentials } = authSlice.actions
+export const { setCredentials, clearCredentials,  setStartupReady, markStartupReady} = authSlice.actions
 export default authSlice.reducer
