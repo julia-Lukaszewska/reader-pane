@@ -22,22 +22,40 @@ import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const { bookId } = useParams()
 
+  // Step 1: Fetch book metadata (includes filename)
   const { data: book, isFetching: isFetchingBook } = useGetBookByIdQuery(bookId, {
     skip: !bookId,
   })
 
   const filename = book?.file?.filename
-  const { data: fileBlob, isFetching, isError } = useGetPdfFileQuery(filename, {
+
+  // Step 2: Fetch PDF blob stream
+  const {
+    data: fileBlob,
+    isFetching: isFetchingPdf,
+    isError,
+  } = useGetPdfFileQuery(filename, {
     skip: !filename,
   })
 
   useEffect(() => {
-    if (!fileBlob || !book || !filename || !pdfRef || pdfRef.current) return
+    console.log('[useLoadPDFDocument] effect fired', {
+      bookId,
+      filename,
+      fileBlob,
+      pdfRef: pdfRef?.current,
+    })
+
+    if (!fileBlob || !book || !filename || !pdfRef || pdfRef.current) {
+      console.log('[useLoadPDFDocument] skip loading due to missing data')
+      return
+    }
 
     let cancelled = false
 
     ;(async () => {
       try {
+        console.log('[useLoadPDFDocument] loading PDF...')
         const buffer = await fileBlob.arrayBuffer()
         if (cancelled) return
 
@@ -46,6 +64,8 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
         if (cancelled) return
 
         pdfRef.current = pdf
+        console.log('[useLoadPDFDocument] PDF loaded successfully')
+
         if (onLoaded) onLoaded(pdf)
       } catch (error) {
         console.error('[useLoadPDFDocument] Failed to load PDF:', error)
@@ -54,8 +74,12 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
 
     return () => {
       cancelled = true
+      console.log('[useLoadPDFDocument] cleanup, cancelled = true')
     }
   }, [fileBlob, filename, book, pdfRef, onLoaded])
 
-  return { isFetching: isFetching || isFetchingBook, isError }
+  return {
+    isFetching: isFetchingBook || isFetchingPdf,
+    isError,
+  }
 }
