@@ -6,9 +6,9 @@
  */
 
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import * as pdfjsLib from 'pdfjs-dist'
+import { useGetBookByIdQuery } from '@/store/api/booksApi'
 import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
 
 /**
@@ -21,9 +21,12 @@ import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
  */
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const { bookId } = useParams()
-  const book = useSelector((state) => state.books.entities?.[bookId])
-  const filename = book?.file?.filename
 
+  const { data: book, isFetching: isFetchingBook } = useGetBookByIdQuery(bookId, {
+    skip: !bookId,
+  })
+
+  const filename = book?.file?.filename
   const { data: fileBlob, isFetching, isError } = useGetPdfFileQuery(filename, {
     skip: !filename,
   })
@@ -54,5 +57,5 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
     }
   }, [fileBlob, filename, book, pdfRef, onLoaded])
 
-  return { isFetching, isError }
+  return { isFetching: isFetching || isFetchingBook, isError }
 }
