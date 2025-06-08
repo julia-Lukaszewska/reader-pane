@@ -13,7 +13,7 @@ import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
-import useInitializeBooks from '@/features/book/hooks/useInitializeBooks'  // 🔹 Nowy import
+import useInitializeBooks from '@/hooks/useInitializeBooks'  // 🔹 Nowy import
 
 //-----------------------------------------------------------------------------
 // Styled components
