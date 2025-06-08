@@ -13,9 +13,9 @@ import { IoCloseOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 import styled, { keyframes, css } from 'styled-components'
 
-import { useMenuItem } from '@home/HomeMenu'
+import  useMenuItem from '../hooks/useMenuItem'
 import { getLastBookId } from '@/utils'
-import MenuSubTile from '@home/HomeMenu/components/MenuSubTile'
+import MenuSubTile from './MenuSubTile'
 
 //-----------------------------------------------------
 // Animations

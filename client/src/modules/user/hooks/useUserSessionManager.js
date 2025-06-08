@@ -16,7 +16,7 @@
 import { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useAuth, useCurrentUser } from './'
-import { useInitializeBooks } from '@/hooks'
+import { booksApi } from '@/store/api/booksApi'
 import { setAuthModalMode } from '@/store/slices/mainUiSlice'
 
 /**
@@ -27,7 +27,6 @@ export default function useUserSessionManager() {
   const dispatch = useDispatch()
   const { isLoggedIn } = useAuth()
   const { user } = useCurrentUser()
-  const { initialize } = useInitializeBooks()
 
   const hasInitialized = useRef(false)
 
@@ -40,9 +39,11 @@ export default function useUserSessionManager() {
     if (isLoggedIn && user?._id && !hasInitialized.current) {
       console.log('[useUserSessionManager] Initializing book data...')
       hasInitialized.current = true
-      initialize()
+      dispatch(
+        booksApi.endpoints.getBooks.initiate(undefined, { forceRefetch: true })
+      )
     }
-  }, [isLoggedIn, user?._id, initialize])
+  }, [isLoggedIn, user?._id, dispatch])
 
   useEffect(() => {
     if (!isLoggedIn) {

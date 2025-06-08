@@ -73,7 +73,7 @@ const RenderedPDFViewer = () => {
 
   const totalPages = staticBook?.meta?.totalPages ?? 0
 
-  const { pdfRef, preload, visiblePages, setPdfReady } = usePreloadPDFPages()
+  const { pdfRef, visiblePages, setPdfReady } = usePreloadPDFPages()
 
  const handleLoaded = useCallback((pdf) => {
   console.log('[RenderedPDFViewer] handleLoaded called', pdf)

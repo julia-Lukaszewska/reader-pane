@@ -5,7 +5,7 @@
  * collection, tags, total pages, creation date, last opened date, and document type.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { BookField } from '../fields/BookField'
 import { Input } from '../fields/TextInput'
@@ -65,7 +65,7 @@ const TagsArea = styled(BookField)` grid-area: tags; `
  * @returns {JSX.Element}
  */
 const MetaSection = ({ form, isEditing, handleChange }) => {
-  const meta = form?.meta || {}
+  const meta = useMemo(() => form?.meta || {}, [form?.meta])
 
   useEffect(() => {
     if (!meta || Object.keys(meta).length === 0) {

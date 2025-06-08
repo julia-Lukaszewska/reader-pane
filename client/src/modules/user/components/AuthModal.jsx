@@ -81,7 +81,7 @@ const Tab = styled.button`
     color: white;
     filter: brightness(1.2);
   }
-`;
+`
 
 //-----------------------------------------------------------------------------
 // Component

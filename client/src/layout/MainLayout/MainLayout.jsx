@@ -13,7 +13,7 @@ import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
-import useInitializeBooks from '@/hooks/useInitializeBooks'  // 🔹 Nowy import
+import { booksApi } from '@/store/api/booksApi'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -55,9 +55,8 @@ const MainLayout = () => {
   const location = useLocation()
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
   const { isLoggedIn } = useAuth()
-  const { initialize } = useInitializeBooks()
 
-  const initializedRef = useRef(false) 
+  const initializedRef = useRef(false)
 
   // Automatically close sidebar on route change
   useEffect(() => {
@@ -67,10 +66,12 @@ const MainLayout = () => {
   // Initialize books once after login
   useEffect(() => {
     if (isLoggedIn && !initializedRef.current) {
-      initialize()
+      dispatch(
+        booksApi.endpoints.getBooks.initiate(undefined, { forceRefetch: true })
+      )
       initializedRef.current = true
     }
-  }, [isLoggedIn, initialize])
+  }, [isLoggedIn, dispatch])
 
   return (
     <LayoutWrapper $open={sidebarOpen}>

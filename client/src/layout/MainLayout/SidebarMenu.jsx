@@ -67,7 +67,7 @@ const SidebarMenu = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const isOpen = useSelector(selectSidebarOpen)
-  const { isLoggedIn, user } = useAuth()
+  const { isLoggedIn } = useAuth()
   const logout = useLogout()
 
   const authModalMode = useSelector(selectAuthModalMode)

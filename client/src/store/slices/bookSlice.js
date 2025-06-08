@@ -9,23 +9,23 @@ import { createSlice } from '@reduxjs/toolkit'
 // Helper Functions
 //-----------------------------------------------------------------------------
 
-/**
- * Ensures an entry exists for the given book ID in state.byId.
- *
- * @param {Object} state - The slice state
- * @param {string} id - The book identifier
- */
-function ensureBookEntry(state, id) {
-  if (!state.byId) state.byId = {}
-  if (!state.byId[id]) {
-    state.byId[id] = {
-      meta: {},
-      stats: {},
-      flags: {},
-      preload: {},
-    }
-  }
-}
+// /**
+//  * Ensures an entry exists for the given book ID in state.byId.
+//  *
+//  * @param {Object} state - The slice state
+//  * @param {string} id - The book identifier
+//  */
+// function ensureBookEntry(state, id) {
+//   if (!state.byId) state.byId = {}
+//   if (!state.byId[id]) {
+//     state.byId[id] = {
+//       meta: {},
+//       stats: {},
+//       flags: {},
+//       preload: {},
+//     }
+//   }
+// }
 
 //-----------------------------------------------------------------------------
 // Initial State

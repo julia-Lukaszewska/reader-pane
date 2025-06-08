@@ -70,7 +70,7 @@ const Fill = styled.div`
  * @returns {JSX.Element|null}
  */
 export default function ProgressBar({ bookId, totalPages }) {
-  const mode = useSelector(selectProgressMode) // 'current' or 'max'
+  const mode = useSelector(selectProgressMode)
 
   // Try to get progress from cached book
   const cachedBook = useSelector((state) =>
@@ -78,8 +78,6 @@ export default function ProgressBar({ bookId, totalPages }) {
   )
 
   const cachedStats = cachedBook?.stats
-  const current = cachedStats?.currentPage ?? 0
-  const maxVisited = cachedStats?.maxVisitedPage ?? 0
   const hasStats = !!cachedStats
 
   // Fallback to API only if no cached stats

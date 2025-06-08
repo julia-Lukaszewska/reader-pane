@@ -10,7 +10,7 @@
 
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { authApi, useRefreshMutation } from '@/store/api/authApi'
+import {  useRefreshMutation } from '@/store/api/authApi'
 import { setCredentials } from '@/store/slices/authSlice'
 
 //-----------------------------------------------------------------------------

@@ -53,7 +53,7 @@ const SubmitButton = styled.button`
     opacity: 0.6;
     cursor: not-allowed;
   }
-`;
+`
 
 const ErrorText = styled.p`
   color: #ff6b6b;
