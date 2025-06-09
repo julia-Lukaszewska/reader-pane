@@ -12,6 +12,6 @@ export {default as useEnsureBookFileUrl} from './useEnsureBookFileUrl'
 export { default as useLastOpenedBook } from './useLastOpenedBook' //Open book in reader
 
 export { default as useStartingPage } from './useStartingPage' //Set starting page for book
-export { default as useInitReaderSession } from './useInitReaderSession' //Initialize reader session
+
 
 

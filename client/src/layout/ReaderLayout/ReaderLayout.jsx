@@ -1,18 +1,18 @@
 /**
  * @file ReaderLayout.jsx
- * @description Layout wrapper for the reader view.
- * Initializes reading session and renders the ReaderToolbar and nested routes.
+ * @description Layout wrapper for the PDF reader view.
+ * Renders the ReaderToolbar and delegates session initialization and routing
+ * to the ReaderSessionController.
  */
 
+import React from 'react'
 import styled from 'styled-components'
-import { Outlet } from 'react-router-dom'
 import { ReaderToolbar } from '@reader'
-import { useInitReaderSession } from '@reader/hooks'
+import ReaderSessionController from '@/modules/reader/ReaderSessionController'
 
 //-----------------------------------------------------------------------------
-// Styled components
+// Styled container for the reader layout
 //-----------------------------------------------------------------------------
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -21,24 +21,21 @@ const Container = styled.div`
 
 //-----------------------------------------------------------------------------
 // Component: ReaderLayout
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------/
 
 /**
- * Layout used in the `/read` route.
- * Initializes reader state and wraps nested pages.
+ * Layout component for the `/read` route.
+ * Displays the top ReaderToolbar and uses ReaderSessionController
+ * to handle session initialization, book selection, and route rendering.
  *
- * @returns {JSX.Element}
+ * @component
+ * @returns {JSX.Element} The reader layout with toolbar and session controller.
  */
-const ReaderLayout = () => {
-  console.log('[ReaderLayout] rendered')
-  useInitReaderSession()
-
+export default function ReaderLayout() {
   return (
     <Container>
       <ReaderToolbar />
-      <Outlet />
+      <ReaderSessionController />
     </Container>
   )
 }
-
-export default ReaderLayout
