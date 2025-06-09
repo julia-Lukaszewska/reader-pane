@@ -1,4 +1,3 @@
-
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import {
   persistStore,
@@ -14,12 +13,13 @@ import storage from 'redux-persist/lib/storage'
 
 import { booksApi, externalApi } from './api'
 import { authApi } from './api/authApi'
+import { pdfStreamApi } from './api/pdfStreamApi'
+
 import bookReducer from './slices/bookSlice'
 import readerReducer from './slices/readerSlice'
 import pdfCacheReducer from './slices/pdfCacheSlice'
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
-import { pdfStreamApi } from './api/pdfStreamApi'
 
 //----------------------------------------------------------------------------- 
 // Persistence Configurations
@@ -51,6 +51,15 @@ const readerPersistConfig = {
   whitelist: ['scaleIndex', 'pageViewMode'],
 }
 
+/**
+ * Global persistence configuration
+ */
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: [ 'book', 'reader', 'mainUi', booksApi.reducerPath, pdfStreamApi.reducerPath],
+}
+
 //----------------------------------------------------------------------------- 
 // Root Reducer
 //-----------------------------------------------------------------------------  
@@ -64,18 +73,8 @@ const rootReducer = combineReducers({
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
-    [pdfStreamApi.reducerPath]: pdfStreamApi.reducer, 
+  [pdfStreamApi.reducerPath]: pdfStreamApi.reducer,
 })
-
-//----------------------------------------------------------------------------- 
-// Global Persist Config
-//-----------------------------------------------------------------------------  
-
-const persistConfig = {
-  key: 'root',
-  storage,
-  whitelist: ['auth', 'book', 'reader', 'mainUi', booksApi.reducerPath, pdfStreamApi.reducerPath],
-}
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
@@ -88,7 +87,12 @@ const middleware = getDefaultMiddleware =>
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
-  }).concat(booksApi.middleware, externalApi.middleware, authApi.middleware, pdfStreamApi.middleware  )
+  }).concat(
+    booksApi.middleware,
+    externalApi.middleware,
+    authApi.middleware,
+    pdfStreamApi.middleware
+  )
 
 //----------------------------------------------------------------------------- 
 // Store Configuration

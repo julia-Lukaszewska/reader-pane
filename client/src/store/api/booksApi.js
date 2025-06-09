@@ -24,13 +24,9 @@ export const booksApi = createApi({
   baseQuery: customBaseQuery,
   tagTypes: ['Books', 'BooksStatic', 'Progress', 'Live'],
   endpoints: (builder) => ({
-    /**
-     * Fetches the static list of books (no frequent updates).
-     * Caches data for 24 hours.
-     * @returns {NormalizedState} Normalized state of all static books.
-     */
+
     getBooksStatic: builder.query({
-      query: () => '/books/private/${id}/static',
+      query: () => '/books/private/static',
       keepUnusedDataFor: 86400,
       providesTags: [{ type: 'BooksStatic', id: 'LIST' }],
       transformResponse: (response) =>
