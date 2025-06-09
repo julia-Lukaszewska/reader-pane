@@ -46,7 +46,7 @@ const issueTokens = (user, res) => {
     httpOnly: true,
     secure: true,
     sameSite: 'None', // Changed from Strict to None for cross-origin
-    path: '/api/auth',
+    path: '/',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   })
 

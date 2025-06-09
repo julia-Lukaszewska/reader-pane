@@ -14,6 +14,7 @@
     "clean:orphaned-books": "cross-env BRANCH=main node scripts/delete-books-missing-gridfs.js"
   },
   "dependencies": {
+    "@sentry/node": "^9.27.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -25,7 +26,6 @@
     "mongoose": "^8.15.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
-   
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
