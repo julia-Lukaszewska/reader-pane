@@ -17,7 +17,7 @@ import useStartingPage   from './hooks/useStartingPage'
 import { setActiveBookId } from '@/store/slices/bookSlice'
 import { selectActiveBookId } from '@/store/selectors/selectors'
 
-import FallbackScreen from '@/components/FallbackScreen'
+import FallbackScreen from '@/components/common/FallbackScreen'
 
 //-----------------------------------------------------------------------------
 // Component: ReaderSessionController
