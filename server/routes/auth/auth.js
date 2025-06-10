@@ -44,7 +44,7 @@ const issueTokens = (user, res) => {
 
   res.cookie('rt', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'None', // Changed from Strict to None for cross-origin
     path: '/',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -118,9 +118,9 @@ router.get('/me', passport.authenticate('jwt', { session: false }), async (req, 
 router.post('/logout', (_req, res) => {
   res.clearCookie('rt', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     sameSite: 'None',
-    path: '/',
+    path: '/api/auth',
   })
   return res.sendStatus(204)
 })
