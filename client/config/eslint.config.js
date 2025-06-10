@@ -2,6 +2,7 @@
  * @file eslint.config.js
  * @description ESLint configuration for React + Vite project using ESM and no semicolons.
  */
+// @ts-nocheck
 
 import js from '@eslint/js'
 import globals from 'globals'

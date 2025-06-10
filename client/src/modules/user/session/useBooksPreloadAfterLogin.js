@@ -8,8 +8,8 @@
  */
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { booksApi } from '@/store/api/booksApi'
-import { useGetMeQuery } from '@/store/api/authApi'
+import { booksApi } from '@/store/api/booksPrivateApi/booksApi'
+import { useGetMeQuery } from '@/store/api/authApi/authApi'
 import {  setAuthChecked } from '@/store/slices/authSlice'
 import { selectAuthChecked, selectAccessToken } from '@/store/selectors/authSelectors'
 

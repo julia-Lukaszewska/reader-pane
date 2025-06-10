@@ -4,7 +4,7 @@
  * Hook to handle user registration via /auth/register endpoint.
  */
 
-import { useRegisterMutation } from '@/store/api/authApi'
+import { useRegisterMutation } from '@/store/api/authApi/authApi'
 import { useDispatch } from 'react-redux'
 import { setCredentials } from '@/store/slices/authSlice'
 

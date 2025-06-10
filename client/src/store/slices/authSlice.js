@@ -8,7 +8,7 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit'
-import { authApi } from '@/store/api/authApi'
+import { authApi } from '@/store/api/authApi/authApi'
 
 //----------------------------------------------------------------------------- 
 // Initial State

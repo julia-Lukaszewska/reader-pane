@@ -7,7 +7,7 @@
 
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { useLogoutMutation } from '@/store/api/authApi'
+import { useLogoutMutation } from '@/store/api/authApi/authApi'
 import { clearCredentials } from '@/store/slices/authSlice'
 
 /**

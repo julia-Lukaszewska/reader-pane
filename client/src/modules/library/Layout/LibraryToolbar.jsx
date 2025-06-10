@@ -15,7 +15,7 @@ import {
   LibraryToolbarSelect,
 } from '@library/components/LibraryToolbarButton'
 
-import { useUpdateBookMutation } from '@/store/api/booksApi'
+import { useUpdateBookMutation } from '@/store/api/booksPrivateApi/booksApi'
 import {
   toggleManageMode,
   clearSelected,

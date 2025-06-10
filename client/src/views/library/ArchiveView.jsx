@@ -9,7 +9,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-import { useUpdateBookMutation, useDeleteBookMutation } from '@/store/api/booksApi'
+import { useUpdateBookMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi/booksApi'
 import {
   selectAllBooks,
   selectBooksResult,

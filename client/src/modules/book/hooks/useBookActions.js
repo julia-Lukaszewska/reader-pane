@@ -13,7 +13,7 @@ import {
   useRestoreBookMutation,
   useUnfavoriteBookMutation,
   booksApi,
-} from '@/store/api/booksApi'
+} from '@/store/api/booksPrivateApi/booksApi'
 
 // -----------------------------------------------------------------------------
 // Hook: useBookActions

@@ -7,7 +7,7 @@
 
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { useGetProgressQuery } from '@/store/api/booksApi'
+import { useGetProgressQuery } from '@/store/api/booksPrivateApi/booksApi'
 import {
   selectProgressMode,
   selectBookByIdFromCache,

@@ -7,7 +7,7 @@
 
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useGetProgressQuery, useUpdateProgressMutation } from '@/store/api/booksApi'
+import { useGetProgressQuery, useUpdateProgressMutation } from '@/store/api/booksPrivateApi/booksApi'
 import { selectCurrentPageById } from '@/store/selectors/selectors'
 
 /**

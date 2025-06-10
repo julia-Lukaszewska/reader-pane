@@ -20,7 +20,7 @@ import {
 import storage from 'redux-persist/lib/storage'
 
 import { booksApi, externalApi } from './api'
-import { authApi } from './api/authApi'
+import { authApi } from './api/authApi/authApi'
 import { pdfStreamApi } from './api/pdfStreamApi'
 
 import bookReducer from './slices/bookSlice'

@@ -4,7 +4,7 @@
  *              and uploads a PDF book to the backend (GridFS).
  */
 
-import { useUploadBookMutation } from '@/store/api/booksApi'
+import { useUploadBookMutation } from '@/store/api/booksPrivateApi/booksApi'
 import usePDFValidation from './usePDFValidation'
 import { extractPDFMetadata } from './extractPDFMetadata'
 import { renderPDFCover } from './renderPDFCover'

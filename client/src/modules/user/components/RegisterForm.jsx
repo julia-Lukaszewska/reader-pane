@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react'
-import { useRegisterMutation } from '@/store/api/authApi'
+import { useRegisterMutation } from '@/store/api/authApi/authApi'
 import styled from 'styled-components'
 
 //-----------------------------------------------------------------------------
