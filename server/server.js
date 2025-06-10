@@ -71,9 +71,7 @@ app.use(passport.initialize());
 app.use('/api/books/public', booksPublicRouter);
 app.use('/api/auth', authRouter);
 
-app.get('/api/test-error', (_req, _res) => {
-  throw new Error('Test error from backend (main)');
-});
+
 
 app.use('/api/books/storage', booksStorageRouter);
 // Private book routes
