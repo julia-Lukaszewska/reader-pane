@@ -1,32 +1,52 @@
-
-
-/**
- * @file index.jsx
- * @description Sets up PDF.js worker and renders the React application into the DOM.
- */
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import AppProvider from './providers/AppProvider'
-import App from '@/App'
-import './sentry.client'
+// src/index.jsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import AppProvider from './providers/AppProvider';
+import App from '@/App';
+import * as Sentry from '@sentry/react';
+import { Replay } from '@sentry/replay';
+import * as pdfjsLib from 'pdfjs-dist';
 
 //------------------------------------------------------------------------------
-//------ worker: PDF.js worker path for rendering PDF files
+// Sentry: performance + replay
 //------------------------------------------------------------------------------
-import * as pdfjsLib from 'pdfjs-dist'
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.MODE || 'development',
+  release: 'reader-app@1.0.0',
+  integrations: [
+
+    Sentry.browserTracingIntegration({
+      tracingOrigins: ['localhost', /^https:\/\/api\.twojadomena\.pl/],
+    }),
+   
+    new Replay(),
+  ],
+  ignoreErrors: [
+    'ResizeObserver loop limit exceeded',
+    'Non-Error exception captured',
+    'Network Error',
+  ],
+  tracesSampleRate: 1.0,           
+  replaysSessionSampleRate: 1.0,    
+  replaysOnErrorSampleRate: 1.0,    
+});
+
+//------------------------------------------------------------------------------
+// PDF.js worker
+//------------------------------------------------------------------------------
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 if (!window.Worker) {
-  console.error('Web Workers are not supported in this browser.')
+  console.error('Web Workers are not supported in this browser.');
 }
 
-//----------------------------------------------------------------------------- 
-//------ Entry point: render app into DOM with context and strict mode
-//----------------------------------------------------------------------------- 
-
+//------------------------------------------------------------------------------
+// Entry point
+//------------------------------------------------------------------------------
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AppProvider>
       <App />
     </AppProvider>
-  </StrictMode>  
-)
+  </StrictMode>
+);
