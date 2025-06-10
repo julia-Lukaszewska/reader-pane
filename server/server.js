@@ -8,8 +8,8 @@
 
 import dotenv from 'dotenv';
 import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import './config/sentry.server.js'
+import Sentry, { sentryRequestHandler, sentryErrorHandler } from './config/sentry.server.js'
+
 import * as Sentry from '@sentry/node'
 import express from 'express';
 import helmet from 'helmet';
@@ -57,7 +57,7 @@ const getEffectiveEnv = () => {
 }
 app.use(cors(getCorsOptions(getEffectiveEnv())))
 // --- SENTRY: REQUEST HANDLER ---
-app.use(Sentry.Handlers.requestHandler());
+app.use(sentryRequestHandler)
 
 
 
@@ -99,7 +99,7 @@ mongoose
   })
   .catch((err) => console.error('Database connection error:', err));
 // --- SENTRY: ERROR HANDLER ---
-app.use(Sentry.Handlers.errorHandler());
+app.use(sentryErrorHandler)
 
 // -----------------------------------------------------------------------------
 // GLOBAL ERROR HANDLER

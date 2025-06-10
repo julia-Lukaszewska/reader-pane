@@ -1,4 +1,3 @@
-// server/config/sentry.server.js
 import * as Sentry from '@sentry/node'
 
 Sentry.init({
@@ -7,4 +6,6 @@ Sentry.init({
   release: 'reader-backend@1.0.0',
 })
 
+export const sentryRequestHandler = Sentry.Handlers.requestHandler()
+export const sentryErrorHandler = Sentry.Handlers.errorHandler()
 export default Sentry
