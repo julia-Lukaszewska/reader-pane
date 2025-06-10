@@ -1,108 +1,104 @@
 /**
- * @file server.js
- * @description
- * Main entry point for the Express backend.
- * Connects to MongoDB, configures middleware, serves API routes,
- * and initializes GridFS.
+ * server.js
+ * Main entry point for Express backend.
  */
 
-import dotenv from 'dotenv';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import express from 'express'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+import mongoose from 'mongoose'
+import passport from 'passport'
 
+import configurePassport from './config/passport.js'
+import { getCorsOptions } from './config/cors/index.js'
+import { gridFsBucketReady } from './config/gridfs.js'
 
-import express from 'express';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import mongoose from 'mongoose';
-
-import passport from 'passport';
-import configurePassport from './config/passport.js';
 import {
   authRouter,
   booksPublicRouter,
-  booksPrivateRouter,
-  booksStorageRouter
-} from './routes/index.js';
+  booksStorageRouter,
+  booksPrivateRouter
+} from './routes/index.js'
 
-import { getCorsOptions } from './config/cors/index.js';
-import { gridFsBucketReady } from './config/gridfs.js';
+// ———————————————————————————————
+// 1. ENVIRONMENT
+// ———————————————————————————————
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const BRANCH = process.env.BRANCH || 'dev'
+dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) })
+console.log(`Loaded .env.server.${BRANCH}`)
 
-// -----------------------------------------------------------------------------
-// ENVIRONMENT & PATHS
-// -----------------------------------------------------------------------------
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const BRANCH = process.env.BRANCH || 'dev';
-dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) });
+// ———————————————————————————————
+// 2. EXPRESS APP SETUP
+// ———————————————————————————————
+const app = express()
+app.set('trust proxy', 1)
 
-console.log(`Loaded .env.server.${BRANCH}`);
-// -----------------------------------------------------------------------------
-// APP & COMMON MIDDLEWARE
-// -----------------------------------------------------------------------------
-const app = express();
-app.set('trust proxy', 1);
+// ———————————————————————————————
+// 3. GLOBAL MIDDLEWARE
+// ———————————————————————————————
+app.use(helmet({ crossOriginResourcePolicy: false }))      // security headers
+app.use(morgan('dev'))                                     // request logging
+app.use(express.json({ limit: '50mb' }))                   // body parser JSON
+app.use(express.urlencoded({ extended: true, limit: '50mb' })) // body parser URL-encoded
+app.use(cookieParser())                                    // cookies
+app.use(cors(getCorsOptions(                               // CORS
+  BRANCH === 'main' ? 'production' :
+  BRANCH === 'staging' ? 'staging' : 'development'
+)))
 
-app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(morgan('dev'));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(cookieParser());
+// ———————————————————————————————
+// 4. PASSPORT INITIALIZATION
+// ———————————————————————————————
+configurePassport()
+app.use(passport.initialize())
 
-const getEffectiveEnv = () => {
-  if (BRANCH === 'main' || BRANCH === 'build') return 'production';
-  if (BRANCH === 'staging') return 'staging';
-  return 'development';
-};
-app.use(cors(getCorsOptions(getEffectiveEnv())));
+// ———————————————————————————————
+// 5. PUBLIC ROUTES
+// ———————————————————————————————
+app.use('/api/auth', authRouter)
+app.use('/api/books/public', booksPublicRouter)
 
+// ———————————————————————————————
+// 6. UPLOAD/STORAGE ROUTES
+// ———————————————————————————————
+app.use('/api/books/storage', booksStorageRouter)
 
+// ———————————————————————————————
+// 7. PRIVATE/PROTECTED ROUTES
+// ———————————————————————————————
+app.use('/api/books/private', booksPrivateRouter)
 
-// -----------------------------------------------------------------------------
-// PASSPORT & ROUTES
-// -----------------------------------------------------------------------------
-configurePassport();
-app.use(passport.initialize());
-
-// Public routes
-app.use('/api/books/public', booksPublicRouter);
-app.use('/api/auth', authRouter);
-
-
-
-app.use('/api/books/storage', booksStorageRouter);
-// Private book routes
-app.use('/api/books/private', booksPrivateRouter);
-
-app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'));
+// ———————————————————————————————
+// 8. BASIC HEALTHCHECK & ROOT
+// ———————————————————————————————
+app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'))
 app.get('/health', (_req, res) => {
-  const dbUp = mongoose.connection.readyState === 1;
-  if (dbUp) res.status(200).json({ status: 'ok' });
-  else res.status(500).json({ status: 'MongoDB not ready' });
-});
+  const dbUp = mongoose.connection.readyState === 1
+  res.status(dbUp ? 200 : 500).json({ status: dbUp ? 'ok' : 'MongoDB not ready' })
+})
 
-// -----------------------------------------------------------------------------
-// DATABASE & SERVER START
-// -----------------------------------------------------------------------------
-const PORT = process.env.PORT || 5000;
-
-mongoose
-  .connect(process.env.MONGO_URI)
+// ———————————————————————————————
+// 9. DATABASE CONNECTION & SERVER START
+// ———————————————————————————————
+const PORT = process.env.PORT || 5000
+mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
-    await gridFsBucketReady;
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    await gridFsBucketReady
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
   })
-  .catch((err) => console.error('Database connection error:', err));
+  .catch(err => console.error('Database connection error:', err))
 
-
-
-// -----------------------------------------------------------------------------
-// GLOBAL ERROR HANDLER
-// -----------------------------------------------------------------------------
+// ———————————————————————————————
+// 10. GLOBAL ERROR HANDLER (LAST)
+// ———————————————————————————————
 app.use((err, _req, res, _next) => {
-  // Exception already captured by Sentry's error handler
-  console.error('Global error handler:', err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+  console.error('Global error handler:', err.stack)
+  res.status(500).json({ error: 'Something went wrong!' })
+})
