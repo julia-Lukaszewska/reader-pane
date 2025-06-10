@@ -1,6 +1,6 @@
-
+// src/sentry.client.js
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
+import { BrowserTracing } from '@sentry/react'
 import { Replay } from '@sentry/replay';
 
 Sentry.init({
