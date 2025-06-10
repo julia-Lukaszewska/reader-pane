@@ -8,7 +8,7 @@
 
 import dotenv from 'dotenv';
 import path, { dirname } from 'path';
-import Sentry, { sentryRequestHandler, sentryErrorHandler } from './config/sentry.server.js'
+import  { sentryRequestHandler, sentryErrorHandler } from './config/sentry.server.js'
 
 import * as Sentry from '@sentry/node'
 import express from 'express';
