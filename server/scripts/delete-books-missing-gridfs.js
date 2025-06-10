@@ -44,7 +44,8 @@ const client = new MongoClient(uri)
 await client.connect()
 
 const db = client.db()
-const gridfsFiles = db.collection('pdfs.files')
+// Use the new books_files bucket instead of the legacy pdfs bucket
+const gridfsFiles = db.collection('books_files.files')
 
 console.log('Connected to MongoDB')
 
