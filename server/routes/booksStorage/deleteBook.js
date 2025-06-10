@@ -4,7 +4,7 @@
  */
 
 import express from 'express'
-import  {DeleteBookController}  from '../../controllers/DeleteBookController.js'
+import  { DeleteBookController }  from '../../controllers/DeleteBookController.js'
 
 const router = express.Router()
 
