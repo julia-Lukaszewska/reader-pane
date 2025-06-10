@@ -19,10 +19,10 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
-import { booksApi, externalApi } from './api'
+import   {externalApi}  from './api/externalApi'
 import { authApi } from './api/authApi/authApi'
 import { pdfStreamApi } from './api/pdfStreamApi'
-
+import {booksApi} from './api/booksPrivateApi'
 import bookReducer from './slices/bookSlice'
 import readerReducer from './slices/readerSlice'
 import pdfCacheReducer from './slices/pdfCacheSlice'

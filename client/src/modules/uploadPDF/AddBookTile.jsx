@@ -7,7 +7,7 @@ import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { FiPlus } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
-import { selectLibraryViewMode } from '@/store/selectors/selectors'
+import { selectLibraryViewMode } from '@/store/selectors'
 import { useUploadPDF } from '@/modules/uploadPDF'
 import { LibraryToolbarButton } from '@library/components/LibraryToolbarButton'
 

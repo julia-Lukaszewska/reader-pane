@@ -7,8 +7,8 @@
 
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useGetProgressQuery, useUpdateProgressMutation } from '@/store/api/booksPrivateApi/booksApi'
-import { selectCurrentPageById } from '@/store/selectors/selectors'
+import { useGetProgressQuery, useUpdateProgressMutation } from '@/store/api/booksPrivateApi'
+import { selectCurrentPageById } from '@/store/selectors'
 
 /**
  * Retrieves last saved reading position from backend

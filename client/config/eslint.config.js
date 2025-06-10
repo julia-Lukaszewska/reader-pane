@@ -2,7 +2,6 @@
  * @file eslint.config.js
  * @description ESLint configuration for React + Vite project using ESM and no semicolons.
  */
-// @ts-nocheck
 
 import js from '@eslint/js'
 import globals from 'globals'
@@ -91,18 +90,21 @@ export default [
       react: {
         version: 'detect',
       },
-      'import/resolver': {
-        alias: {
-          map: [
-            ['@', './src'],
-            ['@book', './src/modules/book'],
-            ['@reader', './src/modules/reader'],
-            ['@upload', './src/modules/uploadPDF'],
-            ['@library', './src/modules/library'],
-          ],
-          extensions: ['.js', '.jsx'],
-        },
-      },
+     'import/resolver': {
+  alias: {
+    map: [
+      ['@', './src'],
+      ['@book', './src/modules/book'],
+      ['@reader', './src/modules/reader'],
+      ['@upload', './src/modules/uploadPDF'],
+      ['@library', './src/modules/library'],
+      ['@user', './src/modules/user'],
+      ['@home', './src/modules/home'],
+    ],
+    extensions: ['.js', '.jsx'],
+  },
+}
+
     },
   },
 ]

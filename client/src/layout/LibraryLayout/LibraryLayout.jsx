@@ -12,7 +12,7 @@ import {
   selectIsManageMode,
   selectSelectedBookIds,
  
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 
 import EmptyLibraryGuestMessage from '@/views/library/EmptyLibraryGuestMessage'
 import { LibraryToolbar } from '@library/Layout'

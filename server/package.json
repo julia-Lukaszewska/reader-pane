@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "lint": "eslint . --ext .js",
+     "lint": "eslint . --ext .js --config ./config/eslint.config.js",
     "auth": "cross-env BRANCH=dev nodemon server.js",
     "delete:legacy": "node scripts/delete-legacy-uploaded-books.js",
     "clean:uploads": "node scripts/clean-uploads.js",

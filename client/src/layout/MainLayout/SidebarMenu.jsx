@@ -12,7 +12,7 @@ import { useAuth } from '@/modules/user/hooks'
 import  useLogout  from '@/modules/user/hooks/useLogout'
 import AuthModal from '@/modules/user/components/AuthModal'
 import { setAuthModalMode } from '@/store/slices/mainUiSlice'
-import { selectAuthModalMode, selectSidebarOpen } from '@/store/selectors/selectors'
+import { selectAuthModalMode, selectSidebarOpen } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled component: nav container with animation

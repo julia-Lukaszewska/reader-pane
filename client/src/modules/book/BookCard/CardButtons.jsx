@@ -15,9 +15,8 @@ import { FaBookOpen, FaHeart, FaBoxArchive } from 'react-icons/fa6'
 import useBookActions from '@/modules/book/hooks/useBookActions'
 import {
   selectIsManageMode,
-  selectBookByIdFromCache,
-} from '@/store/selectors/selectors'
-
+} from '@/store/selectors'
+import { selectBookById } from '@/store/selectors/booksSelectors'
 // -----------------------------------------------------------------------------
 // Component: CardButtons
 // -----------------------------------------------------------------------------
@@ -31,7 +30,7 @@ import {
  */
 export default function CardButtons({ bookId }) {
   const isManageMode = useSelector(selectIsManageMode)
-  const book = useSelector(selectBookByIdFromCache(bookId))
+  const book = useSelector(selectBookById(bookId))
   const { openReader, toggleFavorite, toggleArchive } = useBookActions(book)
 
   const handleClick = (action) => (e) => {

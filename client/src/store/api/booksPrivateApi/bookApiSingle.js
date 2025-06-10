@@ -1,49 +1,39 @@
+import { booksApi } from './booksApi'
+
 /**
- * @file bookApiSingle.js
- * @description
- * Endpoints for operations on a single book:
- * - getBookById
- * - getBookCache
- * - updateBook
- * - deleteBook
+ * Extends booksApi with single-book operations.
  */
-
-import { booksApi } from '../booksApi'
-
 const extendedApi = booksApi.injectEndpoints({
+  overrideExisting: false,
   endpoints: (builder) => ({
+    /**
+     * Get a single book by ID.
+     * @param {string} id - Book identifier
+     */
     getBookById: builder.query({
       query: (id) => `/books/private/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Books', id }],
     }),
 
-    getBookCache: builder.query({
-      query: (id) => `/books/private/${id}/cache`,
-      providesTags: (_result, _error, id) => [{ type: 'Books', id }],
-    }),
-
+    /**
+     * Updates a book's properties.
+     * @param {{id: string, changes: object}} params
+     */
     updateBook: builder.mutation({
-      query: ({ id, changes }) => ({
-        url: `/books/private/${id}`,
-        method: 'PATCH',
-        body: changes,
-      }),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: 'Books', id },
-        { type: 'Books', id: 'LIST' },
-        { type: 'Progress', id },
+      query: ({ id, changes }) => ({ url: `/books/private/${id}`, method: 'PATCH', body: changes }),
+      invalidatesTags: (_res, _err, { id }) => [
+        { type: 'Books', id }, { type: 'Books', id: 'LIST' }, { type: 'Progress', id },
       ],
     }),
 
+    /**
+     * Deletes a book by ID.
+     * @param {string} id
+     */
     deleteBook: builder.mutation({
-      query: (id) => ({
-        url: `/books/private/${id}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: (_result, _error, id) => [
-        { type: 'Books', id },
-        { type: 'Books', id: 'LIST' },
-        { type: 'BooksStatic', id: 'LIST' },
+      query: (id) => ({ url: `/books/private/${id}`, method: 'DELETE' }),
+      invalidatesTags: (_res, _err, id) => [
+        { type: 'Books', id }, { type: 'Books', id: 'LIST' }, { type: 'BooksStatic', id: 'LIST' },
       ],
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         const patch = dispatch(
@@ -59,7 +49,6 @@ const extendedApi = booksApi.injectEndpoints({
       },
     }),
   }),
-  overrideExisting: false,
 })
 
 export const {

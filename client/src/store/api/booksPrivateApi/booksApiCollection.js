@@ -7,7 +7,7 @@
  * - getBooksStatic (normalized via booksAdapter)
  */
 
-import { booksApi } from '../booksApi'
+import { booksApi } from './booksApi'
 import { booksAdapter } from './booksAdapter'
 
 const extendedApi = booksApi.injectEndpoints({

@@ -5,8 +5,8 @@
 
 import { useCallback, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useUpdateProgressMutation } from '@/store/api/booksPrivateApi/booksApi'
-import { selectCurrentPageById } from '@/store/selectors/selectors'
+import { useUpdateProgressMutation } from '@/store/api/booksPrivateApi'
+import { selectCurrentPageById } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------//
 // Hook: usePDFPagination

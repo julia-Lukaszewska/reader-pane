@@ -14,7 +14,7 @@
  */
 
 import { createApi } from '@reduxjs/toolkit/query/react'
-import { baseApiAuthQuery } from './baseAuthApiQuery'
+import { baseAuthApiQuery } from './baseAuthApiQuery'
 
 // -----------------------------------------------------------------------------
 // API: authApi
@@ -22,7 +22,7 @@ import { baseApiAuthQuery } from './baseAuthApiQuery'
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: baseApiAuthQuery,
+  baseQuery: baseAuthApiQuery,
   tagTypes: ['Auth'],
   endpoints: (builder) => ({
     /**

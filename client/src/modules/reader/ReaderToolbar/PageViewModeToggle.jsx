@@ -11,7 +11,7 @@ import { setPageViewMode } from '@/store/slices/readerSlice'
 import {
   selectActiveBookId,
   selectBookStaticById,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled Components

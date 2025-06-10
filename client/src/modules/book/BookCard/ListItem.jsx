@@ -14,7 +14,7 @@ import SelectCheckbox from './SelectCheckbox'
 import CardButtons from './CardButtons'
 import RatingStars from '@/components/common/RatingStars'
 import ProgressBar from '@book/components/ProgressBar'
-import { selectIsManageMode } from '@/store/selectors/selectors'
+import { selectIsManageMode } from '@/store/selectors'
 
 // -----------------------------------------------------------------------------
 // Component: ListItem

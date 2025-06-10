@@ -1,8 +1,9 @@
+import { defineConfig, loadEnv } from 'vite'
+import { viteReactPlugin } from '@vitejs/plugin-react'
+
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
-import tsconfigPaths from 'vite-tsconfig-paths'
+
 import fs from 'fs'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
@@ -22,10 +23,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [
-      react(),
-      tsconfigPaths(),      
-    ],
+plugins: [viteReactPlugin()],
     resolve: {
       alias: {
         global: 'globalThis',

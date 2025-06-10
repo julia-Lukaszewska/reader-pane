@@ -10,7 +10,7 @@
  * - updateLastOpened
  */
 
-import { booksApi } from '../booksApi'
+import { booksApi } from './booksApi'
 
 const extendedApi = booksApi.injectEndpoints({
   endpoints: (builder) => ({

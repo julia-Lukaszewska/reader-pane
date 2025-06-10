@@ -11,7 +11,7 @@ import {
   useDeleteBookMutation,
   useUpdateBookMutation,  
 } from '@/store/api/booksPrivateApi/booksApi'
-import { selectSelectedBookIds } from '@/store/selectors/selectors'
+import { selectSelectedBookIds } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled components

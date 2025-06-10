@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux'
 
 import SelectCheckbox from './SelectCheckbox'
 import CardButtons from './CardButtons'
-import { selectIsManageMode } from '@/store/selectors/selectors'
+import { selectIsManageMode } from '@/store/selectors'
 
 // -----------------------------------------------------------------------------
 // Styled Components

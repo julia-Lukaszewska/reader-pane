@@ -4,13 +4,13 @@
  */
 
 import express from 'express'
-import {  DeleteBookController } from '../../controllers/DeleteBookController.js'
+import  DeleteBookController  from '../../controllers/DeleteBookController.js'
 
 const router = express.Router()
 
 //------------------------------------------------------------------
 // DELETE /api/books/storage/book/:id – delete book record and PDF
 //------------------------------------------------------------------
-router.delete('/book/:id',  DeleteBookController)
+router.delete('/book/:id', DeleteBookController)
 
 export default router

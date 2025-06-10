@@ -5,3 +5,4 @@
  */
 export * from './selectors'
 export * from './authSelectors'
+export * from  './booksSelectors'

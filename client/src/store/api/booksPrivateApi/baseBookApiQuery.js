@@ -5,15 +5,15 @@ import { setCredentials, clearCredentials } from '@/store/slices/authSlice'
 
 /**
  * Raw baseQuery for book-related endpoints.
- * Automatically attaches Bearer token from Redux state.
+ * Automatically attaches Bearer access from Redux state.
  */
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL,
-  credentials: 'include', // send HttpOnly cookies (refresh token)
+  credentials: 'include', // send HttpOnly cookies (refresh access)
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.acces
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`)
+    const access= getState().auth.access
+    if (access) {
+      headers.set('Authorization', `Bearer ${access}`)
     }
     return headers
   },
@@ -22,7 +22,7 @@ const rawBaseQuery = fetchBaseQuery({
 /**
  * Custom baseQuery for all book API calls.
  * - Tries original request
- * - On 401, attempts token refresh
+ * - On 401, attempts access refresh
  * - Retries original request if refresh succeeds
  * - Clears credentials if refresh fails
  *
@@ -47,8 +47,8 @@ export const baseBookApiQuery = async (args, api, extraOptions) => {
     )
 
     if (refreshResult.data) {
-      // store new access token
-      api.dispatch(setCredentials({ token: refreshResult.data.accessToken }))
+      // store new access access
+      api.dispatch(setCredentials({ access: refreshResult.data.access }))
       // retry original request
       result = await rawBaseQuery(args, api, extraOptions)
     } else {

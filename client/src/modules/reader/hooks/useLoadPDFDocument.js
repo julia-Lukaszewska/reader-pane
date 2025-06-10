@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import * as pdfjsLib from 'pdfjs-dist'
 
-import { useGetBookByIdQuery } from '@/store/api/booksPrivateApi/booksApi'
+import { useGetBookByIdQuery } from '@/store/api/booksPrivateApi'
 import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
 import { selectIsLoggedIn } from '@/store/selectors/authSelectors'
 

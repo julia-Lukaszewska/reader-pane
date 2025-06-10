@@ -7,11 +7,11 @@
 
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { useGetProgressQuery } from '@/store/api/booksPrivateApi/booksApi'
+import { useGetProgressQuery } from '@/store/api/booksPrivateApi'
 import {
   selectProgressMode,
-  selectBookByIdFromCache,
-} from '@/store/selectors/selectors'
+  selectBookById,
+} from '@/store/selectors'
 
 // -----------------------------------------------------------------------------
 // Styled Components
@@ -74,7 +74,7 @@ export default function ProgressBar({ bookId, totalPages }) {
 
   // Try to get progress from cached book
   const cachedBook = useSelector((state) =>
-    selectBookByIdFromCache(bookId)(state)
+    selectBookById(bookId)(state)
   )
 
   const cachedStats = cachedBook?.stats

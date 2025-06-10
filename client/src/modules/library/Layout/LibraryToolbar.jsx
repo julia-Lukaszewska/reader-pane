@@ -15,7 +15,7 @@ import {
   LibraryToolbarSelect,
 } from '@library/components/LibraryToolbarButton'
 
-import { useUpdateBookMutation } from '@/store/api/booksPrivateApi/booksApi'
+import { useUpdateBookMutation } from '@/store/api/booksPrivateApi'
 import {
   toggleManageMode,
   clearSelected,
@@ -28,7 +28,7 @@ import {
   selectSelectedBookIds,
   selectLibraryViewMode,
   selectSortMode,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled Components

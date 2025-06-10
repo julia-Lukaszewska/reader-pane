@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { useUpdateBookMutation, booksApi } from '@/store/api/booksPrivateApi/booksApi'
+import { useUpdateBookMutation, booksApi } from '@/store/api/booksPrivateApi'
 import { setActiveBookId } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------

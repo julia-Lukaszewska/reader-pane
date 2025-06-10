@@ -9,14 +9,14 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-import { useUpdateBookMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi/booksApi'
+import { useUpdateBookMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 import {
   selectAllBooks,
   selectBooksResult,
   selectLibraryViewMode,
   selectIsPreviewOpen,
   selectPreviewBookId,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import ConfirmModal from '@/components/ConfirmModal'

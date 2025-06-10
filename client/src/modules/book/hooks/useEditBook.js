@@ -4,7 +4,7 @@
  */
 
 import { useDispatch } from 'react-redux'
-import { useUpdateBookMutation, booksApi } from '@/store/api/booksPrivateApi/booksApi'
+import { useUpdateBookMutation, booksApi } from '@/store/api/booksPrivateApi'
 
 
 //-----------------------------------------------------------------------------

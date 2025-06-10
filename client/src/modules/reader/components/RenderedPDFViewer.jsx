@@ -20,7 +20,7 @@ import {
   selectCurrentPage,
   selectPageViewMode,
   selectBookStaticById,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 
 // -----------------------------------------------------------------------------
 // Styled Components

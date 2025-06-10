@@ -13,7 +13,7 @@ import { toggleSelect } from '@/store/slices/bookSlice'
 import {
   selectIsManageMode,
   selectSelectedBookIds,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 
 // -----------------------------------------------------------------------------
 // Styled Components

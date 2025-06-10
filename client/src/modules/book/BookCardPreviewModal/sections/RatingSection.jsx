@@ -19,7 +19,7 @@ import {
   useGetBookByIdQuery,
   useUpdateBookRatingMutation,
 } from '@/store'
-import { selectBookByIdFromCache } from '@/store/selectors/selectors'
+import { selectBookById } from '@/store/selectors'
 
 // -----------------------------------------------------------------------------
 // Styled Components
@@ -95,7 +95,7 @@ export default function RatingSection({ form, onChange, handleRead }) {
 
   // Prefer cached book data to avoid unnecessary queries
   const cachedBook = useSelector((state) =>
-    selectBookByIdFromCache(bookId)(state)
+    selectBookById(bookId)(state)
   )
 
   const { data: bookData } = useGetBookByIdQuery(bookId, {

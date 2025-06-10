@@ -13,7 +13,7 @@ import {
   selectLibraryViewMode,
   selectIsPreviewOpen,
   selectPreviewBookId,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner } from '@/components'

@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import useLastOpenedBook from './hooks/useLastOpenedBook'
 import useStartingPage   from './hooks/useStartingPage'
 import { setActiveBookId } from '@/store/slices/bookSlice'
-import { selectActiveBookId } from '@/store/selectors/selectors'
+import { selectActiveBookId } from '@/store/selectors'
 
 import FallbackScreen from '@/components/common/FallbackScreen'
 

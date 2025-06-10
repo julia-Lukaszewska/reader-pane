@@ -12,7 +12,7 @@ import {
   selectLibraryViewMode,
   selectIsPreviewOpen,
   selectPreviewBookId,
-} from '@/store/selectors/selectors'
+} from '@/store/selectors'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
