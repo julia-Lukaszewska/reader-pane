@@ -17,7 +17,7 @@ import { customBaseQuery } from './baseQuery'
 const booksAdapter = createEntityAdapter({ selectId: (book) => book._id })
 export { booksAdapter }
 
-const apiRoot = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api'
+
 
 export const booksApi = createApi({
   reducerPath: 'booksApi',

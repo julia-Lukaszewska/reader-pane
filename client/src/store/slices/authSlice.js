@@ -3,28 +3,24 @@
  * @description
  * Redux slice for managing JWT access token after login and token refresh.
  * Provides actions to store and clear token used in authenticated requests,
- * and flags app startup readiness.
+* and flag when auth check is complete.
+
  */
 
 import { createSlice } from '@reduxjs/toolkit'
+import { authApi } from '@/store/api/authApi'
 
 //----------------------------------------------------------------------------- 
 // Initial State
 //-----------------------------------------------------------------------------  
-
-/**
- * @type {{ access: string | null, startupReady: boolean }}
- * Stores JWT access token after login
- */
 const initialState = {
   access: null,
-  startupReady: false,
+  authChecked: false,
 }
 
 //----------------------------------------------------------------------------- 
 // Slice Definition
 //-----------------------------------------------------------------------------  
-
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -36,7 +32,6 @@ const authSlice = createSlice({
     setCredentials(state, action) {
       state.access = action.payload.access
     },
-
     /**
      * Clears the stored access token.
      * Used on logout or token refresh failure.
@@ -44,40 +39,68 @@ const authSlice = createSlice({
     clearCredentials(state) {
       state.access = null
     },
-
     /**
-     * Sets the startupReady flag based on payload.
-     * @param {Object} state
-     * @param {{ payload: boolean }} action
+     * Sets the authChecked flag based on payload.
+     * @param {boolean} action.payload
      */
-    setStartupReady(state, action) {
-      state.startupReady = action.payload
+    setAuthChecked(state, action) {
+      state.authChecked = action.payload
     },
-
     /**
-     * Marks startupReady as true.
+     * Marks authChecked as true.
      */
-    markStartupReady(state) {
-      state.startupReady = true
+    markAuthChecked(state) {
+      state.authChecked = true
+    },
+    /**
+     * Resets auth state completely (for testing or full logout).
+     */
+    resetAuth(state) {
+      state.access = null
+      state.authChecked = false
     },
   },
   extraReducers: builder => {
-    // Add RTK Query or other thunk reducers here, e.g.: 
-    // builder.addCase(refreshToken.fulfilled, (state, action) => {
-    //   state.access = action.payload.access
-    // })
-  }
+    builder
+      .addMatcher(
+        authApi.endpoints.login.matchFulfilled,
+        (state, { payload }) => {
+          state.access = payload.access
+          state.authChecked = true
+        }
+      )
+      .addMatcher(
+        authApi.endpoints.register.matchFulfilled,
+        (state, { payload }) => {
+          state.access = payload.access
+          state.authChecked = true
+        }
+      )
+      .addMatcher(
+        authApi.endpoints.refresh.matchFulfilled,
+        (state, { payload }) => {
+          state.access = payload.access
+        }
+      )
+      .addMatcher(
+        authApi.endpoints.logout.matchFulfilled,
+        state => {
+          state.access = null
+          state.authChecked = true
+        }
+      )
+  },
 })
 
 //----------------------------------------------------------------------------- 
 // Exports
 //-----------------------------------------------------------------------------  
-
 export const {
   setCredentials,
   clearCredentials,
-  setStartupReady,
-  markStartupReady
+  setAuthChecked,
+  markAuthChecked,
+  resetAuth,         
 } = authSlice.actions
 
 export default authSlice.reducer

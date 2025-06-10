@@ -8,7 +8,8 @@ import React from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
-import { useLogout } from '../hooks/useLogout'
+import  useLogout  from '../hooks/useLogout'
+import useCurrentUser from '../hooks/useCurrentUser'
 
 //-----------------------------------------------------------------------------
 // Styled wrapper
@@ -31,20 +32,25 @@ const AuthPanel = () => {
   const logout = useLogout()
   const { isLoggedIn } = useAuth()
 
-  if (!isLoggedIn) {
-    return (
-      <Wrapper>
-        <button onClick={() => navigate('/login')}>Login</button>
-        <button onClick={() => navigate('/register')}>Register</button>
-      </Wrapper>
-    )
-  }
+const { user } = useCurrentUser()
 
+if (isLoggedIn) {
   return (
     <Wrapper>
+      <p>Welcome, {user?.name || 'User'}</p>
       <button onClick={logout}>Log out</button>
     </Wrapper>
   )
+}
+
+
+return (
+  <Wrapper>
+    <button onClick={() => navigate('/login')}>Login</button>
+    <button onClick={() => navigate('/register')}>Register</button>
+  </Wrapper>
+)
+
 }
 
 export default AuthPanel

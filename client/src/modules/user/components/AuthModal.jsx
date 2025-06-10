@@ -97,20 +97,21 @@ const AuthModal = ({ onClose }) => {
   const navigate = useNavigate()
 
   return (
-    <Overlay onClick={onClose}>
+    <Overlay role="dialog" aria-modal="true" aria-label="Authentication Modal" onClick={onClose}>
       <ModalBox onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}>
           <FiX />
         </CloseButton>
+        
+          <Tabs role="tablist">
+            <Tab role="tab" aria-selected={mode === 'login'} $active={mode === 'login'} onClick={() => setMode('login')}>
+              Log In
+            </Tab>
+            <Tab role="tab" aria-selected={mode === 'register'} $active={mode === 'register'} onClick={() => setMode('register')}>
+              Register
+            </Tab>
+          </Tabs>
 
-        <Tabs>
-          <Tab $active={mode === 'login'} onClick={() => setMode('login')}>
-            Log In
-          </Tab>
-          <Tab $active={mode === 'register'} onClick={() => setMode('register')}>
-            Register
-          </Tab>
-        </Tabs>
 
         {mode === 'login' ? (
           <LoginForm

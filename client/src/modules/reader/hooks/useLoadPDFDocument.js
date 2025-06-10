@@ -12,7 +12,7 @@ import * as pdfjsLib from 'pdfjs-dist'
 
 import { useGetBookByIdQuery } from '@/store/api/booksApi'
 import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
-import { selectIsLoggedIn } from '@/store/selectors/selectors'
+import { selectIsLoggedIn } from '@/store/selectors/authSelectors'
 
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const { bookId } = useParams()
@@ -75,7 +75,7 @@ export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
       cancelled = true
       console.log('[useLoadPDFDocument] cleanup: cancelled')
     }
-  }, [fileBlob, filename, book, pdfRef, onLoaded])
+  }, [bookId, fileBlob, filename, book, pdfRef, onLoaded])
 
   return {
     isFetching: isFetchingBook || isFetchingPdf,

@@ -7,9 +7,9 @@
 import { useRegisterMutation } from '@/store/api/authApi'
 import { useDispatch } from 'react-redux'
 import { setCredentials } from '@/store/slices/authSlice'
+
 /**
- * Hook to register a new user and store access token
- *
+ * Returns registration function, loading, and error state.
  * @returns {{ register: Function, isLoading: boolean, error: any }}
  */
 export default function useRegister() {

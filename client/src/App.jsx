@@ -7,7 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import AppRoutes from '@/routes/AppRoutes'
 import GlobalStyles from '@/styles/GlobalStyles'
-import StartupCoordinator from '@/modules/user/StartupCoordinator'
+import AuthController from '@/modules/user/session/AuthController'
 
 // -----------------------------------------------------------------------------
 // Styled components – App container
@@ -31,7 +31,7 @@ const App = () => {
   return (
     <>
       <GlobalStyles />
-      <StartupCoordinator />
+      <AuthController />
       <StyledApp>
         <AppRoutes />
       </StyledApp>

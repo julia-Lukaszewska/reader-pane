@@ -1,3 +1,4 @@
+// src/store/api/authApi.js
 /**
  * @file authApi.js
  * @description
@@ -22,93 +23,77 @@ import { customBaseQuery } from './baseQuery'
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: customBaseQuery,
+  tagTypes: ['Auth'],
   endpoints: (builder) => ({
-
     /**
      * POST /auth/login
      * Logs in the user using email and password.
      * Returns access + refresh tokens.
-     *
-     * @example
-     * const [login, { data, error }] = useLoginMutation()
-     * login({ email, password })
      */
     login: builder.mutation({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
         body: credentials,
-        credentials: 'include', //  Important for setting refresh-token cookie
+        credentials: 'include',
       }),
+      invalidatesTags: ['Auth'],
     }),
 
     /**
      * POST /auth/logout
      * Logs out the user and clears the refresh token cookie.
-     *
-     * @example
-     * const [logout] = useLogoutMutation()
-     * logout()
      */
     logout: builder.mutation({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
-        credentials: 'include', //  Needed to clear the cookie
+        credentials: 'include',
       }),
+      invalidatesTags: ['Auth'],
     }),
 
     /**
      * POST /auth/refresh
      * Requests a new access token using the refresh token (HttpOnly cookie).
-     * Usually triggered automatically by baseQuery.
-     *
-     * @example
-     * const [refresh] = useRefreshMutation()
-     * refresh()
      */
     refresh: builder.mutation({
       query: () => ({
         url: '/auth/refresh',
         method: 'POST',
-        credentials: 'include', //  Needed to read the refresh-token cookie
+        credentials: 'include',
       }),
+      // do not automatically invalidate Auth tag to avoid unnecessary refetches
     }),
 
     /**
      * GET /auth/me
      * Fetches the current logged-in user (based on access token).
-     * Skipped if no token available (see `useCurrentUser()`).
-     *
-     * @example
-     * const { data: user, isLoading } = useGetMeQuery()
      */
     getMe: builder.query({
-      query: () => '/auth/me',
-      keepUnusedDataFor: 0, // Always refetch on mount/arg change
+      query: () => ({ url: '/auth/me', credentials: 'include' }),
+      keepUnusedDataFor: 0,
+      providesTags: ['Auth'],
     }),
 
     /**
      * POST /auth/register
      * Creates a new user account and returns access + refresh tokens.
-     *
-     * @example
-     * const [register] = useRegisterMutation()
-     * register({ email, password, name })
      */
     register: builder.mutation({
       query: (userData) => ({
         url: '/auth/register',
         method: 'POST',
         body: userData,
-        credentials: 'include', //  Needed to set the refresh-token cookie
+        credentials: 'include',
       }),
+      invalidatesTags: ['Auth'],
     }),
   }),
 })
 
 // -----------------------------------------------------------------------------
-// Exported Hooks
+// Exported Hooks & API object
 // -----------------------------------------------------------------------------
 
 export const {
@@ -118,3 +103,5 @@ export const {
   useGetMeQuery,
   useRegisterMutation,
 } = authApi
+
+export default authApi

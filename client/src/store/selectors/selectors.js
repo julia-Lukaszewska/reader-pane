@@ -108,8 +108,4 @@ export const selectCachedPage = (state, bookId, scale, page) =>
 export const selectRenderedRanges = (state, bookId, scale) =>
   state.pdfCache?.[bookId]?.[scale]?.ranges ?? []
 
-//-----------------------------------------------------------------------------//
-//  Auth State Selectors (authSlice)
-//-----------------------------------------------------------------------------//
 
-export const selectIsLoggedIn = state => Boolean(state.auth.access)

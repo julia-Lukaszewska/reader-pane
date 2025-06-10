@@ -8,7 +8,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import AppProvider from './providers/AppProvider'
 import App from '@/App'
-import './sentry.client'
+import '../sentry.client'
 
 //------------------------------------------------------------------------------
 //------ worker: PDF.js worker path for rendering PDF files

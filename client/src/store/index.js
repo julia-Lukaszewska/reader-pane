@@ -1,3 +1,11 @@
+// src/store/index.js
+/**
+ * @file index.js
+ * @description
+ * Configures Redux store with RTK Query APIs, persistence, and middleware.
+ * Persists only UI and data slices, excluding auth state for security.
+ */
+
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import {
   persistStore,
@@ -53,11 +61,18 @@ const readerPersistConfig = {
 
 /**
  * Global persistence configuration
+ * Only UI and cached data slices are persisted. Auth state is not persisted.
  */
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [ 'book', 'reader', 'mainUi', booksApi.reducerPath, pdfStreamApi.reducerPath],
+  whitelist: [
+    'book',
+    'reader',
+    'mainUi',
+    booksApi.reducerPath,
+    pdfStreamApi.reducerPath,
+  ],
 }
 
 //----------------------------------------------------------------------------- 
@@ -69,7 +84,7 @@ const rootReducer = combineReducers({
   book: persistReducer(bookPersistConfig, bookReducer),
   reader: persistReducer(readerPersistConfig, readerReducer),
   pdfCache: pdfCacheReducer,
-  auth: authReducer,
+  auth: authReducer, // auth state remains in memory, not persisted
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
@@ -112,5 +127,5 @@ export const persistor = persistStore(store)
 
 export * from './api'
 export * from './slices'
-export * from './selectors/selectors'
+export * from './selectors'
 export default store

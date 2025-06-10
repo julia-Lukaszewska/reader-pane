@@ -5,7 +5,7 @@
  * Displays login modal automatically when user is not authenticated.
  */
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
@@ -13,7 +13,7 @@ import { Header, Sidebar } from '@/layout/MainLayout'
 import { setSidebar } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
-import { booksApi } from '@/store/api/booksApi'
+
 
 //-----------------------------------------------------------------------------
 // Styled components

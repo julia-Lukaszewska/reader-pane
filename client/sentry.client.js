@@ -10,6 +10,12 @@ Sentry.init({
     browserTracingIntegration(),
     new Replay(),
   ],
+  ignoreErrors: [
+  'ResizeObserver loop limit exceeded',
+  'Non-Error exception captured',
+  'Network Error',
+],
+
   tracePropagationTargets: ['localhost', /^https:\/\/api\.twojadomena\.pl/],
   tracesSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
