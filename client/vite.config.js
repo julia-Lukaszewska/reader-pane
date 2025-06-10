@@ -54,7 +54,7 @@ export default defineConfig(({ mode }) => {
      */
     resolve: {
       alias: {
-        '@/': resolve(__dirname, 'src'),
+        '@/': resolve(__dirname, 'src/'),
         '@book/': resolve(__dirname, 'src/modules/book'),
         '@reader/': resolve(__dirname, 'src/modules/reader'),
         '@upload/': resolve(__dirname, 'src/modules/uploadPDF'),
