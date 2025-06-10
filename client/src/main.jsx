@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import AppProvider from './providers/AppProvider';
 import App from '@/App';
 import * as Sentry from '@sentry/react';
-import { Replay } from '@sentry/replay';
+
 import * as pdfjsLib from 'pdfjs-dist';
 
 //------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ Sentry.init({
       tracingOrigins: ['localhost', /^https:\/\/api\.twojadomena\.pl/],
     }),
    
-    new Replay(),
+   
   ],
   ignoreErrors: [
     'ResizeObserver loop limit exceeded',
