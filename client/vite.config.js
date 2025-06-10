@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
-import { viteReactPlugin } from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
 
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-plugins: [viteReactPlugin()],
+plugins: [react()],
     resolve: {
       alias: {
         global: 'globalThis',
