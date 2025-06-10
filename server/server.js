@@ -10,7 +10,6 @@ import dotenv from 'dotenv';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-import Sentry from './config/sentry.server.js';
 
 import express from 'express';
 import helmet from 'helmet';
@@ -40,7 +39,6 @@ const BRANCH = process.env.BRANCH || 'dev';
 dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) });
 
 console.log(`Loaded .env.server.${BRANCH}`);
-
 // -----------------------------------------------------------------------------
 // APP & COMMON MIDDLEWARE
 // -----------------------------------------------------------------------------
@@ -60,10 +58,7 @@ const getEffectiveEnv = () => {
 };
 app.use(cors(getCorsOptions(getEffectiveEnv())));
 
-// -----------------------------------------------------------------------------
-// SENTRY: Express integration
-// -----------------------------------------------------------------------------
-Sentry.setupExpressErrorHandler(app);
+
 
 // -----------------------------------------------------------------------------
 // PASSPORT & ROUTES
@@ -75,15 +70,17 @@ app.use(passport.initialize());
 app.use('/api/books/public', booksPublicRouter);
 app.use('/api/auth', authRouter);
 
-// Book storage & private routes
+
+
 app.use('/api/books/storage', booksStorageRouter);
+// Private book routes
 app.use('/api/books/private', booksPrivateRouter);
 
 app.get('/', (_req, res) => res.send('Reader-Pane backend is running.'));
 app.get('/health', (_req, res) => {
   const dbUp = mongoose.connection.readyState === 1;
-  if (dbUp) return res.status(200).json({ status: 'ok' });
-  res.status(500).json({ status: 'MongoDB not ready' });
+  if (dbUp) res.status(200).json({ status: 'ok' });
+  else res.status(500).json({ status: 'MongoDB not ready' });
 });
 
 // -----------------------------------------------------------------------------
@@ -99,11 +96,13 @@ mongoose
   })
   .catch((err) => console.error('Database connection error:', err));
 
+
+
 // -----------------------------------------------------------------------------
-// GLOBAL ERROR HANDLER (fallback)
+// GLOBAL ERROR HANDLER
 // -----------------------------------------------------------------------------
 app.use((err, _req, res, _next) => {
-  // wszystkie wyjątki zostały już przekazane do Sentry
+  // Exception already captured by Sentry's error handler
   console.error('Global error handler:', err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
