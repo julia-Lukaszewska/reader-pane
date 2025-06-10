@@ -1,7 +1,7 @@
 // src/sentry.client.js
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/react'
-import { Replay } from '@sentry/replay';
+
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -11,7 +11,7 @@ Sentry.init({
     new BrowserTracing({
       tracingOrigins: ['localhost', /^https:\/\/api\.twojadomena\.pl/],
     }),
-    new Replay(),
+   
   ],
   ignoreErrors: [
     'ResizeObserver loop limit exceeded',
