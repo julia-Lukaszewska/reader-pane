@@ -6,7 +6,7 @@
 import React from 'react'  
 import styled from 'styled-components'
 import { BookCard } from '@book/BookCard'
-import { AddBookTile } from '@upload'
+import { AddBookTile } from '@/modules/'
 
 //-----------------------------------------------------------------------------
 // Styled components

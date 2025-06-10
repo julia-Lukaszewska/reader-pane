@@ -11,7 +11,7 @@ import {
   LibraryGridLayout,
   LibraryListLayout,
   LibraryTableLayout,
-} from '@library'
+} from '@library/'
 import { LibraryToolbar } from '@/modules/library/Layout'
 import { BooksManagementToolbar } from '@/modules/library'
 

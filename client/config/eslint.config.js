@@ -1,6 +1,10 @@
 /**
  * @file eslint.config.js
- * @description ESLint configuration for React + Vite project using ESM and no semicolons.
+ * @description ESLint configuration for React + Vite project using ESM syntax and no semicolons.
+ *   - Ignores build and config files
+ *   - Enforces single quotes, no semicolons
+ *   - Supports React, hooks, accessibility, and import rules
+ *   - Resolves imports from both project root and client/node_modules
  */
 
 import js from '@eslint/js'
@@ -12,9 +16,9 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import importPlugin from 'eslint-plugin-import'
 
 export default [
-  //------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // Ignore files and folders
-  //------------------------------------------------------------------
+  // ----------------------------------------------------------------
   {
     ignores: [
       'dist',
@@ -30,20 +34,23 @@ export default [
       'build/**',
       'out/**',
     ],
-  }, 
+  },
 
-  //------------------------------------------------------------------
-  // Base rule overrides (e.g. semicolon preference)
-  //------------------------------------------------------------------
+  // ----------------------------------------------------------------
+  // Base rule overrides
+  // ----------------------------------------------------------------
   {
     rules: {
+      // Enforce no semicolons
       semi: ['error', 'never'],
+      // Enforce single quotes
+      quotes: ['error', 'single'],
     },
   },
 
-  //------------------------------------------------------------------
-  // Configuration for all JS/JSX files
-  //------------------------------------------------------------------
+  // ----------------------------------------------------------------
+  // All JS/JSX files
+  // ----------------------------------------------------------------
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -66,6 +73,7 @@ export default [
       import: importPlugin,
     },
     rules: {
+      // Base recommended rules
       ...js.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
@@ -74,13 +82,14 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
-      'quotes': ['error', 'single'],
-      
+
+      // Import rules
       'import/no-unresolved': ['error', { commonjs: true, amd: true }],
       'import/named': 'error',
       'import/default': 'error',
       'import/export': 'error',
 
+      // Fast refresh
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
@@ -90,21 +99,18 @@ export default [
       react: {
         version: 'detect',
       },
-     'import/resolver': {
-  alias: {
-    map: [
-      ['@', './src'],
-      ['@book', './src/modules/book'],
-      ['@reader', './src/modules/reader'],
-      ['@upload', './src/modules/uploadPDF'],
-      ['@library', './src/modules/library'],
-      ['@user', './src/modules/user'],
-      ['@home', './src/modules/home'],
-    ],
-    extensions: ['.js', '.jsx'],
-  },
-}
-
+      'import/resolver': {
+        // Resolve modules from root and client/node_modules
+        node: {
+          moduleDirectory: ['node_modules', 'client/node_modules'],
+          extensions: ['.js', '.jsx', '.mjs', '.cjs', '.json'],
+        },
+        // Support path aliases defined in jsconfig.json
+        typescript: {
+          project: './client/jsconfig.json',
+          alwaysTryTypes: true,
+        },
+      },
     },
   },
 ]

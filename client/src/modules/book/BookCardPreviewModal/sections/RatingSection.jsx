@@ -18,7 +18,7 @@ import RatingStars from '@/components/common/RatingStars'
 import {
   useGetBookByIdQuery,
   useUpdateBookRatingMutation,
-} from '@/store'
+} from '@/store/api/booksPrivateApi'
 import { selectBookById } from '@/store/selectors'
 
 // -----------------------------------------------------------------------------

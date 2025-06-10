@@ -20,9 +20,3 @@ export const booksApi = createApi({
   tagTypes: ['Books', 'BooksStatic', 'Progress', 'Live'],
   endpoints: bookEndpoints,
 })
-
-// Injected endpoints:
-export * from './booksApiCollection'
-export * from './bookApiSingle'
-export * from './booksApiStats'
-export * from './booksApiForm'

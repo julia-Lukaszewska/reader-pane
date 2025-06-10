@@ -12,7 +12,7 @@ import {
   useUpdateBookMutation,
   useDeleteBookMutation,
   booksApi,
-} from '@/store/api/booksPrivateApi/booksApi'
+} from '@/store/api/booksPrivateApi'
 import { saveBookToArchiveStorage } from '@/utils'
 import { Button } from '@/components'
 

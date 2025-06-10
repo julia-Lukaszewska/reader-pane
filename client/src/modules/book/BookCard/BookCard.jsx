@@ -11,7 +11,7 @@ import ListItem from './ListItem'
 import TableRow from './TableRow'
 import ConfirmModal from '@/components/ConfirmModal'
 import { selectIsManageMode } from '@/store/selectors'
-import { useDeleteBookMutation } from '@/store/api/booksPrivateApi/booksApi'
+import { useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 import { toggleSelect, setPreviewBookId } from '@/store/slices/bookSlice'
 import useBookActions from '../hooks/useBookActions'
 

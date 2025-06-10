@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react'
 import { useGetWolneLekturyQuery } from '@/store/api/externalApi'
-import { useUploadBookMutation } from '@/store/api/booksPrivateApi/booksApi'
+import { useUploadBookMutation } from '@/store/api/booksPrivateApi'
 import { createBook } from '@/modules/book/utils'
 import { useBookActions } from '@/modules/book/hooks'
 

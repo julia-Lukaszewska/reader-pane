@@ -6,7 +6,7 @@
 import { useEffect } from 'react'   
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useUpdateLastOpenedMutation } from '@/store/api/booksPrivateApi/booksApi'
+import { useUpdateLastOpenedMutation } from '@/store/api/booksPrivateApi'
 import {
   setActiveBookId,
   setLastOpenedBookId,
