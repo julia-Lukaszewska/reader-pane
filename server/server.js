@@ -9,7 +9,8 @@
 import dotenv from 'dotenv';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import Sentry from './config/sentry.server.js'
+import './config/sentry.server.js'
+import * as Sentry from '@sentry/node'
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
