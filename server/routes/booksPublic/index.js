@@ -6,12 +6,12 @@
  *   • GET /api/books/public/file/:filename – stream public PDF files
  */
 
-import express from 'express'
-import booksPublicRouter from './booksPublic.js'
+// import express from 'express'
+// import booksPublicRouter from './booksPublic.js'
 
-const router = express.Router()
+// const router = express.Router()
 
-// Mount public book routes
-router.use('/', booksPublicRouter)
+// // Mount public book routes
+// router.use('/', booksPublicRouter)
 
-export default router
+// export default router
