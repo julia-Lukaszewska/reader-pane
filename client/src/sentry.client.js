@@ -1,6 +1,7 @@
+
 import * as Sentry from '@sentry/react';
-import { Replay } from '@sentry/replay';
 import { BrowserTracing } from '@sentry/tracing';
+import { Replay } from '@sentry/replay';
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -8,8 +9,7 @@ Sentry.init({
   release: 'reader-app@1.0.0',
   integrations: [
     new BrowserTracing({
-      // skąd chcesz propagować trace’ami
-      tracingOrigins: ['localhost', /^\https:\/\/api\.twojadomena\.pl/],
+      tracingOrigins: ['localhost', /^https:\/\/api\.twojadomena\.pl/],
     }),
     new Replay(),
   ],
