@@ -54,13 +54,13 @@ export default defineConfig(({ mode }) => {
      */
     resolve: {
       alias: {
-        '@/': resolve(__dirname, 'src/'),
-        '@book/': resolve(__dirname, 'src/modules/book'),
-        '@reader/': resolve(__dirname, 'src/modules/reader'),
-        '@upload/': resolve(__dirname, 'src/modules/uploadPDF'),
-        '@library/': resolve(__dirname, 'src/modules/library'),
-        '@user/': resolve(__dirname, 'src/modules/user'),
-        '@home/': resolve(__dirname, 'src/modules/home'),
+        '@': resolve(__dirname, 'src/'),
+        '@book': resolve(__dirname, 'src/modules/book'),
+        '@reader': resolve(__dirname, 'src/modules/reader'),
+        '@upload': resolve(__dirname, 'src/modules/uploadPDF'),
+        '@library': resolve(__dirname, 'src/modules/library'),
+        '@user': resolve(__dirname, 'src/modules/user'),
+        '@home': resolve(__dirname, 'src/modules/home'),
       },
     },
 

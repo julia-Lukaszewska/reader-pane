@@ -103,13 +103,13 @@ export default [
       'import/resolver': {
         alias: {
           map: [
-            ['@/', './src'],
-            ['@book/', './src/modules/book'],
-            ['@reader/', './src/modules/reader'],
-            ['@upload/', './src/modules/uploadPDF'],
-            ['@library/', './src/modules/library'],
-            ['@user/', './src/modules/user'],
-            ['@home/', './src/modules/home'],
+            ['@', './src'],
+            ['@book', './src/modules/book'],
+            ['@reader', './src/modules/reader'],
+            ['@upload', './src/modules/uploadPDF'],
+            ['@library', './src/modules/library'],
+            ['@user', './src/modules/user'],
+            ['@home', './src/modules/home'],
           ],
           extensions: ['.js', '.jsx', '.mjs', '.cjs', '.json'],
         },
