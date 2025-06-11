@@ -6,7 +6,7 @@
 import { useMemo } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { selectLibraryViewMode, selectSortMode } from '@/store/selectors/selectors'
+import { selectLibraryViewMode, selectSortMode } from '@/store/selectors'
 
 import sortBooks from '@book/utils/sortBooks'
 import AddBookTile from '@/modules/uploadPDF/AddBookTile'
