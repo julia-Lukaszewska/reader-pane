@@ -80,7 +80,7 @@ const EmptyRow = styled.tr`
  * @param {boolean} [props.hideAddTile] - Whether to hide the "Add Book" tile row
  * @returns {JSX.Element}
  */
-const LibraryTableLayout = ({ books, hideAddTile }) => (
+const LibraryTableLayout = ({ books = [], hideAddTile }) => (
   <TableWrapper>
     <Table>
       <thead>

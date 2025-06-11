@@ -38,7 +38,7 @@ const BooksGrid = styled.div`
  * @param {boolean} [props.hideAddTile=false] - Whether to hide the add-book tile
  * @returns {JSX.Element}
  */
-const LibraryGridLayout = ({ books, hideAddTile }) => {
+const LibraryGridLayout = ({ books = [], hideAddTile }) => {
   return (
     <BooksGrid>
       {!hideAddTile && <AddBookTile />}

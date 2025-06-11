@@ -3,68 +3,67 @@
  * @description Renders the sorted list of books in the chosen view mode (grid, list, table).
  */
 
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { selectLibraryViewMode, selectSortMode } from '@/store/selectors'
+import { useGetBooksQuery } from '@/store/api/booksPrivateApi/booksApiCollection'
+import {
+  selectLibraryViewMode,
+  selectSortMode,
+} from '@/store/selectors'
+import { selectAllBooks } from '@/store/selectors/booksSelectors'
 
 import sortBooks from '@book/utils/sortBooks'
-import AddBookTile from '@/modules/uploadPDF/AddBookTile'
-
 import {
   LibraryGridLayout,
-  LibraryListLayout,   
+  LibraryListLayout,
   LibraryTableLayout,
 } from '@library/components'
+import { LoadingSpinner } from '@/components'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
-
-//--- Message shown when library is empty or invalid
+// ----------------------------------------
+// Styled
+// ----------------------------------------
 const EmptyMessage = styled.p`
   padding: 2rem;
   text-align: center;
 `
 
-//-----------------------------------------------------------------------------
-// Component: LibraryBooksRenderer
-//-----------------------------------------------------------------------------
+// ----------------------------------------
+// Component
+// ----------------------------------------
 
 /**
- * Displays the list of books in the current library view mode (grid, list, table).
- *
- * @component
- * @param {Object} props
- * @param {Array} props.books - Array of book objects to render
- * @param {boolean} [props.hideAddTile=false] - Whether to hide the "Add Book" tile
- * @returns {JSX.Element}
+ * Displays the list of books in the current library view mode.
+ * Fetches books on its own – nie wymaga props.books.
  */
-const LibraryBooksRenderer = ({ books, hideAddTile = false }) => {
-  const viewMode = useSelector(selectLibraryViewMode)
-  const sortMode = useSelector(selectSortMode)
+export default function LibraryBooksRenderer({ hideAddTile = false }) {
+  // ⇢ 1. fetch (zwraca isLoading / isError)
+  const { isLoading, isError } = useGetBooksQuery()
 
-  //--- Return memoized sorted books
-  const sortedBooks = useMemo(() => {
-    return sortBooks(books, sortMode)
-  }, [books, sortMode])
+  // ⇢ 2. pobranie danych z cache RTK Query
+  const booksRaw  = useSelector(selectAllBooks)      // może być []
+  const viewMode  = useSelector(selectLibraryViewMode)
+  const sortMode  = useSelector(selectSortMode)
 
-  //--- Show message if no books and add tile is hidden
-  if (!sortedBooks?.length && hideAddTile) {
+  // ⇢ 3. sort + memo
+  const books = useMemo(() => sortBooks(booksRaw, sortMode), [booksRaw, sortMode])
+
+  // ⇢ 4. UI loading / error / empty
+  if (isLoading) return <LoadingSpinner />
+  if (isError)   return <EmptyMessage>Błąd ładowania książek.</EmptyMessage>
+  if (!books.length && hideAddTile)
     return <EmptyMessage>No books found.</EmptyMessage>
-  }
 
-  //--- Render according to selected view mode
+  // ⇢ 5. render właściwego layoutu
   switch (viewMode) {
     case 'grid':
-      return <LibraryGridLayout books={sortedBooks} hideAddTile={hideAddTile} />
+      return <LibraryGridLayout books={books} hideAddTile={hideAddTile} />
     case 'list':
-      return <LibraryListLayout books={sortedBooks} hideAddTile={hideAddTile} />
+      return <LibraryListLayout books={books} hideAddTile={hideAddTile} />
     case 'table':
-      return <LibraryTableLayout books={sortedBooks} hideAddTile={hideAddTile} />
+      return <LibraryTableLayout books={books} hideAddTile={hideAddTile} />
     default:
       return <EmptyMessage>Invalid view mode: {viewMode}</EmptyMessage>
   }
 }
-
-export default LibraryBooksRenderer
