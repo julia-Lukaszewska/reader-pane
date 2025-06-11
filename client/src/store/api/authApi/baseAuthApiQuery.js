@@ -14,7 +14,7 @@
  */
 
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { saveAuth, getAuth, clearAuth } from '../../utils/storageService'
+import { saveAuth, getAuth, clearAuth } from '@/utils/storageService'
 import { authApi } from './authApi'
 
 /**
