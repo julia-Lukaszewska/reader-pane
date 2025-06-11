@@ -2,7 +2,7 @@
  * server.js
  * Main entry point for Express backend.
  */
-
+import * as Sentry from '@sentry/node'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -39,6 +39,7 @@ console.log(`Loaded .env.server.${BRANCH}`)
 // ———————————————————————————————
 const app = express()
 app.set('trust proxy', 1)
+app.use(Sentry.Handlers.requestHandler())
 
 // ———————————————————————————————
 // 3. GLOBAL MIDDLEWARE
@@ -83,6 +84,7 @@ app.get('/health', (_req, res) => {
   const dbUp = mongoose.connection.readyState === 1
   res.status(dbUp ? 200 : 500).json({ status: dbUp ? 'ok' : 'MongoDB not ready' })
 })
+app.use(Sentry.Handlers.errorHandler())
 
 // ———————————————————————————————
 // 9. DATABASE CONNECTION & SERVER START
