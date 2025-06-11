@@ -41,6 +41,7 @@ const app = express()
 app.set('trust proxy', 1)
 app.use(Sentry.Handlers.requestHandler())
 
+app.use(Sentry.Handlers.tracingHandler())
 // ———————————————————————————————
 // 3. GLOBAL MIDDLEWARE
 // ———————————————————————————————
