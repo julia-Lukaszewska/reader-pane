@@ -50,7 +50,7 @@ export default function configurePassport() {
         {
           clientID: process.env.GGL_ID,
           clientSecret: process.env.GGL_SECRET,
-          callbackURL: '/auth/google/callback',
+          callbackURL: 'api/auth/google/callback',
         },
         async (_accessToken, _refreshToken, profile, done) => {
           try {

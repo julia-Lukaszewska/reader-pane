@@ -29,7 +29,7 @@ const router = express.Router()
  * @param {Object} user - Mongoose user document
  * @param {Object} res - Express response object
  */
-const issueTokens = (user, res) => {
+const issueTokens = async (user, res) => {
   const accessToken = jwt.sign(
     { id: user._id },
     process.env.JWT_ACCESS_KEY,
@@ -41,6 +41,12 @@ const issueTokens = (user, res) => {
     process.env.JWT_REFRESH_KEY,
     { expiresIn: '30d' }
   )
+ // Save refresh token with expiry on the user
+  user.refresh.push({
+    token: refreshToken,
+    exp: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+  })
+  await user.save()
 
   res.cookie('rt', refreshToken, {
     httpOnly: true,
@@ -70,7 +76,7 @@ router.post('/register', async (req, res) => {
 
     const user = await User.create({ email, password, name })
     console.log('[REGISTER] User created:', user._id)
-    return issueTokens(user, res)
+    return await issueTokens(user, res)
   } catch (err) {
     console.error('[REGISTER] Error:', err)
     return res.status(500).json({ error: 'Registration failed.' })
@@ -82,11 +88,11 @@ router.post('/register', async (req, res) => {
 // ROUTE – local login (email + password)
 // -----------------------------------------------------------------------------
 
-router.post('/login', 
+router.post('/login',
   passport.authenticate('local', { session: false, failWithError: true }),
-  (req, res) => {
+  async (req, res) => {
     console.log('[LOGIN] Successful login for:', req.user.email)
-    issueTokens(req.user, res)
+    await issueTokens(req.user, res)
   },
   (err, req, res, _next) => {
     console.warn('[LOGIN] Failed login for:', req.body.email)
@@ -115,21 +121,32 @@ router.get('/me', passport.authenticate('jwt', { session: false }), async (req, 
 // ROUTE – logout (clear refresh token cookie)
 // -----------------------------------------------------------------------------
 
-  router.post('/logout', (_req, res) => {
-    res.clearCookie('rt', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      path: '/',
-    })
-    return res.sendStatus(204)
+router.post('/logout', async (req, res) => {
+  const { rt } = req.cookies
+
+  if (rt) {
+    try {
+      const { id } = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
+      await User.updateOne({ _id: id }, { $pull: { refresh: { token: rt } } })
+    } catch (err) {
+      console.error('[LOGOUT] Failed to verify token:', err.message)
+    }
+  }
+
+  res.clearCookie('rt', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+  })
+  return res.sendStatus(204)
 })
 
 // -----------------------------------------------------------------------------
 // ROUTE – refresh access token using valid refresh token (from cookie)
 // -----------------------------------------------------------------------------
 
-router.post('/refresh', (req, res) => {
+router.post('/refresh', async (req, res) => {
   const { rt } = req.cookies
   console.log('[REFRESH] Cookie received:', !!rt)
 
@@ -138,6 +155,11 @@ router.post('/refresh', (req, res) => {
   try {
     const { id } = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
     console.log('[REFRESH] Token valid for user ID:', id)
+   const user = await User.findById(id)
+    const tokenEntry = user?.refresh.find(r => r.token === rt)
+    if (!tokenEntry || tokenEntry.exp < new Date()) {
+      return res.sendStatus(401)
+    }
 
     const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, { expiresIn: '15m' })
     return res.json({ access: accessToken })
@@ -164,8 +186,8 @@ router.get(
 router.get(
   '/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/login' }),
-  (req, res) => {
-    issueTokens(req.user, res)
+  async (req, res) => {
+   await issueTokens(req.user, res)
     return res.redirect('/')
   }
 )
