@@ -19,11 +19,11 @@ const WHITELIST = {
   staging: [
     'https://reader-pane-staging.vercel.app',
   ],
-production: [
-  'https://reader-pane.vercel.app',        // build
-  'https://reader-pane-main.vercel.app',   // main
-   /^https:\/\/reader-pane(-[\w-]+)?\.vercel\.app$/, 
-],
+  production: [
+    'https://reader-pane.vercel.app', // build
+    'https://reader-pane-main.vercel.app', // main
+    /^https:\/\/reader-pane(-[\w-]+)?\.vercel\.app$/,
+  ],
 
 };
 
@@ -37,29 +37,24 @@ export function getCorsOptions(env = process.env.NODE_ENV) {
   const allowed = WHITELIST[env] || [];
 
   return {
-  origin(origin, cb) {
-  console.log('[CORS] Request from:', origin)
-  if (!origin || allowed.some(rule =>
-     typeof rule === 'string' ? rule === origin : rule.test(origin)
-    )) {
-         console.log('[CORS] Allowed');
-         return cb(null, true);
-       }
-  console.warn('[CORS] Blocked origin:', origin)
-  cb(new Error('Not allowed by CORS'))
-
+    origin(origin, cb) {
+      console.log('[CORS] Request from:', origin);
+      if (
+        !origin ||
+        allowed.some((rule) =>
+          typeof rule === 'string' ? rule === origin : rule.test(origin)
+        )
+      ) {
+        console.log('[CORS] Allowed');
+        return cb(null, true);
+      }
+      console.warn('[CORS] Blocked origin:', origin);
+      cb(new Error('Not allowed by CORS'));
 
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'Range',
-    ],
-    exposedHeaders: [
-      'Accept-Ranges',
-      'Content-Range',
-    ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
+    exposedHeaders: ['Accept-Ranges', 'Content-Range'],
   };
 }
