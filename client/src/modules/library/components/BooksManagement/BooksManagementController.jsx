@@ -1,6 +1,6 @@
 /**
  * @file BooksManagementController.jsx
- * @description Main container for managing books in the library view – handles view modes, sorting, and bulk actions.
+ * @description Main container for managing books in the library view – handles view modes, sorting, bulk actions, and data fetching.
  */
 
 import React, { useEffect } from 'react'
@@ -33,10 +33,11 @@ import {
 
 //-----------------------------------------------------------------------------
 // Component: BooksManagementController
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- 
 
 /**
- * Controls the library interface: view switching, sorting, bulk selection and toolbar.
+ * Controls the library interface: fetches books via RTK Query, handles view switching,
+ * sorting, bulk selection, and renders the appropriate layout.
  *
  * @component
  * @returns {JSX.Element}
@@ -50,7 +51,11 @@ const BooksManagementController = () => {
   }, [dispatch])
 
   //--- Fetch books via RTK Query
-  const { isLoading } = useGetBooksQuery()
+  const {
+    data: books = [],
+    isLoading,
+    isError,
+  } = useGetBooksQuery()
 
   //--- Selectors
   const viewMode    = useSelector(selectLibraryViewMode)
@@ -68,16 +73,18 @@ const BooksManagementController = () => {
   let Content
   if (isLoading) {
     Content = <LoadingSpinner />
+  } else if (isError) {
+    Content = <p>Wystąpił błąd podczas ładowania książek.</p>
   } else {
     switch (viewMode) {
       case 'grid':
-        Content = <LibraryGridLayout sortMode={sortMode} />
+        Content = <LibraryGridLayout books={books} sortMode={sortMode} />
         break
       case 'list':
-        Content = <LibraryListLayout sortMode={sortMode} />
+        Content = <LibraryListLayout books={books} sortMode={sortMode} />
         break
       case 'table':
-        Content = <LibraryTableLayout sortMode={sortMode} />
+        Content = <LibraryTableLayout books={books} sortMode={sortMode} />
         break
       default:
         Content = null
