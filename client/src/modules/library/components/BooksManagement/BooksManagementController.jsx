@@ -3,9 +3,10 @@
  * @description Main container for managing books in the library view – handles view modes, sorting, and bulk actions.
  */
 
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useEffect } from 'react'
-   
+import { useGetBooksQuery } from '@/store/api/booksPrivateApi/booksApiCollection'
+
 import { LoadingSpinner } from '@/components'
 import {
   LibraryGridLayout,
@@ -48,12 +49,14 @@ const BooksManagementController = () => {
     dispatch(setManageMode(false))
   }, [dispatch])
 
+  //--- Fetch books via RTK Query
+  const { isLoading } = useGetBooksQuery()
+
   //--- Selectors
   const viewMode    = useSelector(selectLibraryViewMode)
   const sortMode    = useSelector(selectSortMode)
   const isManaging  = useSelector(selectIsManageMode)
   const selectedIds = useSelector(selectSelectedBookIds)
-  const loading     = useSelector(state => state.library.status === 'loading')
 
   //--- Actions
   const handleToggleManaging = () => dispatch(toggleManageMode())
@@ -63,7 +66,7 @@ const BooksManagementController = () => {
 
   //--- Determine content layout
   let Content
-  if (loading) {
+  if (isLoading) {
     Content = <LoadingSpinner />
   } else {
     switch (viewMode) {
