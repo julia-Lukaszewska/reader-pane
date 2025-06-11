@@ -7,7 +7,7 @@
 
 import 'dotenv/config'
 import mongoose from 'mongoose'
-import Book from '../models/Book.js'
+import Book from '../server/models/Book.js'
 
 //------------------------------------------------------------------
 // Connect to MongoDB

@@ -17,6 +17,7 @@
     "install:all": "npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {
+    "@eslint/js": "^9.28.0",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3"
   },

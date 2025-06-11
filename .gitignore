@@ -39,8 +39,9 @@ src/utils/index.js
 .eslintignore
 .prettierignore 
 .markdownlintignore
+.npmcheckrc
 # .gitignore 
-jsconfig.json
+# jsconfig.json
 #-----------------------------------------------------------------------------#
 # Editor and system files
 #-----------------------------------------------------------------------------#

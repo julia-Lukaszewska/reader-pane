@@ -4,7 +4,7 @@
  */
 
 import express from 'express'
-import { deleteFile }  from '../../config/gridfs'
+import { deleteFile } from '../../config/gridfs.js'
 
 const router = express.Router()
 

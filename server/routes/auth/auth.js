@@ -115,14 +115,14 @@ router.get('/me', passport.authenticate('jwt', { session: false }), async (req, 
 // ROUTE – logout (clear refresh token cookie)
 // -----------------------------------------------------------------------------
 
-router.post('/logout', (_req, res) => {
-  res.clearCookie('rt', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-    path: '/api/auth',
-  })
-  return res.sendStatus(204)
+  router.post('/logout', (_req, res) => {
+    res.clearCookie('rt', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      path: '/',
+    })
+    return res.sendStatus(204)
 })
 
 // -----------------------------------------------------------------------------
