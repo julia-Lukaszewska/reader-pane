@@ -9,8 +9,10 @@
  * - register
  * - get current user info (/auth/me)
  *
- * All requests use a custom baseQuery with JWT access token injection
- * and automatic token refresh handling.
+ * All requests use a custom baseQuery with:
+ *  1. JWT access token injection
+ *  2. HttpOnly refresh cookie
+ *  3. Automatic token refresh handling
  */
 
 import { createApi } from '@reduxjs/toolkit/query/react'
@@ -19,89 +21,88 @@ import { baseAuthApiQuery } from './baseAuthApiQuery'
 // -----------------------------------------------------------------------------
 // API: authApi
 // -----------------------------------------------------------------------------
-
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseAuthApiQuery,
   tagTypes: ['Auth'],
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     /**
+     * Login mutation
      * POST /auth/login
-     * Logs in the user using email and password.
-     * Returns access + refresh tokens.
+     * @param {{ email: string, password: string }} credentials
+     * @returns {{ access: string, user: object }}
      */
     login: builder.mutation({
-      query: (credentials) => ({
+      query: credentials => ({
         url: '/auth/login',
         method: 'POST',
-        body: credentials,
-        credentials: 'include',
+        body: credentials
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ['Auth']
     }),
 
     /**
+     * Logout mutation
      * POST /auth/logout
-     * Logs out the user and clears the refresh token cookie.
      */
     logout: builder.mutation({
       query: () => ({
         url: '/auth/logout',
-        method: 'POST',
-        credentials: 'include',
+        method: 'POST'
       }),
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ['Auth']
     }),
 
     /**
+     * Refresh mutation
      * POST /auth/refresh
-     * Requests a new access token using the refresh token (HttpOnly cookie).
+     * @returns {{ access: string, user: object }}
      */
     refresh: builder.mutation({
       query: () => ({
         url: '/auth/refresh',
-        method: 'POST',
-        credentials: 'include',
-      }),
-      // do not automatically invalidate Auth tag to avoid unnecessary refetches
+        method: 'POST'
+      })
+      // no invalidatesTags to avoid auto refetch
     }),
 
     /**
+     * Get current user
      * GET /auth/me
-     * Fetches the current logged-in user (based on access token).
+     * @returns {object}
      */
     getMe: builder.query({
-      query: () => ({ url: '/auth/me', credentials: 'include' }),
-      keepUnusedDataFor: 0,
+      query: () => ({ url: '/auth/me' }),
       providesTags: ['Auth'],
+      keepUnusedDataFor: 0
     }),
 
     /**
+     * Register mutation
      * POST /auth/register
-     * Creates a new user account and returns access + refresh tokens.
+     * @param {{ email: string, password: string, name: string }} userData
+     * @returns {{ access: string, user: object }}
      */
     register: builder.mutation({
-      query: (userData) => ({
+      query: userData => ({
         url: '/auth/register',
         method: 'POST',
-        body: userData,
-        credentials: 'include',
+        body: userData
       }),
-      invalidatesTags: ['Auth'],
-    }),
-  }),
+      invalidatesTags: ['Auth']
+    })
+  })
 })
 
 // -----------------------------------------------------------------------------
-// Exported Hooks & API object
+// Exported hooks
 // -----------------------------------------------------------------------------
-
 export const {
   useLoginMutation,
   useLogoutMutation,
   useRefreshMutation,
   useGetMeQuery,
-  useRegisterMutation,
+  useRegisterMutation
 } = authApi
 
 export default authApi

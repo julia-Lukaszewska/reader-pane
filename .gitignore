@@ -29,8 +29,7 @@ safe-commit/
 #-----------------------------------------------------------------------------#
 # Source files to ignore (only if not committed on purpose)
 #-----------------------------------------------------------------------------#
-src/utils/storage.js
-src/utils/index.js
+
 
 #-----------------------------------------------------------------------------#
 # Tool cache files (keep config files in repo)
