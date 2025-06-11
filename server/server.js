@@ -20,7 +20,7 @@ import { gridFsBucketReady } from './config/gridfs.js'
 
 import {
   authRouter,
-  booksPublicRouter,
+  // booksPublicRouter,
   booksStorageRouter,
   booksPrivateRouter
 } from './routes/index.js'
@@ -63,7 +63,7 @@ app.use(passport.initialize())
 // 5. PUBLIC ROUTES
 // ———————————————————————————————
 app.use('/api/auth', authRouter)
-app.use('/api/books/public', booksPublicRouter)
+// app.use('/api/books/public', booksPublicRouter)
 
 // ———————————————————————————————
 // 6. UPLOAD/STORAGE ROUTES
