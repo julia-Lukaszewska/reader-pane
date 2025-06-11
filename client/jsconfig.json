@@ -3,12 +3,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@book/*": ["src/modules/book/*"],
-      "@reader/*": ["src/modules/reader/*"],
-      "@upload/*": ["src/modules/uploadPDF/*"],
-      "@library/*": ["src/modules/library/*"],
-      "@user/*": ["src/modules/user/*"],
-      "@home/*": ["src/modules/home/*"],
+      "@/book/*": ["src/modules/book/*"],
+      "@/reader/*": ["src/modules/reader/*"],
+      "@/upload/*": ["src/modules/uploadPDF/*"],
+      "@/library/*": ["src/modules/library/*"],
+      "@/user/*": ["src/modules/user/*"],
+      "@/home/*": ["src/modules/home/*"],
     }
   },
   "exclude": ["node_modules", "dist"]
