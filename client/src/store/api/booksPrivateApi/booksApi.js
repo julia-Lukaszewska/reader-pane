@@ -12,7 +12,7 @@
 
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { baseBookApiQuery } from './baseBookApiQuery'
-import { bookEndpoints } from './bookEndopoints'
+import { bookEndpoints } from './bookEndpoints'
 
 export const booksApi = createApi({
   reducerPath: 'booksApi',

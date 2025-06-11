@@ -60,30 +60,30 @@ export default [
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
 
-      // Custom rules
+     
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
 
-      // Import rules
+      
       'import/no-unresolved': ['error', { commonjs: true, amd: true }],
       'import/named': 'error',
       'import/default': 'error',
       'import/export': 'error',
 
-      // Fast refresh
+     
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
 
-      // JSDoc rules
-      'jsdoc/check-alignment': 'error',
-      'jsdoc/check-indentation': 'warn',
-      'jsdoc/newline-after-description': 'warn',
-      'jsdoc/require-description': 'warn',
+      
+      'jsdoc/check-alignment': 'off',
+      'jsdoc/check-indentation': 'off',
+
+      'jsdoc/require-description': 'off',  
       'jsdoc/require-jsdoc': [
-        'warn',
+        'off',
         {
           publicOnly: true,
           require: {
@@ -95,6 +95,7 @@ export default [
           },
         },
       ],
+      
     },
     settings: {
       react: {

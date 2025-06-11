@@ -1,5 +1,3 @@
-// src/components/MenuTile.jsx
-
 /**
  * @file MenuTile.jsx
  * @description Main animated tile with sub-tiles. Handles click activation,
@@ -12,9 +10,9 @@ import React from 'react'
 import { IoCloseOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 import styled, { keyframes, css } from 'styled-components'
-
-import  useMenuItem from '../hooks/useMenuItem'
-import { getLastBookId } from '@/utils'
+import { useSelector } from 'react-redux'
+import { selectLastOpenedBookId } from '@/store/selectors/booksSelectors'
+import useMenuItem from '../hooks/useMenuItem'
 import MenuSubTile from './MenuSubTile'
 
 //-----------------------------------------------------
@@ -153,38 +151,33 @@ const SubTilesContainer = styled.div`
 `
 
 //-----------------------------------------------------
-// SubTile Presets (modified per request)
+// SubTile Presets
 //-----------------------------------------------------
 
-const presets = () => {
-  const last = getLastBookId()
-  return {
-    library: [
-      { label: 'View All Books', route: '/library', area: 'LT' },
-      { label: 'Your Favorites', route: '/library/favorites', area: 'RT' },
-      { label: 'Import Books', route: '/library/import', area: 'LB' },
-      { label: 'Archive', route: '/library/archive', area: 'RB' },
-    ],
-    reader: [
-      {
-        label: 'Continue Reading',
-        route: last ? `/read/${last}` : '/read',
-        area: 'LT',
-      },
-      { label: 'Choose a Book', route: '/library', area: 'RT' },
-      // Bookmarked Pages and Reading History are temporarily disabled
-      { label: 'Bookmarked Pages', route: null, area: 'LB' },
-      { label: 'Reading History', route: null, area: 'RB' },
-    ],
-    settings: [
-      // All settings sub-tiles point simply to /settings for now
-      { label: 'Theme Settings', route: '/settings', area: 'LT' },
-      { label: 'Language Settings', route: '/settings', area: 'RT' },
-      { label: 'Progress Settings', route: '/settings', area: 'LB' },
-      { label: 'All Settings', route: '/settings', area: 'RB' },
-    ],
-  }
-}
+const getPresets = (last) => ({
+  library: [
+    { label: 'View All Books',   route: '/library',            area: 'LT' },
+    { label: 'Your Favorites',    route: '/library/favorites', area: 'RT' },
+    { label: 'Import Books',      route: '/library/import',    area: 'LB' },
+    { label: 'Archive',           route: '/library/archive',   area: 'RB' },
+  ],
+  reader: [
+    {
+      label: 'Continue Reading',
+      route: last ? `/read/${last}` : '/read',
+      area: 'LT',
+    },
+    { label: 'Choose a Book',     route: '/library',          area: 'RT' },
+    { label: 'Bookmarked Pages',  route: null,                area: 'LB' },
+    { label: 'Reading History',   route: null,                area: 'RB' },
+  ],
+  settings: [
+    { label: 'Theme Settings',    route: '/settings',        area: 'LT' },
+    { label: 'Language Settings', route: '/settings',        area: 'RT' },
+    { label: 'Progress Settings', route: '/settings',        area: 'LB' },
+    { label: 'All Settings',      route: '/settings',        area: 'RB' },
+  ],
+})
 
 //-----------------------------------------------------
 // Component: MenuTile
@@ -195,15 +188,16 @@ const presets = () => {
  * @description Main animated tile component with optional sub-tiles.
  *
  * @param {Object} props
- * @param {string} props.name           - Tile name (e.g. 'library', 'reader', 'settings')
- * @param {string} props.area           - Grid area identifier (LT, RT, LB, RB)
- * @param {string} props.label          - Text label when tile is inactive
+ * @param {string} props.name             - Tile name (e.g. 'library', 'reader', 'settings')
+ * @param {string} props.area             - Grid area identifier (LT, RT, LB, RB)
+ * @param {string} props.label            - Text label when tile is inactive
  * @param {boolean} props.isAnyTileActive - Global active tile flag
  * @returns {JSX.Element}
  */
 const MenuTile = ({ name, area, label, isAnyTileActive }) => {
+  const lastBookId = useSelector(selectLastOpenedBookId)
+  const subTiles = getPresets(lastBookId)[name] || []
   const { $isActive, handleClick, handleClose } = useMenuItem(name)
-  const subTiles = presets()[name] || []
   const navigate = useNavigate()
 
   return (
@@ -215,7 +209,9 @@ const MenuTile = ({ name, area, label, isAnyTileActive }) => {
         if (!$isActive) handleClick()
       }}
     >
-      {!$isActive && !isAnyTileActive && <StyledLabel>{label}</StyledLabel>}
+      {!$isActive && !isAnyTileActive && (
+        <StyledLabel>{label}</StyledLabel>
+      )}
 
       {$isActive && (
         <CloseButton
@@ -238,9 +234,7 @@ const MenuTile = ({ name, area, label, isAnyTileActive }) => {
             $active={$isActive}
             $delay={`${(index + 1) * 0.1}s`}
             onClick={() => {
-              if (route) {
-                navigate(route)
-              }
+              if (route) navigate(route)
             }}
           />
         ))}

@@ -1,19 +1,11 @@
-/**
- * @file ConfirmModal.jsx
- * @description
- * Modal window used for confirming archive, restore, or permanent delete actions on books.
- * Supports three modes: archive from library, permanent delete, or restore to library.
- */
-
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
+
 import {
-  useUpdateBookMutation,
+  useUpdateBookFlagsMutation,
   useDeleteBookMutation,
-  booksApi,
+  
 } from '@/store/api/booksPrivateApi'
-import { saveBookToArchiveStorage } from '@/utils'
 import { Button } from '@/components'
 
 // -----------------------------------------------------------------------------
@@ -81,18 +73,10 @@ const ConfirmModal = ({
   onTrash,
   onConfirm,
 }) => {
-  const [updateBook] = useUpdateBookMutation()
+  const [updateBookFlags] = useUpdateBookFlagsMutation()
   const [deleteBook] = useDeleteBookMutation()
 
-  const book = useSelector((state) =>
-    booksApi.endpoints.getBookById.select(bookId)(state)?.data
-  )
 
-  useEffect(() => {
-    if (book?.flags?.isArchived) {
-      saveBookToArchiveStorage(book)
-    }
-  }, [book])
 
   const isLibrary = variant === 'library'
   const isPermanent = variant === 'permanent-delete'
@@ -108,10 +92,7 @@ const ConfirmModal = ({
     if (onTrash) {
       onTrash()
     } else {
-      await updateBook({
-        id: bookId,
-        changes: { flags: { isArchived: true } },
-      }).unwrap()
+      await updateBookFlags({ id: bookId, flags: { isArchived: true } }).unwrap()
     }
     onCancel()
   }
@@ -120,10 +101,7 @@ const ConfirmModal = ({
     if (onConfirm) {
       onConfirm()
     } else {
-      await updateBook({
-        id: bookId,
-        changes: { flags: { isArchived: false } },
-      }).unwrap()
+      await updateBookFlags({ id: bookId, flags: { isArchived: false } }).unwrap()
     }
     onCancel()
   }
