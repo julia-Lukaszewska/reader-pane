@@ -51,11 +51,13 @@ const BooksManagementController = () => {
   }, [dispatch])
 
   //--- Fetch books via RTK Query
-  const {
-    data: books = [],
-    isLoading,
-    isError,
-  } = useGetBooksQuery()
+ const {
+   data: booksRaw,
+   isLoading,
+   isError,
+ } = useGetBooksQuery()
+
+ const books = Array.isArray(booksRaw) ? booksRaw : []
 
   //--- Selectors
   const viewMode    = useSelector(selectLibraryViewMode)
