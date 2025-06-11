@@ -10,27 +10,30 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { booksApi } from '@/store/api/booksPrivateApi/booksApi'
 import { useGetMeQuery } from '@/store/api/authApi/authApi'
-import {  setAuthChecked } from '@/store/slices/authSlice'
+import { setAuthChecked } from '@/store/slices/authSlice'
 import { selectAuthChecked, selectAccessToken } from '@/store/selectors/authSelectors'
 
 export default function useBooksPreloadAfterLogin() {
   const dispatch = useDispatch()
   const authChecked = useSelector(selectAuthChecked)
   const accessToken = useSelector(selectAccessToken)
-  const { data: user } = useGetMeQuery(undefined, { skip: !accessToken })
+
+
+  const { data } = useGetMeQuery(undefined, { skip: !accessToken })
+  const userId = data?.user?._id
 
   useEffect(() => {
-    if (accessToken && user?._id && !authChecked) {
+    if (accessToken && userId && !authChecked) {
       const result = dispatch(
         booksApi.endpoints.getBooks.initiate(undefined, { forceRefetch: true })
       )
-      result
-        .unwrap()
-        .then(() => dispatch(setAuthChecked(true)))
-        .catch(() => dispatch(setAuthChecked(true)))
+      
+      result.unwrap().finally(() => {
+        dispatch(setAuthChecked(true))
+      })
       return () => {
         result.unsubscribe?.()
       }
     }
-  }, [accessToken, user?._id, authChecked, dispatch])
+  }, [accessToken, userId, authChecked, dispatch])
 }
