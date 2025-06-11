@@ -5,7 +5,7 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import { Outlet } from 'react-router-dom'
+import { useGetBooksQuery } from '@/store/api/booksPrivateApi/booksApiCollection'
 import { useSelector } from 'react-redux'
 import  {selectIsLoggedIn} from '@/store/selectors/authSelectors'
 import {
@@ -17,6 +17,8 @@ import {
 import EmptyLibraryGuestMessage from '@/views/library/EmptyLibraryGuestMessage'
 import { LibraryToolbar } from '@library/Layout'
 import { BooksManagementToolbar } from '@library/components/BooksManagement'
+import {BooksManagementController}from '@library/components'
+import { LoadingSpinner }             from '@/components'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -40,16 +42,27 @@ export default function LibraryLayout() {
   const isLoggedIn = useSelector(selectIsLoggedIn)
   const isManageMode = useSelector(selectIsManageMode)
   const selectedIds = useSelector(selectSelectedBookIds)
-
+  const {
+    data: books = [],
+    isLoading,
+    isError,
+  } = useGetBooksQuery()
   if (!isLoggedIn) return <EmptyLibraryGuestMessage />
 
   return (
-    <Container>
+     <Container>
       <LibraryToolbar />
-      <Outlet />
 
+      {isLoading && <LoadingSpinner />}
+
+      {isError && <p>loading error.</p>}
+
+      {!isLoading && !isError && (
+       
+        <BooksManagementController books={books} />
+      )}
       {isManageMode && selectedIds.length > 0 && (
-        <BooksManagementToolbar />
+        <BooksManagementToolbar selectedBooks={selectedIds} />
       )}
     </Container>
   )
