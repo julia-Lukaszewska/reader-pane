@@ -1,20 +1,17 @@
 /**
  * @file storageService.js
- * @description Provides a unified interface for saving, retrieving, and clearing
- * authentication data using either sessionStorage or localStorage.
+ * @description
+ * Provides a unified interface for saving, retrieving, and clearing
+ * authentication data using localStorage.
  */
 
-/** Toggle between sessionStorage and localStorage */
-const USE_SESSION = true
-
-/** Active storage mechanism */
-const storage = USE_SESSION ? sessionStorage : localStorage
+const storage = localStorage
 
 /**
- * Saves authentication data (access and user) to storage.
+ * Saves authentication data (access and user) to localStorage.
  *
- * @param {string} access - Authentication access.
- * @param {Object} user - User object to store (will be stringified).
+ * @param {string} access - JWT access token.
+ * @param {Object} user - User object to store.
  */
 export const saveAuth = (access, user) => {
   storage.setItem('access', access)
@@ -22,7 +19,7 @@ export const saveAuth = (access, user) => {
 }
 
 /**
- * Clears authentication data from storage.
+ * Clears authentication data from localStorage.
  */
 export const clearAuth = () => {
   storage.removeItem('access')
@@ -30,13 +27,14 @@ export const clearAuth = () => {
 }
 
 /**
- * Retrieves authentication data from storage.
+ * Retrieves authentication data from localStorage.
  *
  * @returns {{ access: string, user: Object } | null}
- *          Returns the access and parsed user if present, otherwise null.
  */
 export const getAuth = () => {
   const access = storage.getItem('access')
-  const user = storage.getItem('user')
-  return access && user ? { access, user: JSON.parse(user) } : null
+  const userJson = storage.getItem('user')
+  return access && userJson
+    ? { access, user: JSON.parse(userJson) }
+    : null
 }
