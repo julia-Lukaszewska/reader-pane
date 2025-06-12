@@ -42,7 +42,7 @@ import {
  * @component
  * @returns {JSX.Element}
  */
-const BooksManagementController = () => {
+const BooksManagementController = (props) => {
   const dispatch = useDispatch()
 
   //--- Reset management mode when entering library
@@ -50,15 +50,10 @@ const BooksManagementController = () => {
     dispatch(setManageMode(false))
   }, [dispatch])
 
-  //--- Fetch books via RTK Query
- const {
-   data: booksRaw,
-   isLoading,
-   isError,
- } = useGetBooksQuery()
-
- const books = Array.isArray(booksRaw) ? booksRaw : []
-
+ //--- Book data is provided by the layout
+  const books    = Array.isArray(props.books) ? props.books : []
+  const isLoading = props.isLoading
+  const isError   = props.isError
   //--- Selectors
   const viewMode    = useSelector(selectLibraryViewMode)
   const sortMode    = useSelector(selectSortMode)

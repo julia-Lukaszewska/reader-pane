@@ -101,7 +101,7 @@ const ArchiveView = () => {
     <Container>
       <LibraryBooksRenderer
         books={archivedBooks}
-        viewMode={viewMode}
+       
         onRestore={handleRestore}
         onDelete={book => setModalBook(book)}
         hideAddTile

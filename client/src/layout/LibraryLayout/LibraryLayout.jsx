@@ -15,10 +15,9 @@ import {
 } from '@/store/selectors'
 
 import EmptyLibraryGuestMessage from '@/views/library/EmptyLibraryGuestMessage'
-import { LibraryToolbar } from '@library/Layout'
+
 import { BooksManagementToolbar } from '@library/components/BooksManagement'
-import {BooksManagementController}from '@library/components'
-import { LoadingSpinner }             from '@/components'
+import { BooksManagementController } from '@library/components'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -51,16 +50,12 @@ export default function LibraryLayout() {
 
   return (
      <Container>
-      <LibraryToolbar />
-
-      {isLoading && <LoadingSpinner />}
-
-      {isError && <p>loading error.</p>}
-
-      {!isLoading && !isError && (
-       
-        <BooksManagementController books={books} />
-      )}
+      
+   <BooksManagementController
+        books={books}
+        isLoading={isLoading}
+        isError={isError}
+      />
       {isManageMode && selectedIds.length > 0 && (
         <BooksManagementToolbar selectedBooks={selectedIds} />
       )}

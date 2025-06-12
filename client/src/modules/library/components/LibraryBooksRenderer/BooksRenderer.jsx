@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux'
 import { selectLibraryViewMode, selectSortMode } from '@/store/selectors'
 
 import sortBooks from '@book/utils/sortBooks'
-import AddBookTile from '@/modules/uploadPDF/AddBookTile'
 
 import {
   LibraryGridLayout,
@@ -40,8 +39,15 @@ const EmptyMessage = styled.p`
  * @param {boolean} [props.hideAddTile=false] - Whether to hide the "Add Book" tile
  * @returns {JSX.Element}
  */
-const LibraryBooksRenderer = ({ books, hideAddTile = false }) => {
-  const viewMode = useSelector(selectLibraryViewMode)
+const LibraryBooksRenderer = ({
+  books,
+  hideAddTile = false,
+  onRestore,
+  onDelete,
+  viewMode: viewModeProp,
+}) => {
+  const stateViewMode = useSelector(selectLibraryViewMode)
+  const viewMode = viewModeProp ?? stateViewMode
   const sortMode = useSelector(selectSortMode)
 
   //--- Return memoized sorted books
@@ -57,11 +63,35 @@ const LibraryBooksRenderer = ({ books, hideAddTile = false }) => {
   //--- Render according to selected view mode
   switch (viewMode) {
     case 'grid':
-      return <LibraryGridLayout books={sortedBooks} hideAddTile={hideAddTile} />
+      return (
+        <LibraryGridLayout
+          books={sortedBooks}
+          hideAddTile={hideAddTile}
+          onRestore={onRestore}
+          onDelete={onDelete}
+          viewMode={viewMode}
+        />
+      )
     case 'list':
-      return <LibraryListLayout books={sortedBooks} hideAddTile={hideAddTile} />
+      return (
+        <LibraryListLayout
+          books={sortedBooks}
+          hideAddTile={hideAddTile}
+          onRestore={onRestore}
+          onDelete={onDelete}
+          viewMode={viewMode}
+        />
+      )
     case 'table':
-      return <LibraryTableLayout books={sortedBooks} hideAddTile={hideAddTile} />
+      return (
+        <LibraryTableLayout
+          books={sortedBooks}
+          hideAddTile={hideAddTile}
+          onRestore={onRestore}
+          onDelete={onDelete}
+          viewMode={viewMode}
+        />
+      )
     default:
       return <EmptyMessage>Invalid view mode: {viewMode}</EmptyMessage>
   }

@@ -40,11 +40,18 @@ const ListWrapper = styled.div`
  * @param {Function} [props.onDelete] - Callback when deleting a book (optional)
  * @returns {JSX.Element}
  */
-const LibraryListLayout = ({ books = [],  onRestore, onDelete }) => {
+const LibraryListLayout = ({
+  books = [],
+  hideAddTile,
+  onRestore,
+  onDelete,
+  
+}) => {
   return (
     <>
       <ListWrapper>
-        {books.map((book) =>
+           {!hideAddTile && <AddBookTile />}
+        {books.map(book =>
           book ? (
             <BookCard
               key={book._id}

@@ -63,7 +63,7 @@ const MyLibraryView = () => {
 
   return (
     <Container>
-      <LibraryBooksRenderer books={nonArchived} viewMode={viewMode} />
+      <LibraryBooksRenderer books={nonArchived}  />
 
       {isOpen && previewBook && (
         <BookCardPreviewModal

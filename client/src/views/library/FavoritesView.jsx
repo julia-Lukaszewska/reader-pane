@@ -55,11 +55,7 @@ const FavoritesView = () => {
 
   return (
     <Container>
-      <LibraryBooksRenderer
-        books={favoriteBooks}
-        viewMode={viewMode}
-        hideAddTile
-      />
+     <LibraryBooksRenderer books={favoriteBooks} hideAddTile />
 
       {isOpen && previewBook && (
         <BookCardPreviewModal
