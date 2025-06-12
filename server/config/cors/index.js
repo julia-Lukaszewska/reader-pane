@@ -5,7 +5,7 @@
  *   - staging     → staging frontend on Vercel
  *   - production  → build & main frontends on Vercel
  *
- * Usage:
+ * Usage    :
  *   import cors from 'cors';
  *   import { getCorsOptions } from './config/cors/index.js';
  *   app.use(cors(getCorsOptions()));

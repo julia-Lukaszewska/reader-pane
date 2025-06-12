@@ -31,29 +31,45 @@ import {
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const BRANCH = process.env.BRANCH || 'dev'
-dotenv.config({ path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`) })
+dotenv.config({
+  path: path.join(__dirname, '..', 'env', `.env.server.${BRANCH}`)
+})
 console.log(`Loaded .env.server.${BRANCH}`)
+
+// Initialize Sentry for error tracking & performance
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: BRANCH,
+  release: `${BRANCH}@${process.env.npm_package_version}`,
+  tracesSampleRate: 1.0,
+  integrations: [
+    // automatyczna integracja Express
+    new Sentry.Integrations.Express({ app: undefined })
+  ]
+})
 
 // ———————————————————————————————
 // 2. EXPRESS APP SETUP
 // ———————————————————————————————
 const app = express()
 app.set('trust proxy', 1)
-app.use(Sentry.Handlers.requestHandler())
 
-app.use(Sentry.Handlers.tracingHandler())
 // ———————————————————————————————
 // 3. GLOBAL MIDDLEWARE
 // ———————————————————————————————
-app.use(helmet({ crossOriginResourcePolicy: false }))      // security headers
-app.use(morgan('dev'))                                     // request logging
-app.use(express.json({ limit: '50mb' }))                   // body parser JSON
-app.use(express.urlencoded({ extended: true, limit: '50mb' })) // body parser URL-encoded
-app.use(cookieParser())                                    // cookies
-app.use(cors(getCorsOptions(                               // CORS
-  BRANCH === 'main' ? 'production' :
-  BRANCH === 'staging' ? 'staging' : 'development'
-)))
+app.use(helmet({ crossOriginResourcePolicy: false }))
+app.use(morgan('dev'))
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+app.use(cookieParser())
+app.use(
+  cors(
+    getCorsOptions(
+      BRANCH === 'main' ? 'production' :
+      BRANCH === 'staging' ? 'staging' : 'development'
+    )
+  )
+)
 
 // ———————————————————————————————
 // 4. PASSPORT INITIALIZATION
@@ -85,10 +101,14 @@ app.get('/health', (_req, res) => {
   const dbUp = mongoose.connection.readyState === 1
   res.status(dbUp ? 200 : 500).json({ status: dbUp ? 'ok' : 'MongoDB not ready' })
 })
-app.use(Sentry.Handlers.errorHandler())
 
 // ———————————————————————————————
-// 9. DATABASE CONNECTION & SERVER START
+// 9. SENTRY ERROR HANDLER (po wszystkich trasach)
+// ———————————————————————————————
+Sentry.setupExpressErrorHandler(app)
+
+// ———————————————————————————————
+// 10. DATABASE CONNECTION & SERVER START
 // ———————————————————————————————
 const PORT = process.env.PORT || 5000
 mongoose.connect(process.env.MONGO_URI)
@@ -99,7 +119,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('Database connection error:', err))
 
 // ———————————————————————————————
-// 10. GLOBAL ERROR HANDLER (LAST)
+// 11. GLOBAL ERROR HANDLER (LAST)
 // ———————————————————————————————
 app.use((err, _req, res, _next) => {
   console.error('Global error handler:', err.stack)
