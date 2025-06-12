@@ -20,7 +20,7 @@ export default function useBooksPreloadAfterLogin() {
 
 
   const { data } = useGetMeQuery(undefined, { skip: !accessToken })
-  const userId = data?.user?._id
+  const userId = data?._id || data?.user?._id || data?.data?._id
 
   useEffect(() => {
     if (accessToken && userId && !authChecked) {

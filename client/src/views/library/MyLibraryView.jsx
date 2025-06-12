@@ -14,7 +14,7 @@ import {
   selectIsPreviewOpen,
   selectPreviewBookId,
 } from '@/store/selectors'
-
+import { useGetBooksQuery } from '@/store/api/booksPrivateApi/booksApiCollection'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner } from '@/components'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
@@ -37,6 +37,7 @@ const Container = styled.div`
 //-----------------------------------------------------------------------------
 
 const MyLibraryView = () => {
+  useGetBooksQuery()
   const dispatch = useDispatch()
   const viewMode = useSelector(selectLibraryViewMode)
   const isOpen = useSelector(selectIsPreviewOpen)

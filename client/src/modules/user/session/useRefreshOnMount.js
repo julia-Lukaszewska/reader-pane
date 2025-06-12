@@ -22,9 +22,9 @@ export default function useRefreshOnMount() {
     if (!accessToken) {
       refresh()
         .unwrap()
-        .then(({ access }) => {
-          dispatch(setCredentials({ access }))
-        })
+       .then(({ access, user }) => {
+  dispatch(setCredentials({ access, user }))
+})
         .catch(() => {
           // no action on failure
         })

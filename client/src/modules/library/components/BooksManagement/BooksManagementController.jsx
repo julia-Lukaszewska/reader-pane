@@ -1,7 +1,3 @@
-/**
- * @file BooksManagementController.jsx
- * @description Main container for managing books in the library view – handles view modes, sorting, bulk actions, and data fetching.
- */
 
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
@@ -33,16 +29,15 @@ import {
 
 //-----------------------------------------------------------------------------
 // Component: BooksManagementController
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 
 /**
- * Controls the library interface: fetches books via RTK Query, handles view switching,
- * sorting, bulk selection, and renders the appropriate layout.
+ * Controls the library interface: view switching, sorting, bulk selection and toolbar.
  *
  * @component
  * @returns {JSX.Element}
  */
-const BooksManagementController = (props) => {
+const BooksManagementController = () => {
   const dispatch = useDispatch()
 
   //--- Reset management mode when entering library
@@ -50,10 +45,9 @@ const BooksManagementController = (props) => {
     dispatch(setManageMode(false))
   }, [dispatch])
 
- //--- Book data is provided by the layout
-  const books    = Array.isArray(props.books) ? props.books : []
-  const isLoading = props.isLoading
-  const isError   = props.isError
+  //--- Fetch books via RTK Query
+  const { isLoading } = useGetBooksQuery()
+
   //--- Selectors
   const viewMode    = useSelector(selectLibraryViewMode)
   const sortMode    = useSelector(selectSortMode)
@@ -70,18 +64,16 @@ const BooksManagementController = (props) => {
   let Content
   if (isLoading) {
     Content = <LoadingSpinner />
-  } else if (isError) {
-    Content = <p>Wystąpił błąd podczas ładowania książek.</p>
   } else {
     switch (viewMode) {
       case 'grid':
-        Content = <LibraryGridLayout books={books} sortMode={sortMode} />
+        Content = <LibraryGridLayout sortMode={sortMode} />
         break
       case 'list':
-        Content = <LibraryListLayout books={books} sortMode={sortMode} />
+        Content = <LibraryListLayout sortMode={sortMode} />
         break
       case 'table':
-        Content = <LibraryTableLayout books={books} sortMode={sortMode} />
+        Content = <LibraryTableLayout sortMode={sortMode} />
         break
       default:
         Content = null

@@ -162,7 +162,8 @@ router.post('/refresh', async (req, res) => {
     }
 
     const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, { expiresIn: '15m' })
-    return res.json({ access: accessToken })
+    const userData = await User.findById(id).select('-password')
+   return res.json({ access: accessToken, user: userData }) 
   } catch (err) {
     console.error('[REFRESH] Invalid refresh token:', err.message)
     return res.sendStatus(401)

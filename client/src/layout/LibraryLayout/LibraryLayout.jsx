@@ -1,11 +1,8 @@
-/**
- * @file LibraryLayout.jsx
- * @description Pure layout for the library section. Renders toolbar, outlet and optional management toolbar.
- */
+
 
 import React from 'react'
 import styled from 'styled-components'
-import { useGetBooksQuery } from '@/store/api/booksPrivateApi/booksApiCollection'
+import { Outlet } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import  {selectIsLoggedIn} from '@/store/selectors/authSelectors'
 import {
@@ -15,9 +12,8 @@ import {
 } from '@/store/selectors'
 
 import EmptyLibraryGuestMessage from '@/views/library/EmptyLibraryGuestMessage'
-
+import { LibraryToolbar } from '@library/Layout'
 import { BooksManagementToolbar } from '@library/components/BooksManagement'
-import { BooksManagementController } from '@library/components'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -41,23 +37,16 @@ export default function LibraryLayout() {
   const isLoggedIn = useSelector(selectIsLoggedIn)
   const isManageMode = useSelector(selectIsManageMode)
   const selectedIds = useSelector(selectSelectedBookIds)
-  const {
-    data: books = [],
-    isLoading,
-    isError,
-  } = useGetBooksQuery()
+
   if (!isLoggedIn) return <EmptyLibraryGuestMessage />
 
   return (
-     <Container>
-      
-   <BooksManagementController
-        books={books}
-        isLoading={isLoading}
-        isError={isError}
-      />
+    <Container>
+      <LibraryToolbar />
+      <Outlet />
+
       {isManageMode && selectedIds.length > 0 && (
-        <BooksManagementToolbar selectedBooks={selectedIds} />
+        <BooksManagementToolbar />
       )}
     </Container>
   )
