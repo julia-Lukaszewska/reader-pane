@@ -4,16 +4,16 @@
 // Sentry (import first, before any app code)
 //------------------------------------------------------------------------------
 import * as Sentry from '@sentry/react'
-import { BrowserTracing } from '@sentry/browser'
-import { Replay } from '@sentry/react'
+
+
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.BRANCH, 
   release: import.meta.env.VITE_COMMIT_SHA, // Git commit SHA (optional)
   integrations: [
-    new BrowserTracing(),
-    new Replay(),
+
+
   ],
   tracesSampleRate: 1.0,                   // Capture 100% of performance traces
   replaysSessionSampleRate: 0.1,           // Record 10% of user sessions
