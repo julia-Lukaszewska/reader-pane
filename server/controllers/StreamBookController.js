@@ -42,7 +42,10 @@ export const StreamBookController = async (req, res) => {
         res.setHeader('Content-Range', `bytes */${fileSize}`)
         return res.status(416).send('Requested Range Not Satisfiable')
       }
-
+  if (typeof end === 'number' && end < start) {
+        res.setHeader('Content-Range', `bytes */${fileSize}`)
+        return res.status(416).send('Requested Range Not Satisfiable')
+      }
       const chunkEnd = typeof end === 'number' ? end : fileSize - 1
       const chunkSize = chunkEnd - start + 1
 
