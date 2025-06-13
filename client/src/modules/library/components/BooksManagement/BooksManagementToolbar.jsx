@@ -10,7 +10,7 @@ import { clearSelected, setManageMode } from '@/store/slices/bookSlice'
 import {
   useDeleteBookMutation,
   useUpdateBookMutation,  
-} from '@/store/api/booksPrivateApi'
+} from '@/store/api/booksPrivateApi/bookEndopoints/bookApiSingle'
 import { selectSelectedBookIds } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------

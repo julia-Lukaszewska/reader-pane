@@ -6,8 +6,8 @@
  */
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setAuthChecked } from '@store/slices/authSlice'
-import { selectAuthChecked} from  '@store/api/authApi/authSelectors'
+import { setAuthChecked } from '@/store/slices/authSlice'
+import { selectAuthChecked} from  '@/store/selectors/authSelectors'
 
 export default function useAuthFinalizer() {
   const dispatch = useDispatch()

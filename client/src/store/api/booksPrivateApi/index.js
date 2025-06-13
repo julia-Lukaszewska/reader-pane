@@ -1,13 +1,29 @@
-export * from './booksApi'
-export * from './booksAdapter'
-export * from './booksSelectors'
-export * from './baseBookApiQuery'
+// booksPrivateApi/index.js
 
+export { booksApi } from './booksApi'
 
+// Hooki z endpointów
+export {
+  useGetBooksQuery,
+  useGetBooksStaticQuery,
+} from './bookEndopoints/booksApiCollection'
 
-export * from './booksEndpoints/booksApiCollection'
-export * from './booksEndpoints/bookApiSingle'
-export * from './booksEndpoints/bookApiFlags'
-export * from './booksEndpoints/bookApiStats'
-export * from './booksEndpoints/booksApiForm'
-export * from './booksEndpoints/booksApiUpload'
+export {
+  useUploadBookMutation,
+} from './bookEndopoints/booksApiUpload'
+
+export {
+  useUpdateBookMutation,
+  useDeleteBookMutation,
+  useGetBookByIdQuery,
+} from './bookEndopoints/bookApiSingle'
+
+export {
+  useUpdateBookRatingMutation,
+} from './bookEndopoints/booksApiForm'
+
+export {
+  useGetProgressQuery,
+  useUpdateProgressMutation,
+  useUpdateLastOpenedMutation,
+} from './bookEndopoints/bookApiStats'

@@ -5,7 +5,7 @@
 
 import express from 'express'
 import Book from '../../models/Book.js'
-
+import { listLibrary } from '../../controllers/LibraryBooksController.js'
 const router = express.Router()
 
 //------------------------------------------------------------------
@@ -35,14 +35,6 @@ router.get('/static', async (req, res) => {
 //------------------------------------------------------------------
 // GET /api/books/private       – list full documents for all books
 //------------------------------------------------------------------
-router.get('/', async (req, res) => {
-  try {
-    const books = await Book.find({ owner: req.user.id }).sort({ 'meta.addedAt': -1 })
-    res.json(books)
-  } catch (err) {
-    console.error('[GET ALL]', err)
-    res.status(500).json({ error: 'Failed to fetch books' })
-  }
-})
+router.get('/', listLibrary)
 
 export default router

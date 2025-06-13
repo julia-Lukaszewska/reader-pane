@@ -7,8 +7,8 @@ import React from 'react'
 import styled from 'styled-components'
 import AppRoutes from '@/routes/AppRoutes'
 import GlobalStyles from '@/styles/GlobalStyles'
-import AuthController from '@/modules/user/session/AuthController'
-import { useGetBooksQuery } from '@/store/api/booksPrivateApi'
+import AuthController from '@/controllers/AuthController'
+
 
 // -----------------------------------------------------------------------------
 // Styled components – App container
@@ -29,7 +29,7 @@ const StyledApp = styled.div`
  * Wraps the application with global styles and renders the main route component.
  */
 const App = () => {
-  useGetBooksQuery()
+
   return (
     <>
       <GlobalStyles />

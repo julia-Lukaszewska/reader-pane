@@ -8,7 +8,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { ReaderToolbar } from '@reader/'
-import ReaderSessionController from '@/modules/reader/ReaderSessionController'
+import ReaderSessionController from '@/controllers/ReaderSessionController'
 
 //-----------------------------------------------------------------------------
 // Styled container for the reader layout

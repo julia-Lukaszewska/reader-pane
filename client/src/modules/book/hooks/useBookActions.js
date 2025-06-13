@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setActiveBookId } from '@/store/slices/bookSlice'
-import { useUpdateBookFlagsMutation } from '@store/api/booksPrivateApi/bookApiFlags'
+import { useUpdateBookMutation } from '@/store/api/booksPrivateApi'
 
 /**
  * Hook providing book-related actions: open reader, toggle archive/favorite.
@@ -11,7 +11,7 @@ import { useUpdateBookFlagsMutation } from '@store/api/booksPrivateApi/bookApiFl
 export default function useBookActions(book) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [updateFlags] = useUpdateBookFlagsMutation()
+  const [updateFlags] = useUpdateBookMutation()
 
   /**
    * Opens the book reader view for the given book.

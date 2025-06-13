@@ -9,8 +9,8 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { booksApi } from '@/store/api/booksPrivateApi/booksApi'
-import {  setAuthChecked } from '@store/slices/authSlice'
-import { selectAuthChecked, selectAccessToken } from '@store/api/authApi/authSelectors'
+import {  setAuthChecked } from '@/store/slices/authSlice'
+import { selectAuthChecked, selectAccessToken } from '@/store/selectors/authSelectors'
 import { setAuthModalMode } from '@/store/slices/mainUiSlice'
 
 export default function useAuthCleanupOnLogout() {

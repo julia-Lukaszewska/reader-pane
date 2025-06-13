@@ -83,9 +83,7 @@ const EmptyRow = styled.tr`
 const LibraryTableLayout = ({
   books = [],
   hideAddTile,
-  onRestore,
-  onDelete,
-  viewMode,
+
 }) => (
   <TableWrapper>
     <Table>

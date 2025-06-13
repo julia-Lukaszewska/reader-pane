@@ -6,7 +6,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { IoGrid, IoList, IoReorderThree, IoTrash } from 'react-icons/io5'
-import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AddBookTile from '@upload/AddBookTile'
@@ -21,6 +20,7 @@ import {
   clearSelected,
   setLibraryViewMode,
   setSortMode,
+  setLibraryFilter,
 } from '@/store/slices/bookSlice'
 
 import {
@@ -30,9 +30,9 @@ import {
   selectSortMode,
 } from '@/store/selectors'
 
-//-----------------------------------------------------------------------------
-// Styled Components
-//-----------------------------------------------------------------------------
+/* --------------------------------------------------------------------------- */
+/*  STYLED COMPONENTS                                                          */
+/* --------------------------------------------------------------------------- */
 
 const ToolbarWrapper = styled.div`
   width: 100%;
@@ -86,29 +86,27 @@ const IconButton = styled.button.withConfig({
   }
 `
 
-//-----------------------------------------------------------------------------
-// Component: LibraryToolbar
-//-----------------------------------------------------------------------------
+/* --------------------------------------------------------------------------- */
+/*  COMPONENT: LibraryToolbar                                                  */
+/* --------------------------------------------------------------------------- */
 
 const LibraryToolbar = () => {
-  const { pathname } = useLocation()
   const dispatch = useDispatch()
   const [updateBook] = useUpdateBookMutation()
 
   const isManaging = useSelector(selectIsManageMode)
-  const selected = useSelector(selectSelectedBookIds)
-  const viewMode = useSelector(selectLibraryViewMode)
-  const sortMode = useSelector(selectSortMode)
+  const selected   = useSelector(selectSelectedBookIds)
+  const viewMode   = useSelector(selectLibraryViewMode)
+  const sortMode   = useSelector(selectSortMode)
+  const filter     = useSelector((s) => s.book.libraryFilter)
 
   const section = useMemo(() => {
-    if (pathname === '/library') return 'My Books'
-    if (pathname === '/library/import') return 'Import Books'
-    if (pathname === '/library/archive') return 'Archive'
-    if (pathname === '/library/favorites') return 'Favorites'
-    return ''
-  }, [pathname])
+    if (filter === 'archive')    return 'Archive'
+    if (filter === 'favorites')  return 'Favorites'
+    return 'My Books'
+  }, [filter])
 
-  const inLibrary = pathname.startsWith('/library')
+  const inLibrary = true
 
   const handleBatchDelete = () => {
     selected.forEach((id) => {

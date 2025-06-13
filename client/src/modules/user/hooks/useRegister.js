@@ -6,7 +6,7 @@
 
 import { useRegisterMutation } from '@/store/api/authApi/authApi'
 import { useDispatch } from 'react-redux'
-import { setCredentials } from '@store/slices/authSlice'
+import { setCredentials } from '@/store/slices/authSlice'
 
 /**
  * Returns registration function, loading, and error state.

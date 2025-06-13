@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLoginMutation } from '@/store/api/authApi/authApi'
-import { setCredentials } from '@store/slices/authSlice'
+import { setCredentials } from '@/store/slices/authSlice'
 import styled from 'styled-components'
 
 //-----------------------------------------------------------------------------

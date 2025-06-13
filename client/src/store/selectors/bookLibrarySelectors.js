@@ -1,51 +1,51 @@
 /**
  * @file bookLibrarySelectors.js
  * @description
- * Selectors for filtering books based on flags and library view mode.
+ * Redux selectors for filtering Book entities based on library filter.
  */
-
-import { createSelector } from 'reselect'
-import { selectAllBooks, selectLibraryViewMode } from './booksSelectors'
-
-/**
- * Books with isArchived === false
- */
-export const selectActiveBooks = createSelector(
-  selectAllBooks,
-  (books) => books.filter((book) => !book.flags?.isArchived)
-)
+import { createSelector } from '@reduxjs/toolkit'
+import { selectAllBooks, selectLibraryFilter } from './booksSelectors'
 
 /**
- * Books with isArchived === true
+ * Returns list of books according to current library filter.
+ * Supported filter values:
+ * - 'favorites' : only favorited, non-archived books
+ * - 'archived'  : only archived books
+ * - 'to-read'   : books flagged to read next, non-archived
+ * - 'reading'   : books in progress, non-archived
+ * - 'finished'  : completed books, non-archived
+ * - default     : all non-archived books
  */
-export const selectArchivedBooks = createSelector(
-  selectAllBooks,
-  (books) => books.filter((book) => book.flags?.isArchived)
-)
+export const selectVisibleBooks = createSelector(
+  [selectAllBooks, selectLibraryFilter],
+  (books, filter) => {
+    switch (filter) {
+      case 'favorites':
+        return books.filter(b => b.flags?.isFavorited && !b.flags?.isArchived)
 
-/**
- * Books with isFavorited === true
- */
-export const selectFavoritedBooks = createSelector(
-  selectAllBooks,
-  (books) => books.filter((book) => book.flags?.isFavorited)
-)
+      case 'archived':
+        return books.filter(b => b.flags?.isArchived)
 
-/**
- * Returns books based on current view mode:
- * - "archived": archived only
- * - "favorites": favorited & not archived
- * - default: all active (non-archived)
- */
-export const selectBooksForCurrentView = createSelector(
-  [selectLibraryViewMode, selectAllBooks],
-  (mode, books) => {
-    if (mode === 'archived') {
-      return books.filter((book) => book.flags?.isArchived)
+      case 'to-read':
+        return books.filter(b => b.flags?.isToRead && !b.flags?.isArchived)
+
+      case 'reading':
+        return books.filter(b => b.flags?.isReading && !b.flags?.isArchived)
+
+      case 'finished':
+        return books.filter(b => b.flags?.isFinished && !b.flags?.isArchived)
+
+      default:
+        // e.g. 'all' or any unknown value: show only non-archived
+        return books.filter(b => !b.flags?.isArchived)
     }
-    if (mode === 'favorites') {
-      return books.filter((book) => book.flags?.isFavorited && !book.flags?.isArchived)
-    }
-    return books.filter((book) => !book.flags?.isArchived)
   }
+)
+
+/**
+ * Returns `true` if there are no books in the current filtered view.
+ */
+export const selectIsLibraryEmpty = createSelector(
+  selectVisibleBooks,
+  list => list.length === 0
 )

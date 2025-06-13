@@ -35,8 +35,6 @@ import {
   HomeView,
   MyLibraryView,
   ImportBooksView,
-  ArchiveView,
-  FavoritesView,
   ReaderView,
   SettingsView,
   PageNotFoundView,
@@ -79,8 +77,6 @@ const router = createBrowserRouter([
             children: [
               { index: true,           element: <MyLibraryView /> },  // /library
               { path: 'import',        element: <ImportBooksView /> }, // /library/import
-              { path: 'archive',       element: <ArchiveView /> },     // /library/archive
-              { path: 'favorites',     element: <FavoritesView /> },   // /library/favorites
             ],
           },
           

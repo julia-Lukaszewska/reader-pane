@@ -5,21 +5,12 @@
 
 import express from 'express'
 import Book from '../../models/Book.js'
-
+import { getLibraryBook } from '../../controllers/LibraryBooksController.js'
 const router = express.Router()
 
 //------------------------------------------------------------------
 // GET /api/books/private/:id – retrieve single book (full document)
 //------------------------------------------------------------------
-router.get('/:id', async (req, res) => {
-  try {
-    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id })
-    if (!book) return res.status(404).json({ error: 'Book not found' })
-    res.json(book)
-  } catch (err) {
-    console.error('[GET BOOK]', err)
-    res.status(500).json({ error: 'Failed to fetch book' })
-  }
-})
+router.get('/:id', getLibraryBook)
 
 export default router

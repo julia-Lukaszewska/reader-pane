@@ -1,66 +1,67 @@
 /**
  * @file LibraryBooksRenderer.jsx
- * @description Renders the sorted list of books in the chosen view mode (grid, list, table).
+ * @description
+ * Renders the sorted list of visible books in the selected view mode (grid, list, table).
  */
 
 import { useMemo } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import { selectLibraryViewMode, selectSortMode } from '@/store/selectors'
+import {
+  selectLibraryViewMode,
+  selectSortMode,
+  selectVisibleBooks,
+} from '@/store/selectors'
 
 import sortBooks from '@book/utils/sortBooks'
 
 import {
   LibraryGridLayout,
-  LibraryListLayout,   
+  LibraryListLayout,
   LibraryTableLayout,
 } from '@library/components'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
+/* --------------------------------------------------------------------------- */
+/*  STYLED COMPONENTS                                                          */
+/* --------------------------------------------------------------------------- */
 
-//--- Message shown when library is empty or invalid
 const EmptyMessage = styled.p`
   padding: 2rem;
   text-align: center;
 `
 
-//-----------------------------------------------------------------------------
-// Component: LibraryBooksRenderer
-//-----------------------------------------------------------------------------
+/* --------------------------------------------------------------------------- */
+/*  COMPONENT: LIBRARY BOOKS RENDERER                                          */
+/* --------------------------------------------------------------------------- */
 
 /**
  * Displays the list of books in the current library view mode (grid, list, table).
  *
  * @component
  * @param {Object} props
- * @param {Array} props.books - Array of book objects to render
  * @param {boolean} [props.hideAddTile=false] - Whether to hide the "Add Book" tile
+ * @param {Function} [props.onRestore] - Callback for restoring a book
+ * @param {Function} [props.onDelete] - Callback for deleting a book
+ * @param {string} [props.viewMode] - Optional override for view mode
  * @returns {JSX.Element}
  */
 const LibraryBooksRenderer = ({
-  books,
   hideAddTile = false,
   onRestore,
   onDelete,
   viewMode: viewModeProp,
 }) => {
+  const books       = useSelector(selectVisibleBooks)
+  const sortMode    = useSelector(selectSortMode)
   const stateViewMode = useSelector(selectLibraryViewMode)
-  const viewMode = viewModeProp ?? stateViewMode
-  const sortMode = useSelector(selectSortMode)
+  const viewMode    = viewModeProp ?? stateViewMode
 
-  //--- Return memoized sorted books
-  const sortedBooks = useMemo(() => {
-    return sortBooks(books, sortMode)
-  }, [books, sortMode])
+  const sortedBooks = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
 
-  //--- Show message if no books and add tile is hidden
   if (!sortedBooks?.length && hideAddTile) {
     return <EmptyMessage>No books found.</EmptyMessage>
   }
 
-  //--- Render according to selected view mode
   switch (viewMode) {
     case 'grid':
       return (

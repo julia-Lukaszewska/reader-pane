@@ -12,7 +12,7 @@ import * as pdfjsLib from 'pdfjs-dist'
 
 import { useGetBookByIdQuery } from '@/store/api/booksPrivateApi'
 import { useGetPdfFileQuery } from '@/store/api/pdfStreamApi'
-import { selectIsLoggedIn } from '@store/api/authApi/authSelectors'
+import { selectIsLoggedIn } from '@/store/selectors/authSelectors'
 
 export default function useLoadPDFDocument({ pdfRef, onLoaded }) {
   const { bookId } = useParams()

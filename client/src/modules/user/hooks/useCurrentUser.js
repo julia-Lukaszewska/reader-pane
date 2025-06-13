@@ -7,7 +7,7 @@
 import { useSelector } from 'react-redux'
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useGetMeQuery } from '@/store/api/authApi/authApi'
-import { selectAccessToken } from '@store/api/authApi/authSelectors'
+import { selectAccessToken } from '@/store/selectors/authSelectors'
 
 /**
  * Returns the current user object, loading, and error state.

@@ -2,9 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 import {
-  useUpdateBookFlagsMutation,
-  useDeleteBookMutation,
-  
+  useUpdateBookMutation,
+  useDeleteBookMutation
 } from '@/store/api/booksPrivateApi'
 import { Button } from '@/components'
 
@@ -73,7 +72,7 @@ const ConfirmModal = ({
   onTrash,
   onConfirm,
 }) => {
-  const [updateBookFlags] = useUpdateBookFlagsMutation()
+  const [updateBookFlags] = useUpdateBookMutation()
   const [deleteBook] = useDeleteBookMutation()
 
 

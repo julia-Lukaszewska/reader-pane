@@ -5,7 +5,7 @@
 
 import express from 'express'
 import Book from '../../models/Book.js'
-
+import { updateLibraryBook } from '../../controllers/LibraryBooksController.js'
 const router = express.Router()
 
 //------------------------------------------------------------------
@@ -31,27 +31,7 @@ router.post('/', async (req, res) => {
 //------------------------------------------------------------------
 // PATCH  /api/books/private/:id    – update meta fields (shallow merge)
 //------------------------------------------------------------------
-router.patch('/:id', async (req, res) => {
-  try {
-    if (!req.body.meta) {
-      return res.status(400).json({ error: 'No meta provided.' })
-    }
-    const updates = {}
-    for (const [key, value] of Object.entries(req.body.meta)) {
-      updates[`meta.${key}`] = value
-    }
-    const book = await Book.findOneAndUpdate(
-      { _id: req.params.id, owner: req.user.id },
-      { $set: updates },
-      { new: true, runValidators: true }
-    )
-    if (!book) return res.status(404).json({ error: 'Book not found' })
-    res.json(book)
-  } catch (err) {
-    console.error('[PATCH META]', err)
-    res.status(500).json({ error: 'Failed to update book metadata' })
-  }
-})
+router.patch('/:id', updateLibraryBook)
 
 //------------------------------------------------------------------
 // PATCH  /api/books/private/:id/notes         – add a note

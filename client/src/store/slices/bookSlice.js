@@ -35,6 +35,7 @@ const initialState = {
   activeBookId: null,      // currently opened book in reader
   previewBookId: null,     // book shown in preview modal
   isManageMode: false,     // whether selection mode is active
+  libraryFilter:'all',         // all | archive | favorites
   selectedIds: [],         // IDs of books currently selected
   libraryViewMode: 'grid', // 'grid' | 'list' | 'table'
   sortMode: 'title-asc',   // sort order for library listing
@@ -59,6 +60,9 @@ const bookSlice = createSlice({
     setPreviewBookId: (state, action) => {
       state.previewBookId = action.payload
     },
+    setLibraryFilter(state, action) {
+      state.libraryFilter = action.payload
+      },
     clearPreviewBook: state => {
       state.previewBookId = null
     },
@@ -113,6 +117,7 @@ export const {
   clearSelected,
   setLibraryViewMode,
   setSortMode,
+  setLibraryFilter,
   setProgressMode,
   setLastOpenedBookId,
 } = bookSlice.actions

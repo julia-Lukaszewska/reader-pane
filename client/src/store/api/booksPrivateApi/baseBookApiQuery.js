@@ -1,7 +1,7 @@
 // src/store/api/baseBookApiQuery.js
 
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { setCredentials, clearCredentials } from '@store/slices/authSlice'
+import { setCredentials, clearCredentials } from '@/store/slices/authSlice'
 
 /**
  * Raw baseQuery for book-related endpoints.
