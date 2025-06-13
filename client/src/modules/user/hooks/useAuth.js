@@ -5,8 +5,8 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux'
-import { clearCredentials } from '@/store/slices/authSlice'
-import { selectAccessToken, selectAuthChecked, selectIsLoggedIn } from '@/store/selectors/authSelectors'
+import { clearCredentials } from '@store/slices/authSlice'
+import { selectAccessToken, selectAuthChecked, selectIsLoggedIn } from '@store/api/authApi/authSelectors'
 import { useNavigate } from 'react-router-dom'
 
 /**

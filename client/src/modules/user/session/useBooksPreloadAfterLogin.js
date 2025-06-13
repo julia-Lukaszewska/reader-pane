@@ -10,8 +10,8 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { booksApi } from '@/store/api/booksPrivateApi/booksApi'
 import { useGetMeQuery } from '@/store/api/authApi/authApi'
-import { setAuthChecked } from '@/store/slices/authSlice'
-import { selectAuthChecked, selectAccessToken } from '@/store/selectors/authSelectors'
+import { setAuthChecked } from '@store/slices/authSlice'
+import { selectAuthChecked, selectAccessToken } from '@store/api/authApi/authSelectors'
 
 export default function useBooksPreloadAfterLogin() {
   const dispatch = useDispatch()
