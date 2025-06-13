@@ -14,55 +14,68 @@ export const StreamBookController = async (req, res) => {
     const bucket = getGridFsBucket()
     const { filename } = req.params
 
-     console.log('[STREAM → start]', {
+    console.log('[STREAM → start]', {
       filename,
       userId: req.user?.id,
       rangeHeader: req.headers.range,
     })
+
     const filesColl = bucket.s.db.collection('books_files.files')
     const fileDoc = await filesColl.findOne({ filename })
     if (!fileDoc) {
       return res.status(404).send('File not found')
     }
+
     const fileSize = fileDoc.length
     const range = req.range
 
-console.log('[STREAM → file found]', {
+    console.log('[STREAM → file found]', {
       fileSize,
       rangeParsed: range,
     })
 
-    if (range) {
+    // --- PARTIAL REQUEST (with Range header)
+    if (range && typeof range.start === 'number') {
       const { start, end } = range
+
       if (start >= fileSize) {
         res.setHeader('Content-Range', `bytes */${fileSize}`)
         return res.status(416).send('Requested Range Not Satisfiable')
       }
 
+      const chunkEnd = typeof end === 'number' ? end : fileSize - 1
+      const chunkSize = chunkEnd - start + 1
 
-      const chunkSize = (end ? end : fileSize - 1) - start + 1
       res.writeHead(206, {
-        'Content-Range': `bytes ${start}-${end ? end : fileSize - 1}/${fileSize}`,
+        'Content-Range': `bytes ${start}-${chunkEnd}/${fileSize}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunkSize,
         'Content-Type': 'application/pdf',
       })
-      console.log('[STREAM]', filename, 'size', fileSize, 'range', range)
 
-      bucket.openDownloadStreamByName(filename, { start, end: (end || fileSize - 1) + 1 }).pipe(res)
+      console.log('[STREAM]', filename, '→ range', `${start}-${chunkEnd} / ${fileSize}`)
+
+      bucket
+        .openDownloadStreamByName(filename, { start, end: chunkEnd + 1 })
+        .pipe(res)
+
     } else {
+      // --- FULL REQUEST (no Range header)
       res.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Length': fileSize,
         'Accept-Ranges': 'bytes',
       })
+
+      console.log('[STREAM]', filename, '→ full file')
+
       bucket.openDownloadStreamByName(filename).pipe(res)
-      
     }
+
   } catch (err) {
     console.error('[STREAM PDF ERROR]', {
       filename: req.params?.filename,
-      error: err.message,
+      error: err?.message,
     })
     res.status(500).json({ error: 'Unable to stream file' })
   }

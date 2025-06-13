@@ -55,6 +55,6 @@ export function getCorsOptions(env = process.env.NODE_ENV) {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
-    exposedHeaders: ['Accept-Ranges', 'Content-Range'],
+    exposedHeaders: ['Accept-Ranges', 'Content-Range', 'Content-Length', 'Content-Type'],
   };
 }

@@ -128,8 +128,10 @@ const usePreloadPDFPages = () => {
   // Effect: trigger preload when appropriate
   //-----------------------------------------------------------------------------
   useEffect(() => {
-    const should = pdfReady && totalPages > 0 &&
-      shouldPreload(validCurrentPage, renderedRanges, totalPages)
+      const safeTotal = totalPages || Number.MAX_SAFE_INTEGER      
+
+  const should = pdfReady &&
+    shouldPreload(validCurrentPage, renderedRanges, safeTotal) 
 
     console.log('[usePreloadPDFPages] useEffect fired', {
       pdfReady,

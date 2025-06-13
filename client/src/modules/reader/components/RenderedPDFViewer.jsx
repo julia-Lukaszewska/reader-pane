@@ -81,17 +81,13 @@ const RenderedPDFViewer = () => {
   const pages = totalPages || pdf?.numPages || 0
   console.log('[RenderedPDFViewer] handleLoaded pages:', pages)
 
-  if (pages > 0 && currentPage > 0) {
-    console.log('[RenderedPDFViewer] Setting pdfReady to true')
-    setPdfReady(true)
-  } else {
-    console.log('[RenderedPDFViewer] Waiting: pages/currentPage', {
-      pages,
-      currentPage,
-    })
-  }
-}, [totalPages, currentPage, setPdfReady])
-
+  if (!totalPages && pdf?.numPages) {
+      staticBook.meta.totalPages = pdf.numPages
+    }
+    if (pages > 0 && currentPage > 0) {
+      setPdfReady(true)
+    }
+  }, [totalPages, currentPage, setPdfReady, staticBook])
 
 console.log('[RenderedPDFViewer] bookId from store:', bookId)
 
@@ -106,15 +102,13 @@ useLoadPDFDocument({ pdfRef, onLoaded: handleLoaded })
     }
   }, [currentPage, visiblePages])
 
-  let pagesToRender = []
-
-  if (viewMode === 'single') {
-    pagesToRender = visiblePages.filter(p => p.pageNumber === currentPage)
-  } else {
-    pagesToRender = visiblePages.filter(
-      p => p.pageNumber === currentPage || p.pageNumber === currentPage + 1
-    )
-  }
+    const pagesToRender = useMemo(() => {
+    if (viewMode === 'single') {
+      return visiblePages.filter(p => p.pageNumber === currentPage)
+    }
+    return visiblePages.filter(p =>
+      p.pageNumber === currentPage || p.pageNumber === currentPage + 1)
+  }, [viewMode, visiblePages, currentPage])
 
   if (pagesToRender.length === 0) {
     return <p>Loading…</p>
