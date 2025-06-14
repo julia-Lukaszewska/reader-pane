@@ -70,8 +70,7 @@ const persistConfig = {
     'book',
     'reader',
     'mainUi',
-    booksApi.reducerPath,
-    pdfStreamApi.reducerPath,
+ 
   ],
 }
 

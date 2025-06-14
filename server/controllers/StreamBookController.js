@@ -27,7 +27,7 @@ export const StreamBookController = async (req, res) => {
     }
 
     const fileSize = fileDoc.length
-    const range = req.range
+    const range = req.rangeParsed
 
     console.log('[STREAM → file found]', {
       fileSize,
