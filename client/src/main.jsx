@@ -1,53 +1,49 @@
-// src/index.jsx
+// -----------------------------------------------------------------------------
+// 1. Libraries & global config
+// -----------------------------------------------------------------------------
+import * as pdfjsLib from 'pdfjs-dist';
+import * as Sentry   from '@sentry/react';
 
-//------------------------------------------------------------------------------
-// Sentry (import first, before any app code)
-//------------------------------------------------------------------------------
-import * as Sentry from '@sentry/react'
-
-
-
+// --- Sentry first -------------------------------------------------------------
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
-  environment: import.meta.env.BRANCH, 
-  release: import.meta.env.VITE_COMMIT_SHA, // Git commit SHA (optional)
-  integrations: [
+  dsn:            import.meta.env.VITE_SENTRY_DSN,
+  environment:    import.meta.env.BRANCH,
+  release:        import.meta.env.VITE_COMMIT_SHA,
+  tracesSampleRate:        1.0,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  sendDefaultPii:           true,
+});
 
+// --- pdf.js worker (public/pdf.worker.min.js) --------------------------------
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
-  ],
-  tracesSampleRate: 1.0,                   // Capture 100% of performance traces
-  replaysSessionSampleRate: 0.1,           // Record 10% of user sessions
-  replaysOnErrorSampleRate: 1.0,           // Record 100% of sessions with errors
-  sendDefaultPii: true,                    // Send user IP and device info
-})
+// Warn once if the browser lacks Workers
+if (!window.Worker) console.error('Web Workers are not supported in this browser.');
 
-//------------------------------------------------------------------------------
-// App imports (after Sentry is initialized)
-//------------------------------------------------------------------------------
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import AppProvider from './providers/AppProvider'
-import App from './App'
-import * as pdfjsLib from 'pdfjs-dist'
+// -----------------------------------------------------------------------------
+// 2. App imports
+// -----------------------------------------------------------------------------
+import React, { StrictMode } from 'react';
+import { createRoot }        from 'react-dom/client';
+import AppProvider           from './providers/AppProvider';
+import App                   from './App';
 
-//------------------------------------------------------------------------------
-// PDF.js worker config
-//------------------------------------------------------------------------------
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+// -----------------------------------------------------------------------------
+// 3. Choose wrapper: StrictMode only in production builds
+// -----------------------------------------------------------------------------
+const Wrapper =
+  process.env.NODE_ENV === 'production' ? StrictMode : React.Fragment;
 
-if (!window.Worker) {
-  console.error('Web Workers are not supported in this browser.')
-}
-
-//------------------------------------------------------------------------------
-// App entry point
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// 4. Boot the app
+// -----------------------------------------------------------------------------
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <Wrapper>
     <AppProvider>
-      <Sentry.ErrorBoundary fallback={<p>Something went wrong </p>}>
+      <Sentry.ErrorBoundary fallback={<p>Something went wrong</p>}>
         <App />
       </Sentry.ErrorBoundary>
     </AppProvider>
-  </StrictMode>
-)
+  </Wrapper>
+);

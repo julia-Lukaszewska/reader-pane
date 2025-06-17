@@ -65,7 +65,7 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
     const end = Math.min(safeTotalPages, validCurrentPage + half)
 
     const isCached = renderedRanges.some(([a, b]) => start >= a && end <= b)
-     preload()
+    if (!isCached) preload()
   }, [validCurrentPage, preload, renderedRanges, safeTotalPages])
 
   const visiblePageNumbers = useMemo(() => {

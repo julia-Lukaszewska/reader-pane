@@ -1,9 +1,8 @@
-import * as pdfjsLib from 'pdfjs-dist'
 import { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { selectAccessToken, selectFileUrl } from '@/store/selectors'
 
-
+import * as pdfjsLib from 'pdfjs-dist'
 export default function usePDFStreamer({ onLoaded, pdfRef }) {
   const fileUrl = useSelector(selectFileUrl)
   const token = useSelector(selectAccessToken)
