@@ -1,80 +1,116 @@
+/**
+ * @file renderPages.js
+ * @description
+ * Renders a range of PDF pages into image bitmaps using canvas.
+ * Supports aborting via signal and parallel rendering with concurrency control.
+ */
+
+//-----------------------------------------------------------------------------
+// Function: renderPages
+//-----------------------------------------------------------------------------
+/**
+ * Renders a set of PDF pages to image bitmaps using canvas.
+ * Skips pages already present in renderedPages.
+ *
+ * @async
+ * @function renderPages
+ * @param {Object} params
+ * @param {Object} params.pdf – Loaded PDF document (PDFDocumentProxy)
+ * @param {number} params.scale – Zoom level
+ * @param {number} params.from – First page to render (inclusive)
+ * @param {number} params.to – Last page to render (inclusive)
+ * @param {AbortSignal} [params.signal] – Optional abort controller signal
+ * @param {Object} [params.renderedPages={}] – Previously rendered pages
+ * @param {number} [params.concurrency=2] – Number of parallel render tasks
+ * @returns {Promise<Object>} Map of newly rendered pages (keyed by page number)
+ */
 export default async function renderPages({
   pdf,
   scale,
   from,
   to,
-  renderedPages = {},
   signal,
+  renderedPages = {},
   concurrency = 2,
 }) {
   console.log('[renderPages] start →', { from, to, scale, concurrency })
 
-  const toRender = []
-  for (let i = from; i <= to; i++) {
-    if (!renderedPages[i]) toRender.push(i)
+  //-----------------------------------------------------------------------------
+  // Collect pages to render (exclude cached)
+  //-----------------------------------------------------------------------------
+  const pagesToRender = []
+  for (let p = from; p <= to; p++) {
+    if (!renderedPages[p]) pagesToRender.push(p)
   }
-
   const newPages = {}
 
-  const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+  //-----------------------------------------------------------------------------
+  // Helpers: wait() and retry()
+  //-----------------------------------------------------------------------------
+  const wait = ms => new Promise(r => setTimeout(r, ms))
 
-  async function renderOne(pageNum) {
-    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
-
-    let page
-    for (let i = 0; ; i++) {
+  async function retry(fn, attempts = 3) {
+    for (let i = 0; i < attempts; i++) {
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
       try {
-        page = await pdf.getPage(pageNum)
-        break
+        return await fn()
       } catch (err) {
-        if (i >= 2) throw err
+        if (i === attempts - 1) throw err
         await wait(100 * (i + 1))
       }
     }
+  }
 
-    const viewport = page.getViewport({ scale })
+  //-----------------------------------------------------------------------------
+  // Render a single page
+  //-----------------------------------------------------------------------------
+  async function renderOne(pageNum) {
+    try {
+      console.log(`Rendering page ${pageNum}`)
 
-    const canvas =
-      typeof OffscreenCanvas !== 'undefined'
+      const page = await retry(() => pdf.getPage(pageNum))
+      const viewport = page.getViewport({ scale })
+
+      const canvas = typeof OffscreenCanvas !== 'undefined'
         ? new OffscreenCanvas(viewport.width, viewport.height)
         : Object.assign(document.createElement('canvas'), {
             width: viewport.width,
             height: viewport.height,
           })
 
-    const ctx = canvas.getContext('2d')
+      const ctx = canvas.getContext('2d')
 
-    for (let i = 0; ; i++) {
-      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
-      try {
-        await page.render({ canvasContext: ctx, viewport }).promise
-        break
-      } catch (err) {
-        if (i >= 2) throw err
-        await wait(100 * (i + 1))
+      await retry(() => page.render({ canvasContext: ctx, viewport }).promise)
+
+      const bitmap = canvas.transferToImageBitmap
+        ? canvas.transferToImageBitmap()
+        : await createImageBitmap(canvas)
+
+      newPages[pageNum] = {
+        bitmap,
+        width: viewport.width,
+        height: viewport.height,
       }
-    }
 
-    const bitmap = canvas.transferToImageBitmap
-      ? canvas.transferToImageBitmap()
-      : await createImageBitmap(canvas)
-
-    newPages[pageNum] = {
-      bitmap,
-      width: viewport.width,
-      height: viewport.height,
+      console.log(`Finished page ${pageNum}`)
+    } catch (err) {
+      console.error(`Error rendering page ${pageNum}`, err)
     }
   }
 
-
-  const queue = [...toRender]
-  while (queue.length) {
-    const batch = queue.splice(0, concurrency)
-    await Promise.all(batch.map((n) => renderOne(n)))
+  //-----------------------------------------------------------------------------
+  // Render pages in batches
+  //-----------------------------------------------------------------------------
+  for (let i = 0; i < pagesToRender.length; i += concurrency) {
+    const batch = pagesToRender.slice(i, i + concurrency)
+    console.log('Rendering batch:', batch)
+    await Promise.all(batch.map(renderOne))
   }
 
-  console.log('[🔎 newPages final]', newPages)
+  //-----------------------------------------------------------------------------
+  // Return rendered page data
+  //-----------------------------------------------------------------------------
+  console.log('[newPages final]', newPages)
   console.log('[renderPages] done, new:', Object.keys(newPages).length)
-
   return newPages
 }

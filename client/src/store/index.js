@@ -1,9 +1,8 @@
-// src/store/index.js
 /**
  * @file index.js
  * @description
- * Configures Redux store with RTK Query APIs, persistence, and middleware.
- * Persists only UI and data slices, excluding auth state for security.
+ * Configures Redux store with RTK Query APIs, state persistence, and middleware.
+ * Only UI and data slices are persisted. Auth state is excluded for security.
  */
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
@@ -19,22 +18,30 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
-import   {externalApi}  from './api/externalApi'
+//-----------------------------------------------------------------------------
+// API Slices
+//-----------------------------------------------------------------------------
+
+import { booksApi } from './api/booksPrivateApi'
+import { externalApi } from './api/externalApi'
 import { authApi } from './api/authApi/authApi'
 import { pdfStreamApi } from './api/pdfStreamApi'
-import {booksApi} from './api/booksPrivateApi'
+
+//-----------------------------------------------------------------------------
+// Reducers
+//-----------------------------------------------------------------------------
+
 import bookReducer from './slices/bookSlice'
 import readerReducer from './slices/readerSlice'
-
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
 
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Persistence Configurations
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 /**
- * Persistence configuration for book slice (UI only)
+ * Persist selected fields from the book UI slice.
  */
 const bookPersistConfig = {
   key: 'book',
@@ -51,7 +58,7 @@ const bookPersistConfig = {
 }
 
 /**
- * Persistence configuration for reader slice
+ * Persist selected reader-related state (zoom and view mode).
  */
 const readerPersistConfig = {
   key: 'reader',
@@ -60,30 +67,23 @@ const readerPersistConfig = {
 }
 
 /**
- * Global persistence configuration
- * Only UI and cached data slices are persisted. Auth state is not persisted.
+ * Root persistence configuration (only UI/data slices).
  */
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: [
-    'book',
-    'reader',
-    'mainUi',
- 
-  ],
+  whitelist: ['book', 'reader', 'mainUi'],
 }
 
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Root Reducer
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 const rootReducer = combineReducers({
   ui: mainUiReducer,
   book: persistReducer(bookPersistConfig, bookReducer),
   reader: persistReducer(readerPersistConfig, readerReducer),
-
-  auth: authReducer, // auth state remains in memory, not persisted
+  auth: authReducer, // auth is kept in memory only
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
@@ -92,9 +92,9 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Middleware
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 const middleware = getDefaultMiddleware =>
   getDefaultMiddleware({
@@ -108,9 +108,9 @@ const middleware = getDefaultMiddleware =>
     pdfStreamApi.middleware
   )
 
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Store Configuration
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 export const store = configureStore({
   reducer: persistedReducer,
@@ -120,9 +120,9 @@ export const store = configureStore({
 
 export const persistor = persistStore(store)
 
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Exports
-//-----------------------------------------------------------------------------  
+//-----------------------------------------------------------------------------
 
 export * from './api'
 export * from './slices'

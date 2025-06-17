@@ -1,17 +1,35 @@
+/**
+ * @file useStreamingPdfManager.js
+ * @description
+ * Combines loading a remote PDF (via usePDFStreamer) with page preloading (via usePreloadPDFPages).
+ * Exposes loading state, visible pages, and a reference to the PDF document.
+ */
 
 import { useRef, useEffect, useState } from 'react'
 import usePDFStreamer from './usePDFStreamer'
 import usePreloadPDFPages from './usePreloadPDFPages'
 
-export default function useStreamingPdfManager({
-  bookId
-  
-}) {
+//-----------------------------------------------------------------------------
+// Hook: useStreamingPdfManager
+//-----------------------------------------------------------------------------
+
+/**
+ * Manages loading and rendering of streamed PDF pages.
+ *
+ * @param {Object} params
+ * @param {string} params.bookId – Book identifier
+ * @returns {{
+ *   loading: boolean,
+ *   error: Error|null,
+ *   visiblePages: Array<Object>,
+ *   pdfRef: React.MutableRefObject
+ * }}
+ */
+export default function useStreamingPdfManager({ bookId }) {
   const pdfRef = useRef(null)
   const [pdfReady, setPdfReady] = useState(false)
 
   const { loading, error } = usePDFStreamer({
- 
     pdfRef,
     onLoaded: () => setPdfReady(true),
   })
@@ -23,8 +41,8 @@ export default function useStreamingPdfManager({
 
   useEffect(() => {
     if (pdfReady) {
-         console.log('[🔁 preload() triggered]')
-        preload()
+      console.log('[ preload() triggered]')
+      preload()
     }
   }, [pdfReady, preload])
 

@@ -1,5 +1,16 @@
+/**
+ * @file RenderedPDFViewer.jsx
+ * @description
+ * Displays rendered PDF pages as <canvas> elements inside a scrollable container.
+ * Handles image bitmap drawing and adjusts layout based on sidebar state.
+ */
+
 import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
+
+//-----------------------------------------------------------------------------
+// Styled Components
+//-----------------------------------------------------------------------------
 
 const ScrollWrapper = styled.div`
   width: ${({ $isSidebarOpen }) =>
@@ -25,6 +36,20 @@ const Canvas = styled.canvas`
   display: block;
 `
 
+//-----------------------------------------------------------------------------
+// Component: RenderedPDFViewer
+//-----------------------------------------------------------------------------
+
+/**
+ * Displays a list of visible PDF pages using canvas.
+ * Draws image bitmaps onto canvas elements when visiblePages change.
+ *
+ * @param {Object} props
+ * @param {React.RefObject} props.containerRef – Optional external container ref
+ * @param {Array<Object>} props.visiblePages – Array of { pageNumber, bitmap, width, height }
+ * @param {boolean} props.sidebarOpen – Whether the sidebar is open (affects layout)
+ * @returns {JSX.Element}
+ */
 export default function RenderedPDFViewer({
   containerRef,
   visiblePages = [],
@@ -34,19 +59,13 @@ export default function RenderedPDFViewer({
   const pageRefs = useRef({})
 
   useEffect(() => {
-    visiblePages.forEach(({ pageNumber, bitmap, width, height }) => {
+    visiblePages.forEach(({ pageNumber, bitmap }) => {
       const canvas = pageRefs.current[pageNumber]
       if (!canvas || !bitmap) return
 
-      canvas.width = width
-      canvas.height = height
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
-
       const ctx = canvas.getContext('2d')
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(bitmap, 0, 0)
-
-      // optional: bitmap.close()
     })
   }, [visiblePages])
 
@@ -55,10 +74,11 @@ export default function RenderedPDFViewer({
       <PagesContainer>
         {visiblePages.map(({ pageNumber, width, height }) => (
           <Canvas
-            key={pageNumber}
+            key={`${pageNumber}-${width}x${height}`}
             data-page={pageNumber}
             ref={(el) => (pageRefs.current[pageNumber] = el)}
-            style={{ width: `${width}px`, height: `${height}px` }}
+            width={width}
+            height={height}
           />
         ))}
       </PagesContainer>

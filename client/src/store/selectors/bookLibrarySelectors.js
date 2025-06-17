@@ -1,16 +1,29 @@
+/**
+ * @file libraryViewSelectors.js
+ * @description
+ * Selectors related to the current view of the user's library (filtered books).
+ */
+
 import { createSelector } from '@reduxjs/toolkit'
 import { selectAllBooks, selectLibraryFilter } from './booksSelectors'
 
-//-----------------------------------------------------
-//------ Library View Selectors
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Library View Selectors
+//-----------------------------------------------------------------------------
 
 /**
+ * Returns books filtered by the current library filter value.
+ *
+ * Possible filters:
+ * - 'favorites'
+ * - 'archived'
+ * - 'to-read'
+ * - 'reading'
+ * - 'finished'
+ * - default (non-archived)
+ *
  * @function selectVisibleBooks
- * @description Returns books filtered by the current library filter.
- * @param {Array} books
- * @param {string} filter
- * @returns {Array<Object>}
+ * @returns {Array<Object>} List of visible book objects
  */
 export const selectVisibleBooks = createSelector(
   [selectAllBooks, selectLibraryFilter],
@@ -33,8 +46,9 @@ export const selectVisibleBooks = createSelector(
 )
 
 /**
+ * Returns true if no books are visible in the current filter view.
+ *
  * @function selectIsLibraryEmpty
- * @description Returns true if no books are visible in the current filter.
  * @returns {boolean}
  */
 export const selectIsLibraryEmpty = createSelector(

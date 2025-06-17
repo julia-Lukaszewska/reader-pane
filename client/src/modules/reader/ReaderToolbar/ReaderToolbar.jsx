@@ -1,3 +1,10 @@
+/**
+ * @file ReaderToolbar.jsx
+ * @description
+ * Top toolbar for the reader view, includes navigation and controls
+ * for page view mode, zoom, and page navigation.
+ */
+
 import * as pdfjsLib from 'pdfjs-dist'
 import React, { memo, useCallback } from 'react'
 import styled from 'styled-components'
@@ -50,8 +57,10 @@ const BackButton = styled(IoArrowBack)`
 //-----------------------------------------------------------------------------
 
 /**
- * Renders the reader view's top toolbar with:
- * - Back button to return to the library
+ * Renders the top toolbar in the PDF reader view.
+ *
+ * Features:
+ * - Back button (to return to library)
  * - Page view mode toggle (single/double)
  * - Zoom controls (in/out/reset)
  * - Page navigation controls (prev/next)
@@ -64,20 +73,20 @@ const ReaderToolbar = () => {
   const goBack = useCallback(() => navigate('/library'), [navigate])
 
   return (
-    <StyledToolbar aria-label="Toolbar czytnika">
+    <StyledToolbar aria-label="Reader toolbar">
       <LeftSection>
         <BackButton
           size={32}
           color="white"
-          aria-label="Wróć do biblioteki"
+          aria-label="Go back to library"
           onClick={goBack}
         />
       </LeftSection>
 
       <CenterSection>
-        <PageViewModeToggle aria-label="Tryb widoku strony" />
-        <PDFZoomControls aria-label="Kontrola powiększenia" />
-        <PDFPageControls aria-label="Nawigacja stron" />
+        <PageViewModeToggle aria-label="Page view mode toggle" />
+        <PDFZoomControls aria-label="Zoom controls" />
+        <PDFPageControls aria-label="Page navigation controls" />
       </CenterSection>
     </StyledToolbar>
   )

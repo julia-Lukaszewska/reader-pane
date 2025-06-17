@@ -1,46 +1,37 @@
 /**
  * @file bookSlice.js
- * @description Redux slice for managing book data, UI state, and view settings.
+ * @description
+ * Redux slice for managing UI state and settings related to books in the library view.
  */
 
 import { createSlice } from '@reduxjs/toolkit'
 
 //-----------------------------------------------------------------------------
-// Helper Functions
-//-----------------------------------------------------------------------------
-
-// /**
-//  * Ensures an entry exists for the given book ID in state.byId.
-//  *
-//  * @param {Object} state - The slice state
-//  * @param {string} id - The book identifier
-//  */
-// function ensureBookEntry(state, id) {
-//   if (!state.byId) state.byId = {}
-//   if (!state.byId[id]) {
-//     state.byId[id] = {
-//       meta: {},
-//       stats: {},
-//       flags: {},
-//       preload: {},
-//     }
-//   }
-// }
-
-//-----------------------------------------------------------------------------
 // Initial State
 //-----------------------------------------------------------------------------
 
+/**
+ * @type {object}
+ * @property {string|null} activeBookId - ID of the currently opened book in the reader.
+ * @property {string|null} previewBookId - ID of the book shown in preview modal.
+ * @property {boolean} isManageMode - Whether multi-select/manage mode is active.
+ * @property {string} libraryFilter - Filter mode (e.g. 'all', 'favorites', 'archived').
+ * @property {Array<string>} selectedIds - List of selected book IDs in manage mode.
+ * @property {string} libraryViewMode - View mode in the library ('grid' | 'list' | 'table').
+ * @property {string} sortMode - Sorting mode for the book list.
+ * @property {string} progressMode - Type of progress shown: 'current' or 'max'.
+ * @property {string|null} lastOpenedBookId - Last opened book (used to resume session).
+ */
 const initialState = {
-  activeBookId: null,      // currently opened book in reader
-  previewBookId: null,     // book shown in preview modal
-  isManageMode: false,     // whether selection mode is active
-  libraryFilter:'all',         // all | archive | favorites
-  selectedIds: [],         // IDs of books currently selected
-  libraryViewMode: 'grid', // 'grid' | 'list' | 'table'
-  sortMode: 'title-asc',   // sort order for library listing
-  progressMode: 'current', // 'current' | 'max' for progress bar
-  lastOpenedBookId: null,  // persisted last opened book ID
+  activeBookId: null,
+  previewBookId: null,
+  isManageMode: false,
+  libraryFilter: 'all',
+  selectedIds: [],
+  libraryViewMode: 'grid',
+  sortMode: 'title-asc',
+  progressMode: 'current',
+  lastOpenedBookId: null,
 }
 
 //-----------------------------------------------------------------------------
@@ -54,19 +45,19 @@ const bookSlice = createSlice({
     setActiveBookId: (state, action) => {
       state.activeBookId = action.payload
     },
-    clearActiveBook: state => {
+    clearActiveBook: (state) => {
       state.activeBookId = null
     },
     setPreviewBookId: (state, action) => {
       state.previewBookId = action.payload
     },
-    setLibraryFilter(state, action) {
-      state.libraryFilter = action.payload
-      },
-    clearPreviewBook: state => {
+    clearPreviewBook: (state) => {
       state.previewBookId = null
     },
-    toggleManageMode: state => {
+    setLibraryFilter: (state, action) => {
+      state.libraryFilter = action.payload
+    },
+    toggleManageMode: (state) => {
       state.isManageMode = !state.isManageMode
       if (!state.isManageMode) state.selectedIds = []
     },
@@ -78,16 +69,15 @@ const bookSlice = createSlice({
       state.selectedIds = action.payload
     },
     toggleSelect: (state, action) => {
-  const id = action.payload
-  const index = state.selectedIds.indexOf(id)
-  if (index === -1) {
-    state.selectedIds.push(id)
-  } else {
-    state.selectedIds.splice(index, 1)
-  }
-},
-
-    clearSelected: state => {
+      const id = action.payload
+      const index = state.selectedIds.indexOf(id)
+      if (index === -1) {
+        state.selectedIds.push(id)
+      } else {
+        state.selectedIds.splice(index, 1)
+      }
+    },
+    clearSelected: (state) => {
       state.selectedIds = []
     },
     setLibraryViewMode: (state, action) => {
@@ -104,6 +94,10 @@ const bookSlice = createSlice({
     },
   },
 })
+
+//-----------------------------------------------------------------------------
+// Exports
+//-----------------------------------------------------------------------------
 
 export const {
   setActiveBookId,
