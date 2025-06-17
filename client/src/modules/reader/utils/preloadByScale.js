@@ -57,6 +57,7 @@ export default async function preloadByScale({
   }
 
   const total = pdf.numPages
+  console.log('[ pdf.numPages]', total)
   const RANGE_SIZE = 15
   const half = Math.floor(RANGE_SIZE / 2)
   const start = Math.max(1, currentPage - half)

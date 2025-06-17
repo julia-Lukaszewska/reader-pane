@@ -77,11 +77,12 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
       loadingRef,
       concurrency: 2,
       onPages: (pages) => {
+        console.log('[onPages]', pages)
         Object.entries(pages).forEach(([pageNum, data]) => {
           const key = `${bookId}-${scale}-${pageNum}`
           cacheRef.current.set(key, data)
         })
-        setVersion((v) => v + 1)
+        setVersion(v => v + 1)
       },
       onRange: (range) => {
         dispatch(setRenderedRanges({ bookId, scale, range }))
@@ -120,7 +121,7 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
   const visiblePages = useMemo(
     () =>
       visiblePageNumbers
-        .map((num) => {
+        .map(num => {
           const key = `${bookId}-${scale}-${num}`
           const data = cacheRef.current.get(key)
           return data ? { pageNumber: num, ...data } : null

@@ -49,7 +49,8 @@ export default function useStreamingPdfManager({ bookId }) {
   //-----------------------------------------------------
   useEffect(() => {
     if (pdfReady) {
-      preload()
+         console.log('[ preload() triggered]')
+        preload()
     }
   }, [pdfReady, preload])
 
