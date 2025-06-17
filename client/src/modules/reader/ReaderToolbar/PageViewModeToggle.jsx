@@ -9,9 +9,12 @@ import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import { setPageViewMode } from '@/store/slices/readerSlice'
 import {
-  selectActiveBookId,
-  selectBookStaticById,
-} from '@/store/selectors'
+  selectTotalPages,
+  selectPageViewMode,
+ 
+
+ 
+} from '@/store/selectors/readerSelectors'
 
 //-----------------------------------------------------------------------------
 // Styled Components
@@ -57,11 +60,11 @@ const PageViewModeToggle = () => {
   console.log('PageViewModeToggle')
 
   const dispatch = useDispatch()
-  const pageViewMode = useSelector((s) => s.reader.pageViewMode)
+  const pageViewMode = useSelector(selectPageViewMode)
 
-  const bookId = useSelector(selectActiveBookId)
-  const staticBook = useSelector(selectBookStaticById(bookId))
-  const totalPages = staticBook?.meta?.totalPages ?? 0
+ 
+
+  const totalPages = useSelector(selectTotalPages)
 
   const isDoubleDisabled = totalPages <= 1
 
