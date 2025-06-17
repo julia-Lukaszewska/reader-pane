@@ -129,7 +129,17 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
         .filter(Boolean),
     [visiblePageNumbers, bookId, scale, version]
   )
-
+  //-----------------------------------------------------
+  //------ Cleanup Object URLs on Unmount
+  //-----------------------------------------------------
+  useEffect(() => {
+    return () => {
+      cacheRef.current.forEach(({ url }) => {
+        if (url) URL.revokeObjectURL(url)
+      })
+      cacheRef.current.clear()
+    }
+  }, [])
   //-----------------------------------------------------
   //------ Return
   //-----------------------------------------------------

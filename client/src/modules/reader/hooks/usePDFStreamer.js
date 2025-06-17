@@ -64,8 +64,12 @@ export default function usePDFStreamer({ onLoaded, pdfRef }) {
 
     return () => {
       controller.abort()
-      loadingTask.destroy?.()
-      pdfRef.current = null
+           if (pdfRef.current) {
+        pdfRef.current.destroy?.()
+        pdfRef.current = null
+      } else {
+        loadingTask.destroy?.()
+      }
     }
   }, [fileUrl])
 

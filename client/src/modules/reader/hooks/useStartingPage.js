@@ -58,7 +58,7 @@ export default function useStartingPage(bookId) {
 
     didInitRef.current = true
     setInitialized(true)
-  }, [bookData, fileReady, dispatch, bookId, totalPages, currentPage, fileUrl])
+  }, [bookData, fileReady, dispatch, bookId])
 
   return isInitialized
 }
