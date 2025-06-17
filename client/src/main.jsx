@@ -33,7 +33,7 @@ import App                   from './App';
 // 3. Choose wrapper: StrictMode only in production builds
 // -----------------------------------------------------------------------------
 const Wrapper =
-  process.env.NODE_ENV === 'production' ? StrictMode : React.Fragment;
+  import.meta.env.MODE === 'development' ? React.Fragment : React.StrictMode;
 
 // -----------------------------------------------------------------------------
 // 4. Boot the app

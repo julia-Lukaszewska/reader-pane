@@ -22,52 +22,43 @@ const Canvas = styled.canvas`
   margin: 1rem;
   max-height: 100%;
   object-fit: contain;
-  z-index: 10000;
-  width: 100%;
-  height: auto;
   display: block;
 `
 
 export default function RenderedPDFViewer({
-  pdfRef,
-  fileUrl,
+  containerRef,
   visiblePages = [],
-  currentPage,
   sidebarOpen = false,
 }) {
-  const wrapperRef = pdfRef || useRef()
+  const wrapperRef = containerRef || useRef()
   const pageRefs = useRef({})
 
   useEffect(() => {
-    visiblePages.forEach(({ pageNumber, url, width, height }) => {
+    visiblePages.forEach(({ pageNumber, bitmap, width, height }) => {
       const canvas = pageRefs.current[pageNumber]
-      if (!canvas || !url) return
+      if (!canvas || !bitmap) return
+
+      canvas.width = width
+      canvas.height = height
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
 
       const ctx = canvas.getContext('2d')
-      const img = new Image()
+      ctx.drawImage(bitmap, 0, 0)
 
-      img.onload = () => {
-        canvas.width = width
-        canvas.height = height
-        ctx.drawImage(img, 0, 0)
-      }
-
-      img.onerror = (e) => {
-        console.error(`[❌ error img ${pageNumber}]`, e)
-      }
-
-      img.src = url
+      // optional: bitmap.close()
     })
   }, [visiblePages])
 
   return (
     <ScrollWrapper $isSidebarOpen={sidebarOpen} ref={wrapperRef}>
       <PagesContainer>
-        {visiblePages.map(({ pageNumber }) => (
+        {visiblePages.map(({ pageNumber, width, height }) => (
           <Canvas
             key={pageNumber}
             data-page={pageNumber}
             ref={(el) => (pageRefs.current[pageNumber] = el)}
+            style={{ width: `${width}px`, height: `${height}px` }}
           />
         ))}
       </PagesContainer>

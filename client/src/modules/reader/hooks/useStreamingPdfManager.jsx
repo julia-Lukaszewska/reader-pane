@@ -1,10 +1,10 @@
-import * as pdfjsLib from 'pdfjs-dist'
+
 import { useRef, useEffect, useState } from 'react'
 import usePDFStreamer from './usePDFStreamer'
 import usePreloadPDFPages from './usePreloadPDFPages'
 
 export default function useStreamingPdfManager({
-  bookId,
+  bookId
   
 }) {
   const pdfRef = useRef(null)

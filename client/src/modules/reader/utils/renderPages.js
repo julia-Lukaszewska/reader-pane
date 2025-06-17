@@ -14,7 +14,6 @@ export default async function renderPages({
     if (!renderedPages[i]) toRender.push(i)
   }
 
-  /** @type {{[n:number]: {url:string,width:number,height:number}}} */
   const newPages = {}
 
   const wait = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -22,7 +21,6 @@ export default async function renderPages({
   async function renderOne(pageNum) {
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
 
-    // 1. get page
     let page
     for (let i = 0; ; i++) {
       try {
@@ -34,8 +32,8 @@ export default async function renderPages({
       }
     }
 
-    // 2. prepare canvas
     const viewport = page.getViewport({ scale })
+
     const canvas =
       typeof OffscreenCanvas !== 'undefined'
         ? new OffscreenCanvas(viewport.width, viewport.height)
@@ -43,9 +41,9 @@ export default async function renderPages({
             width: viewport.width,
             height: viewport.height,
           })
+
     const ctx = canvas.getContext('2d')
 
-    // 3. render
     for (let i = 0; ; i++) {
       if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
       try {
@@ -57,22 +55,18 @@ export default async function renderPages({
       }
     }
 
-    // 4. convert to blob URL
-    const blob =
-      canvas.convertToBlob
-        ? await canvas.convertToBlob()
-        : await new Promise((res) => canvas.toBlob(res))
-
-    const url = URL.createObjectURL(blob)
+    const bitmap = canvas.transferToImageBitmap
+      ? canvas.transferToImageBitmap()
+      : await createImageBitmap(canvas)
 
     newPages[pageNum] = {
-      url,
+      bitmap,
       width: viewport.width,
       height: viewport.height,
     }
   }
 
-  // Queue rendering with limited concurrency
+
   const queue = [...toRender]
   while (queue.length) {
     const batch = queue.splice(0, concurrency)
@@ -81,5 +75,6 @@ export default async function renderPages({
 
   console.log('[🔎 newPages final]', newPages)
   console.log('[renderPages] done, new:', Object.keys(newPages).length)
+
   return newPages
 }

@@ -1,6 +1,6 @@
 // ReaderLayout.jsx
 import styled from 'styled-components'
-import ReaderSessionController from '@/controllers/ReaderSessionController'
+
 import { ReaderToolbar } from '@reader/ReaderToolbar'
 import ReaderView from '@/views/ReaderView'
 
@@ -12,20 +12,8 @@ const Container = styled.div`
 
 const ReaderLayout = () => (
   <Container>
-    <ReaderSessionController>
-      {({ pdfRef, visiblePages }) => (
-        <>
-          <ReaderToolbar 
-            pdfRef={pdfRef} 
-            visiblePages={visiblePages} 
-          />
-          <ReaderView 
-            pdfRef={pdfRef} 
-            visiblePages={visiblePages} 
-          />
-        </>
-      )}
-    </ReaderSessionController>
+    <ReaderToolbar />   
+    <ReaderView />
   </Container>
 )
 
