@@ -6,34 +6,42 @@
  * - updateBookLive:    Update real-time stats
  * - getProgress:       Get reading progress for a book
  * - updateProgress:    Update progress (current page, max page)
- * - updateProgressAuto:Update progress automatically (background/save-on-exit)
+ * - updateProgressAuto: Update progress automatically (background/save-on-exit)
  * - updateLastOpened:  Update last opened timestamp for a book
  */
-
 import { booksApi } from '../booksApi'
 
-//-----------------------------------------------------------------------------
-// Endpoints: Book Statistics & Reading Progress
-//-----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ booksApiStats Endpoints
+//-----------------------------------------------------
 /**
- * Injects endpoints for book statistics and progress management into booksApi.
+ * @constant booksApiStats
+ * @description Injects endpoints for book statistics and progress management into booksApi.
  */
 export const booksApiStats = booksApi.injectEndpoints({
-  endpoints: (builder) => ({
+  overrideExisting: false,
+  endpoints: builder => ({
+    //-------------------------------------------------
+    //------ getBookLive Query
+    //-------------------------------------------------
     /**
-     * Gets live stats for a book (real-time progress, activity, etc).
+     * @function getBookLive
+     * @description Gets live stats for a book (real-time progress, activity, etc).
      * @param {string} id - Book ID
      * @returns {object} Live stats for the book
      * @providesTags [{ type: 'Live', id }]
      */
     getBookLive: builder.query({
-      query: (id) => `/books/private/${id}/live`,
+      query: id => `/books/private/${id}/live`,
       providesTags: (_result, _error, id) => [{ type: 'Live', id }],
     }),
 
+    //-------------------------------------------------
+    //------ updateBookLive Mutation
+    //-------------------------------------------------
     /**
-     * Updates live stats for a book (real-time).
+     * @function updateBookLive
+     * @description Updates live stats for a book (real-time).
      * @param {{id: string, changes: object}} params
      * @returns {object} Updated live stats
      * @invalidatesTags [{ type: 'Live', id }]
@@ -47,20 +55,28 @@ export const booksApiStats = booksApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Live', id }],
     }),
 
+    //-------------------------------------------------
+    //------ getProgress Query
+    //-------------------------------------------------
     /**
-     * Gets reading progress for a book.
+     * @function getProgress
+     * @description Gets reading progress for a book.
      * @param {string} id - Book ID
      * @returns {object} Progress object (currentPage, maxVisitedPage, etc.)
      * @providesTags [{ type: 'Progress', id }]
      */
     getProgress: builder.query({
-      query: (id) => `/books/private/${id}/progress`,
+      query: id => `/books/private/${id}/progress`,
       providesTags: (_result, _error, id) => [{ type: 'Progress', id }],
     }),
 
+    //-------------------------------------------------
+    //------ updateProgress Mutation
+    //-------------------------------------------------
     /**
-     * Updates reading progress (current page, max visited page).
-     * Optimistically updates cache for getBooks and getBookById.
+     * @function updateProgress
+     * @description Updates reading progress (current page, max visited page).
+     *              Optimistically updates cache for getBooks and getBookById.
      * @param {{id: string, currentPage: number}} params
      * @returns {object} Updated progress
      * @invalidatesTags [{ type: 'Progress', id }]
@@ -74,29 +90,18 @@ export const booksApiStats = booksApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Progress', id }],
       async onQueryStarted({ id, currentPage }, { dispatch, queryFulfilled }) {
         const patchBooks = dispatch(
-          booksApi.util.updateQueryData('getBooks', undefined, (draft) => {
-            // If using adapter:
+          booksApi.util.updateQueryData('getBooks', undefined, draft => {
             if (draft.entities?.[id]) {
               draft.entities[id].stats.currentPage = currentPage
               draft.entities[id].stats.maxVisitedPage = Math.max(
                 currentPage,
                 draft.entities[id].stats.maxVisitedPage || 1
               )
-            } else {
-              // For legacy: array
-              const book = draft.find((b) => b._id === id)
-              if (book) {
-                book.stats.currentPage = currentPage
-                book.stats.maxVisitedPage = Math.max(
-                  currentPage,
-                  book.stats.maxVisitedPage || 1
-                )
-              }
             }
           })
         )
         const patchOne = dispatch(
-          booksApi.util.updateQueryData('getBookById', id, (draft) => {
+          booksApi.util.updateQueryData('getBookById', id, draft => {
             if (!draft.stats) draft.stats = {}
             draft.stats.currentPage = currentPage
             draft.stats.maxVisitedPage = Math.max(
@@ -114,9 +119,13 @@ export const booksApiStats = booksApi.injectEndpoints({
       },
     }),
 
+    //-------------------------------------------------
+    //------ updateProgressAuto Mutation
+    //-------------------------------------------------
     /**
-     * Automatically updates progress (e.g. background or on unmount).
-     * Optimistically updates cache for getBooks.
+     * @function updateProgressAuto
+     * @description Automatically updates progress (e.g. background or on unmount).
+     *              Optimistically updates cache for getBooks.
      * @param {{id: string, currentPage: number}} params
      * @returns {object} Updated progress
      */
@@ -128,22 +137,13 @@ export const booksApiStats = booksApi.injectEndpoints({
       }),
       async onQueryStarted({ id, currentPage }, { dispatch, queryFulfilled }) {
         const patch = dispatch(
-          booksApi.util.updateQueryData('getBooks', undefined, (draft) => {
+          booksApi.util.updateQueryData('getBooks', undefined, draft => {
             if (draft.entities?.[id]) {
               draft.entities[id].stats.currentPage = currentPage
               draft.entities[id].stats.maxVisitedPage = Math.max(
                 currentPage,
                 draft.entities[id].stats.maxVisitedPage || 1
               )
-            } else {
-              const book = draft.find((b) => b._id === id)
-              if (book) {
-                book.stats.currentPage = currentPage
-                book.stats.maxVisitedPage = Math.max(
-                  currentPage,
-                  book.stats.maxVisitedPage || 1
-                )
-              }
             }
           })
         )
@@ -155,14 +155,18 @@ export const booksApiStats = booksApi.injectEndpoints({
       },
     }),
 
+    //-------------------------------------------------
+    //------ updateLastOpened Mutation
+    //-------------------------------------------------
     /**
-     * Updates the "last opened" timestamp for a book.
+     * @function updateLastOpened
+     * @description Updates the "last opened" timestamp for a book.
      * @param {string} id - Book ID
      * @returns {object} Updated book object with new lastOpenedAt
      * @invalidatesTags [{ type: 'Books', id }, { type: 'Books', id: 'LIST' }]
      */
     updateLastOpened: builder.mutation({
-      query: (id) => ({
+      query: id => ({
         url: `/books/private/${id}/last-opened`,
         method: 'PATCH',
       }),
@@ -172,13 +176,11 @@ export const booksApiStats = booksApi.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
 })
 
-//-----------------------------------------------------------------------------
-// Exported RTK Query hooks
-//-----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ Hooks Export
+//-----------------------------------------------------
 export const {
   useGetBookLiveQuery,
   useUpdateBookLiveMutation,
@@ -187,4 +189,3 @@ export const {
   useUpdateProgressAutoMutation,
   useUpdateLastOpenedMutation,
 } = booksApiStats
-

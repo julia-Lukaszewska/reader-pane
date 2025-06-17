@@ -1,47 +1,43 @@
 /**
  * @file ReaderView.jsx
- * @description Renders the PDF reader view using RenderedPDFViewer component.
+ * @description
+ * Renders the PDF reader view container and delegates page rendering to RenderedPDFViewer.
  */
-
-//-----------------------------------------------------
-//------ ReaderView – displays PDF reader interface
-//-----------------------------------------------------
-
 import React from 'react'
 import styled from 'styled-components'
-import { RenderedPDFViewer } from '@/modules/reader'
+import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
 
 //-----------------------------------------------------
 //------ Styled Components
-//-----------------------------------------------------
-
-//------ StyledReaderView
 //-----------------------------------------------------
 const StyledReaderView = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 100%; 
-  z-index: 9000;
+  width: 100%;
   background: var(--bg-default);
 `
 
 //-----------------------------------------------------
-//------ Component
+//------ ReaderView Component
 //-----------------------------------------------------
-
 /**
- * @function ReaderView
- * @description Displays the PDF viewer within a styled container.
- *
+ * @component ReaderView
+ * @description
+ * Container for the PDF reader; renders visible pages via RenderedPDFViewer.
+ * @param {object} props
+ * @param {React.RefObject} props.pdfRef           - Ref to attach to the scrollable container
+ * @param {Array<{pageNumber:number,url:string,width:number,height:number}>} props.visiblePages
+ *                                                  - Pages to render
  * @returns {JSX.Element}
  */
-const ReaderView = () => {
-  return (
-    <StyledReaderView>
-      <RenderedPDFViewer />
-    </StyledReaderView>
-  )
-}
+const ReaderView = ({ pdfRef, visiblePages }) => (
+  <StyledReaderView ref={pdfRef}>
+    <RenderedPDFViewer
+      pdfRef={pdfRef}
+      visiblePages={visiblePages}
+    />
+  </StyledReaderView>
+)
 
-export default ReaderView
+export default React.memo(ReaderView)

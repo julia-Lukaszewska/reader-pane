@@ -1,18 +1,24 @@
 /**
  * @file AuthController.jsx
  * @description
- * Component that orchestrates authentication lifecycle:
- * - refresh on mount
- * - preload books after login
- * - cleanup on logout
- * - finalizes auth check
+ * Orchestrates authentication lifecycle:
+ * - Refreshes auth on mount
+ * - Preloads books after login
+ * - Cleans up on logout
+ * - Finalizes auth check
  */
-
 import useRefreshOnMount from '@user/session/useRefreshOnMount'
 import useBooksPreloadAfterLogin from '@user/session/useBooksPreloadAfterLogin'
 import useAuthCleanupOnLogout from '@user/session/useAuthCleanupOnLogout'
 import useAuthFinalizer from '@user/session/useAuthFinalizer'
-
+//-----------------------------------------------------
+//------ AuthController Component
+//-----------------------------------------------------
+/**
+ * @component AuthController
+ * @description Invisible controller handling authentication side effects.
+ * @returns {null}
+ */
 export default function AuthController() {
   useRefreshOnMount()
   useBooksPreloadAfterLogin()

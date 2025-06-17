@@ -2,36 +2,40 @@
  * @file booksApi.js
  * @description
  * Main RTK Query API slice for all book-related endpoints.
- * 
- * This slice is extended by endpoint modules using injectEndpoints:
- * - booksApiCollection.js (fetch lists of books)
- * - bookApiSingle.js      (CRUD for single book)
- * - bookApiFlags.js       (mutations for flags like archive/favorite)
- * - booksApiForm.js       (notes, bookmarks, rating, file URL)
- * - booksApiStats.js      (progress, live stats, last opened)
- * 
- * All endpoint hooks are exported from their respective files.
+ * - Extended by feature modules via `injectEndpoints`:
+ *   • booksApiCollection.js (list & static queries)
+ *   • bookApiSingle.js      (single book CRUD)
+ *   • bookApiFlags.js       (flag mutations: archive, favorite)
+ *   • booksApiForm.js       (notes, bookmarks, ratings, file URL)
+ *   • booksApiStats.js      (progress, live stats, last opened)
+ *
+ * All endpoint hooks are exported from their respective modules.
  */
-
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { baseBookApiQuery } from './baseBookApiQuery'
 
-//-----------------------------------------------------------------------------
-// RTK Query API slice for books (empty endpoints, extended elsewhere)
-//-----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ Main booksApi Slice
+//-----------------------------------------------------
 /**
- * Main books API slice, to be extended by feature endpoint modules.
- * 
+ * @constant booksApi
+ * @description
+ * RTK Query API slice for books.  
+ * Uses `baseBookApiQuery` and defines common tagTypes.  
+ * Endpoints are injected in feature modules.
  * @type {import('@reduxjs/toolkit/query').Api<{}>}
  */
 export const booksApi = createApi({
   reducerPath: 'booksApi',
   baseQuery: baseBookApiQuery,
   tagTypes: ['Books', 'BooksStatic', 'Progress', 'Live'],
-  endpoints: () => ({}), // Endpoints are injected in separate files!
+  endpoints: () => ({}), // injected by feature modules
 })
 
-//-----------------------------------------------------------------------------
-// All endpoint hooks are exported from individual feature files
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Note on Endpoint Hooks
+//-----------------------------------------------------
+/*
+  All endpoint hooks (useGetBooksQuery, useUpdateBookMutation, etc.)
+  are exported from their individual feature files under ./bookEndopoints/
+*/

@@ -1,30 +1,17 @@
-// -----------------------------------------------------------------------------
-// RenderedPDFViewer – displays PDF pages from preload
-// -----------------------------------------------------------------------------
-
 /**
  * @file RenderedPDFViewer.jsx
  * @description
- * Component that renders visible pages of a loaded PDF document using preloaded data.
- * Supports single and double page view modes and auto-scrolls to the current page.
+ * Renders PDF pages onto canvas elements:
+ * - Uses a streaming PDF manager’s `visiblePages` array
+ * - Always calls hooks in the same order
+ * - No visible UI outside the canvases
  */
-
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import {
-  useLoadPDFDocument,
-  usePreloadPDFPages,
-} from '@reader/hooks'
-import {
-  selectCurrentPage,
-  selectPageViewMode,
-  selectBookById,
-} from '@/store/selectors'
 
-// -----------------------------------------------------------------------------
-// Styled Components
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Styled Components
+//-----------------------------------------------------
 
 const ScrollWrapper = styled.div`
   width: ${({ $isSidebarOpen }) =>
@@ -43,101 +30,75 @@ const PagesContainer = styled.div`
   gap: 0.3rem;
 `
 
-const PDFPage = styled.img`
-  object-fit: contain;
+const Canvas = styled.canvas`
   margin: 1rem;
   max-height: 100%;
+  object-fit: contain;
   z-index: 10000;
+  width: 100%;
+  height: auto;
+  display: block;
 `
 
-// -----------------------------------------------------------------------------
-// Component: RenderedPDFViewer
-// -----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ RenderedPDFViewer Component
+//-----------------------------------------------------
 
-export default function RenderedPDFViewer() {
-  const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
-  const rawCurrentPage = useSelector(selectCurrentPage)
-  const currentPage =
-    Number.isFinite(rawCurrentPage) && rawCurrentPage > 0
-      ? rawCurrentPage
-      : 1
-
-  const viewMode = useSelector(selectPageViewMode)
-  const bookId = useSelector((state) => state.book.activeBookId)
-  const selectBook = useMemo(() => selectBookById(bookId), [bookId])
-  const staticBook = useSelector(selectBook)
-  const totalPages = staticBook?.meta?.totalPages || 0
-
-  // Preload hook
-  const { pdfRef, visiblePages, setPdfReady } = usePreloadPDFPages()
-
-  // Handle initial load
-  const handleLoaded = useCallback(
-    (pdf) => {
-    const pages = totalPages || pdf?.numPages || 0
-    if (!totalPages && pdf?.numPages && staticBook?.meta) {
-      // tu staticBook istnieje, więc dopiero wtedy zapisujemy
-      staticBook.meta.totalPages = pdf.numPages
-    }
-      if (pages > 0 && currentPage > 0) {
-        setPdfReady(true)
-      }
-    },
-    [totalPages, currentPage, setPdfReady, staticBook]
-  )
-
- useLoadPDFDocument({ pdfRef, book: staticBook, onLoaded: handleLoaded })
-
-  // Auto-scroll to current page
+/**
+ * @component RenderedPDFViewer
+ * @description Draws each PDF page image into a canvas element.
+ * @param {Object} props
+ * @param {React.RefObject} props.pdfRef               - Optional wrapper ref for scroll container
+ * @param {Array<{pageNumber: number, url: string, width: number, height: number}>} props.visiblePages
+ *   Pages to render, each with a URL and dimensions
+ * @param {boolean} props.sidebarOpen                  - Whether the sidebar is open (adjusts width)
+ * @returns {React.ReactNode|null}
+ */
+export default function RenderedPDFViewer({
+  pdfRef,
+  visiblePages = [],
+  sidebarOpen = false,
+}) {
+  // always call hooks in the same order
+  const localWrapperRef = useRef()
+  const wrapperRef = pdfRef || localWrapperRef
   const pageRefs = useRef({})
-  useEffect(() => {
-    const el = pageRefs.current[currentPage]
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [currentPage, visiblePages])
 
-  // Determine pages to render
-  const pagesToRender = useMemo(() => {
-    if (viewMode === 'single') {
-      return visiblePages.filter((p) => p.pageNumber === currentPage)
-    }
-    return visiblePages.filter(
-      (p) =>
-        p.pageNumber === currentPage || p.pageNumber === currentPage + 1
-    )
-  }, [viewMode, visiblePages, currentPage])
-
-  // Revoke unused Blob URLs
-  const seenUrls = useRef(new Set())
+  //-----------------------------------------------------
+  //------ Draw Pages on Canvas
+  //-----------------------------------------------------
   useEffect(() => {
-    // Revoke URLs no longer used
-    seenUrls.current.forEach((url) => {
-      if (!pagesToRender.some((p) => p.blobUrl === url)) {
-        URL.revokeObjectURL(url)
-        seenUrls.current.delete(url)
+    visiblePages.forEach(({ pageNumber, url, width, height }) => {
+      const canvas = pageRefs.current[pageNumber]
+      if (!canvas || !url) return
+
+      const ctx = canvas.getContext('2d')
+      const img = new Image()
+
+      img.onload = () => {
+        canvas.width = width
+        canvas.height = height
+        ctx.drawImage(img, 0, 0)
       }
+
+      img.onerror = (e) => {
+        console.error(`[RenderedPDFViewer] Error loading page ${pageNumber}`, e)
+      }
+
+      img.src = url
     })
-    // Track new URLs
-    pagesToRender.forEach((p) => seenUrls.current.add(p.blobUrl))
+  }, [visiblePages])
 
-    return () => {
-      seenUrls.current.forEach((url) => URL.revokeObjectURL(url))
-      seenUrls.current.clear()
-    }
-  }, [pagesToRender])
-
-  // Show loading if no pages ready
-  if (pagesToRender.length === 0) {
-    return <p>Loading…</p>
-  }
-
+  //-----------------------------------------------------
+  //------ Render
+  //-----------------------------------------------------
   return (
-    <ScrollWrapper $isSidebarOpen={sidebarOpen} ref={pdfRef}>
+    <ScrollWrapper $isSidebarOpen={sidebarOpen} ref={wrapperRef}>
       <PagesContainer>
-        {pagesToRender.map(({ id, blobUrl, pageNumber }) => (
-          <PDFPage
-            key={id}
-            src={blobUrl}
-            alt={`Page ${pageNumber}`}
+        {visiblePages.map(({ pageNumber }) => (
+          <Canvas
+            key={pageNumber}
+            data-page={pageNumber}
             ref={(el) => (pageRefs.current[pageNumber] = el)}
           />
         ))}

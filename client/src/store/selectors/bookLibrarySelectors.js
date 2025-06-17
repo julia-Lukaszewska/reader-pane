@@ -1,20 +1,16 @@
-/**
- * @file bookLibrarySelectors.js
- * @description
- * Redux selectors for filtering Book entities based on library filter.
- */
 import { createSelector } from '@reduxjs/toolkit'
 import { selectAllBooks, selectLibraryFilter } from './booksSelectors'
 
+//-----------------------------------------------------
+//------ Library View Selectors
+//-----------------------------------------------------
+
 /**
- * Returns list of books according to current library filter.
- * Supported filter values:
- * - 'favorites' : only favorited, non-archived books
- * - 'archived'  : only archived books
- * - 'to-read'   : books flagged to read next, non-archived
- * - 'reading'   : books in progress, non-archived
- * - 'finished'  : completed books, non-archived
- * - default     : all non-archived books
+ * @function selectVisibleBooks
+ * @description Returns books filtered by the current library filter.
+ * @param {Array} books
+ * @param {string} filter
+ * @returns {Array<Object>}
  */
 export const selectVisibleBooks = createSelector(
   [selectAllBooks, selectLibraryFilter],
@@ -22,28 +18,24 @@ export const selectVisibleBooks = createSelector(
     switch (filter) {
       case 'favorites':
         return books.filter(b => b.flags?.isFavorited && !b.flags?.isArchived)
-
       case 'archived':
         return books.filter(b => b.flags?.isArchived)
-
       case 'to-read':
         return books.filter(b => b.flags?.isToRead && !b.flags?.isArchived)
-
       case 'reading':
         return books.filter(b => b.flags?.isReading && !b.flags?.isArchived)
-
       case 'finished':
         return books.filter(b => b.flags?.isFinished && !b.flags?.isArchived)
-
       default:
-        // e.g. 'all' or any unknown value: show only non-archived
         return books.filter(b => !b.flags?.isArchived)
     }
   }
 )
 
 /**
- * Returns `true` if there are no books in the current filtered view.
+ * @function selectIsLibraryEmpty
+ * @description Returns true if no books are visible in the current filter.
+ * @returns {boolean}
  */
 export const selectIsLibraryEmpty = createSelector(
   selectVisibleBooks,

@@ -6,24 +6,28 @@
  * - GoogleStrategy for OAuth login
  * - JwtStrategy for access token validation
  *
- * This module exports a function `configurePassport()` that should be called
- * during server initialization to register the strategies.
+ * Call `configurePassport()` during server initialization to register these strategies.
  */
-
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
 import User from '../models/User.js'
 
-// -----------------------------------------------------------------------------
-// STRATEGY CONFIGURATION
-// -----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ configurePassport Function
+//-----------------------------------------------------
+/**
+ * @function configurePassport
+ * @description Registers Passport strategies:
+ *   • LocalStrategy: email/password authentication  
+ *   • GoogleStrategy: OAuth2 login via Google  
+ *   • JwtStrategy: Bearer token validation  
+ */
 export default function configurePassport() {
-  // ---------------------------------------------------------------------------
-  // LOCAL STRATEGY – email and password login
-  // ---------------------------------------------------------------------------
+  //---------------------------------------------------
+  //------ LocalStrategy: Email + Password Login
+  //---------------------------------------------------
   passport.use(
     new LocalStrategy(
       { usernameField: 'email' },
@@ -41,16 +45,16 @@ export default function configurePassport() {
     )
   )
 
-  // ---------------------------------------------------------------------------
-  // GOOGLE STRATEGY – OAuth login with Google
-  // ---------------------------------------------------------------------------
+  //---------------------------------------------------
+  //------ GoogleStrategy: OAuth Login with Google
+  //---------------------------------------------------
   if (process.env.GGL_ID && process.env.GGL_SECRET) {
     passport.use(
       new GoogleStrategy(
         {
           clientID: process.env.GGL_ID,
           clientSecret: process.env.GGL_SECRET,
-          callbackURL: 'api/auth/google/callback',
+          callbackURL: '/api/auth/google/callback',
         },
         async (_accessToken, _refreshToken, profile, done) => {
           try {
@@ -73,12 +77,14 @@ export default function configurePassport() {
       )
     )
   } else {
-    console.warn('Google OAuth configuration missing – GoogleStrategy not initialized.')
+    console.warn(
+      'Google OAuth configuration missing – GoogleStrategy not initialized.'
+    )
   }
 
-  // ---------------------------------------------------------------------------
-  // JWT STRATEGY – access token authentication
-  // ---------------------------------------------------------------------------
+  //---------------------------------------------------
+  //------ JwtStrategy: Access Token Validation
+  //---------------------------------------------------
   if (process.env.JWT_ACCESS_KEY) {
     passport.use(
       new JwtStrategy(
@@ -90,6 +96,8 @@ export default function configurePassport() {
       )
     )
   } else {
-    console.warn('JWT_ACCESS_KEY missing – JwtStrategy not initialized.')
+    console.warn(
+      'JWT_ACCESS_KEY missing – JwtStrategy not initialized.'
+    )
   }
 }

@@ -1,42 +1,62 @@
 /**
  * @file ReaderLayout.jsx
- * @description Layout wrapper for the PDF reader view.
- * Renders the ReaderToolbar and delegates session initialization and routing
- * to the ReaderSessionController.
+ * @description
+ * Layout component for the reader view:
+ * - Wraps content in a flex column container
+ * - Uses ReaderSessionController to manage PDF session
+ * - Renders ReaderToolbar and ReaderView once ready
  */
-
 import React from 'react'
 import styled from 'styled-components'
-import { ReaderToolbar } from '@reader'
+
+//-----------------------------------------------------
+//------ Controllers
+//-----------------------------------------------------
 import ReaderSessionController from '@/controllers/ReaderSessionController'
 
-//-----------------------------------------------------------------------------
-// Styled container for the reader layout
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ UI Components
+//-----------------------------------------------------
+import { ReaderToolbar } from '@reader/ReaderToolbar'
+import ReaderView from '@/views/ReaderView'
+
+//-----------------------------------------------------
+//------ Styled Components
+//-----------------------------------------------------
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
 `
 
-//-----------------------------------------------------------------------------
-// Component: ReaderLayout
-//-----------------------------------------------------------------------------/
-
+//-----------------------------------------------------
+//------ ReaderLayout Component
+//-----------------------------------------------------
 /**
- * Layout component for the `/read` route.
- * Displays the top ReaderToolbar and uses ReaderSessionController
- * to handle session initialization, book selection, and route rendering.
- *
- * @component
- * @returns {JSX.Element} The reader layout with toolbar and session controller.
+ * @component ReaderLayout
+ * @description
+ * Orchestrates the reader page layout:
+ * - Initializes PDF session
+ * - Renders toolbar and view with session props
+ * @returns {JSX.Element}
  */
-export default function ReaderLayout() {
-  return (
-    <Container>
-      <ReaderToolbar />
-      <ReaderSessionController />
-    
-    </Container>
-  )
-}
+const ReaderLayout = () => (
+  <Container>
+    <ReaderSessionController>
+      {({ pdfRef, visiblePages }) => (
+        <>
+          <ReaderToolbar
+            pdfRef={pdfRef}
+            visiblePages={visiblePages}
+          />
+          <ReaderView
+            pdfRef={pdfRef}
+            visiblePages={visiblePages}
+          />
+        </>
+      )}
+    </ReaderSessionController>
+  </Container>
+)
+
+export default React.memo(ReaderLayout)

@@ -1,10 +1,13 @@
-/** 
-* @file FallbackScreen.jsx 
-* @description Simple screen displayed when there is no bookId. 
-*/
+/**
+ * @file FallbackScreen.jsx
+ * @description Simple screen displayed when there is no bookId.
+ */
 import React from 'react'
 import styled from 'styled-components'
 
+//-----------------------------------------------------
+//------ Styled Components
+//-----------------------------------------------------
 const Center = styled.div`
   display: flex;
   align-items: center;
@@ -14,10 +17,14 @@ const Center = styled.div`
   color: var(--text-secondary);
 `
 
+//-----------------------------------------------------
+//------ FallbackScreen Component
+//-----------------------------------------------------
 /**
- * @component
+ * @component FallbackScreen
+ * @description Displays a placeholder when no document is selected.
  * @returns {JSX.Element}
  */
-export default function FallbackScreen() { 
-return <Center>No document selected for reading</Center>
+export default function FallbackScreen() {
+  return <Center>No document selected for reading</Center>
 }

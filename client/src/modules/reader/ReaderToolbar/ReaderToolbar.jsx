@@ -1,8 +1,12 @@
 /**
  * @file ReaderToolbar.jsx
- * @description Top navigation toolbar inside the PDF reader view, with back button, page view toggle, zoom and pagination controls.
+ * @description Top toolbar for the reader view:
+ * - Back button to return to the library
+ * - Page view mode toggle (single/double)
+ * - Zoom controls (in/out/reset)
+ * - Page navigation controls (prev/next)
  */
-
+import React, { memo, useCallback } from 'react'
 import styled from 'styled-components'
 import {
   PDFPageControls,
@@ -12,11 +16,9 @@ import {
 import { IoArrowBack } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 
-//-----------------------------------------------------------------------------
-// Styled components
-//-----------------------------------------------------------------------------
-  
-//--- Main toolbar container
+//-----------------------------------------------------
+//------ Styled Components
+//-----------------------------------------------------
 const StyledToolbar = styled.nav`
   position: relative;
   display: flex;
@@ -25,13 +27,18 @@ const StyledToolbar = styled.nav`
   height: 7vh;
   width: 100%;
   padding: 2rem 3rem;
-  background: var(--gradient-main-v2);
+  background: var(--gradient-metal-blue-light);
   border-bottom: 1rem solid var(--color-metal-100);
   overflow: hidden;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.384);
 `
 
-//--- Center section for view/zoom/pagination controls
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+`
+
 const CenterSection = styled.div`
   display: flex;
   align-items: center;
@@ -40,49 +47,40 @@ const CenterSection = styled.div`
   margin: 0 auto;
 `
 
-//--- Left section for back navigation
-const LeftSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
+const BackButton = styled(IoArrowBack)`
+  cursor: pointer;
 `
 
-//-----------------------------------------------------------------------------
-// Component: ReaderToolbar
-//-----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ ReaderToolbar Component
+//-----------------------------------------------------
 /**
- * Renders the reader view's top toolbar with:
- * - Back button to return to the library
- * - Page view mode toggle (single/double)
- * - Zoom controls (in/out/reset)
- * - Page navigation controls (prev/next)
- *
- * @component
+ * @component ReaderToolbar
+ * @description Renders the reader view’s top toolbar with navigation and controls.
  * @returns {JSX.Element}
  */
 const ReaderToolbar = () => {
-  console.log('ReaderToolbar')
   const navigate = useNavigate()
+  const goBack = useCallback(() => navigate('/library'), [navigate])
 
   return (
-    <StyledToolbar>
+    <StyledToolbar aria-label="Reader toolbar">
       <LeftSection>
-        <IoArrowBack
+        <BackButton
           size={32}
-          color='white'
-          style={{ cursor: 'pointer' }}
-          onClick={() => navigate('/library')}
+          color="white"
+          aria-label="Back to library"
+          onClick={goBack}
         />
       </LeftSection>
 
       <CenterSection>
-        <PageViewModeToggle />
-        <PDFZoomControls />
-        <PDFPageControls />
+        <PageViewModeToggle aria-label="Toggle page view mode" />
+        <PDFZoomControls aria-label="Zoom controls" />
+        <PDFPageControls aria-label="Page navigation controls" />
       </CenterSection>
     </StyledToolbar>
   )
 }
 
-export default ReaderToolbar
+export default memo(ReaderToolbar)

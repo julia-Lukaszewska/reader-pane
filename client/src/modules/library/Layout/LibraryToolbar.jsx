@@ -20,11 +20,12 @@ import {
   clearSelected,
   setLibraryViewMode,
   setSortMode,
-  setLibraryFilter,
+
 } from '@/store/slices/bookSlice'
 
 import {
   selectIsManageMode,
+  selectLibraryFilter,
   selectSelectedBookIds,
   selectLibraryViewMode,
   selectSortMode,
@@ -98,7 +99,7 @@ const LibraryToolbar = () => {
   const selected   = useSelector(selectSelectedBookIds)
   const viewMode   = useSelector(selectLibraryViewMode)
   const sortMode   = useSelector(selectSortMode)
-  const filter     = useSelector((s) => s.book.libraryFilter)
+  const filter     = useSelector(selectLibraryFilter)
 
   const section = useMemo(() => {
     if (filter === 'archive')    return 'Archive'

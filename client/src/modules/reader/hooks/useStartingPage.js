@@ -1,46 +1,64 @@
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import {
+  useGetBookByIdQuery,
+  useGetBookFileUrlQuery,
+} from '@/store/api/booksPrivateApi'
+import { setReaderState } from '@/store/slices/readerSlice'
+
+//-----------------------------------------------------
+//------ useStartingPage Hook
+//-----------------------------------------------------
+
 /**
- * @file useStartingPage.js
+ * @function useStartingPage
  * @description
- * Sets the reader's currentPage from backend progress,
- * only if currentPage is still the default (1).
- */
-
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { useGetProgressQuery, useUpdateProgressMutation } from '@/store/api/booksPrivateApi'
-import { selectCurrentPageById } from '@/store/selectors'
-
-/**
- * Retrieves last saved reading position from backend
- * and applies it only if current page is still at default (1).
- *
- * @param {string} bookId - ID of the active book
+ * Initializes reader state when both book metadata and PDF URL are ready.
+ * - Fetches book metadata (including totalPages and currentPage)
+ * - Fetches the PDF file URL
+ * - Dispatches `setReaderState` once per mount
+ * @param {string} bookId - ID of the book to start reading
+ * @returns {boolean} True once initialization has run
  */
 export default function useStartingPage(bookId) {
-  const currentPage = useSelector(state => selectCurrentPageById(state, bookId))
-  const isInitial = !bookId || currentPage !== 1
+  const dispatch = useDispatch()
+  const [isInitialized, setInitialized] = useState(false)
+  const didInitRef = useRef(false)
 
-  const { data: progressData } = useGetProgressQuery(bookId, { skip: isInitial })
-  const [updateProgress] = useUpdateProgressMutation()
+  //-----------------------------------------------------
+  //------ RTK Query Hooks
+  //-----------------------------------------------------
+  const { data: bookData } = useGetBookByIdQuery(bookId, { skip: !bookId })
+  const {
+    data: fileUrl,
+    isLoading: fileLoading,
+  } = useGetBookFileUrlQuery(bookId, { skip: !bookId })
 
+  //-----------------------------------------------------
+  //------ Derived Values
+  //-----------------------------------------------------
+  const fileReady = !fileLoading && Boolean(fileUrl)
+  const totalPages = bookData?.meta?.totalPages ?? 1
+  const currentPage = bookData?.stats?.currentPage ?? 1
+
+  //-----------------------------------------------------
+  //------ Effect: Initialize Reader State
+  //-----------------------------------------------------
   useEffect(() => {
-    if (!bookId) {
-      console.log('[useStartingPage] No bookId – skipping')
-      return
-    }
+    if (!bookData || !fileReady || didInitRef.current) return
 
-    if (currentPage !== 1) {
-      console.log('[useStartingPage] currentPage !== 1 – no need to load progress')
-      return
-    }
+    dispatch(
+      setReaderState({
+        bookId,
+        totalPages,
+        currentPage,
+        fileUrl,
+      })
+    )
 
-    if (!progressData?.currentPage || progressData.currentPage === 1) {
-      console.log('[useStartingPage] No backend progress to apply')
-      return
-    }
+    didInitRef.current = true
+    setInitialized(true)
+  }, [bookData, fileReady, dispatch, bookId, totalPages, currentPage, fileUrl])
 
-    console.log(`[useStartingPage] Setting currentPage from backend to ${progressData.currentPage}`)
-
-    updateProgress({ id: bookId, currentPage: progressData.currentPage })
-  }, [bookId, currentPage, progressData, updateProgress])
+  return isInitialized
 }

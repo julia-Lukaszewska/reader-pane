@@ -1,82 +1,85 @@
-/**
- * @file renderPages.js
- * @description Renders a range of PDF pages to image data URLs at a given scale.
- */
-
-
-
-//-----------------------------------------------------------------------------
-// Function: renderPages
-//-----------------------------------------------------------------------------
-
-/**   
- * Renders pages from `from` to `to` using `pdf.getPage` and returns new images.
- *
- * Skips pages already present in `renderedPages`.
- *
- * @param {Object} params
- * @param {Object} params.pdf - PDFJS document instance
- * @param {number} params.scale - Zoom scale for rendering
- * @param {number} params.from - First page number to render (1-based)
- * @param {number} params.to - Last page number to render (inclusive)
- * @param {Object} params.renderedPages - Map of already-rendered pages `{ [page]: {...} }`
- * @returns {Promise<Object>} Map of newly rendered pages, keyed by page number
- */
 export default async function renderPages({
   pdf,
   scale,
   from,
   to,
-  renderedPages,
+  renderedPages = {},
+  signal,
+  concurrency = 2,
 }) {
-  console.log('[renderPages] start →', { from, to, scale })
+  console.log('[renderPages] start →', { from, to, scale, concurrency })
 
-  // Guard: ensure PDF document is available
-  if (!pdf) {
-    console.warn('[renderPages] No PDF document → aborting')
-    return {}
+  const toRender = []
+  for (let i = from; i <= to; i++) {
+    if (!renderedPages[i]) toRender.push(i)
   }
 
-  const already = renderedPages || {}
+  /** @type {{[n:number]: {url:string,width:number,height:number}}} */
   const newPages = {}
 
-  // Render each page in the specified range
-  for (let i = from; i <= to; i++) {
-    if (already[i]) {
-      console.log(`[renderPages] Page ${i} already rendered → skipping`)
-      continue
-    }
-    try {
-      console.log(`[renderPages] Rendering page ${i}`)
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
-      const page = await pdf.getPage(i)
-      const viewport = page.getViewport({ scale })
+  async function renderOne(pageNum) {
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
 
-      // Create canvas for rendering
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-
-      canvas.width = viewport.width
-      canvas.height = viewport.height
-
-      // Render page into canvas
-      await page.render({ canvasContext: ctx, viewport }).promise
-
-      // Store rendered image data
-      newPages[i] = {
-        id: `p${i}-s${scale}`,
-        dataUrl: canvas.toDataURL('image/png'),
-        width: viewport.width,
-        height: viewport.height,
-        pageNumber: i,
+    // 1. get page
+    let page
+    for (let i = 0; ; i++) {
+      try {
+        page = await pdf.getPage(pageNum)
+        break
+      } catch (err) {
+        if (i >= 2) throw err
+        await wait(100 * (i + 1))
       }
+    }
 
-      canvas.remove()
-    } catch (err) {
-      console.error(`[renderPages] Error rendering page ${i}:`, err)
+    // 2. prepare canvas
+    const viewport = page.getViewport({ scale })
+    const canvas =
+      typeof OffscreenCanvas !== 'undefined'
+        ? new OffscreenCanvas(viewport.width, viewport.height)
+        : Object.assign(document.createElement('canvas'), {
+            width: viewport.width,
+            height: viewport.height,
+          })
+    const ctx = canvas.getContext('2d')
+
+    // 3. render
+    for (let i = 0; ; i++) {
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+      try {
+        await page.render({ canvasContext: ctx, viewport }).promise
+        break
+      } catch (err) {
+        if (i >= 2) throw err
+        await wait(100 * (i + 1))
+      }
+    }
+
+    // 4. convert to blob URL
+    const blob =
+      canvas.convertToBlob
+        ? await canvas.convertToBlob()
+        : await new Promise((res) => canvas.toBlob(res))
+
+    const url = URL.createObjectURL(blob)
+
+    newPages[pageNum] = {
+      url,
+      width: viewport.width,
+      height: viewport.height,
     }
   }
 
-  console.log('[renderPages] done → total new pages:', Object.keys(newPages).length)
+  // Queue rendering with limited concurrency
+  const queue = [...toRender]
+  while (queue.length) {
+    const batch = queue.splice(0, concurrency)
+    await Promise.all(batch.map((n) => renderOne(n)))
+  }
+
+  console.log('[ newPages final]', newPages)
+  console.log('[renderPages] done, new:', Object.keys(newPages).length)
   return newPages
 }

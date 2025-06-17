@@ -1,7 +1,20 @@
 /**
  * @file middlewares/authJwt.js
- * @description Sprawdza i dekoduje JWT z nagłówka Authorization
+ * @description
+ * Middleware that validates and decodes JWT from the Authorization header
+ * using Passport.js JwtStrategy.
  */
-import passport from 'passport';
+import passport from 'passport'
 
-export default passport.authenticate('jwt', { session: false });
+//-----------------------------------------------------
+//------ JWT Authentication Middleware
+//-----------------------------------------------------
+/**
+ * @constant authJwt
+ * @description
+ * Express middleware to authenticate requests via JWT.
+ * Uses Passport's 'jwt' strategy and disables sessions.
+ */
+const authJwt = passport.authenticate('jwt', { session: false })
+
+export default authJwt

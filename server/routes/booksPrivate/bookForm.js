@@ -1,16 +1,27 @@
 /**
  * @file routes/booksPrivate/bookForm.js
- * @description Express router for creating and editing book metadata, notes, and bookmarks.
+ * @description
+ * Express router for creating and editing book metadata, notes, and bookmarks.
  */
-
 import express from 'express'
 import Book from '../../models/Book.js'
 import { updateLibraryBook } from '../../controllers/LibraryBooksController.js'
+
+//-----------------------------------------------------
+//------ Router Setup
+//-----------------------------------------------------
 const router = express.Router()
 
-//------------------------------------------------------------------
-// POST   /api/books/private        – create new book metadata
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Create Book Metadata
+//-----------------------------------------------------
+/**
+ * @route POST /api/books/private
+ * @description Create a new book metadata document.
+ * @returns {201} Created book object
+ * @returns {400} If `meta` is missing
+ * @returns {500} On server error
+ */
 router.post('/', async (req, res) => {
   try {
     if (!req.body.meta) {
@@ -28,14 +39,27 @@ router.post('/', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// PATCH  /api/books/private/:id    – update meta fields (shallow merge)
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Update Book Metadata
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id
+ * @description Shallow merge update of book metadata fields.
+ *              Handled by `updateLibraryBook` controller.
+ */
 router.patch('/:id', updateLibraryBook)
 
-//------------------------------------------------------------------
-// PATCH  /api/books/private/:id/notes         – add a note
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Notes Endpoints
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id/notes
+ * @description Add a note to the book.
+ * @returns {Array} Updated notes array
+ * @returns {400} If text or page missing/invalid
+ * @returns {404} If book not found
+ * @returns {500} On server error
+ */
 router.patch('/:id/notes', async (req, res) => {
   try {
     const { text, page } = req.body
@@ -55,9 +79,13 @@ router.patch('/:id/notes', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// DELETE /api/books/private/:id/notes/:index – remove a note by index
-//------------------------------------------------------------------
+/**
+ * @route DELETE /api/books/private/:id/notes/:index
+ * @description Remove a note by index.
+ * @returns {Array} Updated notes array
+ * @returns {404} If book not found
+ * @returns {500} On server error
+ */
 router.delete('/:id/notes/:index', async (req, res) => {
   try {
     const idx = Number(req.params.index)
@@ -78,9 +106,17 @@ router.delete('/:id/notes/:index', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// PATCH  /api/books/private/:id/bookmarks      – add a bookmark
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ Bookmarks Endpoints
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id/bookmarks
+ * @description Add a bookmark to the book.
+ * @returns {Array} Updated bookmarks array
+ * @returns {400} If page missing/invalid
+ * @returns {404} If book not found
+ * @returns {500} On server error
+ */
 router.patch('/:id/bookmarks', async (req, res) => {
   try {
     const { label, page } = req.body
@@ -100,9 +136,13 @@ router.patch('/:id/bookmarks', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// DELETE /api/books/private/:id/bookmarks/:index – remove a bookmark by index
-//------------------------------------------------------------------
+/**
+ * @route DELETE /api/books/private/:id/bookmarks/:index
+ * @description Remove a bookmark by index.
+ * @returns {Array} Updated bookmarks array
+ * @returns {404} If book not found
+ * @returns {500} On server error
+ */
 router.delete('/:id/bookmarks/:index', async (req, res) => {
   try {
     const idx = Number(req.params.index)

@@ -1,32 +1,46 @@
+/**
+ * @file src/api/pdfStreamApi.js
+ * @description
+ * RTK Query API slice for interacting with GridFS PDF storage:
+ * - Automatically includes JWT auth token in headers
+ * - Supports listing available PDF filenames
+ */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { selectAccessToken } from '@/store/selectors/authSelectors'
 
+//-----------------------------------------------------
+//------ PDF Stream API Slice
+//-----------------------------------------------------
 export const pdfStreamApi = createApi({
   reducerPath: 'pdfStreamApi',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL,
-    credentials: 'include',
-    prepareHeaders: (h, { getState }) => {
+    prepareHeaders: (headers, { getState }) => {
       const token = selectAccessToken(getState())
-      if (token) h.set('Authorization', `Bearer ${token}`)
-      return h
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
+      return headers
     },
+    credentials: 'include',
   }),
-  endpoints: (builder) => ({
+  endpoints: builder => ({
+    //-------------------------------------------------
+    //------ listFiles Query
+    //-------------------------------------------------
     /**
-     * Pobiera plik PDF jako Blob.
-     * @param {string} filename – dokładna nazwa pliku w GridFS
-     * @returns {Blob}
+     * @function listFiles
+     * @description Fetches an array of filenames for all PDFs stored in GridFS.
+     * @memberof pdfStreamApi.endpoints
+     * @returns {Array<string>} An array of PDF filenames available for streaming.
      */
-    getPdfFile: builder.query({
-      query: (filename) => ({
-        url: `/books/storage/${encodeURIComponent(filename)}`,
-        responseHandler: 'blob',   // <-- RTK Query zwróci Blob w data
-        cache: 'no-store',         // (opcjonalnie) wyłącz cache przeglądarki
-      }),
-      extraOptions: { maxRetries: 2 },
+    listFiles: builder.query({
+      query: () => '/books/storage',
     }),
   }),
 })
 
-export const { useGetPdfFileQuery } = pdfStreamApi
+//-----------------------------------------------------
+//------ Hooks Export
+//-----------------------------------------------------
+export const { useListFilesQuery } = pdfStreamApi

@@ -2,15 +2,23 @@
  * @file routes/booksPrivate/booksCollection.js
  * @description Express router for retrieving book collections.
  */
-
 import express from 'express'
 import Book from '../../models/Book.js'
 import { listLibrary } from '../../controllers/LibraryBooksController.js'
+
+//-----------------------------------------------------
+//------ Router Setup
+//-----------------------------------------------------
 const router = express.Router()
 
-//------------------------------------------------------------------
-// GET /api/books/private/static – list lightweight metadata for all books
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ GET /api/books/private/static
+//-----------------------------------------------------
+/**
+ * @route GET /api/books/private/static
+ * @description List lightweight metadata for all books.
+ * @returns {Array<Object>} Array of book metadata objects with selected fields.
+ */
 router.get('/static', async (req, res) => {
   try {
     const books = await Book.find(
@@ -32,9 +40,13 @@ router.get('/static', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// GET /api/books/private       – list full documents for all books
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ GET /api/books/private
+//-----------------------------------------------------
+/**
+ * @route GET /api/books/private
+ * @description List full documents for all books owned by the user.
+ */
 router.get('/', listLibrary)
 
 export default router

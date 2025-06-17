@@ -25,7 +25,7 @@ import { pdfStreamApi } from './api/pdfStreamApi'
 import {booksApi} from './api/booksPrivateApi'
 import bookReducer from './slices/bookSlice'
 import readerReducer from './slices/readerSlice'
-import pdfCacheReducer from './slices/pdfCacheSlice'
+
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
 
@@ -82,7 +82,7 @@ const rootReducer = combineReducers({
   ui: mainUiReducer,
   book: persistReducer(bookPersistConfig, bookReducer),
   reader: persistReducer(readerPersistConfig, readerReducer),
-  pdfCache: pdfCacheReducer,
+
   auth: authReducer, // auth state remains in memory, not persisted
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,

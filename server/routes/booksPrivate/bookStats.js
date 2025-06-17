@@ -2,15 +2,21 @@
  * @file routes/booksPrivate/bookStats.js
  * @description Express router for managing book stats (progress and timestamps).
  */
-
 import express from 'express'
 import Book from '../../models/Book.js'
 
+//-----------------------------------------------------
+//------ Router Setup
+//-----------------------------------------------------
 const router = express.Router()
 
-//------------------------------------------------------------------
-// GET /api/books/private/:id/live    – get mutable stats (e.g., currentPage, maxVisitedPage, lastOpenedAt)
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ GET Live Stats
+//-----------------------------------------------------
+/**
+ * @route GET /api/books/private/:id/live
+ * @description Get mutable stats (e.g., currentPage, maxVisitedPage, lastOpenedAt).
+ */
 router.get('/:id/live', async (req, res) => {
   try {
     const book = await Book.findOne(
@@ -25,9 +31,13 @@ router.get('/:id/live', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// PATCH /api/books/private/:id/live  – update mutable stats
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ PATCH Live Stats
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id/live
+ * @description Update mutable stats.
+ */
 router.patch('/:id/live', async (req, res) => {
   try {
     if (!req.body.stats) {
@@ -50,9 +60,13 @@ router.patch('/:id/live', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// GET /api/books/private/:id/progress – get reading progress (currentPage, maxVisitedPage)
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ GET Reading Progress
+//-----------------------------------------------------
+/**
+ * @route GET /api/books/private/:id/progress
+ * @description Get reading progress (currentPage, maxVisitedPage).
+ */
 router.get('/:id/progress', async (req, res) => {
   try {
     const book = await Book.findOne(
@@ -70,9 +84,13 @@ router.get('/:id/progress', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// PATCH /api/books/private/:id/progress – save progress manually
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ PATCH Reading Progress
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id/progress
+ * @description Save progress manually.
+ */
 router.patch('/:id/progress', async (req, res) => {
   try {
     const { currentPage } = req.body
@@ -82,7 +100,7 @@ router.patch('/:id/progress', async (req, res) => {
     const book = await Book.findOne({ _id: req.params.id, owner: req.user.id })
     if (!book) return res.status(404).json({ error: 'Book not found' })
 
-    if (!book.stats) book.stats = {}
+    book.stats = book.stats || {}
     book.stats.currentPage = currentPage
     book.stats.maxVisitedPage = Math.max(currentPage, book.stats.maxVisitedPage || 1)
     await book.save()
@@ -97,9 +115,13 @@ router.patch('/:id/progress', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// PATCH /api/books/private/:id/progress/auto – auto-save progress
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ PATCH Auto-Save Progress
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id/progress/auto
+ * @description Auto-save progress (background/save-on-exit).
+ */
 router.patch('/:id/progress/auto', async (req, res) => {
   try {
     const currentPage = req.body?.changes?.stats?.currentPage
@@ -109,7 +131,7 @@ router.patch('/:id/progress/auto', async (req, res) => {
     const book = await Book.findOne({ _id: req.params.id, owner: req.user.id })
     if (!book) return res.status(404).json({ error: 'Book not found' })
 
-    if (!book.stats) book.stats = {}
+    book.stats = book.stats || {}
     book.stats.currentPage = currentPage
     book.stats.maxVisitedPage = Math.max(currentPage, book.stats.maxVisitedPage || 1)
     await book.save()
@@ -124,9 +146,13 @@ router.patch('/:id/progress/auto', async (req, res) => {
   }
 })
 
-//------------------------------------------------------------------
-// PATCH /api/books/private/:id/last-opened – update lastOpenedAt timestamp
-//------------------------------------------------------------------
+//-----------------------------------------------------
+//------ PATCH Last Opened Timestamp
+//-----------------------------------------------------
+/**
+ * @route PATCH /api/books/private/:id/last-opened
+ * @description Update lastOpenedAt timestamp.
+ */
 router.patch('/:id/last-opened', async (req, res) => {
   try {
     const now = new Date()

@@ -23,6 +23,7 @@ import { GlobalStyles } from '@/styles'
  * @returns {JSX.Element}
  */
 export default function AppProvider({ children }) {
+  
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

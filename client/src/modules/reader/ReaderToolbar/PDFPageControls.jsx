@@ -1,27 +1,18 @@
 /**
  * @file PDFPageControls.jsx
- * @description
- * Pagination controls for PDF viewer, allowing navigation between pages.
- * Includes back/next buttons and current page display.
- * Hidden outside of `/read` route or if book/page data is missing.
+ * @description Pagination controls for PDF viewer, allowing navigation between pages.
  */
-
 import React from 'react'
 import styled from 'styled-components'
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
 import { useLocation } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { usePDFPagination } from '@reader/hooks'
-import {
-  selectActiveBookId,
-  selectPageViewMode,
-  selectBookStaticById,
-} from '@/store/selectors'
+import { useSelector, useDispatch } from 'react-redux'
+import { setCurrentPage } from '@/store/slices/readerSlice'
+import { selectActiveBookId, selectTotalPages } from '@/store/selectors'
 
-// -----------------------------------------------------------------------------
-// Styled Components
-// -----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ Styled Components
+//-----------------------------------------------------
 const StyledPagination = styled.div`
   display: flex;
   align-items: center;
@@ -47,33 +38,40 @@ const PageInfo = styled.span`
   color: #fff;
 `
 
-// -----------------------------------------------------------------------------
-// Component: PDFPageControls
-// -----------------------------------------------------------------------------
-
+//-----------------------------------------------------
+//------ PDFPageControls Component
+//-----------------------------------------------------
 /**
- * Pagination controls shown in the PDF reader.
- * Includes navigation buttons and current page indicator.
- *
- * @returns {JSX.Element|null}
+ * @component PDFPageControls
+ * @description Renders back/next buttons and current page info.
+ *              Manages page state via Redux. Hidden if not on /read route or missing data.
+ * @returns {React.ReactNode|null}
  */
 const PDFPageControls = () => {
   const location = useLocation()
-  const bookId = useSelector(selectActiveBookId)
-  const viewMode = useSelector(selectPageViewMode)
+  const dispatch = useDispatch()
 
-  const staticBook = useSelector(selectBookStaticById(bookId))
-  const totalPages = staticBook?.meta?.totalPages ?? 0
+  //-----------------------------------------------------
+  //------ Redux State Selectors
+  //-----------------------------------------------------
+  const bookId      = useSelector(selectActiveBookId)
+  const totalPages  = useSelector(selectTotalPages)
+  const currentPage = useSelector(state => state.reader.currentPage)
 
-  const {
-    currentPage,
-    isPrevDisabled,
-    isNextDisabled,
-    handlePrev,
-    handleNext,
-  } = usePDFPagination(bookId, totalPages, viewMode)
+  //-----------------------------------------------------
+  //------ Navigation Helpers
+  //-----------------------------------------------------
+  const clamp = n => Math.max(1, Math.min(n, totalPages))
+  const goToPage = n => dispatch(setCurrentPage(clamp(n)))
+  const prevPage = () => goToPage(currentPage - 1)
+  const nextPage = () => goToPage(currentPage + 1)
 
-  // Hide if not in /read route or book/page data is missing
+  const isPrevDisabled = currentPage <= 1
+  const isNextDisabled = currentPage >= totalPages
+
+  //-----------------------------------------------------
+  //------ Guard: Only Render on /read with Valid Data
+  //-----------------------------------------------------
   if (
     !location.pathname.startsWith('/read') ||
     !bookId ||
@@ -82,19 +80,22 @@ const PDFPageControls = () => {
     return null
   }
 
+  //-----------------------------------------------------
+  //------ Render Pagination Controls
+  //-----------------------------------------------------
   return (
     <StyledPagination>
-      <button onClick={handlePrev} disabled={isPrevDisabled}>
+      <button onClick={prevPage} disabled={isPrevDisabled}>
         <IoChevronBack />
       </button>
       <PageInfo>
         {currentPage} of {totalPages}
       </PageInfo>
-      <button onClick={handleNext} disabled={isNextDisabled}>
+      <button onClick={nextPage} disabled={isNextDisabled}>
         <IoChevronForward />
       </button>
     </StyledPagination>
   )
 }
 
-export default PDFPageControls
+export default React.memo(PDFPageControls)

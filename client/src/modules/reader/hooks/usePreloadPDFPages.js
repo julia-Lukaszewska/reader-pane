@@ -1,100 +1,70 @@
-/**
- * @file usePreloadPDFPages.js
- * @description Hook that manages PDF preloading logic per book, scale and current page.
- * It ensures that only the necessary pages are rendered and memoizes visible pages for display.
- */
-
-import { useEffect, useRef, useCallback, useMemo, useState } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { preloadByScale } from '@reader/utils'
-import shouldPreload from '@reader/utils/shouldPreload'
-
+import { setRenderedRanges } from '@/store/slices/readerSlice'
 import {
-  selectActiveBookId,
-  selectBookStaticById,
-  selectCurrentPageById,
+  selectCurrentPage,
+  selectTotalPages,
   selectCurrentScale,
   selectPageViewMode,
-} from '@/store/selectors'
+  makeSelectRenderedRanges,
+} from '@/store/selectors/readerSelectors'
 
-const EMPTY_PAGES = {}
-const EMPTY_RANGES = []
-
-//-----------------------------------------------------------------------------
-// Hook: usePreloadPDFPages
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------
+//------ usePreloadPDFPages Hook
+//-----------------------------------------------------
 
 /**
- * Handles preloading and rendering PDF pages for a specific book, view mode, and zoom scale.
- * Uses redux state (bookId, currentPage, scale) and pdf.js reference to decide what to render.
+ * @function usePreloadPDFPages
+ * @description
+ * Preloads visible PDF pages based on current scale and page number.
+ * - Prevents duplicate renders with range cache
+ * - Triggers `preloadByScale()` with controlled concurrency
+ * - Stores data locally and dispatches `setRenderedRanges`
  *
- * @returns {Object} Hook state: pdfRef, preload(), visiblePages[], setPdfReady()
+ * @param {Object} params
+ * @param {string} params.bookId – Unique book identifier
+ * @param {React.MutableRefObject} params.pdfRef – Ref to the loaded PDF instance
+ *
+ * @returns {{
+ *   preload: () => Promise<void>,
+ *   visiblePages: Array<Object>,
+ *   cacheRef: React.MutableRefObject
+ * }}
  */
-const usePreloadPDFPages = () => {
+export default function usePreloadPDFPages({ bookId, pdfRef }) {
   const dispatch = useDispatch()
-
-  //--- Refs
-  const pdfRef = useRef(null)
   const loadingRef = useRef(false)
+  const cacheRef = useRef(new Map())
+  const [version, setVersion] = useState(0)
 
-  //--- Local state
-  const [pdfReady, setPdfReady] = useState(false)
-
-  //--- Global state
-  const bookId = useSelector(selectActiveBookId)
-
-  const selectStaticBook = useMemo(
-    () => selectBookStaticById(bookId),
-    [bookId]
-  )
-  const staticBook = useSelector(selectStaticBook)
-  const totalPages = staticBook?.meta?.totalPages ?? 0
-
-  const currentPage = useSelector(state =>
-    selectCurrentPageById(state, bookId)
-  )
+  //-----------------------------------------------------
+  //------ Selectors
+  //-----------------------------------------------------
+  const currentPage = useSelector(selectCurrentPage)
+  const totalPages = useSelector(selectTotalPages)
   const scale = useSelector(selectCurrentScale) ?? 1.0
   const viewMode = useSelector(selectPageViewMode)
 
-  const renderedPages = useSelector(
-    s => s.pdfCache[bookId]?.[String(scale)]?.pages ?? EMPTY_PAGES
-  )
+  //-----------------------------------------------------
+  //------ Safe Page Values
+  //-----------------------------------------------------
+  const safeCurrentPage = Number.isInteger(currentPage) ? currentPage : 1
+  const safeTotalPages = Number.isInteger(totalPages) ? totalPages : 1
+  const validCurrentPage = Math.max(1, Math.min(safeCurrentPage, safeTotalPages))
+
+  //-----------------------------------------------------
+  //------ Memoized Selectors
+  //-----------------------------------------------------
   const renderedRanges = useSelector(
-    s => s.pdfCache[bookId]?.[String(scale)]?.ranges ?? EMPTY_RANGES
+    useMemo(() => makeSelectRenderedRanges(bookId, scale), [bookId, scale])
   )
 
-  const validCurrentPage = Math.min(currentPage, totalPages)
-
-  //-----------------------------------------------------------------------------
-  // Effect: mount/unmount cleanup
-  //-----------------------------------------------------------------------------
-  useEffect(() => {
-    console.log('[usePreloadPDFPages] mounted')
-    return () => {
-      console.log('[usePreloadPDFPages] cleanup on unmount')
-      pdfRef.current = null
-      loadingRef.current = false
-    }
-  }, [])
-
-  //-----------------------------------------------------------------------------
-  // Function: preload()
-  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------
+  //------ Preload Function
+  //-----------------------------------------------------
   const preload = useCallback(() => {
-    console.log('[usePreloadPDFPages] preload() called, pdfRef.current exists:', !!pdfRef.current)
-
-    if (
-      !pdfRef.current ||
-      loadingRef.current ||
-      !bookId ||
-      !Number.isInteger(validCurrentPage)
-    ) {
-      console.log('[usePreloadPDFPages] preload() guard failed', {
-        pdfLoaded: !!pdfRef.current,
-        loading: loadingRef.current,
-        bookId,
-        currentPage: validCurrentPage,
-      })
+    if (!pdfRef.current || loadingRef.current || !Number.isInteger(validCurrentPage)) {
       return Promise.resolve()
     }
 
@@ -102,72 +72,69 @@ const usePreloadPDFPages = () => {
       pdf: pdfRef.current,
       scale,
       currentPage: validCurrentPage,
-      renderedPages,
+      renderedPages: {},
       renderedRanges,
-      bookId,
-      dispatch,
       loadingRef,
-    }).then(() => {
-      console.log('[usePreloadPDFPages] preloadByScale completed')
+      concurrency: 2,
+      onPages: (pages) => {
+        Object.entries(pages).forEach(([pageNum, data]) => {
+          const key = `${bookId}-${scale}-${pageNum}`
+          cacheRef.current.set(key, data)
+        })
+        setVersion((v) => v + 1)
+      },
+      onRange: (range) => {
+        dispatch(setRenderedRanges({ bookId, scale, range }))
+      },
     })
-  }, [bookId, validCurrentPage, scale, renderedPages, renderedRanges, dispatch])
+  }, [bookId, scale, validCurrentPage, pdfRef, renderedRanges, dispatch])
 
-  //-----------------------------------------------------------------------------
-  // Debug logs – state changes
-  //-----------------------------------------------------------------------------
-  useEffect(() => { console.log('[STATE CHANGE] currentPage:', currentPage) }, [currentPage])
-  useEffect(() => { console.log('[STATE CHANGE] totalPages:', totalPages) }, [totalPages])
-  useEffect(() => { console.log('[STATE CHANGE] scale:', scale) }, [scale])
-  useEffect(() => { console.log('[STATE CHANGE] pdfReady:', pdfReady) }, [pdfReady])
-  useEffect(() => { console.log('[STATE CHANGE] renderedRanges:', renderedRanges) }, [renderedRanges])
-  useEffect(() => { console.log('[STATE CHANGE] renderedPages:', renderedPages) }, [renderedPages])
-  useEffect(() => { console.log('[STATE CHANGE] bookId:', bookId) }, [bookId])
-  useEffect(() => { console.log('[STATE CHANGE] viewMode:', viewMode) }, [viewMode])
-
-  //-----------------------------------------------------------------------------
-  // Effect: trigger preload when appropriate
-  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------
+  //------ Effect: Auto-preload Nearby Pages
+  //-----------------------------------------------------
   useEffect(() => {
-      const safeTotal = totalPages || Number.MAX_SAFE_INTEGER      
+    if (!pdfRef.current) return
 
-  const should = pdfReady &&
-    shouldPreload(validCurrentPage, renderedRanges, safeTotal) 
+    const rangeSize = 15
+    const half = Math.floor(rangeSize / 2)
+    const start = Math.max(1, validCurrentPage - half)
+    const end = Math.min(safeTotalPages, validCurrentPage + half)
 
-    console.log('[usePreloadPDFPages] useEffect fired', {
-      pdfReady,
-      currentPage: validCurrentPage,
-      scale,
-      totalPages,
-      renderedRanges,
-      should,
-    })
+    const isCached = renderedRanges.some(([a, b]) => start >= a && end <= b)
+    preload()
+  }, [validCurrentPage, preload, renderedRanges, safeTotalPages])
 
-    if (should) preload()
-  }, [pdfReady, validCurrentPage, renderedRanges, preload, totalPages, bookId, scale])
-
-  //-----------------------------------------------------------------------------
-  // Compute visible pages based on viewMode
-  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------
+  //------ Derived: Visible Pages
+  //-----------------------------------------------------
   const visiblePageNumbers = useMemo(() => {
     if (viewMode === 'double') {
-      const nextPage = validCurrentPage + 1
-      return validCurrentPage >= totalPages
+      const next = validCurrentPage + 1
+      return validCurrentPage >= safeTotalPages
         ? [validCurrentPage]
-        : [validCurrentPage, Math.min(nextPage, totalPages)]
+        : [validCurrentPage, Math.min(next, safeTotalPages)]
     }
     return [validCurrentPage]
-  }, [validCurrentPage, totalPages, viewMode])
+  }, [validCurrentPage, safeTotalPages, viewMode])
 
-  const visiblePages = useMemo(() => {
-    const arr = Array.from(new Set(visiblePageNumbers))
-      .map(num => ({ pageNumber: num, ...renderedPages[num] }))
-      .filter(p => p.dataUrl)
+  const visiblePages = useMemo(
+    () =>
+      visiblePageNumbers
+        .map((num) => {
+          const key = `${bookId}-${scale}-${num}`
+          const data = cacheRef.current.get(key)
+          return data ? { pageNumber: num, ...data } : null
+        })
+        .filter(Boolean),
+    [visiblePageNumbers, bookId, scale, version]
+  )
 
-    console.log('[usePreloadPDFPages] visiblePages:', arr.map(p => p.pageNumber))
-    return arr
-  }, [visiblePageNumbers, renderedPages])
-
-  return { pdfRef, preload, visiblePages, setPdfReady }
+  //-----------------------------------------------------
+  //------ Return
+  //-----------------------------------------------------
+  return {
+    preload,
+    visiblePages,
+    cacheRef,
+  }
 }
-
-export default usePreloadPDFPages
