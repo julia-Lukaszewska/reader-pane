@@ -1,39 +1,16 @@
+import * as pdfjsLib from 'pdfjs-dist'
 import { useEffect, useState, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { selectAccessToken, selectFileUrl } from '@/store/selectors'
-import * as pdfjsLib from 'pdfjs-dist'
 
-//-----------------------------------------------------
-//------ usePDFStreamer Hook
-//-----------------------------------------------------
 
-/**
- * @function usePDFStreamer
- * @description
- * Loads a PDF document from a secure URL using pdf.js.
- * - Requires access token from Redux
- * - Uses `pdfRef` to store the loaded PDF document
- * - Calls `onLoaded` once the document is ready
- *
- * @param {Object} params
- * @param {Function} params.onLoaded - Callback after successful load
- * @param {React.MutableRefObject} params.pdfRef - Ref to hold the PDF document
- * @returns {{
- *   loading: boolean,
- *   error: any
- * }}
- */
 export default function usePDFStreamer({ onLoaded, pdfRef }) {
   const fileUrl = useSelector(selectFileUrl)
   const token = useSelector(selectAccessToken)
-  const tokenRef = useRef(token)
-
+const tokenRef = useRef(token) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  //-----------------------------------------------------
-  //------ Effect: Load PDF Document
-  //-----------------------------------------------------
   useEffect(() => {
     console.log('effect for', fileUrl)
 
@@ -46,7 +23,7 @@ export default function usePDFStreamer({ onLoaded, pdfRef }) {
     const loadingTask = pdfjsLib.getDocument({
       url: fileUrl,
       withCredentials: false,
-      httpHeaders: { Authorization: `Bearer ${tokenRef.current}` },
+       httpHeaders: { Authorization: `Bearer ${tokenRef.current}` },
       signal: controller.signal,
     })
 
@@ -64,12 +41,8 @@ export default function usePDFStreamer({ onLoaded, pdfRef }) {
 
     return () => {
       controller.abort()
-           if (pdfRef.current) {
-        pdfRef.current.destroy?.()
-        pdfRef.current = null
-      } else {
-        loadingTask.destroy?.()
-      }
+      loadingTask.destroy?.()
+      pdfRef.current = null    
     }
   }, [fileUrl])
 

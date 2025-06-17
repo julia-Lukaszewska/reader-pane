@@ -2,6 +2,7 @@
  * @file PDFZoomControls.jsx
  * @description Zoom controls for PDF viewer: zoom in, zoom out, reset zoom, and display current zoom level.
  */
+
 import React from 'react'
 import { IoAdd, IoRemove, IoRefresh } from 'react-icons/io5'
 import styled from 'styled-components'
@@ -9,63 +10,56 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setScaleIndex } from '@/store/slices/readerSlice'
 import { selectScaleIndex } from '@/store/selectors'
 
-//-----------------------------------------------------
-//------ Styled Components
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
 
+//--- Container for zoom controls
 const StyledZoom = styled.div`
-  display: flex;
+  display: flex;  
   align-items: center;
   gap: 0.6rem;
 `
 
+//--- Display current zoom percentage
 const ZoomInfo = styled.span`
   font-size: 0.85rem;
   color: #fff;
 `
 
-//-----------------------------------------------------
-//------ PDFZoomControls Component
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Component: PDFZoomControls
+//-----------------------------------------------------------------------------
 
 /**
- * @component PDFZoomControls
- * @description Renders zoom in/out/reset buttons and displays current zoom percentage.
- *              Manages zoom state via Redux slice 'reader'. Hidden if not on /read route.
- * @returns {React.ReactNode|null}
+ * Renders buttons to control PDF zoom level and shows current zoom percentage.
+ * Manages zoom state via Redux slice 'reader'.
+ * Hidden if not in /read route.
  */
 const PDFZoomControls = () => {
   const dispatch = useDispatch()
   const index = useSelector(selectScaleIndex)
 
-  //-----------------------------------------------------
-  //------ Zoom Levels & Current Scale
-  //-----------------------------------------------------
+  // predefined zoom levels
   const levels = [0.5, 0.75, 1, 1.25, 1.5, 2]
   const totalLevels = levels.length
-  const currentScale = levels[index] ?? 1
+  const currentScale = levels[index]
 
-  //-----------------------------------------------------
-  //------ Handlers
-  //-----------------------------------------------------
-  const handleZoomIn  = () => dispatch(setScaleIndex(Math.min(index + 1, totalLevels - 1)))
+  // handlers
+  const handleZoomIn = () => dispatch(setScaleIndex(Math.min(index + 1, totalLevels - 1)))
   const handleZoomOut = () => dispatch(setScaleIndex(Math.max(index - 1, 0)))
-  const handleReset   = () => dispatch(setScaleIndex(levels.indexOf(1)))
+  const handleReset = () => dispatch(setScaleIndex(levels.indexOf(1)))
 
+  // disabled states
   const isMinZoom = index <= 0
   const isMaxZoom = index >= totalLevels - 1
 
-  //-----------------------------------------------------
-  //------ Guard: Only Show on /read Route
-  //-----------------------------------------------------
+  // guard: only show on /read
   const pathname = window.location.pathname
   if (!pathname.startsWith('/read')) {
     return null
   }
 
-  //-----------------------------------------------------
-  //------ Render Zoom Controls
-  //-----------------------------------------------------
   return (
     <StyledZoom>
       <button onClick={handleZoomOut} disabled={isMinZoom} title="Zoom out">
@@ -85,4 +79,4 @@ const PDFZoomControls = () => {
   )
 }
 
-export default React.memo(PDFZoomControls)
+export default PDFZoomControls

@@ -1,11 +1,4 @@
-/**
- * @file ReaderToolbar.jsx
- * @description Top toolbar for the reader view:
- * - Back button to return to the library
- * - Page view mode toggle (single/double)
- * - Zoom controls (in/out/reset)
- * - Page navigation controls (prev/next)
- */
+import * as pdfjsLib from 'pdfjs-dist'
 import React, { memo, useCallback } from 'react'
 import styled from 'styled-components'
 import {
@@ -16,9 +9,10 @@ import {
 import { IoArrowBack } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 
-//-----------------------------------------------------
-//------ Styled Components
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Styled components
+//-----------------------------------------------------------------------------
+
 const StyledToolbar = styled.nav`
   position: relative;
   display: flex;
@@ -51,12 +45,18 @@ const BackButton = styled(IoArrowBack)`
   cursor: pointer;
 `
 
-//-----------------------------------------------------
-//------ ReaderToolbar Component
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Component: ReaderToolbar
+//-----------------------------------------------------------------------------
+
 /**
- * @component ReaderToolbar
- * @description Renders the reader view’s top toolbar with navigation and controls.
+ * Renders the reader view's top toolbar with:
+ * - Back button to return to the library
+ * - Page view mode toggle (single/double)
+ * - Zoom controls (in/out/reset)
+ * - Page navigation controls (prev/next)
+ *
+ * @component
  * @returns {JSX.Element}
  */
 const ReaderToolbar = () => {
@@ -64,20 +64,20 @@ const ReaderToolbar = () => {
   const goBack = useCallback(() => navigate('/library'), [navigate])
 
   return (
-    <StyledToolbar aria-label="Reader toolbar">
+    <StyledToolbar aria-label="Toolbar czytnika">
       <LeftSection>
         <BackButton
           size={32}
           color="white"
-          aria-label="Back to library"
+          aria-label="Wróć do biblioteki"
           onClick={goBack}
         />
       </LeftSection>
 
       <CenterSection>
-        <PageViewModeToggle aria-label="Toggle page view mode" />
-        <PDFZoomControls aria-label="Zoom controls" />
-        <PDFPageControls aria-label="Page navigation controls" />
+        <PageViewModeToggle aria-label="Tryb widoku strony" />
+        <PDFZoomControls aria-label="Kontrola powiększenia" />
+        <PDFPageControls aria-label="Nawigacja stron" />
       </CenterSection>
     </StyledToolbar>
   )

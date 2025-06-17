@@ -1,17 +1,5 @@
-/**
- * @file RenderedPDFViewer.jsx
- * @description
- * Renders PDF pages onto canvas elements:
- * - Uses a streaming PDF manager’s `visiblePages` array
- * - Always calls hooks in the same order
- * - No visible UI outside the canvases
- */
 import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
-
-//-----------------------------------------------------
-//------ Styled Components
-//-----------------------------------------------------
 
 const ScrollWrapper = styled.div`
   width: ${({ $isSidebarOpen }) =>
@@ -40,33 +28,16 @@ const Canvas = styled.canvas`
   display: block;
 `
 
-//-----------------------------------------------------
-//------ RenderedPDFViewer Component
-//-----------------------------------------------------
-
-/**
- * @component RenderedPDFViewer
- * @description Draws each PDF page image into a canvas element.
- * @param {Object} props
- * @param {React.RefObject} props.pdfRef               - Optional wrapper ref for scroll container
- * @param {Array<{pageNumber: number, url: string, width: number, height: number}>} props.visiblePages
- *   Pages to render, each with a URL and dimensions
- * @param {boolean} props.sidebarOpen                  - Whether the sidebar is open (adjusts width)
- * @returns {React.ReactNode|null}
- */
 export default function RenderedPDFViewer({
   pdfRef,
+  fileUrl,
   visiblePages = [],
+  currentPage,
   sidebarOpen = false,
 }) {
-  // always call hooks in the same order
-  const localWrapperRef = useRef()
-  const wrapperRef = pdfRef || localWrapperRef
+  const wrapperRef = pdfRef || useRef()
   const pageRefs = useRef({})
 
-  //-----------------------------------------------------
-  //------ Draw Pages on Canvas
-  //-----------------------------------------------------
   useEffect(() => {
     visiblePages.forEach(({ pageNumber, url, width, height }) => {
       const canvas = pageRefs.current[pageNumber]
@@ -82,16 +53,13 @@ export default function RenderedPDFViewer({
       }
 
       img.onerror = (e) => {
-        console.error(`[RenderedPDFViewer] Error loading page ${pageNumber}`, e)
+        console.error(`[❌ error img ${pageNumber}]`, e)
       }
 
       img.src = url
     })
   }, [visiblePages])
 
-  //-----------------------------------------------------
-  //------ Render
-  //-----------------------------------------------------
   return (
     <ScrollWrapper $isSidebarOpen={sidebarOpen} ref={wrapperRef}>
       <PagesContainer>

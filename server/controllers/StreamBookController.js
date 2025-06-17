@@ -3,8 +3,8 @@
  * @description
  * Streams a PDF from GridFS by filename, with full support for byte‐range requests.
  */
-import rangeParser from 'range-parser'
 import { getGridFsBucket } from '../config/gridfs.js'
+import rangeParser from 'range-parser'
 
 //-----------------------------------------------------
 //------ StreamBookController Function

@@ -1,79 +1,41 @@
+// readerSelectors.js
 import { createSelector } from '@reduxjs/toolkit'
-import {
-  selectProgressMode,
-  selectCurrentPageById,
-  selectMaxVisitedPageById
-} from './booksSelectors'
-
-//-----------------------------------------------------
-//------ Reader State Selectors
-//-----------------------------------------------------
-
-/** @constant selectReader - entire reader slice state */
-export const selectReader           = state => state.reader
-/** @constant selectBookId - ID of the current book in reader */
-export const selectBookId           = state => state.reader.bookId
-/** @constant selectCurrentPage - current page in reader */
-export const selectCurrentPage      = state => state.reader.currentPage
-/** @constant selectTotalPages - total pages count */
-export const selectTotalPages       = state => state.reader.totalPages
-/** @constant selectFileUrl - URL of the loaded PDF */
-export const selectFileUrl          = state => state.reader.fileUrl
-/** @constant selectScaleIndex - index of the current scale */
-export const selectScaleIndex       = state => state.reader.scaleIndex
-/** @constant selectCurrentScale - current scale factor */
-export const selectCurrentScale     = state => state.reader.currentScale
-/** @constant selectFitScaleFactor - scale to fit page */
-export const selectFitScaleFactor   = state => state.reader.fitScaleFactor
-/** @constant selectFullPageFitScale - scale for full-page fit */
-export const selectFullPageFitScale = state => state.reader.fullPageFitScale
-/** @constant selectPageViewMode - page view mode ('single' or 'continuous') */
-export const selectPageViewMode     = state => state.reader.pageViewMode
-/** @constant selectPageTurnRate - page turn rate */
-export const selectPageTurnRate     = state => state.reader.pageTurnRate
-
-//-----------------------------------------------------
-//------ Render Cache Selectors
-//-----------------------------------------------------
-
-/**
- * @function makeSelectRenderedPages
- * @description Factory for a selector returning rendered pages cache by bookId and scale.
- * @param {string} bookId
- * @param {number} scale
- */
 export const makeSelectRenderedPages = (bookId, scale) =>
   createSelector(
-    selectReader,
+    state => state.reader,
     reader => reader.renderedPages?.[bookId]?.[scale] ?? {}
   )
 
-/**
- * @function makeSelectRenderedRanges
- * @description Factory for a selector returning rendered ranges cache by bookId and scale.
- * @param {string} bookId
- * @param {number} scale
- */
 export const makeSelectRenderedRanges = (bookId, scale) =>
   createSelector(
-    selectReader,
+    state => state.reader,
     reader => reader.renderedRanges?.[bookId]?.[scale] ?? []
   )
+export const selectReader = state => state.reader
 
-//-----------------------------------------------------
-//------ Computed Progress Selector
-//-----------------------------------------------------
+export const selectBookId = (state) => state.reader.bookId
 
-/**
- * @function selectProgressValue
- * @description Returns the reading progress value (current or max) based on mode.
- * @param {Object} state
- * @param {string} bookId
- * @returns {number}
- */
-export const selectProgressValue = createSelector(
-  selectProgressMode,
-  (state, bookId) => selectCurrentPageById(state, bookId),
-  (state, bookId) => selectMaxVisitedPageById(state, bookId),
-  (mode, current, max) => (mode === 'max' ? max : current)
-)
+
+export const selectCurrentPage = state => selectReader(state).currentPage
+export const selectTotalPages = state => selectReader(state).totalPages
+
+export const selectFileUrl = (state) => state.reader.fileUrl
+
+export const selectScaleIndex = (state) => state.reader.scaleIndex
+
+export const selectCurrentScale = state => selectReader(state).currentScale
+
+export const selectFitScaleFactor = (state) => state.reader.fitScaleFactor
+
+export const selectFullPageFitScale = (state) => state.reader.fullPageFitScale
+
+export const selectPageViewMode = state => selectReader(state).pageViewMode
+
+export const selectPageTurnRate = (state) => state.reader.pageTurnRate
+
+export const selectRenderedPages = (bookId, scale) => (state) => {
+  return selectReader(state).renderedPages?.[bookId]?.[scale] ?? {}
+}
+export const selectRenderedRanges = (bookId, scale) => (state) => {
+  return selectReader(state).renderedRanges?.[bookId]?.[scale] ?? []
+}
