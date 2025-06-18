@@ -1,29 +1,71 @@
 /**
- * @file libraryViewSelectors.js
+ * @file booksLibrarySelectors.js
  * @description
- * Selectors related to the current view of the user's library (filtered books).
+ * Selectors for:
+ * - Normalized books from RTK Query (getBooks, getBooksStatic)
+ * - Filtered view of the library
+ * - UI state: view mode, sort, preview, selection, etc.
  */
 
 import { createSelector } from '@reduxjs/toolkit'
-import { selectAllBooks, selectLibraryFilter } from './booksSelectors'
+import { booksAdapter } from '@/store/api/booksPrivateApi/booksAdapter'
+import { booksApi } from '@/store/api/booksPrivateApi'
 
 //-----------------------------------------------------------------------------
-// Library View Selectors
+// RTK Query: Normalized book data (getBooks)
 //-----------------------------------------------------------------------------
 
 /**
+ * Returns the full query result of getBooks (with status, data, error).
+ */
+export const selectBooksResult = booksApi.endpoints.getBooks.select()
+
+/**
+ * Returns normalized book data from getBooks query or fallback to initial state.
+ */
+export const selectBooksData = createSelector(
+  selectBooksResult,
+  (res) => res?.data ?? booksAdapter.getInitialState()
+)
+
+/**
+ * Returns all books from normalized entity state.
+ */
+export const selectAllBooks = booksAdapter.getSelectors(selectBooksData).selectAll
+
+//-----------------------------------------------------------------------------
+// RTK Query: Static books (getBooksStatic)
+//-----------------------------------------------------------------------------
+
+/**
+ * Returns all books from static getBooksStatic query (non-normalized).
+ */
+export const selectAllBooksStatic = createSelector(
+  booksApi.endpoints.getBooksStatic.select(),
+  (res) => res?.data ? booksAdapter.getSelectors().selectAll(res.data) : []
+)
+
+/**
+ * Returns a static book by ID from getBooksStatic query.
+ * @param {string} id - Book ID
+ */
+export const selectBookStaticById = (id) =>
+  createSelector(
+    booksApi.endpoints.getBooksStatic.select(),
+    (res) => res?.data ? booksAdapter.getSelectors().selectById(res.data, id) : undefined
+  )
+
+//-----------------------------------------------------------------------------
+// Library Filtered View
+//-----------------------------------------------------------------------------
+
+/**
+ * Returns the current active filter used in library view.
+ */
+export const selectLibraryFilter = (state) => state.book.libraryFilter
+
+/**
  * Returns books filtered by the current library filter value.
- *
- * Possible filters:
- * - 'favorites'
- * - 'archived'
- * - 'to-read'
- * - 'reading'
- * - 'finished'
- * - default (non-archived)
- *
- * @function selectVisibleBooks
- * @returns {Array<Object>} List of visible book objects
  */
 export const selectVisibleBooks = createSelector(
   [selectAllBooks, selectLibraryFilter],
@@ -47,11 +89,57 @@ export const selectVisibleBooks = createSelector(
 
 /**
  * Returns true if no books are visible in the current filter view.
- *
- * @function selectIsLibraryEmpty
- * @returns {boolean}
  */
 export const selectIsLibraryEmpty = createSelector(
   selectVisibleBooks,
   list => list.length === 0
 )
+
+//-----------------------------------------------------------------------------
+// UI State: View, Selection, Preview
+//-----------------------------------------------------------------------------
+
+/**
+ * Returns true if library is in manage mode.
+ */
+export const selectIsManageMode = (state) => state.book.isManageMode
+
+/**
+ * Returns the current library view mode (tile/list/table).
+ */
+export const selectLibraryViewMode = (state) => state.book.libraryViewMode
+
+/**
+ * Returns the current sort mode (e.g. by title/date).
+ */
+export const selectSortMode = (state) => state.book.sortMode
+
+/**
+ * Returns the currently active book ID.
+ */
+export const selectActiveBookId = (state) => state.book.activeBookId
+
+/**
+ * Returns the last opened book ID.
+ */
+export const selectLastOpenedBookId = (state) => state.book.lastOpenedBookId
+
+/**
+ * Returns the ID of the previewed book.
+ */
+export const selectPreviewBookId = (state) => state.book.previewBookId
+
+/**
+ * Returns true if the book preview modal is open.
+ */
+export const selectIsPreviewOpen = (state) => Boolean(state.book.previewBookId)
+
+/**
+ * Returns an array of selected book IDs.
+ */
+export const selectSelectedBookIds = (state) => state.book.selectedIds
+
+/**
+ * Returns the progress mode used in the reader ('current' or 'max').
+ */
+export const selectProgressMode = (state) => state.book.progressMode

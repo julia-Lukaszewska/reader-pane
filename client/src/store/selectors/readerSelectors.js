@@ -8,44 +8,13 @@
 import { createSelector } from '@reduxjs/toolkit'
 
 //-----------------------------------------------------------------------------
-// Memoized selectors (createSelector)
+// Constants
 //-----------------------------------------------------------------------------
 
-/**
- * Returns a memoized map of rendered pages for given book and scale.
- */
-export const makeSelectRenderedPages = (bookId, scale) =>
-  createSelector(
-    state => state.reader,
-    reader => reader.renderedPages?.[bookId]?.[scale] ?? {}
-  )
-  
-  /**
-   * Returns the scale index (integer).
-   */
-  export const selectScaleIndex = (state) => state.reader.scaleIndex
-/**
- * Returns a memoized array of rendered ranges for given book and scale.
- */
-export const makeSelectRenderedRanges = (bookId, scale) =>
-  createSelector(
-    state => state.reader,
-    reader => reader.renderedRanges?.[bookId]?.[scale] ?? []
-  )
-
-/**
- * Returns the current scale value (e.g. 1.25) based on index.
- */
-export const selectCurrentScale = createSelector(
-  [selectScaleIndex],
-  (index) => {
-    const levels = [0.5, 0.75, 1, 1.25, 1.5, 2]
-    return levels[index] ?? 1
-  }
-)
+const SCALE_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2]
 
 //-----------------------------------------------------------------------------
-// Direct selectors (primitive values)
+// Root selector
 //-----------------------------------------------------------------------------
 
 /**
@@ -53,61 +22,66 @@ export const selectCurrentScale = createSelector(
  */
 export const selectReader = (state) => state.reader
 
-/**
- * Returns the current book ID in the reader.
- */
-export const selectBookId = (state) => state.reader.bookId
+//-----------------------------------------------------------------------------
+// Memoized selectors (createSelector)
+//-----------------------------------------------------------------------------
 
 /**
- * Returns the current page number.
+ * Returns the scale index (integer).
  */
-export const selectCurrentPage = (state) => selectReader(state).currentPage
+export const selectScaleIndex = (state) => selectReader(state).scaleIndex
 
 /**
- * Returns the total number of pages in the document.
+ * Returns the current scale value (e.g. 1.25) based on index.
  */
-export const selectTotalPages = (state) => selectReader(state).totalPages
+export const selectCurrentScale = createSelector(
+  [selectScaleIndex],
+  (index) => SCALE_LEVELS[index] ?? 1
+)
 
 /**
- * Returns the file URL of the current document.
+ * Returns a memoized map of rendered pages for given book and scale.
  */
-export const selectFileUrl = (state) => state.reader.fileUrl
-
-
-/**
- * Returns the fit-to-container scale factor.
- */
-export const selectFitScaleFactor = (state) => state.reader.fitScaleFactor
+export const makeSelectRenderedPages = (bookId, scale) =>
+  createSelector(
+    selectReader,
+    reader => reader.renderedPages?.[bookId]?.[scale] ?? {}
+  )
 
 /**
- * Returns the scale factor to fit one full page vertically.
+ * Returns a memoized array of rendered ranges for given book and scale.
  */
-export const selectFullPageFitScale = (state) => state.reader.fullPageFitScale
-
-/**
- * Returns the current page view mode (e.g. single/double).
- */
-export const selectPageViewMode = (state) => selectReader(state).pageViewMode
-
-/**
- * Returns the auto page turn rate.
- */
-export const selectPageTurnRate = (state) => state.reader.pageTurnRate
+export const makeSelectRenderedRanges = (bookId, scale) =>
+  createSelector(
+    selectReader,
+    reader => reader.renderedRanges?.[bookId]?.[scale] ?? []
+  )
 
 //-----------------------------------------------------------------------------
-// Non-memoized dynamic selectors
+// Direct selectors (primitive values)
+//-----------------------------------------------------------------------------
+
+export const selectBookId = (state) => selectReader(state).bookId
+export const selectCurrentPage = (state) => selectReader(state).currentPage
+export const selectTotalPages = (state) => selectReader(state).totalPages
+export const selectFileUrl = (state) => selectReader(state).fileUrl
+export const selectFitScaleFactor = (state) => selectReader(state).fitScaleFactor
+export const selectFullPageFitScale = (state) => selectReader(state).fullPageFitScale
+export const selectPageViewMode = (state) => selectReader(state).pageViewMode
+export const selectPageTurnRate = (state) => selectReader(state).pageTurnRate
+
+//-----------------------------------------------------------------------------
+// Optional: Non-memoized fallback selectors (if needed elsewhere)
 //-----------------------------------------------------------------------------
 
 /**
  * Returns the rendered pages map for a given book and scale.
  */
-export const selectRenderedPages = (bookId, scale) => (state) => {
-  return selectReader(state).renderedPages?.[bookId]?.[scale] ?? {}
-}
+export const selectRenderedPages = (bookId, scale) => (state) =>
+  selectReader(state).renderedPages?.[bookId]?.[scale] ?? {}
 
 /**
  * Returns the rendered page ranges for a given book and scale.
  */
-export const selectRenderedRanges = (bookId, scale) => (state) => {
-  return selectReader(state).renderedRanges?.[bookId]?.[scale] ?? []
-}
+export const selectRenderedRanges = (bookId, scale) => (state) =>
+  selectReader(state).renderedRanges?.[bookId]?.[scale] ?? []

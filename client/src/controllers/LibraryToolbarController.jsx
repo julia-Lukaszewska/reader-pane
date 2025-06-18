@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   selectLibraryFilter,
   selectLibraryViewMode,
-} from '@/store/selectors/booksSelectors'
+} from '@/store/selectors'
 
 //-----------------------------------------------------
 //------ Actions

@@ -14,9 +14,9 @@ import styled from 'styled-components'
 import { FaBookOpen, FaHeart, FaBoxArchive } from 'react-icons/fa6'
 import useBookActions from '@/modules/book/hooks/useBookActions'
 import {
-  selectIsManageMode,
+  selectIsManageMode,selectBookById
 } from '@/store/selectors'
-import { selectBookById } from '@/store/selectors/booksSelectors'
+
 // -----------------------------------------------------------------------------
 // Component: CardButtons
 // -----------------------------------------------------------------------------

@@ -40,8 +40,8 @@ const [isDeleting, setDeleting] = useState(false)
 
   //--- Confirm permanent delete
 const handleConfirmDelete = async () => {
-  if (isDeleting) return  // 🧤 zapobiegamy duplikacji
-  setDeleting(true)       // ⏳ blokujemy przyciski
+  if (isDeleting) return  
+  setDeleting(true)      
 
   try {
     await deleteBook(book._id).unwrap()

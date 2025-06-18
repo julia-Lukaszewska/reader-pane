@@ -11,7 +11,7 @@ import { IoCloseOutline } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
 import styled, { keyframes, css } from 'styled-components'
 import { useSelector } from 'react-redux'
-import { selectLastOpenedBookId } from '@/store/selectors/booksSelectors'
+import { selectLastOpenedBookId } from '@/store/selectors'
 import useMenuItem from '../hooks/useMenuItem'
 import MenuSubTile from './MenuSubTile'
 

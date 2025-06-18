@@ -5,7 +5,6 @@
  * for page view mode, zoom, and page navigation.
  */
 
-import * as pdfjsLib from 'pdfjs-dist'
 import React, { memo, useCallback } from 'react'
 import styled from 'styled-components'
 import {
