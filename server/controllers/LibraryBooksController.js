@@ -91,35 +91,3 @@ export const updateLibraryBook = async (req, res) => {
   }
 }
 
-//-----------------------------------------------------
-//------ deleteLibraryBook: Delete Book & File
-//-----------------------------------------------------
-/**
- * @function deleteLibraryBook
- * @description Deletes a book and its associated GridFS file (if any).
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- */
-export const deleteLibraryBook = async (req, res) => {
-  try {
-    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id })
-    if (!book) {
-      return res.status(404).json({ error: 'Book not found' })
-    }
-
-    const fileId = book.file?.fileId
-    if (fileId) {
-      try {
-        await deleteFile(fileId)
-      } catch (err) {
-        console.warn('[GRIDFS DELETE ERROR]', err)
-      }
-    }
-
-    await book.deleteOne()
-    res.json({ message: 'Book removed' })
-  } catch (err) {
-    console.error('[LIBRARY DELETE ERROR]', err)
-    res.status(500).json({ error: 'Failed to delete book' })
-  }
-}

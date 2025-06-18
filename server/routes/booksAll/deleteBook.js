@@ -11,10 +11,10 @@ import { DeleteBookController } from '../../controllers/DeleteBookController.js'
 const router = express.Router()
 
 //-----------------------------------------------------
-//------ DELETE /api/books/storage/book/:id
+//------ DELETE /api/books/all/book/:id
 //-----------------------------------------------------
 /**
- * @route DELETE /api/books/storage/book/:id
+ * @route DELETE /api/books/all/book/:id
  * @description Deletes a book document and its PDF file from GridFS.
  *              Uses DeleteBookController to handle file removal and record deletion.
  */

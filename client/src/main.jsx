@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
 // 1. Libraries & global config
 // -----------------------------------------------------------------------------
-import * as pdfjsLib from 'pdfjs-dist';
-import * as Sentry   from '@sentry/react';
+import * as pdfjsLib from 'pdfjs-dist'
+import * as Sentry   from '@sentry/react'
 
 // --- Sentry first -------------------------------------------------------------
 Sentry.init({
@@ -16,18 +16,18 @@ Sentry.init({
 });
 
 // --- pdf.js worker (public/pdf.worker.min.js) --------------------------------
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
 // Warn once if the browser lacks Workers
-if (!window.Worker) console.error('Web Workers are not supported in this browser.');
+if (!window.Worker) console.error('Web Workers are not supported in this browser.')
 
 // -----------------------------------------------------------------------------
 // 2. App imports
 // -----------------------------------------------------------------------------
-import React, { StrictMode } from 'react';
-import { createRoot }        from 'react-dom/client';
-import AppProvider           from './providers/AppProvider';
-import App                   from './App';
+import React, { StrictMode } from 'react'
+import { createRoot }        from 'react-dom/client'
+import AppProvider           from './providers/AppProvider'
+import App                   from './App'
 
 // -----------------------------------------------------------------------------
 // 3. Choose wrapper: StrictMode only in production builds

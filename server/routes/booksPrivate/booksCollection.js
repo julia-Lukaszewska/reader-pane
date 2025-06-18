@@ -4,7 +4,7 @@
  */
 import express from 'express'
 import Book from '../../models/Book.js'
-import { listLibrary, etLibraryBook  } from '../../controllers/LibraryBooksController.js'
+import { listLibrary, getLibraryBook  } from '../../controllers/LibraryBooksController.js'
 
 //-----------------------------------------------------
 //------ Router Setup

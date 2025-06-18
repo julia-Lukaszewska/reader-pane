@@ -1,3 +1,5 @@
+import express from 'express'
+import authJwt from '../../middlewares/authJwt.js'
 import deleteBookRouter from './deleteBook.js'
 
 //-----------------------------------------------------
@@ -14,10 +16,10 @@ const router = express.Router()
 router.use(authJwt)
 
 //-----------------------------------------------------
-//------ DELETE /api/books/storage/book/:id
+//------ DELETE /api/books/all/book/:id'
 //-----------------------------------------------------
 /**
- * @route DELETE /api/books/storage/book/:id
+ * @route DELETE /api/books/all/book/:id'
  * @description Delete the book record and its PDF file.
  */
 router.use('/', deleteBookRouter)

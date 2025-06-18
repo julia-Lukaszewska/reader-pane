@@ -1,44 +1,33 @@
 /**
  * @file DeleteBookController.js
  * @description
- * Controller for deleting a book from the system.
- * 1) Verifies user ownership of the book
- * 2) Removes the PDF file from GridFS using fileId
- * 3) Deletes the Book document from MongoDB
+ * Controller for deleting a book and its associated PDF from GridFS.
+ * 1) Verifies user ownership
+ * 2) Deletes file from GridFS
+ * 3) Deletes book document from MongoDB
  */
 
 import Book from '../models/Book.js'
 import { deleteFile } from '../config/gridfs.js'
 
-// -----------------------------------------------------------------------------
-// DeleteBook Controller
-// -----------------------------------------------------------------------------
 export const DeleteBookController = async (req, res) => {
   try {
-    const bookId = req.params.id
-
-    // 1) Lookup book and verify ownership
-    const book = await Book.findById(bookId)
+    const book = await Book.findOne({ _id: req.params.id, owner: req.user.id })
     if (!book) {
       return res.status(404).json({ error: 'Book not found' })
     }
-    if (book.owner.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'Unauthorized' })
-    }
 
-    // 2) Delete file from GridFS (if fileId exists)
     const fileId = book.file?.fileId
     if (fileId) {
       try {
         await deleteFile(fileId)
       } catch (err) {
-        console.warn('[GridFS] Failed to delete file:', err)
+        console.warn('[GridFS DELETE ERROR]', err)
       }
     }
 
-    // 3) Delete book document
     await book.deleteOne()
-    res.status(200).json({ message: 'Book deleted successfully' })
+    res.json({ message: 'Book removed' })
   } catch (err) {
     console.error('[DELETE BOOK ERROR]', err)
     res.status(500).json({ error: 'Failed to delete book' })
