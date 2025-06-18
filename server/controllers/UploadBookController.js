@@ -27,6 +27,11 @@ export const UploadBookController = async (req, res) => {
     if (!pdfFile.mimetype.includes('pdf')) {
       return res.status(415).json({ error: 'Only PDF files are accepted' })
     }
+const coverFile = req.files?.cover?.[0]
+let coverBuffer = null
+if (coverFile && coverFile.buffer) {
+  coverBuffer = coverFile.buffer
+}
 
     const totalPages = parseInt(req.body.totalPages, 10) || 1
     if (totalPages < 1) {
@@ -68,7 +73,8 @@ export const UploadBookController = async (req, res) => {
         author,
         description,
         tags,
-        cover: req.body.cover || '',
+       cover: coverBuffer ? `data:image/jpeg;base64,${coverBuffer.toString('base64')}` : '',
+
         totalPages,
         publicationDate: publicationDate ? new Date(publicationDate) : undefined,
         genre,

@@ -61,7 +61,7 @@ const useUploadPDF = () => {
       //-----------------------------------------------------------------
       // 3) Generate cover image (base64 PNG)
       //-----------------------------------------------------------------
-      const cover = await renderPDFCover(file)
+     const coverBlob = await renderPDFCover(file)
 
       //-----------------------------------------------------------------
       // 4) Build FormData
@@ -76,7 +76,7 @@ const useUploadPDF = () => {
       if (publicationDate)   formData.append('publicationDate', publicationDate)
       if (publishedYear)     formData.append('publishedYear', publishedYear)
       formData.append('totalPages', totalPages)
-      formData.append('cover', cover)
+      formData.append('cover', coverBlob, 'cover.jpg')
 
       //-----------------------------------------------------------------
       // 5) Upload via API

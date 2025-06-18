@@ -7,7 +7,7 @@ import express from 'express'
 import authJwt from '../../middlewares/authJwt.js'
 import uploadRouter from './upload.js'
 import streamRouter from './stream.js'
-import deleteFileRouter from './deleteFile.js'
+import { deleteFileRouter } from './deleteFile.js'
 import deleteBookRouter from './deleteBook.js'
 
 //-----------------------------------------------------

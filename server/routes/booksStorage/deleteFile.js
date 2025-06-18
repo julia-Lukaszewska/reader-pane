@@ -44,4 +44,5 @@ router.delete('/:filename', async (req, res) => {
   }
 })
 
-export default router
+// na końcu pliku:
+export const deleteFileRouter = router

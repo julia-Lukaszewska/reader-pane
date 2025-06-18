@@ -35,5 +35,9 @@ URL.revokeObjectURL(objectUrl)
   await page.render({ canvasContext: context, viewport }).promise
 
   // Return PNG data URL
-  return canvas.toDataURL('image/png')
+   return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(blob)
+    }, 'image/jpeg', 0.6) // jakość 60%
+  })
 }

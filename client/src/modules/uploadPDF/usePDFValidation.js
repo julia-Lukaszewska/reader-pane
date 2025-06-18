@@ -20,7 +20,7 @@ import { useCallback } from 'react'
  *   - validate: (file: File) => boolean
  */
 const usePDFValidation = () => {
-  const MAX_SIZE_MB = 20
+  const MAX_SIZE_MB = 50
   const validate = useCallback((file) => {
     if (!file) {
       alert('No file selected.')
