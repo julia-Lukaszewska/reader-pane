@@ -23,7 +23,7 @@ const BookCard = ({ book, viewType }) => {
   const dispatch = useDispatch()
   const [deleteBook] = useDeleteBookMutation()
   const [isConfirmOpen, setConfirm] = useState(false)
-
+const [isDeleting, setDeleting] = useState(false)
   const isManageMode = useSelector(selectIsManageMode)
   const { openReader } = useBookActions(book)
 
@@ -39,10 +39,19 @@ const BookCard = ({ book, viewType }) => {
   const handleRemoveClick = () => setConfirm(true)
 
   //--- Confirm permanent delete
-  const handleConfirmDelete = async () => {
-    await deleteBook(book._id)
-    setConfirm(false)
+const handleConfirmDelete = async () => {
+  if (isDeleting) return  // 🧤 zapobiegamy duplikacji
+  setDeleting(true)       // ⏳ blokujemy przyciski
+
+  try {
+    await deleteBook(book._id).unwrap()
+  } catch (err) {
+    console.error('[Delete Error]', err)
   }
+
+  setDeleting(false)
+  setConfirm(false)
+}
 
   //--- Cancel delete
   const handleCancelDelete = () => setConfirm(false)
@@ -70,6 +79,7 @@ const BookCard = ({ book, viewType }) => {
           variant={book.flags?.isArchived ? 'permanent-delete' : 'library'}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
+           isLoading={isDeleting}
         />
       )}
     </>

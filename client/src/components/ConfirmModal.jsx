@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import {
   useUpdateBookFlagsMutation,
-  useDeleteBookMutation
+
 } from '@/store/api/booksPrivateApi'
 import { Button } from '@/components'
 
@@ -71,9 +71,10 @@ const ConfirmModal = ({
   variant = 'library',
   onTrash,
   onConfirm,
+  isLoading = false
 }) => {
   const [updateBookFlags] = useUpdateBookFlagsMutation()
-  const [deleteBook] = useDeleteBookMutation()
+
 
 
 
@@ -81,11 +82,7 @@ const ConfirmModal = ({
   const isPermanent = variant === 'permanent-delete'
   const isRestore = variant === 'restore'
 
-  const handleDeleteForever = async () => {
-    await deleteBook(bookId)
-    onConfirm?.()
-    onCancel()
-  }
+
 
   const handleArchive = async () => {
     if (onTrash) {
@@ -120,7 +117,7 @@ const ConfirmModal = ({
               <Button $variant="button_secondary" onClick={handleArchive}>
                 Archive
               </Button>
-              <Button $variant="button_primary" onClick={handleDeleteForever}>
+              <Button $variant="button_primary" onClick={onConfirm}disabled={isLoading}>
                 Delete
               </Button>
             </>
@@ -128,7 +125,7 @@ const ConfirmModal = ({
 
           {isPermanent && (
             <>
-              <Button $variant="button_primary" onClick={handleDeleteForever}>
+              <Button $variant="button_primary" onClick={onConfirm} disabled={isLoading}>
                 Yes
               </Button>
               <Button $variant="button_secondary" onClick={onCancel}>
