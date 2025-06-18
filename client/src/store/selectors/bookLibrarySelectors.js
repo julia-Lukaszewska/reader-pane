@@ -115,6 +115,11 @@ export const selectLibraryViewMode = (state) => state.book.libraryViewMode
 export const selectSortMode = (state) => state.book.sortMode
 
 /**
+ * Returns the current active library view route (e.g. 'default', 'favorites', 'archive').
+ */
+export const selectActiveLibraryView = (state) => state.book.activeLibraryView
+
+/**
  * Returns the currently active book ID.
  */
 export const selectActiveBookId = (state) => state.book.activeBookId

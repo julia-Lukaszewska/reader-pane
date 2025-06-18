@@ -35,6 +35,8 @@ import {
   HomeView,
   MyLibraryView,
   ImportBooksView,
+  ArchiveView,
+  FavoritesView,
   ReaderView,
   SettingsView,
   PageNotFoundView,
@@ -74,10 +76,14 @@ const router = createBrowserRouter([
                 <LibraryLayout />
               </Suspense>
             ),
-            children: [
-              { index: true,           element: <MyLibraryView /> },  // /library
+              children: [
+              { index: true, element: <MyLibraryView /> },
+
               { path: 'import',        element: <ImportBooksView /> }, // /library/import
+              { path: 'archive',       element: <ArchiveView /> },     // /library/archive
+              { path: 'favorites',     element: <FavoritesView /> },   // /library/favorites
             ],
+          
           },
           
             { path: 'read/:bookId?', element: <ReaderLayout />, children: [

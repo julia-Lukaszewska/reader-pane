@@ -66,13 +66,24 @@ export const getLibraryBook = async (req, res) => {
  */
 export const updateLibraryBook = async (req, res) => {
   try {
-    if (!req.body.meta) {
-      return res.status(400).json({ error: 'No meta provided.' })
+    const updates = {}
+
+    
+    if (req.body.meta) {
+      for (const [key, value] of Object.entries(req.body.meta)) {
+        updates[`meta.${key}`] = value
+      }
     }
 
-    const updates = {}
-    for (const [key, value] of Object.entries(req.body.meta)) {
-      updates[`meta.${key}`] = value
+  
+    if (req.body.flags) {
+      for (const [key, value] of Object.entries(req.body.flags)) {
+        updates[`flags.${key}`] = value
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: 'No valid data provided for update.' })
     }
 
     const book = await Book.findOneAndUpdate(
@@ -80,6 +91,7 @@ export const updateLibraryBook = async (req, res) => {
       { $set: updates },
       { new: true, runValidators: true }
     )
+
     if (!book) {
       return res.status(404).json({ error: 'Book not found' })
     }
@@ -90,4 +102,5 @@ export const updateLibraryBook = async (req, res) => {
     res.status(500).json({ error: 'Failed to update book' })
   }
 }
+
 

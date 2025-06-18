@@ -1,0 +1,62 @@
+{
+  "resources": [
+    {
+      "filePath": "client\\src\\components\\ConfirmModal.jsx",
+      "group": "Default"
+    },
+    {
+      "filePath": "client\\src\\store\\api",
+      "group": "Default"
+    },
+    {
+      "filePath": "client\\src\\modules\\library",
+      "group": "serweer"
+    },
+    {
+      "filePath": "client\\src\\store",
+      "group": "serweer"
+    },
+    {
+      "filePath": "server\\middlewares",
+      "group": "serweer"
+    },
+    {
+      "filePath": "server\\controllers",
+      "group": "serweer"
+    },
+    {
+      "filePath": "server\\config",
+      "group": "serweer"
+    },
+    {
+      "filePath": "server\\routes",
+      "group": "serweer"
+    },
+    {
+      "filePath": "server\\models",
+      "group": "serweer"
+    },
+    {
+      "filePath": "server\\server.js",
+      "group": "serweer"
+    },
+    {
+      "filePath": "client\\src\\components\\ConfirmModal.jsx",
+      "group": "serweer"
+    },
+    {
+      "filePath": "client\\src\\controllers",
+      "group": "serweer"
+    },
+    {
+      "filePath": "client\\src\\modules\\book",
+      "group": "serweer"
+    }
+  ],
+  "groups": [
+    "Default",
+    "serweer",
+    "dev"
+  ],
+  "currentGroup": "serweer"
+}

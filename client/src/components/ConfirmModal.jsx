@@ -1,10 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import {
-  useUpdateBookFlagsMutation,
-
-} from '@/store/api/booksPrivateApi'
+import { useUpdateBookFlagsMutation} from '@/store/api/booksPrivateApi'
 import { Button } from '@/components'
 
 // -----------------------------------------------------------------------------

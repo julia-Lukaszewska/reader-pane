@@ -11,6 +11,7 @@ import {
   selectLibraryViewMode,
   selectSortMode,
   selectVisibleBooks,
+  selectActiveLibraryView,
 } from '@/store/selectors'
 
 import sortBooks from '@book/utils/sortBooks'
@@ -51,14 +52,18 @@ const LibraryBooksRenderer = ({
   onDelete,
   viewMode: viewModeProp,
 }) => {
-  const books       = useSelector(selectVisibleBooks)
-  const sortMode    = useSelector(selectSortMode)
-  const stateViewMode = useSelector(selectLibraryViewMode)
-  const viewMode    = viewModeProp ?? stateViewMode
+  const books              = useSelector(selectVisibleBooks)
+  const sortMode           = useSelector(selectSortMode)
+  const stateViewMode      = useSelector(selectLibraryViewMode)
+  const activeLibraryView  = useSelector(selectActiveLibraryView)
+  const viewMode           = viewModeProp ?? stateViewMode
 
   const sortedBooks = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
 
-  if (!sortedBooks?.length && hideAddTile) {
+  // Hide "Add Book" tile in archive or favorites view
+  const shouldHideAddTile = hideAddTile || ['archive', 'favorites'].includes(activeLibraryView)
+
+  if (!sortedBooks?.length && shouldHideAddTile) {
     return <EmptyMessage>No books found.</EmptyMessage>
   }
 
@@ -67,7 +72,7 @@ const LibraryBooksRenderer = ({
       return (
         <LibraryGridLayout
           books={sortedBooks}
-          hideAddTile={hideAddTile}
+          hideAddTile={shouldHideAddTile}
           onRestore={onRestore}
           onDelete={onDelete}
           viewMode={viewMode}
@@ -77,7 +82,7 @@ const LibraryBooksRenderer = ({
       return (
         <LibraryListLayout
           books={sortedBooks}
-          hideAddTile={hideAddTile}
+          hideAddTile={shouldHideAddTile}
           onRestore={onRestore}
           onDelete={onDelete}
           viewMode={viewMode}
@@ -87,7 +92,7 @@ const LibraryBooksRenderer = ({
       return (
         <LibraryTableLayout
           books={sortedBooks}
-          hideAddTile={hideAddTile}
+          hideAddTile={shouldHideAddTile}
           onRestore={onRestore}
           onDelete={onDelete}
           viewMode={viewMode}
