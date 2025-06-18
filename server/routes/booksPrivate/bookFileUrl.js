@@ -12,22 +12,19 @@ router.get('/:id/file-url', async (req, res) => {
     return res.status(404).json({ message: 'No file for this book' })
   }
 
-  // 🔹 Przygotuj dane do odpowiedzi
   const body = JSON.stringify({
     fileUrl: `/api/books/storage/${encodeURIComponent(book.file.filename)}`,
     file: book.file,
   })
 
-  // 🔹 Oblicz ETag z danych odpowiedzi
   const etag = crypto.createHash('md5').update(body).digest('hex')
   const clientETag = req.headers['if-none-match']
 
-  // 🔹 Jeśli klient ma identyczny ETag → zwróć 304
+  
   if (clientETag === etag) {
     return res.status(304).end()
   }
 
-  // 🔹 Ustaw ETag i Cache-Control
   res.set('ETag', etag)
   res.set('Cache-Control', 'private, must-revalidate')
 

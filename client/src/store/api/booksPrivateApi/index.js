@@ -32,6 +32,13 @@ export {
   useDeleteBookMutation,
   useGetBookByIdQuery,
 } from './bookEndopoints/bookApiSingle'
+//-----------------------------------------------------
+//------ Single-Book flags
+//-----------------------------------------------------
+export {
+  useUpdateBookFlagsMutation
+
+} from './bookEndopoints/bookApiFlags'
 
 //-----------------------------------------------------
 //------ Form-Related Endpoints: File URL, Notes, Bookmarks, Rating

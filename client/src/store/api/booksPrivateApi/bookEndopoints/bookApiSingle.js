@@ -76,7 +76,7 @@ export const bookApiSingle = booksApi.injectEndpoints({
      */
     deleteBook: builder.mutation({
       query: id => ({
-        url: `/books/private/${id}`,
+        url: `/books/storage/book/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_res, _err, id) => [
