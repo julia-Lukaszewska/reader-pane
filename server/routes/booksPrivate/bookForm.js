@@ -162,23 +162,6 @@ router.delete('/:id/bookmarks/:index', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete bookmark' })
   }
 })
-//-----------------------------------------------------
-//------ DELETE /api/books/private/:id
-//-----------------------------------------------------
-router.delete('/:id', async (req, res) => {
-  try {
-    const book = await Book.findOne({
-      _id: req.params.id,
-      owner: req.user.id,
-    })
-    if (!book) return res.status(404).json({ error: 'Book not found' })
 
-    await book.deleteOne()
-    res.json({ message: 'Book metadata deleted' })
-  } catch (err) {
-    console.error('[DELETE METADATA ONLY]', err)
-    res.status(500).json({ error: 'Failed to delete book' })
-  }
-})
 
 export default router

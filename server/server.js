@@ -23,6 +23,7 @@ import {
   authRouter,
   booksStorageRouter,
   booksPrivateRouter,
+  booksAllRouter,
 } from './routes/index.js'
 
 // --------------------------------------------
@@ -73,7 +74,7 @@ app.use(passport.initialize())
 app.use('/api/auth', authRouter)
 app.use('/api/books/storage', booksStorageRouter)
 app.use('/api/books/private', booksPrivateRouter)
-
+app.use('/api/books/all', booksAllRouter)
 // --------------------------------------------
 // HEALTHCHECK & ROOT
 // --------------------------------------------

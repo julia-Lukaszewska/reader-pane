@@ -4,7 +4,7 @@
  */
 import express from 'express'
 import Book from '../../models/Book.js'
-import { listLibrary } from '../../controllers/LibraryBooksController.js'
+import { listLibrary, etLibraryBook  } from '../../controllers/LibraryBooksController.js'
 
 //-----------------------------------------------------
 //------ Router Setup
@@ -48,5 +48,16 @@ router.get('/static', async (req, res) => {
  * @description List full documents for all books owned by the user.
  */
 router.get('/', listLibrary)
+//-----------------------------------------------------
+//------ GET /api/books/private/:id
+//-----------------------------------------------------
+/**
+ * @route GET /api/books/private/:id
+ * @description Retrieves a single book’s full document for the authenticated user.
+ *              Uses the `getLibraryBook` controller to handle lookup and error responses.
+ * @param {import('express').Request}  req
+ * @param {import('express').Response} res
+ */
+router.get('/:id', getLibraryBook)
 
 export default router

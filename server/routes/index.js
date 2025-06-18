@@ -11,10 +11,12 @@ import authRouter          from './auth/index.js'
 // import booksPublicRouter   from './booksPublic/index.js'
 import booksPrivateRouter  from './booksPrivate/index.js'
 import booksStorageRouter  from './booksStorage/index.js'
+import booksAllRouter from './booksAll/index.js'
 
 export {
   authRouter,
   // booksPublicRouter,
   booksPrivateRouter,
   booksStorageRouter,
+  booksAllRouter,
 }
