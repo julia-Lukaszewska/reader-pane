@@ -6,6 +6,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
+import { useLibraryFilter } from '@library/hooks'
 import {
   selectVisibleBooks,
   selectBooksResult,
@@ -39,8 +40,10 @@ const MyLibraryView = () => {
   const dispatch = useDispatch()
 
   const status = useSelector(selectBooksResult).status
+       useLibraryFilter('all')
+ const allBooks = useSelector(selectVisibleBooks)
+const books = allBooks.filter(book => !book.flags?.isArchived)
 
-  const books = useSelector(selectVisibleBooks)
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
   const previewBook = books.find(b => b._id === previewId)

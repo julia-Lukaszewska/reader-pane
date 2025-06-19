@@ -5,7 +5,7 @@
  * Uses selector-based filtering and sets the correct library filter on mount.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -14,7 +14,9 @@ import {
   selectIsPreviewOpen,
   selectPreviewBookId,
 } from '@/store/selectors'
-import { clearPreviewBook, setLibraryFilter } from '@/store/slices/bookSlice'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
+import { useLibraryFilter } from '@library/hooks'
+
 import { useUpdateBookMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import ConfirmModal from '@/components/ConfirmModal'
@@ -47,10 +49,7 @@ const ArchiveView = () => {
   const dispatch = useDispatch()
   const [modalBook, setModalBook] = useState(null)
 
-  // Set archive filter on mount
-  useEffect(() => {
-    dispatch(setLibraryFilter('archived'))
-  }, [dispatch])
+ useLibraryFilter('archived')
 
   const { status } = useSelector(selectBooksResult)
   const books = useSelector(selectVisibleBooks)

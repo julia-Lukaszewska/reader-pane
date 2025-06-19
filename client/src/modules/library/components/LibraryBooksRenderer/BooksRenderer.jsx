@@ -1,103 +1,92 @@
-/**
- * @file LibraryBooksRenderer.jsx
- * @description
- * Renders the sorted list of visible books in the selected view mode (grid, list, table).
- */
-
 import { useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
-import {
-  selectLibraryViewMode,
-  selectSortMode,
-  selectVisibleBooks,
-  selectActiveLibraryView,
-} from '@/store/selectors'
-
+import { selectLibraryViewMode, selectSortMode } from '@/store/selectors'
+import { useGetBooksQuery } from '@/store/api/booksPrivateApi'
 import sortBooks from '@book/utils/sortBooks'
-
 import {
   LibraryGridLayout,
   LibraryListLayout,
   LibraryTableLayout,
 } from '@library/components'
 
-/* --------------------------------------------------------------------------- */
-/*  STYLED COMPONENTS                                                          */
-/* --------------------------------------------------------------------------- */
-
+/* --------------------------------------------- */
+/* STYLES                                        */
+/* --------------------------------------------- */
 const EmptyMessage = styled.p`
   padding: 2rem;
   text-align: center;
 `
 
-/* --------------------------------------------------------------------------- */
-/*  COMPONENT: LIBRARY BOOKS RENDERER                                          */
-/* --------------------------------------------------------------------------- */
-
-/**
- * Displays the list of books in the current library view mode (grid, list, table).
- *
- * @component
- * @param {Object} props
- * @param {boolean} [props.hideAddTile=false] - Whether to hide the "Add Book" tile
- * @param {Function} [props.onRestore] - Callback for restoring a book
- * @param {Function} [props.onDelete] - Callback for deleting a book
- * @param {string} [props.viewMode] - Optional override for view mode
- * @returns {JSX.Element}
- */
+/* --------------------------------------------- */
+/* COMPONENT                                     */
+/* --------------------------------------------- */
 const LibraryBooksRenderer = ({
   hideAddTile = false,
   onRestore,
   onDelete,
   viewMode: viewModeProp,
 }) => {
-  const books              = useSelector(selectVisibleBooks)
-  const sortMode           = useSelector(selectSortMode)
-  const stateViewMode      = useSelector(selectLibraryViewMode)
-  const activeLibraryView  = useSelector(selectActiveLibraryView)
-  const viewMode           = viewModeProp ?? stateViewMode
+  const { pathname } = useLocation()
+  const { data: bookData } = useGetBooksQuery()
+  const sortMode = useSelector(selectSortMode)
+  const stateViewMode = useSelector(selectLibraryViewMode)
+  const viewMode = viewModeProp ?? stateViewMode
 
+  /* --------------------------------------------- */
+  /* FILTER BOOKS BY PATH                          */
+  /* --------------------------------------------- */
+  const books = useMemo(() => {
+    if (!bookData?.ids?.length) return []
+
+    const allBooks = bookData.ids.map(id => bookData.entities[id])
+
+    switch (pathname) {
+      case '/library/favorites':
+        return allBooks.filter(b => b.flags?.isFavorited)
+      case '/library/archive':
+        return allBooks.filter(b => b.flags?.isArchived)
+      case '/library':
+        return allBooks.filter(b => !b.flags?.isArchived)
+      default:
+        return []
+    }
+  }, [bookData, pathname])
+
+  /* --------------------------------------------- */
+  /* SORT BOOKS                                    */
+  /* --------------------------------------------- */
   const sortedBooks = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
 
-  // Hide "Add Book" tile in archive or favorites view
-  const shouldHideAddTile = hideAddTile || ['archive', 'favorites'].includes(activeLibraryView)
+  /* --------------------------------------------- */
+  /* UI FLAGS                                      */
+  /* --------------------------------------------- */
+  const shouldHideAddTile =
+    hideAddTile || pathname === '/library/archive' || pathname === '/library/favorites'
 
-  if (!sortedBooks?.length && shouldHideAddTile) {
+  if (!sortedBooks.length && shouldHideAddTile) {
     return <EmptyMessage>No books found.</EmptyMessage>
+  }
+
+  /* --------------------------------------------- */
+  /* RENDER LAYOUT                                 */
+  /* --------------------------------------------- */
+  const commonProps = {
+    books: sortedBooks,
+    hideAddTile: shouldHideAddTile,
+    onRestore,
+    onDelete,
+    viewMode,
   }
 
   switch (viewMode) {
     case 'grid':
-      return (
-        <LibraryGridLayout
-          books={sortedBooks}
-          hideAddTile={shouldHideAddTile}
-          onRestore={onRestore}
-          onDelete={onDelete}
-          viewMode={viewMode}
-        />
-      )
+      return <LibraryGridLayout {...commonProps} />
     case 'list':
-      return (
-        <LibraryListLayout
-          books={sortedBooks}
-          hideAddTile={shouldHideAddTile}
-          onRestore={onRestore}
-          onDelete={onDelete}
-          viewMode={viewMode}
-        />
-      )
+      return <LibraryListLayout {...commonProps} />
     case 'table':
-      return (
-        <LibraryTableLayout
-          books={sortedBooks}
-          hideAddTile={shouldHideAddTile}
-          onRestore={onRestore}
-          onDelete={onDelete}
-          viewMode={viewMode}
-        />
-      )
+      return <LibraryTableLayout {...commonProps} />
     default:
       return <EmptyMessage>Invalid view mode: {viewMode}</EmptyMessage>
   }

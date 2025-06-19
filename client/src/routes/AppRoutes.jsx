@@ -78,6 +78,7 @@ const router = createBrowserRouter([
             ),
               children: [
               { index: true, element: <MyLibraryView /> },
+              { path: 'library', element: <MyLibraryView /> },
 
               { path: 'import',        element: <ImportBooksView /> }, // /library/import
               { path: 'archive',       element: <ArchiveView /> },     // /library/archive

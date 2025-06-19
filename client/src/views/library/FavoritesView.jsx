@@ -5,7 +5,7 @@
  * Uses selector-based filtering and sets the correct library filter on mount.
  */
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -14,7 +14,8 @@ import {
   selectIsPreviewOpen,
   selectPreviewBookId,
 } from '@/store/selectors'
-import { clearPreviewBook, setLibraryFilter } from '@/store/slices/bookSlice'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
+import { useLibraryFilter } from '@library/hooks'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
 import { LoadingSpinner } from '@/components'
@@ -44,10 +45,7 @@ const Container = styled.div`
 const FavoritesView = () => {
   const dispatch = useDispatch()
 
-  // Set the global filter to "favorites" on component mount
-  useEffect(() => {
-    dispatch(setLibraryFilter('favorites'))
-  }, [dispatch])
+useLibraryFilter('favorites')
 
   const { status } = useSelector(selectBooksResult)
   const books = useSelector(selectVisibleBooks)

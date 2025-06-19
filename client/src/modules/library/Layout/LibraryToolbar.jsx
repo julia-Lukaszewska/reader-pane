@@ -2,9 +2,8 @@
  * @file LibraryToolbar.jsx
  * @description Toolbar with title, sorting, view toggle and batch actions.
  */
-
-import React, { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { IoGrid, IoList, IoReorderThree, IoTrash } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
@@ -21,6 +20,7 @@ import {
   clearSelected,
   setLibraryViewMode,
   setSortMode,
+  setLibraryFilter,
 } from '@/store/slices/bookSlice'
 
 import {
@@ -98,14 +98,17 @@ const LibraryToolbar = () => {
   const selected   = useSelector(selectSelectedBookIds)
   const viewMode   = useSelector(selectLibraryViewMode)
   const sortMode   = useSelector(selectSortMode)
+  const filter     = useSelector((s) => s.book.libraryFilter)
 
-  const { pathname } = useLocation()
+const { pathname } = useLocation()
 
-  const section = useMemo(() => {
-    if (pathname.includes('/archive'))   return 'Archive'
-    if (pathname.includes('/favorites')) return 'Favorites'
-    return 'My Books'
-  }, [pathname])
+const section = useMemo(() => {
+  if (pathname.includes('/archive'))    return 'Archive'
+  if (pathname.includes('/favorites'))  return 'Favorites'
+  return 'My Books'
+}, [pathname])
+
+  const inLibrary = true
 
   const handleBatchDelete = () => {
     selected.forEach((id) => {
@@ -123,12 +126,14 @@ const LibraryToolbar = () => {
           <AddBookTile />
         )}
 
-        <LibraryToolbarButton
-          onClick={() => dispatch(toggleManageMode())}
-          $active={isManaging}
-        >
-          {isManaging ? 'Done' : 'Manage'}
-        </LibraryToolbarButton>
+        {inLibrary && (
+          <LibraryToolbarButton
+            onClick={() => dispatch(toggleManageMode())}
+            $active={isManaging}
+          >
+            {isManaging ? 'Done' : 'Manage'}
+          </LibraryToolbarButton>
+        )}
 
         {isManaging && selected.length > 0 && (
           <LibraryToolbarButton onClick={handleBatchDelete} $danger>
@@ -136,44 +141,48 @@ const LibraryToolbar = () => {
           </LibraryToolbarButton>
         )}
 
-        <LibraryToolbarSelect
-          value={sortMode}
-          onChange={(e) => dispatch(setSortMode(e.target.value))}
-        >
-          <option value="title-asc">Title A–Z</option>
-          <option value="title-desc">Title Z–A</option>
-          <option value="author-asc">Author A–Z</option>
-          <option value="author-desc">Author Z–A</option>
-          <option value="date-desc">Recently added</option>
-          <option value="date-asc">Oldest added</option>
-          <option value="updated-desc">Last edited</option>
-          <option value="rating-desc">Highest rating</option>
-          <option value="rating-asc">Lowest rating</option>
-        </LibraryToolbarSelect>
+        {inLibrary && (
+          <>
+            <LibraryToolbarSelect
+              value={sortMode}
+              onChange={(e) => dispatch(setSortMode(e.target.value))}
+            >
+              <option value="title-asc">Title A–Z</option>
+              <option value="title-desc">Title Z–A</option>
+              <option value="author-asc">Author A–Z</option>
+              <option value="author-desc">Author Z–A</option>
+              <option value="date-desc">Recently added</option>
+              <option value="date-asc">Oldest added</option>
+              <option value="updated-desc">Last edited</option>
+              <option value="rating-desc">Highest rating</option>
+              <option value="rating-asc">Lowest rating</option>
+            </LibraryToolbarSelect>
 
-        <ViewToggle>
-          <IconButton
-            $active={viewMode === 'grid'}
-            onClick={() => dispatch(setLibraryViewMode('grid'))}
-            title="Grid view"
-          >
-            <IoGrid />
-          </IconButton>
-          <IconButton
-            $active={viewMode === 'list'}
-            onClick={() => dispatch(setLibraryViewMode('list'))}
-            title="List view"
-          >
-            <IoList />
-          </IconButton>
-          <IconButton
-            $active={viewMode === 'table'}
-            onClick={() => dispatch(setLibraryViewMode('table'))}
-            title="Table view"
-          >
-            <IoReorderThree />
-          </IconButton>
-        </ViewToggle>
+            <ViewToggle>
+              <IconButton
+                $active={viewMode === 'grid'}
+                onClick={() => dispatch(setLibraryViewMode('grid'))}
+                title="Grid view"
+              >
+                <IoGrid />
+              </IconButton>
+              <IconButton
+                $active={viewMode === 'list'}
+                onClick={() => dispatch(setLibraryViewMode('list'))}
+                title="List view"
+              >
+                <IoList />
+              </IconButton>
+              <IconButton
+                $active={viewMode === 'table'}
+                onClick={() => dispatch(setLibraryViewMode('table'))}
+                title="Table view"
+              >
+                <IoReorderThree />
+              </IconButton>
+            </ViewToggle>
+          </>
+        )}
       </ToolbarActions>
     </ToolbarWrapper>
   )
