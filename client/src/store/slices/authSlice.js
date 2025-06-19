@@ -9,7 +9,7 @@
 
 import { createSlice } from '@reduxjs/toolkit'
 import { authApi } from '@/store/api/authApi/authApi'
-
+import { saveAuth, clearAuth } from '@/utils/storageService'
 //----------------------------------------------------------------------------- 
 // Initial State
 //-----------------------------------------------------------------------------  
@@ -67,6 +67,7 @@ const authSlice = createSlice({
         (state, { payload }) => {
           state.access = payload.access
           state.authChecked = true
+           saveAuth(payload.access, payload.user)
         }
       )
       .addMatcher(
@@ -74,12 +75,14 @@ const authSlice = createSlice({
         (state, { payload }) => {
           state.access = payload.access
           state.authChecked = true
+           saveAuth(payload.access, payload.user)
         }
       )
       .addMatcher(
         authApi.endpoints.refresh.matchFulfilled,
         (state, { payload }) => {
           state.access = payload.access
+           saveAuth(payload.access, payload.user)
         }
       )
       .addMatcher(
@@ -87,6 +90,7 @@ const authSlice = createSlice({
         state => {
           state.access = null
           state.authChecked = true
+           clearAuth()
         }
       )
   },

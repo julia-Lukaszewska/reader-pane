@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useLogoutMutation } from '@/store/api/authApi/authApi'
 import { clearCredentials } from '@/store/slices/authSlice'
-
+import { clearAuth } from '@/utils/storageService'
 /**
  * Returns an async function to log out the user.
  * Sends logout request to backend, clears credentials, and redirects to homepage.
@@ -27,6 +27,7 @@ export default function useLogout() {
       // handle error if needed
     } finally {
       dispatch(clearCredentials())
+       clearAuth()
       navigate('/')
     }
   }

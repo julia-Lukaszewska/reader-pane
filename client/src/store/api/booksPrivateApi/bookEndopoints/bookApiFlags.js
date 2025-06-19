@@ -60,7 +60,10 @@ export const bookApiFlags = booksApi.injectEndpoints({
           patchOne.undo()
         }
       },
-      invalidatesTags: (_result, _error, { id }) => [{ type: 'Books', id }],
+       // Optimistic updates already patch caches for getBooks and getBookById,
+      // so we skip automatic invalidation to avoid refetching the entire list
+      // which previously caused a brief flicker of empty tiles.
+      invalidatesTags: [],
     }),
   }),
 })

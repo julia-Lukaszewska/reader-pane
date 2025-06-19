@@ -8,10 +8,10 @@
  */
 import { useEffect } from 'react'
 import { useRefreshMutation } from '@/store/api/authApi/authApi'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setCredentials } from '@/store/slices/authSlice'
 import { selectAccessToken } from '@/store/selectors/authSelectors'
-import { useSelector } from 'react-redux'
+
 
 export default function useRefreshOnMount() {
   const dispatch = useDispatch()
