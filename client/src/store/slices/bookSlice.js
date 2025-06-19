@@ -32,7 +32,7 @@ const initialState = {
   sortMode: 'title-asc',
   progressMode: 'current',
   lastOpenedBookId: null,
-  activeLibraryView: 'default', // ← NEW
+
 }
 
 //-----------------------------------------------------------------------------
@@ -93,10 +93,7 @@ const bookSlice = createSlice({
     setLastOpenedBookId: (state, action) => {
       state.lastOpenedBookId = action.payload
     },
-    setActiveLibraryView: (state, action) => {
-    state.activeLibraryView = action.payload
-    },
-
+  
   },
 })
 
@@ -119,7 +116,7 @@ export const {
   setLibraryFilter,
   setProgressMode,
   setLastOpenedBookId,
-  setActiveLibraryView,
+
 } = bookSlice.actions
 
 export default bookSlice.reducer
