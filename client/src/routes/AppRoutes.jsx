@@ -4,22 +4,9 @@
  */
 
 import React, { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { LoadingSpinner } from '@/components'
-import { useAuth } from '@/modules/user/hooks'
-
-//-----------------------------------------------------------------------------
-// PrivateRoute: Protects routes for authenticated users only
-//-----------------------------------------------------------------------------
-/**
- * Redirects to /login if the user is not authenticated.
- * Otherwise renders nested routes (Outlet).
- */
-const PrivateRoute = () => {
-  const { isLoggedIn } = useAuth()
-  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />
-}
-
+import PrivateRoute from './PrivateRoute.jsx'
 //-----------------------------------------------------------------------------
 // Lazy-loaded Layouts
 //-----------------------------------------------------------------------------
