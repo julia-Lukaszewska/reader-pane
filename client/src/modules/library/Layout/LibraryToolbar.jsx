@@ -14,7 +14,7 @@ import {
   LibraryToolbarSelect,
 } from '@library/components/LibraryToolbarButton'
 
-import { useUpdateBookMutation } from '@/store/api/booksPrivateApi'
+import { useBulkBookActions } from '@library/hooks'
 import {
   toggleManageMode,
   clearSelected,
@@ -92,7 +92,7 @@ const IconButton = styled.button.withConfig({
 
 const LibraryToolbar = () => {
   const dispatch = useDispatch()
-  const [updateBook] = useUpdateBookMutation()
+  const { archiveAll } = useBulkBookActions()
 
   const isManaging = useSelector(selectIsManageMode)
   const selected   = useSelector(selectSelectedBookIds)
@@ -111,9 +111,7 @@ const section = useMemo(() => {
   const inLibrary = true
 
   const handleBatchDelete = () => {
-    selected.forEach((id) => {
-      updateBook({ id, changes: { flags: { isArchived: true } } })
-    })
+    archiveAll(selected)
     dispatch(clearSelected())
   }
 

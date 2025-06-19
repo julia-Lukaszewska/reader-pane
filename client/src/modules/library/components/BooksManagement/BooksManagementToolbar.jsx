@@ -7,10 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearSelected, setManageMode } from '@/store/slices/bookSlice'
-import {
-  useDeleteBookMutation,
-  useUpdateBookMutation,  
-} from '@/store/api/booksPrivateApi/bookEndopoints/bookApiSingle'
+import { useBulkBookActions } from '@library/hooks'
 import { selectSelectedBookIds } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
@@ -60,8 +57,7 @@ const BooksManagementToolbar = () => {
   const dispatch = useDispatch()
   const selectedIds = useSelector(selectSelectedBookIds)
 
-  const [deleteBook] = useDeleteBookMutation()
-  const [updateBook] = useUpdateBookMutation()
+  const { deleteAll, archiveAll } = useBulkBookActions()
 
   //--- Exit management mode and clear selection
   const exitManaging = () => {
@@ -71,20 +67,13 @@ const BooksManagementToolbar = () => {
 
   //--- Delete selected books from backend
   const handleDelete = async () => {
-    for (const bookId of selectedIds) {
-      await deleteBook(bookId)
-    }
+     await deleteAll(selectedIds)
     exitManaging()
   }
 
   //--- Archive selected books (set isArchived = true)
   const handleArchive = async () => {
-    for (const bookId of selectedIds) {
-      await updateBook({
-        id: bookId,
-        changes: { flags: { isArchived: true } },
-      })
-    }
+ await archiveAll(selectedIds)
     exitManaging()
   }
 
