@@ -5,15 +5,16 @@ export default function useBulkBookActions() {
   const [deleteBook] = useDeleteBookMutation()
 
   const archiveAll = async (ids = []) => {
-    for (const id of ids) {
-      await updateBook({ id, changes: { flags: { isArchived: true } } })
-    }
+        await Promise.all(
+      ids.map((id) =>
+        updateBook({ id, changes: { flags: { isArchived: true } } })
+      )
+    )
+    
   }
 
   const deleteAll = async (ids = []) => {
-    for (const id of ids) {
-      await deleteBook(id)
-    }
+        await Promise.all(ids.map((id) => deleteBook(id)))
   }
 
   return { archiveAll, deleteAll }

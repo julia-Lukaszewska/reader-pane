@@ -72,7 +72,7 @@ export const selectVisibleBooks = createSelector(
   (books, filter) => {
     switch (filter) {
       case 'favorites':
-        return books.filter(b => b.flags?.isFavorited && !b.flags?.isArchived)
+        return books.filter(b => b.flags?.isFavorited)
       case 'archived':
         return books.filter(b => b.flags?.isArchived)
       case 'to-read':

@@ -49,7 +49,7 @@ export default function LibraryLayout() {
   const isLoggedIn   = useSelector(selectIsLoggedIn)
   const isManageMode = useSelector(selectIsManageMode)
   const selectedIds  = useSelector(selectSelectedBookIds)
-console.log('[LibraryLayout] mounted')
+
 
   if (!isLoggedIn) return <EmptyLibraryGuestMessage />
 

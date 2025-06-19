@@ -5,8 +5,7 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import { BookCard } from '@/modules/book'
-import { AddBookTile } from '@/modules/uploadPDF'
+import BookTiles from './BookTiles'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -41,10 +40,7 @@ const BooksGrid = styled.div`
 const LibraryGridLayout = ({ books = [], hideAddTile }) => {
   return (
     <BooksGrid>
-      {!hideAddTile && <AddBookTile />}
-      {books.map((book) => (
-        <BookCard key={book._id} book={book} viewType='grid' />
-      ))}
+           <BookTiles books={books} hideAddTile={hideAddTile} viewType='grid' />
     </BooksGrid>
   )
 }

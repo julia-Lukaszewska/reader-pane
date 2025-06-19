@@ -5,7 +5,7 @@
 
 import React from 'react'  
 import styled from 'styled-components'
-import { BookCard } from '@book/BookCard'
+import BookTiles from './BookTiles'
 import { AddBookTile } from '@/modules/uploadPDF'
 
 //-----------------------------------------------------------------------------
@@ -50,22 +50,7 @@ const Td = styled.td`
   color: var(--text-primary);
 `
 
-//--- Row for AddBookTile
-const AddRow = styled.tr`
-  td {
-    padding: 1rem 0;
-  }
-`
 
-//--- Row when there are no books
-const EmptyRow = styled.tr`
-  td {
-    padding: 2rem;
-    color: var(--text-secondary);
-    font-style: italic;
-    text-align: center;
-  }
-`
 
 //-----------------------------------------------------------------------------
 // Component: LibraryTableLayout
@@ -80,11 +65,7 @@ const EmptyRow = styled.tr`
  * @param {boolean} [props.hideAddTile] - Whether to hide the "Add Book" tile row
  * @returns {JSX.Element}
  */
-const LibraryTableLayout = ({
-  books = [],
-  hideAddTile,
-
-}) => (
+const LibraryTableLayout = ({ books = [], hideAddTile }) => (
   <TableWrapper>
     <Table>
       <thead>
@@ -98,23 +79,7 @@ const LibraryTableLayout = ({
         </tr>
       </thead>
       <tbody>
-        <AddRow>
-          <Td />
-          <Td colSpan={4}>
-            {!hideAddTile && <AddBookTile />}
-          </Td>
-          <Td />
-        </AddRow>
-
-        {books.length === 0 ? (
-          <EmptyRow>
-            <Td colSpan={6}>No books — add first!</Td>
-          </EmptyRow>
-        ) : (
-          books.map(book => (
-            <BookCard key={book._id} book={book} viewType='table' />
-          ))
-        )}
+                <BookTiles books={books} hideAddTile={hideAddTile} viewType='table' />
       </tbody>
     </Table>
   </TableWrapper>

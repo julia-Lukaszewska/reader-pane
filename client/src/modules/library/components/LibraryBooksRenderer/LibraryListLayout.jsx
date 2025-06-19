@@ -5,8 +5,7 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import { BookCard } from '@/modules/book'
-import { AddBookTile } from '@/modules/uploadPDF'  
+import BookTiles from './BookTiles' 
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -40,30 +39,19 @@ const ListWrapper = styled.div`
  * @param {Function} [props.onDelete] - Callback when deleting a book (optional)
  * @returns {JSX.Element}
  */
-const LibraryListLayout = ({
-  books = [],
-  hideAddTile,
-  onRestore,
-  onDelete,
-  
-}) => {
+const LibraryListLayout = ({ books = [], hideAddTile, onRestore, onDelete }) => {
   return (
-    <>
-      <ListWrapper>
-           {!hideAddTile && <AddBookTile />}
-        {books.map(book =>
-          book ? (
-            <BookCard
-              key={book._id}
-              book={book}
-              viewType='list'
-              onOpenPreview={() => onRestore && onRestore(book._id)}
-            onRemoveClick={() => onDelete && onDelete(book)}
-          />
-        ) : null
-      )}
+    
+ <ListWrapper>
+      <BookTiles
+        books={books}
+        hideAddTile={hideAddTile}
+        viewType='list'
+        onRestore={onRestore}
+        onDelete={onDelete}
+      />
     </ListWrapper>
-    </>
+    
   )
 }
 
