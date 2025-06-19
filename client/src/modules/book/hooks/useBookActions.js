@@ -1,6 +1,4 @@
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { setActiveBookId } from '@/store/slices/bookSlice'
+import { useOpenReader } from '@/modules/reader/hooks'
 import { useUpdateBookFlagsMutation } from '@/store/api/booksPrivateApi'
 
 /**
@@ -9,17 +7,10 @@ import { useUpdateBookFlagsMutation } from '@/store/api/booksPrivateApi'
  * @returns {{openReader: function, toggleArchive: function, toggleFavorite: function}}
  */
 export default function useBookActions(book) {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+
   const [updateFlags] = useUpdateBookFlagsMutation()
 
-  /**
-   * Opens the book reader view for the given book.
-   */
-  const openReader = () => {
-    dispatch(setActiveBookId(book._id))
-    navigate(`/read/${book._id}`)
-  }
+ const openReader = useOpenReader(book._id)
 
   /**
    * Toggles the archived state of the book.

@@ -12,7 +12,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   theme: 'light',            // 'light' | 'dark'   
   sidebarOpen: false,        // whether sidebar is expanded
-  activeItem: null,          // identifier of the currently active navigation item
+  activeItem: null,         
   loginModalOpen: false,     // whether login modal is open
   registerModalOpen: false,  // whether register modal is open
   authModalMode: null,  // 'login' | 'register' | null

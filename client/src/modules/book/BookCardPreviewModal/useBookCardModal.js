@@ -4,10 +4,10 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+
 import { useDispatch } from 'react-redux'
 import { useUpdateBookMutation, booksApi } from '@/store/api/booksPrivateApi'
-import { setActiveBookId } from '@/store/slices/bookSlice'
+import { useOpenReader } from '@/modules/reader/hooks'
 
 //-----------------------------------------------------------------------------
 // Hook: useBookCardModal
@@ -23,9 +23,10 @@ import { setActiveBookId } from '@/store/slices/bookSlice'
  */
 export function useBookCardModal(book, onClose) {
   const [updateBook] = useUpdateBookMutation()
-  const navigate = useNavigate()
+ 
   const dispatch = useDispatch()
-
+  const openReader = useOpenReader(book?._id)
+ 
   const [form, setForm] = useState({ meta: {}, flags: {}, stats: {} })
   const [isEditingMain, setIsEditingMain] = useState(false)
   const [isEditingNotes, setIsEditingNotes] = useState(false)
@@ -178,8 +179,7 @@ export function useBookCardModal(book, onClose) {
    */
   const handleRead = () => {
     if (!book?._id) return
-    dispatch(setActiveBookId(book._id))
-    navigate(`/read/${book._id}`)
+    openReader()
     onClose?.()
   }
 

@@ -34,7 +34,13 @@ export const clearAuth = () => {
 export const getAuth = () => {
   const access = storage.getItem('access')
   const userJson = storage.getItem('user')
-  return access && userJson
-    ? { access, user: JSON.parse(userJson) }
-    : null
+    if (!access || !userJson) return null
+
+  try {
+    return { access, user: JSON.parse(userJson) }
+  } catch {
+    // corrupt data should be cleared to avoid parse errors in future
+    clearAuth()
+    return null
+  }
 }
