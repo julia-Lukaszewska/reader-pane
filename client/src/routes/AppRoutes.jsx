@@ -6,7 +6,8 @@
 import React, { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { LoadingSpinner } from '@/components'
-import PrivateRoute from './PrivateRoute.jsx'
+import PrivateRoute from './PrivateRoute'
+import libraryRoutes from './LibraryRoutes'
 //-----------------------------------------------------------------------------
 // Lazy-loaded Layouts
 //-----------------------------------------------------------------------------
@@ -20,10 +21,6 @@ const ReaderLayout  = lazy(() => import('@/layout/ReaderLayout'))
 //-----------------------------------------------------------------------------
 import {
   HomeView,
-  MyLibraryView,
-  ImportBooksView,
-  ArchiveView,
-  FavoritesView,
   ReaderView,
   SettingsView,
   PageNotFoundView,
@@ -56,24 +53,7 @@ const router = createBrowserRouter([
       {
         element: <PrivateRoute />, // Protect all nested routes
         children: [
-          {
-            path: 'library',
-            element: (
-              <Suspense fallback={<LoadingSpinner />}>
-                <LibraryLayout />
-              </Suspense>
-            ),
-              children: [
-              { index: true, element: <MyLibraryView /> },
-              { path: 'library', element: <MyLibraryView /> },
-
-              { path: 'import',        element: <ImportBooksView /> }, // /library/import
-              { path: 'archive',       element: <ArchiveView /> },     // /library/archive
-              { path: 'favorites',     element: <FavoritesView /> },   // /library/favorites
-            ],
-          
-          },
-          
+           libraryRoutes,
             { path: 'read/:bookId?', element: <ReaderLayout />, children: [
             { index: true, element: <ReaderView /> }, 
           ]},
