@@ -40,7 +40,7 @@ export default function LibraryController() {
   //-----------------------------------------------------
   const { data: books, isError, error } = useGetBooksQuery(undefined, {
     skip: !isLoggedIn,
-    refetchOnMountOrArgChange: true
+    refetchOnMountOrArgChange: false,
   })
 
   //-----------------------------------------------------
@@ -61,7 +61,7 @@ export default function LibraryController() {
   useEffect(() => {
     return () => {
       dispatch(clearSelected())
-      booksApi.util.resetApiState()
+     
     }
   }, [dispatch])
 

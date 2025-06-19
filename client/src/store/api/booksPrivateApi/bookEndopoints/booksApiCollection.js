@@ -32,6 +32,7 @@ export const booksApiCollection = booksApi.injectEndpoints({
      */
     getBooks: builder.query({
       query: () => '/books/private',
+      keepUnusedDataFor: 86400, // cache for 24 hours
       transformResponse: response =>
         booksAdapter.setAll(booksAdapter.getInitialState(), response),
       providesTags: result =>
