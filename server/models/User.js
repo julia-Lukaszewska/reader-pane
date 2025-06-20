@@ -26,6 +26,7 @@ import bcrypt from 'bcrypt'
  * @returns {boolean}
  */
 function validatePasswordComplexity(pwd) {
+    // eslint-disable-next-line no-useless-escape
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/
   return regex.test(pwd)
 }

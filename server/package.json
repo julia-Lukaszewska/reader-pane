@@ -38,6 +38,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pdfjs-dist": "^5.3.31",
+    "@napi-rs/canvas" : "^0.1.71" , 
     "range-parser": "^1.2.1",
     "reader-pane": "file:.."
   },

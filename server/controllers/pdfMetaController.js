@@ -1,6 +1,5 @@
 import fs from 'fs'
-import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.js'
-const { getDocument } = pdfjs
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 
 export async function extractPdfMetadata(bufferOrPath) {
   let data
