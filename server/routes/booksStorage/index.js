@@ -8,7 +8,7 @@ import authJwt from '../../middlewares/authJwt.js'
 import uploadRouter from './upload.js'
 import streamRouter from './stream.js'
 import metaRouter from './meta.js'
-
+import pageRouter from './page.js'
 //-----------------------------------------------------
 //------ Router Setup
 //-----------------------------------------------------
@@ -38,6 +38,11 @@ router.use('/', uploadRouter)
  * @description Return PDF page metadata.
  */
 router.use('/', metaRouter)
+//---------------------------------------------------
+//------- GET /api/books/storage/:filename/page/:num
+//--------------------------------------------------
+
+router.use('/', pageRouter)
 
 
 //-----------------------------------------------------
