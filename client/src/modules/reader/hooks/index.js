@@ -14,3 +14,5 @@ export { default as useStartingPage } from './useStartingPage' //Set starting pa
 
 export {default as useStreamingPdfManager} from './useStreamingPdfManager'
 
+export { default as usePdfMetadata } from './usePdfMetadata'
+

@@ -8,7 +8,7 @@
  *   - Rendered page ranges cache
  */
 import { createSlice } from '@reduxjs/toolkit'
-
+import { mergeRanges } from '@/utils/mergeRanges'
 
 //-----------------------------------------------------
 //------ Initial State
