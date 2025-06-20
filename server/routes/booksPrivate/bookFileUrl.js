@@ -1,6 +1,7 @@
 // routes/booksPrivate/bookFileUrl.js
 import express from 'express'
-import Books from '../../models/Book.js' 
+import Books from '../../models/Book.js'
+ 
 import crypto from 'crypto'
 
 const router = express.Router()
@@ -18,12 +19,7 @@ router.get('/:id/file-url', async (req, res) => {
   })
 
   const etag = crypto.createHash('md5').update(body).digest('hex')
-  const clientETag = req.headers['if-none-match']
-
-  
-  if (clientETag === etag) {
-    return res.status(304).end()
-  }
+ 
 
   res.set('ETag', etag)
   res.set('Cache-Control', 'private, must-revalidate')

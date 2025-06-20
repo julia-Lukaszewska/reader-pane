@@ -42,6 +42,7 @@ console.log(`Loaded .env.server.${BRANCH}`)
 // EXPRESS APP SETUP
 // --------------------------------------------
 const app = express()
+app.disable('etag')
 app.set('trust proxy', 1)
 
 // --------------------------------------------
