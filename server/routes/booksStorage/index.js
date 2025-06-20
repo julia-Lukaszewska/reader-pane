@@ -7,7 +7,7 @@ import express from 'express'
 import authJwt from '../../middlewares/authJwt.js'
 import uploadRouter from './upload.js'
 import streamRouter from './stream.js'
-
+import metaRouter from './meta.js'
 
 //-----------------------------------------------------
 //------ Router Setup
@@ -30,6 +30,15 @@ router.use(authJwt)
  * @description Upload PDF and save metadata.
  */
 router.use('/', uploadRouter)
+//-----------------------------------------------------
+//------ GET /api/books/storage/:filename/meta
+//-----------------------------------------------------
+/**
+ * @route GET /api/books/storage/:filename/meta
+ * @description Return PDF page metadata.
+ */
+router.use('/', metaRouter)
+
 
 //-----------------------------------------------------
 //------ GET /api/books/storage/:filename
