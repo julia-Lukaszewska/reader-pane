@@ -87,12 +87,14 @@ const readerSlice = createSlice({
     //-------------------------------------------------
     //------ Rendered Ranges Cache
     //-------------------------------------------------
-    setRenderedRanges(state, action) {
+     setRenderedRanges(state, action) {
       const { bookId, scale, range } = action.payload
-      if (!state.renderedRanges[bookId]) {
-        state.renderedRanges[bookId] = {}
-      }
-   
+      if (!state.renderedRanges[bookId]) state.renderedRanges[bookId] = {}
+      if (!state.renderedRanges[bookId][scale]) state.renderedRanges[bookId][scale] = []
+      state.renderedRanges[bookId][scale] = mergeRanges(
+        state.renderedRanges[bookId][scale],
+        range
+      )
     },
 
     /**

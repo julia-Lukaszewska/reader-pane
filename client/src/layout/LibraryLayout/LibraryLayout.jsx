@@ -41,10 +41,9 @@ const Container = styled.div`
   background: var(--gradient-blue-clear);
 `
 
-/* ------------------------------------------------------------------------- */
-/*  COMPONENT                                                                */
-/* ------------------------------------------------------------------------- */
-
+//---------------------------------------------------
+//------Component
+//---------------------------------------------------
 export default function LibraryLayout() {
   const isLoggedIn   = useSelector(selectIsLoggedIn)
   const isManageMode = useSelector(selectIsManageMode)
