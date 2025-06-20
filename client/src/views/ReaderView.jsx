@@ -7,9 +7,12 @@
 
 import React, { useRef } from 'react'
 import styled from 'styled-components'
+import { useSelector } from 'react-redux'
+import { SinglePageLayout, DoublePageLayout } from '@reader/layouts'
+import { usePdfMetadata } from '@reader/hooks'
 import ReaderSessionController from '@/controllers/ReaderSessionController'
 import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
-
+import { selectPageViewMode, selectFileUrl, selectActiveBookId } from '@/store/selectors'
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
@@ -37,16 +40,26 @@ const StyledReaderView = styled.div`
  */
 const ReaderView = () => {
   const containerRef = useRef(null)
+  const viewMode = useSelector(selectPageViewMode)
+  const fileUrl = useSelector(selectFileUrl)
+  const bookId = useSelector(selectActiveBookId)
 
+  const filename = fileUrl ? decodeURIComponent(fileUrl.split('/').pop()) : null
+  const metadata = usePdfMetadata(bookId, filename)
+  
   return (
     <StyledReaderView ref={containerRef}>
       <ReaderSessionController>
-        {({ containerRef, visiblePages }) => (
-          <RenderedPDFViewer
-            containerRef={containerRef}
-            visiblePages={visiblePages}
-          />
-        )}
+       {({ containerRef, visiblePages }) => {
+          const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
+          return (
+            <Layout
+              containerRef={containerRef}
+              visiblePages={visiblePages}
+              metadata={metadata}
+            />
+          )
+        }}
       </ReaderSessionController>
     </StyledReaderView>
   )

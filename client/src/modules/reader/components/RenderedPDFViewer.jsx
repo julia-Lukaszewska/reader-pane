@@ -25,6 +25,7 @@ const PagesContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: ${({ $direction }) => $direction};
   min-height: 100%;
   gap: 0.3rem;
 `
@@ -54,6 +55,7 @@ export default function RenderedPDFViewer({
   containerRef,
   visiblePages = [],
   sidebarOpen = false,
+  direction = 'row',
 }) {
   const wrapperRef = containerRef || useRef()
   const pageRefs = useRef({})
@@ -71,7 +73,7 @@ export default function RenderedPDFViewer({
 
   return (
     <ScrollWrapper $isSidebarOpen={sidebarOpen} ref={wrapperRef}>
-      <PagesContainer>
+      <PagesContainer $direction={direction}>
         {visiblePages.map(({ pageNumber, width, height }) => (
           <Canvas
             key={`${pageNumber}-${width}x${height}`}
