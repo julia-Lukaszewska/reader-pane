@@ -6,15 +6,9 @@
 import { RxReader } from 'react-icons/rx'
 import { CgEreader } from 'react-icons/cg'
 import styled from 'styled-components'
-import { useDispatch, useSelector } from 'react-redux'
-import { setPageViewMode } from '@/store/slices/readerSlice'
-import {
-  selectTotalPages,
-  selectPageViewMode,
- 
-
- 
-} from '@/store/selectors/readerSelectors'
+import { useSelector } from 'react-redux'
+import { selectTotalPages } from '@/store/selectors/readerSelectors'
+import { usePageViewMode } from '@reader/hooks'
 
 //-----------------------------------------------------------------------------
 // Styled Components
@@ -59,8 +53,7 @@ const IconBtn = styled.button.withConfig({
 const PageViewModeToggle = () => {
   console.log('PageViewModeToggle')
 
-  const dispatch = useDispatch()
-  const pageViewMode = useSelector(selectPageViewMode)
+  const { pageViewMode, setPageViewMode } = usePageViewMode()
 
  
 
@@ -70,7 +63,7 @@ const PageViewModeToggle = () => {
 
   const handleToggle = (mode) => {
     if (mode === 'double' && isDoubleDisabled) return
-    dispatch(setPageViewMode(mode))
+     setPageViewMode(mode)
   }
 
   return (
