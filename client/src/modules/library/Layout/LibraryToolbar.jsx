@@ -20,7 +20,6 @@ import {
   clearSelected,
   setLibraryViewMode,
   setSortMode,
-  setLibraryFilter,
 } from '@/store/slices/bookSlice'
 
 import {
@@ -98,7 +97,7 @@ const LibraryToolbar = () => {
   const selected   = useSelector(selectSelectedBookIds)
   const viewMode   = useSelector(selectLibraryViewMode)
   const sortMode   = useSelector(selectSortMode)
-  const filter     = useSelector((s) => s.book.libraryFilter)
+
 
 const { pathname } = useLocation()
 

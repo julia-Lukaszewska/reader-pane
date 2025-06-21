@@ -6,7 +6,8 @@
 
 export { default as usePDFStreamer } from './usePDFStreamer' //Async load + cleanup of PDF document 
 
-export { default as usePreloadPDFPages } from './usePreloadPDFPages' //Preload surrounding pages 
+export { default as usePreloadPDFPages } from './usePreloadPDFPages' //Preload surrounding pages
+export { default as usePreloadVisiblePages } from './usePreloadVisiblePages' 
 export { default as useOpenReader } from './useOpenReader' //Navigate to reader
 export { default as useLastOpenedBook } from './useLastOpenedBook' //Open book in reader
 
