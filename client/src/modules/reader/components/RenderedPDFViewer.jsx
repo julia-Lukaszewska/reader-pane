@@ -57,7 +57,8 @@ export default function RenderedPDFViewer({
   sidebarOpen = false,
   direction = 'row',
 }) {
-  const wrapperRef = containerRef || useRef()
+  const internalRef = useRef()
+  const wrapperRef = containerRef ?? internalRef
   const pageRefs = useRef({})
 
   useEffect(() => {

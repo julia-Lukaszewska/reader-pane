@@ -16,3 +16,4 @@ export {default as useStreamingPdfManager} from './useStreamingPdfManager'
 
 export { default as usePdfMetadata } from './usePdfMetadata'
 
+export { default as usePageViewMode } from './usePageViewMode'

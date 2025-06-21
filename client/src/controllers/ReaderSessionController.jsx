@@ -5,7 +5,7 @@ import useLastOpenedBook from '@/modules/reader/hooks/useLastOpenedBook'
 import useStartingPage from '@/modules/reader/hooks/useStartingPage'
 import useStreamingPdfManager from '@/modules/reader/hooks/useStreamingPdfManager'
 
-export default function ReaderSessionController({ children }) {
+export default function ReaderSessionController({ children , containerRef }) {
   const { bookId: routeBookId } = useParams()
   const resolvedBookId = useLastOpenedBook(routeBookId)
 
@@ -20,5 +20,6 @@ export default function ReaderSessionController({ children }) {
   return children({
     pdfRef,
     visiblePages,
+     containerRef ,
   })
 }

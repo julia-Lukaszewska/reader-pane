@@ -49,8 +49,8 @@ const ReaderView = () => {
   
   return (
     <StyledReaderView ref={containerRef}>
-      <ReaderSessionController>
-       {({ containerRef, visiblePages }) => {
+       <ReaderSessionController containerRef={containerRef}>
+        {({ containerRef, visiblePages }) => {
           const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
           return (
             <Layout
