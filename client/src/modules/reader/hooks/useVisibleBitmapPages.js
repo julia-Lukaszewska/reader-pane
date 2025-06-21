@@ -1,25 +1,18 @@
+// src/modules/reader/hooks/useVisibleBitmapPages.js
+
 import { useMemo } from 'react'
 
 /**
- * useVisibleBitmapPages
- *
  * Returns a memoized list of visible pages (with bitmap data) based on the current
  * visible page numbers and the in-memory cache.
  *
- * Each result includes:
- * - pageNumber
- * - bitmap
- * - width
- * - height
- *
- * Only pages that are present in the cache will be returned (filtered).
- *
  * @param {Object} params
  * @param {number[]} params.visiblePageNumbers - Pages currently visible in the viewport
- * @param {string} params.bookId - Unique book ID used in cache keys
- * @param {number} params.scale - Current zoom level
- * @param {React.MutableRefObject} params.pageBitmapsRef - Ref to the bitmap cache { pages: Map }
- * @param {number} params.version - Used to re-trigger memoization when cache updates
+ * @param {string} params.bookId               - Unique book ID used in cache keys
+ * @param {number} params.scale                - Current zoom level
+ * @param {React.MutableRefObject} params.pageBitmapsRef
+ *        - Ref to the bitmap cache { pages: Map<string, { bitmap, width, height }> }
+ * @param {number} params.version              - Used to re-trigger memoization when cache updates
  *
  * @returns {Array<{ pageNumber: number, bitmap: ImageBitmap, width: number, height: number }>}
  */
@@ -30,10 +23,14 @@ export default function useVisibleBitmapPages({
   pageBitmapsRef,
   version
 }) {
+  // Note: version is included to force re-run when cache updates,
+  // so we disable the exhaustive-deps warning for version.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => {
-    // guard przed niezainicjalizowanym refem
     const pagesMap = pageBitmapsRef?.current?.pages
-    if (!pagesMap) return []
+    if (!pagesMap) {
+      return []
+    }
 
     return visiblePageNumbers
       .map(num => {
@@ -42,5 +39,5 @@ export default function useVisibleBitmapPages({
         return data ? { pageNumber: num, ...data } : null
       })
       .filter(Boolean)
-  }, [visiblePageNumbers, bookId, scale, version, pageBitmapsRef])
+  }, [visiblePageNumbers, bookId, scale, pageBitmapsRef, version])
 }

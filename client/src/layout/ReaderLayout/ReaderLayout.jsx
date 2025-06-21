@@ -20,7 +20,7 @@ const ReaderLayout = () => {
       dispatch(resetReaderState())
       console.log('[ReaderLayout] resetReaderState triggered')
     }
-  }, [])
+  }, [dispatch])
 
   return (
     <Container>

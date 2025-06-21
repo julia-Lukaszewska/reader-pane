@@ -30,18 +30,25 @@ export function clampPage(n, totalPages) {
  * @param {string} params.viewMode - View mode: 'single' | 'double' | 'scroll'
  * @returns {number[]}
  */
-export function getVisiblePages({ currentPage = 1, totalPages = 1, viewMode = 'single' }) {
+export function getVisiblePages({
+  currentPage = 1,
+  totalPages = 1,
+  viewMode = 'single'
+}) {
   const page = clampPage(currentPage, totalPages)
 
   switch (viewMode) {
-    case 'double':
-      if (page === 1) return [1]
+    case 'double': {
+      if (page === 1) {
+        return [1]
+      }
       if (page % 2 === 0) {
         const next = Math.min(totalPages, page + 1)
         return [page, next]
       }
       const prev = Math.max(1, page - 1)
       return [prev, page]
+    }
 
     case 'scroll': {
       const { before, after } = PRELOAD_OFFSETS.scroll
@@ -51,8 +58,9 @@ export function getVisiblePages({ currentPage = 1, totalPages = 1, viewMode = 's
     }
 
     case 'single':
-    default:
+    default: {
       return [page]
+    }
   }
 }
 
@@ -70,7 +78,7 @@ export function getPagesToPreload({
   currentPage = 1,
   viewMode = 'single',
   zoomIndex = 2,
-  pagesCount = 1,
+  pagesCount = 1
 }) {
   const { before, after } = PRELOAD_OFFSETS[viewMode] || PRELOAD_OFFSETS.single
   const total = Math.max(1, pagesCount)
@@ -81,6 +89,7 @@ export function getPagesToPreload({
   const scale = ZOOM_LEVELS[zoomIndex] ?? ZOOM_LEVELS[2]
   return { pages, scale }
 }
+
 /**
  * Returns a [start, end] range of pages for preloading around the current page.
  * @param {Object} params
@@ -96,6 +105,7 @@ export function getPreloadRange({ currentPage, totalPages, rangeSize }) {
   const end = Math.min(totalPages, page + half)
   return { start, end }
 }
+
 /**
  * Calculates the start and end of a RANGE_SIZE-based segment containing given page.
  * Returns rangeStart, rangeEnd, and string rangeKey.
@@ -109,6 +119,6 @@ export function getPageRangeKey(pageNum, rangeSize) {
   return {
     rangeStart,
     rangeEnd,
-    rangeKey: `${rangeStart}-${rangeEnd}`,
+    rangeKey: `${rangeStart}-${rangeEnd}`
   }
 }

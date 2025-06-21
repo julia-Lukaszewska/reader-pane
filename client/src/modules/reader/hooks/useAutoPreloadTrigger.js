@@ -1,4 +1,4 @@
-
+// src/modules/reader/hooks/useAutoPreloadTrigger.js
 
 import { useEffect } from 'react'
 import { getVisiblePages } from '@reader/utils/pdfPageNavigation'
@@ -27,12 +27,12 @@ export default function useAutoPreloadTrigger({
   pageBitmapsRef,
   preload
 }) {
-  // If the ref or its pages map is not initialized yet, do nothing
-  if (!pageBitmapsRef || !pageBitmapsRef.current?.pages) {
-    return
-  }
-
   useEffect(() => {
+    // If the cache ref or its pages map isn't ready yet, do nothing
+    if (!pageBitmapsRef?.current?.pages) {
+      return
+    }
+
     // Build a Set of all pages that have already been rendered
     const renderedPages = new Set()
     renderedRanges.forEach(([start, end]) => {
@@ -48,7 +48,7 @@ export default function useAutoPreloadTrigger({
       viewMode: undefined
     })
 
-    // Filter out pages that are neither in cache nor already rendered
+    // Filter out pages that neither exist in cache nor have been rendered
     const missingPages = visiblePages.filter(page => {
       const cacheKey = `${bookId}-${scale}-${page}`
       return (
