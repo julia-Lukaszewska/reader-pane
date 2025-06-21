@@ -7,7 +7,8 @@
 
 import { useRef, useEffect, useState } from 'react'
 import usePDFStreamer from './usePDFStreamer'
-import usePreloadPDFPages from './usePreloadPDFPages'
+import usePreloadVisiblePages from './usePreloadVisiblePages'
+
 
 //-----------------------------------------------------------------------------
 // Hook: useStreamingPdfManager
@@ -25,31 +26,30 @@ import usePreloadPDFPages from './usePreloadPDFPages'
  *   pdfRef: React.MutableRefObject
  * }}
  */
-export default function useStreamingPdfManager({ bookId }) {
+export default function useStreamingPdfManager({ bookId, visiblePageNumbers = [], scale = 1 }) {
   const pdfRef = useRef(null)
   const [pdfReady, setPdfReady] = useState(false)
 
-  const { loading, error } = usePDFStreamer({
+usePDFStreamer({
     pdfRef,
     onLoaded: () => setPdfReady(true),
   })
 
-  const { preload, visiblePages } = usePreloadPDFPages({
+    const { preload, visiblePages } = usePreloadVisiblePages({
     bookId,
     pdfRef,
+    visiblePageNumbers,
+    scale,
   })
 
   useEffect(() => {
-    if (pdfReady) {
-      console.log('[ preload() triggered]')
-      preload()
-    }
-  }, [pdfReady, preload])
+    if (!pdfReady) return
+    preload()
+  }, [pdfReady, preload, visiblePageNumbers])
 
   return {
-    loading,
-    error,
     visiblePages,
+    preload,
     pdfRef,
   }
 }
