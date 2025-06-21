@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import preloadByScale from '@reader/utils/preloadByScale'
 import { getPageRangeKey } from '@reader/utils/pdfPageNavigation'
 import { setRenderedRanges } from '@/store/slices/readerSlice'
+import { DEFAULT_RANGE_SIZE } from '@reader/utils/pdfConstants' 
 
 /**
  * usePreloadController
@@ -37,7 +38,8 @@ export default function usePreloadController({
   dispatch,
   loadingRef,
   setVersion
-}) {
+})
+ {
   return useCallback(() => {
     if (!pdfRef.current || loadingRef.current || !Number.isInteger(currentPage)) {
       return Promise.resolve()
@@ -54,7 +56,8 @@ export default function usePreloadController({
 
       onPages: (pages) => {
         for (const [pageNum, data] of Object.entries(pages)) {
-          const { rangeKey } = getPageRangeKey(Number(pageNum))
+          const { rangeKey } = getPageRangeKey(currentPage, DEFAULT_RANGE_SIZE)
+
           updateCache({
             bookId,
             scale,

@@ -70,6 +70,7 @@ export default function RenderedPDFViewer({
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(bitmap, 0, 0)
     })
+      console.log('🚀 visiblePages:', visiblePages);
   }, [visiblePages])
 
   return (

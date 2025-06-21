@@ -46,6 +46,9 @@ usePDFStreamer({
     if (!pdfReady) return
     preload()
   }, [pdfReady, preload, visiblePageNumbers])
+useEffect(() => {
+  console.log('🚧 [useStreamingPdfManager]', { visiblePageNumbers, scale, 'pdfRef.current': pdfRef.current });
+}, [visiblePageNumbers, scale, pdfRef.current, visiblePages]);
 
   return {
     visiblePages,

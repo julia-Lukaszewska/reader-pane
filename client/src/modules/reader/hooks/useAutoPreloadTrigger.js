@@ -25,9 +25,11 @@ export default function useAutoPreloadTrigger({
   totalPages,
   renderedRanges,
   pageBitmapsRef,
-  preload
+  preload,
+  pdfRef,
 }) {
   useEffect(() => {
+    if (!pdfRef?.current) return
     // If the cache ref or its pages map isn't ready yet, do nothing
     if (!pageBitmapsRef?.current?.pages) {
       return
@@ -67,6 +69,7 @@ export default function useAutoPreloadTrigger({
     totalPages,
     renderedRanges,
     pageBitmapsRef,
-    preload
+    preload,
+    pdfRef  
   ])
 }

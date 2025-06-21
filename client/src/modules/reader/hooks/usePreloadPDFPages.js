@@ -68,7 +68,7 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
   }, [renderedRanges])
 
   // Local bitmap cache
-  const { ref: pageBitmapsRef, clear: clearCache, update: updateCache } =
+  const { pageBitmapsRef, clear: clearCache, update: updateCache } =
     usePageBitmapsCache()
 
   // Preload controller
@@ -98,7 +98,8 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
     totalPages,
     renderedRanges,
     pageBitmapsRef,
-    preload
+    preload,
+    pdfRef
   })
 
   // Return only pages with bitmaps
