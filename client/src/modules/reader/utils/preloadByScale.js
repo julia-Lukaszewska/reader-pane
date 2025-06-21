@@ -6,7 +6,7 @@
  */
 
 import renderPages from './renderPages'
-
+import { DEFAULT_RANGE_SIZE } from './pdfConstants'
 //-----------------------------------------------------------------------------
 // Function: preloadByScale
 //-----------------------------------------------------------------------------
@@ -55,8 +55,7 @@ export default async function preloadByScale({
   // Define target page range around currentPage
   //-------------------------------------------------------------------------
   const total = pdf.numPages
-  const RANGE_SIZE = 9
-  const half = Math.floor(RANGE_SIZE / 2)
+const half = Math.floor(DEFAULT_RANGE_SIZE / 2)
   const start = Math.max(1, currentPage - half)
   const end = Math.min(total, currentPage + half)
 

@@ -41,7 +41,7 @@ const PDFZoomControls = () => {
   const index = useSelector(selectScaleIndex)
 
   // predefined zoom levels
-  const levels = [0.5, 0.75, 1, 1.25, 1.5, 2]
+  const levels = [0.5, 0.75, 1, 1.25, 1.5]
   const totalLevels = levels.length
   const currentScale = levels[index]
 

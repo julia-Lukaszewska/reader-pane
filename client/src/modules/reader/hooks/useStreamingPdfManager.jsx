@@ -7,7 +7,7 @@
 
 import { useRef, useEffect, useState } from 'react'
 import usePDFStreamer from './usePDFStreamer'
-import usePreloadVisiblePages from './usePreloadVisiblePages'
+import usePreloadPDFPages from './usePreloadPDFPages'
 
 
 //-----------------------------------------------------------------------------
@@ -35,7 +35,7 @@ usePDFStreamer({
     onLoaded: () => setPdfReady(true),
   })
 
-    const { preload, visiblePages } = usePreloadVisiblePages({
+    const { preload, visiblePages } = usePreloadPDFPages({
     bookId,
     pdfRef,
     visiblePageNumbers,
