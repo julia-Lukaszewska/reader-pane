@@ -87,13 +87,14 @@ const readerSlice = createSlice({
     //-------------------------------------------------
     //------ Rendered Ranges Cache
     //-------------------------------------------------
-     setRenderedRanges(state, action) {
+    setRenderedRanges(state, action) {
       const { bookId, scale, range } = action.payload
       if (!state.renderedRanges[bookId]) state.renderedRanges[bookId] = {}
-      if (!state.renderedRanges[bookId][scale]) state.renderedRanges[bookId][scale] = []
+      if (!state.renderedRanges[bookId][scale])
+        state.renderedRanges[bookId][scale] = []
       state.renderedRanges[bookId][scale] = mergeRanges(
         state.renderedRanges[bookId][scale],
-        range
+        range,
       )
     },
 
@@ -108,21 +109,22 @@ const readerSlice = createSlice({
         delete state.renderedRanges[bookId]
       }
     },
-    /**
- * @action resetReaderState
- * @description Resets full reader state (e.g. on reader exit)
- */
-resetReaderState(state) {
-  state.bookId = null
-  state.fileUrl = null
-  state.currentPage = 1
-  state.totalPages = 1
-  state.renderedRanges = {}
-  state.scaleIndex = 2
-  state.currentScale = 1.0
-  state.fullPageFitScale = null
-}
 
+    /**
+     * @action resetReaderState
+     * @description Resets full reader state (e.g. on reader exit)
+     */
+    resetReaderState(state) {
+      state.bookId = null
+      state.fileUrl = null
+      state.currentPage = 1
+      state.totalPages = 1
+      state.renderedRanges = {}
+      state.scaleIndex = 2
+      state.currentScale = 1.0
+      state.fullPageFitScale = null
+      state.pageViewMode = 'single'
+    },
   },
 })
 
@@ -142,7 +144,7 @@ export const {
   setReaderState,
   setRenderedRanges,
   resetRenderedRanges,
-  resetReaderState, 
+  resetReaderState,
 } = readerSlice.actions
 
 export default readerSlice.reducer

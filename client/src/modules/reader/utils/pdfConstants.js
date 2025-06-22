@@ -5,4 +5,4 @@ export const PRELOAD_OFFSETS = {
   double: { before: 2, after: 3 },
   scroll: { before: 3, after: 6 }
 }
-export const DEFAULT_RANGE_SIZE = 9
+export const DEFAULT_RANGE_SIZE = 15

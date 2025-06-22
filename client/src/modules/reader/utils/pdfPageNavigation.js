@@ -1,6 +1,6 @@
 // reader/utils/pdfPageNavigation.js
 
-import { ZOOM_LEVELS, PRELOAD_OFFSETS } from "./pdfConstants"
+import { ZOOM_LEVELS, PRELOAD_OFFSETS } from './pdfConstants'
 
 /**
  * Generates a numeric range: [start, ..., end]
@@ -33,12 +33,12 @@ export function clampPage(n, totalPages) {
 export function getVisiblePages({
   currentPage = 1,
   totalPages = 1,
-  viewMode = "single",
+  viewMode = 'single',
 }) {
   const page = clampPage(currentPage, totalPages)
 
   switch (viewMode) {
-    case "double": {
+    case 'double': {
       const start = page % 2 === 0 ? page - 1 : page
       const first = Math.max(1, start)
       const second = Math.min(totalPages, first + 1)
@@ -48,14 +48,14 @@ export function getVisiblePages({
       return [first, second]
     }
 
-    case "scroll": {
+    case 'scroll': {
       const { before, after } = PRELOAD_OFFSETS.scroll
       const start = Math.max(1, page - before)
       const end = Math.min(totalPages, page + after)
       return range(start, end)
     }
 
-    case "single":
+    case 'single':
     default: {
       return [page]
     }
@@ -74,7 +74,7 @@ export function getVisiblePages({
  */
 export function getPagesToPreload({
   currentPage = 1,
-  viewMode = "single",
+  viewMode = 'single',
   zoomIndex = 2,
   pagesCount = 1,
 }) {
