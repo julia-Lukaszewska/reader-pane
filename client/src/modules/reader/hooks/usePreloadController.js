@@ -40,20 +40,12 @@ export default function usePreloadController({
   setVersion
 })
  {
-  const abortRef = useRef(null)
-
   return useCallback(() => {
-    if (!pdfRef.current || !Number.isInteger(currentPage)) {
+    if (!pdfRef.current || loadingRef.current || !Number.isInteger(currentPage)) {
       return Promise.resolve()
     }
 
-    if (typeof abortRef.current === 'function') {
-      abortRef.current()
-    }
-
-    loadingRef.current = true
-
-    const abort = preloadByScale({
+    return preloadByScale({
       pdf: pdfRef.current,
       scale,
       currentPage,
@@ -80,8 +72,6 @@ export default function usePreloadController({
         dispatch(setRenderedRanges({ bookId, scale, range }))
       }
     })
-       abortRef.current = abort
-    return abort
   }, [
     bookId,
     scale,
