@@ -41,12 +41,7 @@ export default function usePreloadPDFPages({ bookId, pdfRef, pdfReady = false })
   const safePage = clampPage(currentPage, totalPages)
 
   // Pages that should be visible now
-  const visiblePageNumbers = useVisiblePageRange({
-    currentPage: safePage,
-    totalPages,
-    viewMode
-  })
-
+ const visiblePageNumbers = useVisiblePageRange()
   // Ranges already rendered, with stable fallback
   const renderedRanges = useSelector(
     useMemo(

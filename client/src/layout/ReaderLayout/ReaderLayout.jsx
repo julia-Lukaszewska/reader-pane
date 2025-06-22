@@ -18,7 +18,7 @@ const ReaderLayout = () => {
   useEffect(() => {
     return () => {
       dispatch(resetReaderState())
-      console.log('[ReaderLayout] resetReaderState triggered')
+    
     }
   }, [dispatch])
 
