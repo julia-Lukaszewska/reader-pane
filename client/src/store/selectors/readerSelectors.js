@@ -7,6 +7,7 @@
 
 import { createSelector } from '@reduxjs/toolkit'
 import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
+
 //-----------------------------------------------------------------------------
 // Constants
 //-----------------------------------------------------------------------------

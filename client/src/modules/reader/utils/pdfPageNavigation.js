@@ -30,37 +30,6 @@ export function clampPage(n, totalPages) {
  * @param {string} params.viewMode - View mode: 'single' | 'double' | 'scroll'
  * @returns {number[]}
  */
-export function getVisiblePages({
-  currentPage = 1,
-  totalPages = 1,
-  viewMode = 'single',
-}) {
-  const page = clampPage(currentPage, totalPages)
-
-  switch (viewMode) {
-    case 'double': {
-      const start = page % 2 === 0 ? page - 1 : page
-      const first = Math.max(1, start)
-      const second = Math.min(totalPages, first + 1)
-      if (first === second) {
-        return [first]
-      }
-      return [first, second]
-    }
-
-    case 'scroll': {
-      const { before, after } = PRELOAD_OFFSETS.scroll
-      const start = Math.max(1, page - before)
-      const end = Math.min(totalPages, page + after)
-      return range(start, end)
-    }
-
-    case 'single':
-    default: {
-      return [page]
-    }
-  }
-}
 
 /**
  * Returns a set of pages to preload and the associated zoom scale.

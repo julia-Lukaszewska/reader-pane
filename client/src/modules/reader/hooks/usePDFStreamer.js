@@ -32,10 +32,10 @@ export default function usePDFStreamer({ onLoaded, pdfRef }) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-   
+    console.log('effect for', fileUrl)
 
     if (!fileUrl || pdfRef.current) return
- console.log('[usePDFStreamer] loading', fileUrl)
+
     const controller = new AbortController()
     setLoading(true)
     setError(null)
@@ -52,19 +52,16 @@ export default function usePDFStreamer({ onLoaded, pdfRef }) {
     loadingTask.promise
       .then((pdf) => {
         pdfRef.current = pdf
-        console.log('[usePDFStreamer] loaded', pdf.numPages, 'pages')
         onLoaded?.(pdf)
         setLoading(false)
       })
       .catch((err) => {
         if (err?.name === 'AbortError') return
-        console.error('[usePDFStreamer] error', err)
         setError(err)
         setLoading(false)
       })
 
     return () => {
-       console.log('[usePDFStreamer] cleanup')
       controller.abort()
       loadingTask.destroy?.()
       pdfRef.current = null

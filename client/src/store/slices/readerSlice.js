@@ -15,8 +15,8 @@ import { mergeRanges } from '@/utils/mergeRanges'
 //-----------------------------------------------------
 const initialState = {
   scaleIndex: 2,
- 
   fitScaleFactor: 1.0,
+  visiblePages: [],
   fullPageFitScale: null,
   pageViewMode: 'single',
   pageTurnRate: null,
@@ -57,7 +57,10 @@ const readerSlice = createSlice({
     setPageTurnRate(state, action) {
       state.pageTurnRate = action.payload
     },
-
+setVisiblePages: (state, action) => {
+  state.visiblePages = action.payload
+}
+,
     //-------------------------------------------------
     //------ Page Navigation
     //-------------------------------------------------
@@ -137,6 +140,7 @@ export const {
   setPageViewMode,
   setPageTurnRate,
   setCurrentPage,
+  setVisiblePages,
   setTotalPages,
   setFileUrl,
   setReaderState,

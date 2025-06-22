@@ -6,7 +6,7 @@
  */
 
 import renderPages from './renderPages'
-import { getPreloadRange } from './pdfPageNavigation'
+
 //-----------------------------------------------------------------------------
 // Function: preloadByScale
 //-----------------------------------------------------------------------------
@@ -32,12 +32,10 @@ export default async function preloadByScale({
   scale,
   currentPage,
   renderedRanges = [],
-  renderedPages = {},
   onPages,
   onRange,
   loadingRef,
   concurrency = 2,
-  viewMode = 'single'
 }) {
   //-------------------------------------------------------------------------
   // Validate input and skip if not ready
@@ -45,15 +43,22 @@ export default async function preloadByScale({
   console.log('[preloadByScale] INIT', { scale, currentPage })
 
   if (!pdf || !loadingRef || loadingRef.current || !Number.isInteger(currentPage)) {
+    console.warn('[Skipping preloadByScale – invalid state]', {
+      hasPDF: !!pdf,
+      loading: loadingRef.current,
+      currentPage,
+    })
     return
   }
 
   //-------------------------------------------------------------------------
   // Define target page range around currentPage
   //-------------------------------------------------------------------------
-   const total = pdf.numPages
-  const dynamicRangeSize = viewMode === 'scroll' ? 15 : viewMode === 'double' ? 10 : 6
-  const { start, end } = getPreloadRange({ currentPage, totalPages: total, rangeSize: dynamicRangeSize })
+  const total = pdf.numPages
+  const RANGE_SIZE = 9
+  const half = Math.floor(RANGE_SIZE / 2)
+  const start = Math.max(1, currentPage - half)
+  const end = Math.min(total, currentPage + half)
 
   if (!Number.isInteger(start) || !Number.isInteger(end) || start > end) {
     console.warn('[Invalid calculated range]', { start, end, total })
@@ -63,16 +68,20 @@ export default async function preloadByScale({
   //-------------------------------------------------------------------------
   // Check if range already rendered (skip if cached)
   //-------------------------------------------------------------------------
-   const isCached = renderedRanges.some(([a, b]) => start >= a && end <= b)
-  if (isCached) return
+  const isCached = renderedRanges.some(([a, b]) => start >= a && end <= b)
+  if (isCached) {
+    console.log('[Skipped – range already cached]', { start, end })
+    return
+  }
 
   //-------------------------------------------------------------------------
   // Start rendering the range
   //-------------------------------------------------------------------------
-
+  console.log('[Starting preload/render]', { from: start, to: end, scale })
 
   loadingRef.current = true
   const controller = new AbortController()
+
   try {
     const rawPages = await renderPages({
       pdf,
@@ -81,25 +90,43 @@ export default async function preloadByScale({
       to: end,
       signal: controller.signal,
       concurrency,
-      renderedPages,
+      renderedPages: {},
     })
 
+    console.log('[Pages rendered]', Object.keys(rawPages))
+
+    // Deliver rendered pages and update range
     if (onPages && Object.keys(rawPages).length) {
       onPages(rawPages)
+      console.log('[onRange called]', [start, end])
       onRange?.([start, end])
+    } else {
+      console.log('[Nothing new to cache]')
     }
 
-
   } catch (err) {
-    if (err?.name !== 'AbortError') console.error('[preloadByScale error]', err)
-  } finally {
-    loadingRef.current = false
-  }
+    //-------------------------------------------------------------------------
+    // Handle errors and aborts
+    //-------------------------------------------------------------------------
+    if (err?.name === 'AbortError') {
+      console.warn('[preloadByScale aborted]')
+    } else {
+      console.error('[preloadByScale error]', err)
+    }
 
-  
+  } finally {
+    //-------------------------------------------------------------------------
+    // Cleanup
+    //-------------------------------------------------------------------------
+    loadingRef.current = false
+    console.log('[preloadByScale finished]')
+  }
 
   //-------------------------------------------------------------------------
   // Return abort function
   //-------------------------------------------------------------------------
-  return () => controller.abort()
+  return () => {
+    console.log('[Abort controller triggered]')
+    controller.abort()
+  }
 }
