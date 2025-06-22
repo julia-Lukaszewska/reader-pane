@@ -36,7 +36,7 @@ usePDFStreamer({
     onLoaded: () => setPdfReady(true),
   })
 
-    const { preload, visiblePages } = usePreloadPDFPages({
+    const { preload, visiblePages, loadingRef } = usePreloadPDFPages({
     bookId,
     pdfRef,
     visiblePageNumbers,
@@ -46,7 +46,8 @@ useEffect(() => {
   if (!pdfReady) return
 
   if (typeof abortRef.current === 'function') {
-    abortRef.current() // bezpieczne wywołanie
+   abortRef.current()
+    if (loadingRef?.current) loadingRef.current = false
   }
 
   const abortFn = preload()

@@ -35,7 +35,7 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
   // Redux state
   const currentPage = useSelector(selectCurrentPage)
   const totalPages = useSelector(selectTotalPages)
-  const scale = useSelector(selectCurrentScale) ?? 1
+  const scale = useSelector(selectCurrentScale) ?? 1.0
   const viewMode = useSelector(selectPageViewMode)
 
   const safePage = clampPage(currentPage, totalPages)
@@ -114,6 +114,7 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
   return {
     preload,
     visiblePages,
-    pageBitmapsRef
+    pageBitmapsRef,
+     loadingRef
   }
 }

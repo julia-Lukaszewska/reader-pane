@@ -11,6 +11,7 @@ import {
   selectPageViewMode,
   selectCurrentScale,
 } from '@/store/selectors/readerSelectors'
+import useSyncCurrentPage from '@/modules/reader/hooks/useSyncCurrentPage'
 
 export default function ReaderSessionController({ children , containerRef }) {
   const { bookId: routeBookId } = useParams()
@@ -21,8 +22,9 @@ export default function ReaderSessionController({ children , containerRef }) {
   const totalPages = useSelector(selectTotalPages)
   const pageViewMode = useSelector(selectPageViewMode)
   const scale = useSelector(selectCurrentScale)
+    useSyncCurrentPage(resolvedBookId)
 useEffect(() => {
-    console.log('🔢 currentPage:', currentPage, 'totalPages:', totalPages, 'viewMode:', pageViewMode)
+    console.log(' currentPage:', currentPage, 'totalPages:', totalPages, 'viewMode:', pageViewMode)
   }, [currentPage, totalPages, pageViewMode])
   const visiblePageNumbers = useVisiblePageRange({
     currentPage,
@@ -30,7 +32,7 @@ useEffect(() => {
     pageViewMode,
   })
    useEffect(() => {
-    console.log('👀 visiblePageNumbers:', visiblePageNumbers)
+    console.log(' visiblePageNumbers:', visiblePageNumbers)
   }, [visiblePageNumbers])
   const { visiblePages, pdfRef } = useStreamingPdfManager({
     bookId: resolvedBookId,
