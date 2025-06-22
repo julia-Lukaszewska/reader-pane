@@ -25,9 +25,9 @@ const EMPTY_RENDERED_RANGES = []
  *
  * @param {Object} params
  * @param {string} params.bookId
- * @param {React.MutableRefObject} params.pdfRef
+
  */
-export default function usePreloadPDFPages({ bookId, pdfRef }) {
+export default function usePreloadPDFPages({ bookId, pdfRef, pdfReady = false }) {
   const dispatch = useDispatch()
   const loadingRef = useRef(false)
   const [version, setVersion] = useState(0)
@@ -76,7 +76,8 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
     bookId,
     scale,
     currentPage: safePage,
-    pdfRef,
+     pdfRef,
+    pdfReady,
     renderedRanges,
     renderedPagesMap,
     updateCache,

@@ -19,7 +19,6 @@ import { DEFAULT_RANGE_SIZE } from "@reader/utils/pdfConstants"
  *        - Array of [startPage, endPage] ranges that have already been rendered
  * @param {React.MutableRefObject<{ pages: Map<string, { bitmap: ImageBitmap; width: number; height: number }> }>
  *        params.pageBitmapsRef                - Ref object holding a Map of cached page bitmaps
- * @param {(targetPage?: number) => void} params.preload - Function to call to preload missing pages
  */
 export default function useAutoPreloadTrigger({
   bookId,
@@ -30,10 +29,11 @@ export default function useAutoPreloadTrigger({
   pageBitmapsRef,
   preload,
   pdfRef,
+   pdfReady = false,
   viewMode = "single",
 }) {
   useEffect(() => {
-    if (!pdfRef?.current || !pageBitmapsRef?.current?.pages) return
+    if (!pdfReady || !pdfRef?.current || !pageBitmapsRef?.current?.pages) return
 
     const renderedPages = new Set()
     renderedRanges.forEach(([start, end]) => {
@@ -85,6 +85,7 @@ export default function useAutoPreloadTrigger({
     pageBitmapsRef,
     preload,
     pdfRef,
+     pdfReady,
     viewMode,
   ])
 }

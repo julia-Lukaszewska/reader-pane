@@ -39,6 +39,7 @@ usePDFStreamer({
     const { preload, visiblePages, loadingRef } = usePreloadPDFPages({
     bookId,
     pdfRef,
+     pdfReady,
     visiblePageNumbers,
     scale,
   })
