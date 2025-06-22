@@ -58,13 +58,13 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
 
   // Fast lookup of rendered pages
   const renderedPagesMap = useMemo(() => {
-    const set = new Set()
+    const  map = {}
     renderedRanges.forEach(([from, to]) => {
       for (let i = from; i <= to; i++) {
-        set.add(i)
+       map[i] = true
       }
     })
-    return set
+    return map
   }, [renderedRanges])
 
   // Local bitmap cache
