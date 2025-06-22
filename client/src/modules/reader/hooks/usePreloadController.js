@@ -1,8 +1,8 @@
-import { useCallback, useRef } from 'react'
-import preloadByScale from '@reader/utils/preloadByScale'
-import { getPageRangeKey } from '@reader/utils/pdfPageNavigation'
-import { setRenderedRanges } from '@/store/slices/readerSlice'
-import { DEFAULT_RANGE_SIZE } from '@reader/utils/pdfConstants' 
+import { useCallback, useRef } from "react"
+import preloadByScale from "@reader/utils/preloadByScale"
+import { getPageRangeKey } from "@reader/utils/pdfPageNavigation"
+import { setRenderedRanges } from "@/store/slices/readerSlice"
+import { DEFAULT_RANGE_SIZE } from "@reader/utils/pdfConstants"
 
 /**
  * usePreloadController
@@ -37,51 +37,55 @@ export default function usePreloadController({
   updateCache,
   dispatch,
   loadingRef,
-  setVersion
-})
- {
-  return useCallback(() => {
-    if (!pdfRef.current || loadingRef.current || !Number.isInteger(currentPage)) {
-      return Promise.resolve()
-    }
+  setVersion,
+}) {
+  return useCallback(
+    (targetPage = currentPage) => {
+      if (
+        !pdfRef.current ||
+        loadingRef.current ||
+        !Number.isInteger(targetPage)
+      ) {
+        return Promise.resolve()
+      }
 
-    return preloadByScale({
-      pdf: pdfRef.current,
-      scale,
-      currentPage,
-      renderedRanges,
-      renderedPages: renderedPagesMap,
-      loadingRef,
-      concurrency: 2,
+      return preloadByScale({
+        pdf: pdfRef.current,
+        scale,
+        currentPage: targetPage,
+        renderedRanges,
+        renderedPages: renderedPagesMap,
+        loadingRef,
+        concurrency: 2,
 
-      onPages: (pages) => {
-        for (const [pageNum, data] of Object.entries(pages)) {
-          const { rangeKey } = getPageRangeKey(currentPage, DEFAULT_RANGE_SIZE)
+        onPages: (pages) => {
+          const { rangeKey } = getPageRangeKey(targetPage, DEFAULT_RANGE_SIZE)
 
           updateCache({
             bookId,
             scale,
-            pages: { [pageNum]: data },
+            pages,
             rangeKey
           })
-        }
-        setVersion(v => v + 1)
-      },
+          setVersion((v) => v + 1)
+        },
 
-      onRange: (range) => {
-        dispatch(setRenderedRanges({ bookId, scale, range }))
-      }
-    })
-  }, [
-    bookId,
-    scale,
-    currentPage,
-    pdfRef,
-    renderedRanges,
-    renderedPagesMap,
-    dispatch,
-    updateCache,
-    loadingRef,
-    setVersion
-  ])
+        onRange: (range) => {
+          dispatch(setRenderedRanges({ bookId, scale, range }))
+        },
+      })
+    },
+    [
+      bookId,
+      scale,
+      currentPage,
+      pdfRef,
+      renderedRanges,
+      renderedPagesMap,
+      dispatch,
+      updateCache,
+      loadingRef,
+      setVersion,
+    ],
+  )
 }

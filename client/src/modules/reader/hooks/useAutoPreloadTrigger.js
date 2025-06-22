@@ -1,7 +1,11 @@
 // src/modules/reader/hooks/useAutoPreloadTrigger.js
 
-import { useEffect } from 'react'
-import { getVisiblePages } from '@reader/utils/pdfPageNavigation'
+import { useEffect } from "react";
+import {
+  getVisiblePages,
+  getPageRangeKey,
+} from "@reader/utils/pdfPageNavigation";
+import { DEFAULT_RANGE_SIZE } from "@reader/utils/pdfConstants";
 
 /**
  * Automatically triggers preloading when visible pages are missing from cache.
