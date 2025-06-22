@@ -69,7 +69,7 @@ export const selectFitScaleFactor = (state) => selectReader(state).fitScaleFacto
 export const selectFullPageFitScale = (state) => selectReader(state).fullPageFitScale
 export const selectPageViewMode = (state) => selectReader(state).pageViewMode
 export const selectPageTurnRate = (state) => selectReader(state).pageTurnRate
-
+export const selectVisiblePages = (state) => selectReader(state).visiblePages
 //-----------------------------------------------------------------------------
 // Optional: Non-memoized fallback selectors (if needed elsewhere)
 //-----------------------------------------------------------------------------

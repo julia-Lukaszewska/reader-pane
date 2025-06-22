@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { preloadByScale } from '@reader/utils'
-import { setRenderedRanges } from '@/store/slices/readerSlice'
+import { setRenderedRanges, setVisiblePages } from '@/store/slices/readerSlice'
 import {
   selectCurrentPage,
   selectTotalPages,
@@ -182,7 +182,9 @@ export default function usePreloadPDFPages({ bookId, pdfRef }) {
       .filter(Boolean),
     [visiblePageNumbers, bookId, scale, version]
   )
-
+  useEffect(() => {
+    dispatch(setVisiblePages(visiblePages))
+  }, [dispatch, visiblePages])
   return {
     preload,
     visiblePages,

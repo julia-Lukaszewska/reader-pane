@@ -17,7 +17,7 @@ export default function ReaderSessionController({ children, containerRef }) {
 
 
 
-  const { visiblePages, pdfRef } = useStreamingPdfManager({
+const { pdfRef } = useStreamingPdfManager({
     bookId: resolvedBookId,
 
     scale,
@@ -27,7 +27,6 @@ export default function ReaderSessionController({ children, containerRef }) {
 
   return children({
     pdfRef,
- 
     containerRef,
   })
 }

@@ -101,6 +101,7 @@ const middleware = getDefaultMiddleware =>
   getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+       ignoredPaths: ['reader.visiblePages']
     },
   }).concat(
     booksApi.middleware,

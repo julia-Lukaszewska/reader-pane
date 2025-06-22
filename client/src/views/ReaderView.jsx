@@ -12,7 +12,7 @@ import { SinglePageLayout, DoublePageLayout } from '@reader/layouts'
 import { usePdfMetadata } from '@reader/hooks'
 import ReaderSessionController from '@/controllers/ReaderSessionController'
 import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
-import { selectPageViewMode, selectFileUrl, selectActiveBookId } from '@/store/selectors'
+import { selectPageViewMode, selectFileUrl, selectActiveBookId, selectVisiblePages } from '@/store/selectors'
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
@@ -43,14 +43,14 @@ const ReaderView = () => {
   const viewMode = useSelector(selectPageViewMode)
   const fileUrl = useSelector(selectFileUrl)
   const bookId = useSelector(selectActiveBookId)
-
+const visiblePages = useSelector(selectVisiblePages)
   const filename = fileUrl ? decodeURIComponent(fileUrl.split('/').pop()) : null
   const metadata = usePdfMetadata(bookId, filename)
   
   return (
     <StyledReaderView ref={containerRef}>
        <ReaderSessionController containerRef={containerRef}>
-        {({ containerRef, visiblePages }) => {
+        {({ containerRef }) => {
           const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
           return (
             <Layout
