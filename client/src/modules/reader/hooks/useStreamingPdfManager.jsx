@@ -29,6 +29,7 @@ import usePreloadPDFPages from './usePreloadPDFPages'
 export default function useStreamingPdfManager({ bookId, visiblePageNumbers = [], scale = 1 }) {
   const pdfRef = useRef(null)
   const [pdfReady, setPdfReady] = useState(false)
+const abortRef = useRef(null)
 
 usePDFStreamer({
     pdfRef,
@@ -41,15 +42,23 @@ usePDFStreamer({
     visiblePageNumbers,
     scale,
   })
-
-  useEffect(() => {
-    if (!pdfReady) return
-    preload()
-  }, [pdfReady, preload, visiblePageNumbers])
 useEffect(() => {
-  console.log('🚧 [useStreamingPdfManager]', { visiblePageNumbers, scale, 'pdfRef.current': pdfRef.current });
-}, [visiblePageNumbers, scale, pdfRef.current, visiblePages]);
+  if (!pdfReady) return
 
+  if (typeof abortRef.current === 'function') {
+    abortRef.current() // bezpieczne wywołanie
+  }
+
+  const abortFn = preload()
+  if (typeof abortFn === 'function') {
+    abortRef.current = abortFn
+  } else {
+    abortRef.current = null
+  }
+}, [pdfReady, preload, visiblePageNumbers])
+
+
+ 
   return {
     visiblePages,
     preload,

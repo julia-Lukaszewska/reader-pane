@@ -27,15 +27,12 @@ export default function useAutoPreloadTrigger({
   pageBitmapsRef,
   preload,
   pdfRef,
+  viewMode = 'single',
 }) {
-  useEffect(() => {
-    if (!pdfRef?.current) return
-    // If the cache ref or its pages map isn't ready yet, do nothing
-    if (!pageBitmapsRef?.current?.pages) {
-      return
-    }
 
-    // Build a Set of all pages that have already been rendered
+  useEffect(() => {
+    if (!pdfRef?.current || !pageBitmapsRef?.current?.pages) return
+
     const renderedPages = new Set()
     renderedRanges.forEach(([start, end]) => {
       for (let page = start; page <= end; page++) {
@@ -43,14 +40,12 @@ export default function useAutoPreloadTrigger({
       }
     })
 
-    // Determine which pages should currently be visible
     const visiblePages = getVisiblePages({
       currentPage,
       totalPages,
-      viewMode: undefined
+      viewMode
     })
 
-    // Filter out pages that neither exist in cache nor have been rendered
     const missingPages = visiblePages.filter(page => {
       const cacheKey = `${bookId}-${scale}-${page}`
       return (
@@ -59,17 +54,19 @@ export default function useAutoPreloadTrigger({
       )
     })
 
+
     if (missingPages.length > 0) {
       preload()
     }
   }, [
-    bookId,
+       bookId,
     scale,
     currentPage,
     totalPages,
     renderedRanges,
     pageBitmapsRef,
     preload,
-    pdfRef  
+    pdfRef,
+    viewMode
   ])
 }

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import preloadByScale from '@reader/utils/preloadByScale'
 import { getPageRangeKey } from '@reader/utils/pdfPageNavigation'
 import { setRenderedRanges } from '@/store/slices/readerSlice'
@@ -40,12 +40,20 @@ export default function usePreloadController({
   setVersion
 })
  {
+  const abortRef = useRef(null)
+
   return useCallback(() => {
-    if (!pdfRef.current || loadingRef.current || !Number.isInteger(currentPage)) {
+    if (!pdfRef.current || !Number.isInteger(currentPage)) {
       return Promise.resolve()
     }
 
-    return preloadByScale({
+    if (typeof abortRef.current === 'function') {
+      abortRef.current()
+    }
+
+    loadingRef.current = true
+
+    const abort = preloadByScale({
       pdf: pdfRef.current,
       scale,
       currentPage,
@@ -72,6 +80,8 @@ export default function usePreloadController({
         dispatch(setRenderedRanges({ bookId, scale, range }))
       }
     })
+       abortRef.current = abort
+    return abort
   }, [
     bookId,
     scale,
