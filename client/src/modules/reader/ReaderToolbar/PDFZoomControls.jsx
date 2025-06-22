@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import { setScaleIndex } from '@/store/slices/readerSlice'
 import { selectScaleIndex } from '@/store/selectors'
-
+import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -41,14 +41,13 @@ const PDFZoomControls = () => {
   const index = useSelector(selectScaleIndex)
 
   // predefined zoom levels
-  const levels = [0.5, 0.75, 1, 1.25, 1.5]
-  const totalLevels = levels.length
-  const currentScale = levels[index]
+  const totalLevels = ZOOM_LEVELS.length
+  const currentScale = ZOOM_LEVELS[index]
 
   // handlers
   const handleZoomIn = () => dispatch(setScaleIndex(Math.min(index + 1, totalLevels - 1)))
   const handleZoomOut = () => dispatch(setScaleIndex(Math.max(index - 1, 0)))
-  const handleReset = () => dispatch(setScaleIndex(levels.indexOf(1)))
+ const handleReset = () => dispatch(setScaleIndex(ZOOM_LEVELS.indexOf(1)))
 
   // disabled states
   const isMinZoom = index <= 0

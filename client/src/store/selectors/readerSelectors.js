@@ -6,12 +6,12 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit'
-
+import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
 //-----------------------------------------------------------------------------
 // Constants
 //-----------------------------------------------------------------------------
 
-const SCALE_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2]
+
 
 //-----------------------------------------------------------------------------
 // Root selector
@@ -36,9 +36,8 @@ export const selectScaleIndex = (state) => selectReader(state).scaleIndex
  */
 export const selectCurrentScale = createSelector(
   [selectScaleIndex],
-  (index) => SCALE_LEVELS[index] ?? 1
+    (index) => ZOOM_LEVELS[index] ?? 1
 )
-
 /**
  * Returns a memoized map of rendered pages for given book and scale.
  */
