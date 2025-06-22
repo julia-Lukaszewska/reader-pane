@@ -8,7 +8,7 @@ import { IoAdd, IoRemove, IoRefresh } from 'react-icons/io5'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import { setScaleIndex } from '@/store/slices/readerSlice'
-import { selectScaleIndex } from '@/store/selectors'
+import { selectScaleIndex, selectCurrentScale } from '@/store/selectors'
 import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
 //-----------------------------------------------------------------------------
 // Styled components
@@ -39,10 +39,10 @@ const ZoomInfo = styled.span`
 const PDFZoomControls = () => {
   const dispatch = useDispatch()
   const index = useSelector(selectScaleIndex)
+  const scale = useSelector(selectCurrentScale)
 
   // predefined zoom levels
   const totalLevels = ZOOM_LEVELS.length
-  const currentScale = ZOOM_LEVELS[index]
 
   // handlers
   const handleZoomIn = () => dispatch(setScaleIndex(Math.min(index + 1, totalLevels - 1)))
@@ -65,7 +65,7 @@ const PDFZoomControls = () => {
         <IoRemove />
       </button>
 
-      <ZoomInfo>{Math.round(currentScale * 100)}%</ZoomInfo>
+    <ZoomInfo>{Math.round(scale * 100)}%</ZoomInfo>
 
       <button onClick={handleZoomIn} disabled={isMaxZoom} title="Zoom in">
         <IoAdd />

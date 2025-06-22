@@ -15,7 +15,7 @@ import { mergeRanges } from '@/utils/mergeRanges'
 //-----------------------------------------------------
 const initialState = {
   scaleIndex: 2,
-  currentScale: 1.0,
+ 
   fitScaleFactor: 1.0,
   fullPageFitScale: null,
   pageViewMode: 'single',
@@ -40,9 +40,7 @@ const readerSlice = createSlice({
     setScaleIndex(state, action) {
       state.scaleIndex = action.payload
     },
-    setScale(state, action) {
-      state.currentScale = action.payload
-    },
+
     setFitScaleFactor(state, action) {
       state.fitScaleFactor = action.payload
     },
@@ -121,7 +119,7 @@ const readerSlice = createSlice({
       state.totalPages = 1
       state.renderedRanges = {}
       state.scaleIndex = 2
-      state.currentScale = 1.0
+
       state.fullPageFitScale = null
       state.pageViewMode = 'single'
     },
@@ -133,7 +131,7 @@ const readerSlice = createSlice({
 //-----------------------------------------------------
 export const {
   setScaleIndex,
-  setScale,
+
   setFitScaleFactor,
   setFullPageFitScale,
   setPageViewMode,
