@@ -1,11 +1,11 @@
 // src/modules/reader/hooks/useAutoPreloadTrigger.js
 
-import { useEffect } from "react";
+import { useEffect } from "react"
 import {
   getVisiblePages,
   getPageRangeKey,
-} from "@reader/utils/pdfPageNavigation";
-import { DEFAULT_RANGE_SIZE } from "@reader/utils/pdfConstants";
+} from "@reader/utils/pdfPageNavigation"
+import { DEFAULT_RANGE_SIZE } from "@reader/utils/pdfConstants"
 
 /**
  * Automatically triggers preloading when visible pages are missing from cache.
@@ -17,10 +17,9 @@ import { DEFAULT_RANGE_SIZE } from "@reader/utils/pdfConstants";
  * @param {number} params.totalPages           - Total number of pages in the document
  * @param {Array<[number, number]>} params.renderedRanges
  *        - Array of [startPage, endPage] ranges that have already been rendered
- * @param {React.MutableRefObject<{ pages: Map<string, { bitmap: ImageBitmap; width: number; height: number }> }>}
- *        params.pageBitmapsRef
- *        - Ref object holding a Map of cached page bitmaps
- * @param {() => void} params.preload          - Function to call to preload missing pages
+ * @param {React.MutableRefObject<{ pages: Map<string, { bitmap: ImageBitmap; width: number; height: number }> }>
+ *        params.pageBitmapsRef                - Ref object holding a Map of cached page bitmaps
+ * @param {(targetPage?: number) => void} params.preload - Function to call to preload missing pages
  */
 export default function useAutoPreloadTrigger({
   bookId,
@@ -31,9 +30,8 @@ export default function useAutoPreloadTrigger({
   pageBitmapsRef,
   preload,
   pdfRef,
-  viewMode = 'single',
+  viewMode = "single",
 }) {
-
   useEffect(() => {
     if (!pdfRef?.current || !pageBitmapsRef?.current?.pages) return
 
@@ -47,10 +45,10 @@ export default function useAutoPreloadTrigger({
     const visiblePages = getVisiblePages({
       currentPage,
       totalPages,
-      viewMode
+      viewMode,
     })
 
-    const missingPages = visiblePages.filter(page => {
+    const missingPages = visiblePages.filter((page) => {
       const cacheKey = `${bookId}-${scale}-${page}`
       return (
         !pageBitmapsRef.current.pages.has(cacheKey) &&
@@ -58,12 +56,28 @@ export default function useAutoPreloadTrigger({
       )
     })
 
-
     if (missingPages.length > 0) {
       preload()
     }
+
+    const { rangeEnd } = getPageRangeKey(currentPage, DEFAULT_RANGE_SIZE)
+    if (currentPage === rangeEnd && rangeEnd < totalPages) {
+      const nextStart = rangeEnd + 1
+      const nextEnd = Math.min(totalPages, nextStart + DEFAULT_RANGE_SIZE - 1)
+      let needNext = false
+      for (let p = nextStart; p <= nextEnd; p++) {
+        const key = `${bookId}-${scale}-${p}`
+        if (!pageBitmapsRef.current.pages.has(key) && !renderedPages.has(p)) {
+          needNext = true
+          break
+        }
+      }
+      if (needNext) {
+        preload(nextStart)
+      }
+    }
   }, [
-       bookId,
+    bookId,
     scale,
     currentPage,
     totalPages,
@@ -71,6 +85,6 @@ export default function useAutoPreloadTrigger({
     pageBitmapsRef,
     preload,
     pdfRef,
-    viewMode
+    viewMode,
   ])
 }

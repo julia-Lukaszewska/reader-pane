@@ -3,18 +3,22 @@
  * @description Pagination controls for PDF viewer, allowing navigation between pages.
  */
 
-import React from 'react'
-import styled from 'styled-components'
-import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
-import { useLocation } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { setCurrentPage } from '@/store/slices/readerSlice'
-import { selectActiveBookId, selectTotalPages } from '@/store/selectors'
+import React from "react"
+import styled from "styled-components"
+import { IoChevronBack, IoChevronForward } from "react-icons/io5"
+import { useLocation } from "react-router-dom"
+import { useSelector, useDispatch } from "react-redux"
+import { setCurrentPage } from "@/store/slices/readerSlice"
+import {
+  selectActiveBookId,
+  selectTotalPages,
+  selectPageViewMode,
+} from "@/store/selectors"
 
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
-  
+
 const StyledPagination = styled.div`
   display: flex;
   align-items: center;
@@ -57,21 +61,23 @@ const PDFPageControls = () => {
   // Selectors
   const bookId = useSelector(selectActiveBookId)
   const totalPages = useSelector(selectTotalPages)
-  const currentPage = useSelector(state => state.reader.currentPage)
+  const currentPage = useSelector((state) => state.reader.currentPage)
+  const viewMode = useSelector(selectPageViewMode)
 
   // Clamp helper
-  const clamp = n => Math.max(1, Math.min(n, totalPages))
+  const clamp = (n) => Math.max(1, Math.min(n, totalPages))
 
   // Navigation handlers
-  const goToPage = n => dispatch(setCurrentPage(clamp(n)))
-  const prevPage = () => goToPage(currentPage - 1)
-  const nextPage = () => goToPage(currentPage + 1)
+  const goToPage = (n) => dispatch(setCurrentPage(clamp(n)))
+  const step = viewMode === "double" ? 2 : 1
+  const prevPage = () => goToPage(currentPage - step)
+  const nextPage = () => goToPage(currentPage + step)
 
-  const isPrevDisabled = currentPage <= 1
-  const isNextDisabled = currentPage >= totalPages
+  const isPrevDisabled = currentPage - step < 1
+  const isNextDisabled = currentPage + step > totalPages
 
   // Guard: render only on /read and when we have pages
-  if (!location.pathname.startsWith('/read') || !bookId || totalPages <= 0) {
+  if (!location.pathname.startsWith("/read") || !bookId || totalPages <= 0) {
     return null
   }
 
