@@ -6,7 +6,7 @@
  * Keeps all read-only access to the streaming state in one place.
  * Memoised selectors are created with Reselect.
  */
-
+import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
 import { createSelector } from '@reduxjs/toolkit'
 
 /* ───────────────── basic field selectors ───────────────── */
@@ -67,6 +67,7 @@ export const selectStreamScale = (state) => state.stream.scale
  */
 export const selectLastLoadedAt = (state) => state.stream.lastLoadedAt
 
+export const selectScaleIndex = (state) => state.stream.scaleIndex
 /* ───────────────── derived / memoised selectors ───────────────── */
 
 /**
@@ -77,6 +78,10 @@ export const selectLastLoadedAt = (state) => state.stream.lastLoadedAt
  *
  * Only includes pages that are available at the current scale and have a bitmap.
  */
+export const selectCurrentScale = createSelector(
+  [selectScaleIndex],
+  (idx) => ZOOM_LEVELS[idx] ?? 1
+)
 export const selectVisibleBitmapPages = createSelector(
   [selectVisiblePages, selectRenderedPages, selectStreamScale],
   (numbers, renderedPages, scale) =>

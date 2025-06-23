@@ -17,8 +17,7 @@ import { setVisiblePages } from '@/store/slices/streamSlice'
  */
 export default function useVisiblePages(
   containerRef,
-  pageHeight,
-  bufferPages = 2
+  pageHeight
 ) {
   const dispatch = useDispatch()
   const scale = useSelector((s) => s.stream.scale)
@@ -32,13 +31,12 @@ export default function useVisiblePages(
       const pageH = pageHeight * scale
 
       // Estimate visible page range with buffer
-      const first = Math.max(1, Math.floor(scrollTop / pageH) + 1 - bufferPages)
-      const last = Math.ceil((scrollTop + clientHeight) / pageH) + bufferPages
+          const firstVisible = Math.max(1, Math.floor(scrollTop / pageH) + 1)
+      const lastVisible = Math.floor((scrollTop + clientHeight - 1) / pageH) + 1
 
       const newVisible = []
-      for (let p = first; p <= last; p++) newVisible.push(p)
- console.log('[ VisiblePages] setVisiblePages', newVisible)
-
+for (let p = firstVisible; p <= lastVisible; p++) newVisible.push(p)
+  console.log('[ VisiblePages] setVisiblePages', newVisible)
       // Update Redux with new visible page numbers
       dispatch(setVisiblePages(newVisible))
     }
@@ -46,5 +44,5 @@ export default function useVisiblePages(
     onScroll() // initial run
     el.addEventListener('scroll', onScroll)
     return () => el.removeEventListener('scroll', onScroll)
-  }, [containerRef, pageHeight, bufferPages, scale])
+  }, [containerRef, pageHeight,  scale])
 }

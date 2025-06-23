@@ -8,23 +8,21 @@
  *   - Rendered page ranges cache
  */
 import { createSlice } from '@reduxjs/toolkit'
-import { mergeRanges } from '@/utils/mergeRanges'
+
 
 //-----------------------------------------------------
 //------ Initial State
 //-----------------------------------------------------
 const initialState = {
-  scaleIndex: 2,
-  fitScaleFactor: 1.0,
 
-  fullPageFitScale: null,
+
   pageViewMode: 'single',
   pageTurnRate: null,
   currentPage: 1,
   totalPages: 1,
   fileUrl: null,
   bookId: null,
-  renderedRanges: {},
+
 }
 
 //-----------------------------------------------------
@@ -34,19 +32,6 @@ const readerSlice = createSlice({
   name: 'reader',
   initialState,
   reducers: {
-    //-------------------------------------------------
-    //------ Zoom Controls
-    //-------------------------------------------------
-    setScaleIndex(state, action) {
-      state.scaleIndex = action.payload
-    },
-
-    setFitScaleFactor(state, action) {
-      state.fitScaleFactor = action.payload
-    },
-    setFullPageFitScale(state, action) {
-      state.fullPageFitScale = action.payload
-    },
 
     //-------------------------------------------------
     //------ View Mode & Turn Rate
@@ -82,32 +67,14 @@ const readerSlice = createSlice({
       state.fileUrl = fileUrl
     },
 
-    //-------------------------------------------------
-    //------ Rendered Ranges Cache
-    //-------------------------------------------------
-    setRenderedRanges(state, action) {
-      const { bookId, scale, range } = action.payload
-      if (!state.renderedRanges[bookId]) state.renderedRanges[bookId] = {}
-      if (!state.renderedRanges[bookId][scale])
-        state.renderedRanges[bookId][scale] = []
-      state.renderedRanges[bookId][scale] = mergeRanges(
-        state.renderedRanges[bookId][scale],
-        range,
-      )
-    },
+    
 
     /**
      * @action resetRenderedRanges
      * @description Clears all renderedRanges for a given bookId.
      * @payload {{bookId: string}}
      */
-    resetRenderedRanges(state, action) {
-      const { bookId } = action.payload
-      if (bookId && state.renderedRanges[bookId]) {
-        delete state.renderedRanges[bookId]
-      }
-    },
-
+ 
     /**
      * @action resetReaderState
      * @description Resets full reader state (e.g. on reader exit)
@@ -130,10 +97,7 @@ const readerSlice = createSlice({
 //------ Exports
 //-----------------------------------------------------
 export const {
-  setScaleIndex,
 
-  setFitScaleFactor,
-  setFullPageFitScale,
   setPageViewMode,
   setPageTurnRate,
   setCurrentPage,
@@ -141,8 +105,7 @@ export const {
   setTotalPages,
   setFileUrl,
   setReaderState,
-  setRenderedRanges,
-  resetRenderedRanges,
+
   resetReaderState,
 } = readerSlice.actions
 

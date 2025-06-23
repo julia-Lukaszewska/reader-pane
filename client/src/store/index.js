@@ -18,6 +18,7 @@ import {
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import expireIn from 'redux-persist-transform-expire-in'
+
 //-----------------------------------------------------------------------------
 // API Slices
 //-----------------------------------------------------------------------------
@@ -36,6 +37,7 @@ import readerReducer from './slices/readerSlice'
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
 import streamReducer from './slices/streamSlice'
+
 //-----------------------------------------------------------------------------
 // Persistence Configurations
 //-----------------------------------------------------------------------------
@@ -72,7 +74,7 @@ const readerPersistConfig = {
 const persistConfig = {
   key: 'root',
   storage,
-   whitelist: ['book', 'reader', 'mainUi', booksApi.reducerPath],
+  whitelist: ['book', 'reader', 'mainUi', booksApi.reducerPath],
   transforms: [expireIn(24 * 60 * 60 * 1000, 'libraryCacheExpiration')],
 }
 
@@ -85,7 +87,7 @@ const rootReducer = combineReducers({
   book: persistReducer(bookPersistConfig, bookReducer),
   reader: persistReducer(readerPersistConfig, readerReducer),
   auth: authReducer, // auth is kept in memory only
-   stream: streamReducer,
+  stream: streamReducer,
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
@@ -103,7 +105,19 @@ const middleware = getDefaultMiddleware =>
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       ignoredPaths: ['reader.visiblePages', 'pdfStreamApi'],
-      isSerializable: value => !(value instanceof Blob)
+      isSerializable: value => {
+        if (value instanceof Blob) return true
+        if (value === null) return true
+        const type = typeof value
+        return (
+          type === 'undefined' ||
+          type === 'string' ||
+          type === 'number' ||
+          type === 'boolean' ||
+          Array.isArray(value) ||
+          Object.getPrototypeOf(value) === Object.prototype
+        )
+      }
     }
   }).concat(
     booksApi.middleware,

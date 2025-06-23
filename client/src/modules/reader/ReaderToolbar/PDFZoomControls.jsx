@@ -7,8 +7,8 @@ import React from 'react'
 import { IoAdd, IoRemove, IoRefresh } from 'react-icons/io5'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
-import { setScaleIndex } from '@/store/slices/readerSlice'
-import { selectScaleIndex, selectCurrentScale } from '@/store/selectors'
+import { setScaleIndex } from '@/store/slices/streamSlice'
+import { selectScaleIndex, selectCurrentScale } from '@/store/selectors/streamSelectors'
 import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
 //-----------------------------------------------------------------------------
 // Styled components

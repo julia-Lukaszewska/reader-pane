@@ -12,6 +12,7 @@ const initialState = {
   scale: 1.0,                      // current zoom level
   error: null,                     // last error encountered during streaming/rendering
   lastLoadedAt: null,              // timestamp of last successful render
+  scaleIndex: 2,
 }
 
 const streamSlice = createSlice({
@@ -60,7 +61,10 @@ const streamSlice = createSlice({
     setStreamStatus(state, action) {
       state.streamStatus = action.payload
     },
-
+    setScaleIndex(state, action) {
+      state.scaleIndex = action.payload
+      state.scale = ZOOM_LEVELS[action.payload] ?? state.scale
+    },
     // Sets the current zoom level
     setScale(state, action) {
       state.scale = action.payload
@@ -109,6 +113,7 @@ export const {
   setPageStatus,
   addPreloadedRange,
   setStreamStatus,
+  setScaleIndex,
   setScale,
   setError,
   setLastLoadedAt,

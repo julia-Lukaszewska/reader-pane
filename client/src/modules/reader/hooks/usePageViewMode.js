@@ -2,9 +2,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   setCurrentPage as setCurrentPageAction,
   setPageViewMode as setPageViewModeAction,
-  setScaleIndex as setScaleIndexAction,
-} from '@/store/slices/readerSlice'
 
+} from '@/store/slices/readerSlice'
+import { setScaleIndex as setScaleIndexAction } from '@/store/slices/streamSlice'
 export default function usePageViewMode() {
   const dispatch = useDispatch()
 
