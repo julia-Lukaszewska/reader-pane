@@ -102,8 +102,9 @@ const middleware = getDefaultMiddleware =>
   getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-       ignoredPaths: ['reader.visiblePages']
-    },
+      ignoredPaths: ['reader.visiblePages', 'pdfStreamApi'],
+      isSerializable: value => !(value instanceof Blob)
+    }
   }).concat(
     booksApi.middleware,
     externalApi.middleware,
