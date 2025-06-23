@@ -18,7 +18,7 @@ export default function ReaderSessionController({ children, containerRef }) {
   const dispatch = useDispatch()
   const visiblePages = useSelector(selectVisiblePages)
 const currentRange = useSelector(selectCurrentRange)
- const streamRange = useRangeStreamer(resolvedBookId)
+const streamRange = useRangeStreamer()
 
   useVisiblePages(containerRef, 792)
 

@@ -20,11 +20,13 @@ import {
 import { BitmapCache } from '@reader/utils/bitmapCache'
 import pdfjsRenderToBitmaps from '@reader/utils/pdfjsRenderToBitmaps'
 import { v4 as uuid } from 'uuid'
+import { selectFileUrl } from '@/store/selectors/readerSelectors'
 
-
-export default function useRangeStreamer(docId) {
+export default function useRangeStreamer() {
   const dispatch = useDispatch()
   const scale = useSelector(s => s.stream.scale)
+    const fileUrl = useSelector(selectFileUrl)
+  const filename = fileUrl ? fileUrl.split('/').pop() : null
   const [fetchRange] = useLazyFetchPageRangeQuery()
 
 
@@ -34,7 +36,9 @@ export default function useRangeStreamer(docId) {
       dispatch(setCurrentRange([start, end]))
 
       // 1) Fetch partial PDF blob from server
-      const blob = await fetchRange({ id: docId, start, end }).unwrap()
+         if (!filename) throw new Error('missing file')
+      const range = `bytes=${start}-${end}`
+      const blob = await fetchRange({ filename, range }).unwrap()
 
       // 2) Render pages to bitmaps
       const pages = await pdfjsRenderToBitmaps(blob, { scale, start, end })

@@ -32,7 +32,7 @@ export default function PdfViewer({ docId }) {
   useVisiblePages(containerRef, PAGE_H)
 
   // Step 2: Prepare streamer for loading page ranges
-  const streamRange = useRangeStreamer(docId)
+  const streamRange = useRangeStreamer()
 
   // State: current visible pages and already loaded ranges
   const { visiblePages, preloadedRanges } = useSelector(s => s.stream)

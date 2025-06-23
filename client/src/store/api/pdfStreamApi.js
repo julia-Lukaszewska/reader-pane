@@ -59,9 +59,10 @@ export const pdfStreamApi = createApi({
      * @returns {Blob} PDF fragment containing selected pages
      */
     fetchPageRange: builder.query({
-      query: ({ id, start, end }) => ({
-        url: `/books/${id}/pages`,
-        params: { start, end },
+      query: ({filename, range}) => ({
+        url: `/books/storage/${filename}`,
+        headers: { Range: range },
+      
         responseHandler: async (res) => {
           const reader = res.body.getReader()
           const chunks = []
