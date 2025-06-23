@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import useLastOpenedBook from '@/modules/reader/hooks/useLastOpenedBook'
 import useStartingPage from '@/modules/reader/hooks/useStartingPage'
 import useVisiblePages from '@reader/hooks/useVisiblePages'
-
-import { selectVisiblePages } from '@/store/selectors/streamSelectors'
+import useRangeStreamer from '@reader/hooks/useRangeStreamer'
+import { selectVisiblePages, selectCurrentRange } from '@/store/selectors/streamSelectors'
 import { getRangeAround } from '@reader/utils/getRangeAround'
 import { setCurrentRange } from '@/store/slices/streamSlice'
 
@@ -17,8 +17,16 @@ export default function ReaderSessionController({ children, containerRef }) {
 
   const dispatch = useDispatch()
   const visiblePages = useSelector(selectVisiblePages)
+const currentRange = useSelector(selectCurrentRange)
+ const streamRange = useRangeStreamer(resolvedBookId)
 
-  useVisiblePages(containerRef, 792) 
+  useVisiblePages(containerRef, 792)
+
+  useEffect(() => {
+    if (ready && currentRange) {
+      streamRange(currentRange)
+    }
+  }, [ready, currentRange])
 
   useEffect(() => {
     if (!ready || !visiblePages.length) return
