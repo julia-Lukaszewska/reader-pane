@@ -62,9 +62,18 @@ export default function RenderedPDFViewer({
    */
   // Draw image bitmaps from cache
   useEffect(() => {
+     console.groupCollapsed('[ Viewer effect]')
+  console.log('scale:', scale)
+  console.log('visiblePages (numbers):', visiblePages)
+  console.log('rendered:', rendered)
     visiblePages.forEach((pageNumber) => {
       const meta = rendered?.[scale]?.[pageNumber]
       const bitmap = meta ? BitmapCache.get(meta.bitmapId) : null
+
+         console.log(`→ Page ${pageNumber}`, {
+      bitmapId: meta?.bitmapId,
+      bitmapExists: !!bitmap,
+    })
       const canvas = pageRefs.current[pageNumber]
       if (!canvas || !bitmap) return
 
@@ -73,7 +82,7 @@ export default function RenderedPDFViewer({
       ctx.drawImage(bitmap, 0, 0)
     })
 
-    console.debug('[Viewer] Rendered pages @scale', scale, visiblePages)
+ console.groupEnd()
   }, [visiblePages, rendered, scale])
 
   return (

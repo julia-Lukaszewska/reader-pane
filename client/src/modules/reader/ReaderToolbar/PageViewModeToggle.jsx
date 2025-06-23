@@ -8,7 +8,7 @@ import { CgEreader } from 'react-icons/cg'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { selectTotalPages } from '@/store/selectors/readerSelectors'
-import { usePageViewMode } from '@reader/hooks'
+import  usePageViewMode from '@reader/hooks/usePageViewMode'
 
 //-----------------------------------------------------------------------------
 // Styled Components

@@ -37,6 +37,7 @@ export default function useVisiblePages(
 
       const newVisible = []
       for (let p = first; p <= last; p++) newVisible.push(p)
+ console.log('[ VisiblePages] setVisiblePages', newVisible)
 
       // Update Redux with new visible page numbers
       dispatch(setVisiblePages(newVisible))

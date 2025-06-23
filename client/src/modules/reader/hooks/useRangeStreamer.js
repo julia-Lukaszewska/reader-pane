@@ -25,38 +25,50 @@ import { selectFileUrl } from '@/store/selectors/readerSelectors'
 export default function useRangeStreamer() {
   const dispatch = useDispatch()
   const scale = useSelector(s => s.stream.scale)
-    const fileUrl = useSelector(selectFileUrl)
+  const fileUrl = useSelector(selectFileUrl)
   const filename = fileUrl ? fileUrl.split('/').pop() : null
   const [fetchRange] = useLazyFetchPageRangeQuery()
 
-
   return async ([start, end]) => {
-        if (!filename) {
-      console.warn('useRangeStreamer: missing filename', { fileUrl, start, end })
+    if (!filename) {
+      console.warn('[Streamer] Missing filename', { fileUrl, start, end })
       dispatch(setError('File URL missing'))
       return
     }
+
     try {
       dispatch(setStreamStatus('streaming'))
       dispatch(setCurrentRange([start, end]))
 
-      const blob = await fetchRange({ filename, start, end }).unwrap()
+      console.log('[Streamer] Fetching blob for', { filename, start, end })
+      const result = await fetchRange({ filename, start, end })
+      const blob = result?.data
 
-      // 2) Render pages to bitmaps
+      if (!blob || !(blob instanceof Blob)) {
+        console.error('[Streamer] Invalid blob received', { blob })
+        dispatch(setError('Invalid blob'))
+        dispatch(setStreamStatus('error'))
+        return
+      }
+
+      console.log('[Streamer] Rendering pages to bitmaps', { start, end, scale })
       const pages = await pdfjsRenderToBitmaps(blob, { scale, start, end })
-      // pages: [{ pageNumber, bitmap }]
 
-      // 3) Cache bitmap and store metadata in Redux
+      console.log('[Streamer] Caching rendered bitmaps')
       pages.forEach(({ pageNumber, bitmap }) => {
         const bitmapId = uuid()
-        BitmapCache.put(bitmapId, bitmap) // store binary in cache
-        dispatch(addRenderedPage({ scale, pageNumber, bitmapId })) // store reference in state
+        BitmapCache.put(bitmapId, bitmap)
+        console.log('[Streamer] Cached bitmap', { pageNumber, bitmapId, scale })
+        dispatch(addRenderedPage({ scale, pageNumber, bitmapId }))
       })
 
       dispatch(addPreloadedRange([start, end]))
       dispatch(setLastLoadedAt(Date.now()))
       dispatch(setStreamStatus('idle'))
+      console.log('[Streamer] Done streaming', { range: [start, end] })
+
     } catch (err) {
+      console.error('[Streamer] Streaming error', err)
       dispatch(setError(err.message || 'stream error'))
       dispatch(setStreamStatus('error'))
     }

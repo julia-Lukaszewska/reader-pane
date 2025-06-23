@@ -6,6 +6,7 @@ export const BitmapCache = {
   put(id, bmp) {
     if (_cache.size >= MAX) _cache.delete(_cache.keys().next().value) // FIFO
     _cache.set(id, bmp)
+     console.debug('[ BitmapCache] put', id)
   },
   get:  id => _cache.get(id),
   has:  id => _cache.has(id),

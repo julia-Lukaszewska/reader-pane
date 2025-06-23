@@ -3,9 +3,9 @@
 import { useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
-import useRangeStreamer from '@/hooks/useRangeStreamer'
-import useVisiblePages from '@/hooks/useVisiblePages'
-import { BitmapCache } from '@/utils/BitmapCache'
+import useRangeStreamer from '@reader/hooks/useRangeStreamer'
+import useVisiblePages from '@reader/hooks/useVisiblePages'
+import { BitmapCache } from '@reader/utils/bitmapCache'
 import Skeleton from '@/components/Skeleton' // loading placeholder
 
 // A4 height at 72 DPI
