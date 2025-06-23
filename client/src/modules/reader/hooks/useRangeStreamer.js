@@ -31,13 +31,16 @@ export default function useRangeStreamer() {
 
 
   return async ([start, end]) => {
+        if (!filename) {
+      console.warn('useRangeStreamer: missing filename', { fileUrl, start, end })
+      dispatch(setError('File URL missing'))
+      return
+    }
     try {
       dispatch(setStreamStatus('streaming'))
       dispatch(setCurrentRange([start, end]))
 
-      // 1) Fetch partial PDF blob from server
-         if (!filename) throw new Error('missing file')
-    const blob = await fetchRange({ filename, start, end }).unwrap()
+      const blob = await fetchRange({ filename, start, end }).unwrap()
 
       // 2) Render pages to bitmaps
       const pages = await pdfjsRenderToBitmaps(blob, { scale, start, end })
