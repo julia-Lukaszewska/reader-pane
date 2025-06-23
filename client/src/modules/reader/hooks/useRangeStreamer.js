@@ -37,8 +37,7 @@ export default function useRangeStreamer() {
 
       // 1) Fetch partial PDF blob from server
          if (!filename) throw new Error('missing file')
-      const range = `bytes=${start}-${end}`
-      const blob = await fetchRange({ filename, range }).unwrap()
+    const blob = await fetchRange({ filename, start, end }).unwrap()
 
       // 2) Render pages to bitmaps
       const pages = await pdfjsRenderToBitmaps(blob, { scale, start, end })
