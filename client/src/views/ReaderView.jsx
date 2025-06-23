@@ -39,20 +39,20 @@ export default function ReaderView() {
 
   const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
 
-  return (
-    <Wrapper ref={containerRef}>
-   
-      <ReaderSessionController containerRef={containerRef}>
-        {() => (
-          <Layout containerRef={containerRef} visiblePages={visiblePages}>
-            <RenderedPDFViewer
-              containerRef={containerRef}
-              visiblePages={visiblePages}
-              sidebarOpen={false}
-            />
-          </Layout>
-        )}
-      </ReaderSessionController>
-    </Wrapper>
-  )
+ return (
+  <StyledReaderView ref={containerRef}>
+    <ReaderSessionController containerRef={containerRef}>
+      {() => (
+        <Layout containerRef={containerRef} visiblePages={visiblePages}>
+          <RenderedPDFViewer
+            containerRef={containerRef}
+            visiblePages={visiblePages}
+            sidebarOpen={false}
+          />
+        </Layout>
+      )}
+    </ReaderSessionController>
+  </StyledReaderView>
+)
+
 }

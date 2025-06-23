@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import {
-  selectVisibleBitmapPages,
+  selectVisiblePages,
+  selectRenderedPages,
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
+import { BitmapCache } from '@reader/utils/bitmapCache'
 
 /* ───────────── Styled Components ───────────── */
 
@@ -51,37 +53,46 @@ export default function RenderedPDFViewer({
   const wrapper = containerRef ?? useRef(null)
   const pageRefs = useRef({})
 
-  // Selector: Pages currently visible and rendered as ImageBitmaps
-  const visiblePages = useSelector(selectVisibleBitmapPages)
+  // Metadata from Redux
+  const visiblePages = useSelector(selectVisiblePages)
   const scale = useSelector(selectStreamScale)
-
+  const rendered = useSelector(selectRenderedPages)
   /**
    * On update of visiblePages or scale, draw all bitmaps into canvas elements.
    */
+  // Draw image bitmaps from cache
   useEffect(() => {
-    visiblePages.forEach(({ pageNumber, bitmap }) => {
+    visiblePages.forEach((pageNumber) => {
+      const meta = rendered?.[scale]?.[pageNumber]
+      const bitmap = meta ? BitmapCache.get(meta.bitmapId) : null
       const canvas = pageRefs.current[pageNumber]
       if (!canvas || !bitmap) return
+
       const ctx = canvas.getContext('2d')
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(bitmap, 0, 0)
     })
 
-    console.debug('[Viewer] rendered pages @scale', scale, visiblePages.map(p => p.pageNumber))
-  }, [visiblePages, scale])
+    console.debug('[Viewer] Rendered pages @scale', scale, visiblePages)
+  }, [visiblePages, rendered, scale])
 
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
-      <PagesContainer $dir={direction}>
-        {visiblePages.map(({ pageNumber, width, height }) => (
-          <Canvas
-            key={`${pageNumber}-${width}x${height}`}
-            ref={(el) => (pageRefs.current[pageNumber] = el)}
-            width={width}
-            height={height}
-            data-page={pageNumber}
-          />
-        ))}
+     <PagesContainer $dir={direction}>
+        {visiblePages.map((pageNumber) => {
+          const meta = rendered?.[scale]?.[pageNumber]
+          const bitmap = meta ? BitmapCache.get(meta.bitmapId) : null
+
+          return (
+            <Canvas
+              key={pageNumber}
+              ref={(el) => (pageRefs.current[pageNumber] = el)}
+              width={bitmap?.width || 1}
+              height={bitmap?.height || 1}
+              data-page={pageNumber}
+            />
+          )
+        })}
       </PagesContainer>
     </ScrollWrapper>
   )

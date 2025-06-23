@@ -35,7 +35,7 @@ import bookReducer from './slices/bookSlice'
 import readerReducer from './slices/readerSlice'
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
-
+import streamReducer from './slices/streamSlice'
 //-----------------------------------------------------------------------------
 // Persistence Configurations
 //-----------------------------------------------------------------------------
@@ -85,6 +85,7 @@ const rootReducer = combineReducers({
   book: persistReducer(bookPersistConfig, bookReducer),
   reader: persistReducer(readerPersistConfig, readerReducer),
   auth: authReducer, // auth is kept in memory only
+   stream: streamReducer,
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,

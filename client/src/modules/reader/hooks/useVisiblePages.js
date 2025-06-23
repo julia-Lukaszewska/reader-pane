@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setVisiblePages } from '@/store/reader/streamSlice'
+import { setVisiblePages } from '@/store/slices/streamSlice'
 
 /**
  * useVisiblePages
