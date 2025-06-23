@@ -9,6 +9,7 @@ import uploadRouter from './upload.js'
 import streamRouter from './stream.js'
 import metaRouter from './meta.js'
 import pageRouter from './page.js'
+import rangeRouter from './range.js'
 //-----------------------------------------------------
 //------ Router Setup
 //-----------------------------------------------------
@@ -44,7 +45,14 @@ router.use('/', metaRouter)
 
 router.use('/', pageRouter)
 
-
+//---------------------------------------------------
+//------- GET /api/books/storage/:filename/pages
+//--------------------------------------------------
+/**
+ * @route GET /api/books/storage/:filename/pages
+ * @description Stream selected range of pages as a PDF slice.
+ */
+router.use('/', rangeRouter)
 //-----------------------------------------------------
 //------ GET /api/books/storage/:filename
 //-----------------------------------------------------
