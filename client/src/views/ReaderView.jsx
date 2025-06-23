@@ -1,18 +1,18 @@
-/**
- * @file ReaderView.jsx
- * @description
- * Wraps the reader content area. Connects session controller to the PDF viewer.
- * Uses styled layout and forwards containerRef to manage visible area.
- */
 
+
+/**
+ * Wraps reader content; pulls bitmap‑enriched visiblePages via selectors.
+ */
 import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
+
 import { SinglePageLayout, DoublePageLayout } from '@reader/layouts'
-import { usePdfMetadata } from '@reader/hooks'
-import ReaderSessionController from '@/controllers/ReaderSessionController'
 import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
-import { selectPageViewMode, selectFileUrl, selectActiveBookId, selectVisiblePages } from '@/store/selectors'
+import ReaderSessionController from '@/controllers/ReaderSessionController'
+
+import { selectPageViewMode } from '@/store/selectors/readerSelectors'
+import { selectVisibleBitmapPages } from '@/store/selectors/streamSelectors'
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
@@ -29,40 +29,30 @@ const StyledReaderView = styled.div`
 //-----------------------------------------------------------------------------
 // Component: ReaderView
 //-----------------------------------------------------------------------------
-
-/**
- * Main viewer container for rendering the PDF pages.
- * Provides a containerRef for measuring viewport bounds
- * and consumes visiblePages from ReaderSessionController.
- *
- * @component
- * @returns {JSX.Element}
- */
-const ReaderView = () => {
+export default function ReaderView() {
   const containerRef = useRef(null)
-  const viewMode = useSelector(selectPageViewMode)
-  const fileUrl = useSelector(selectFileUrl)
-  const bookId = useSelector(selectActiveBookId)
-const visiblePages = useSelector(selectVisiblePages)
-  const filename = fileUrl ? decodeURIComponent(fileUrl.split('/').pop()) : null
-  const metadata = usePdfMetadata(bookId, filename)
-  
+
+  const viewMode     = useSelector(selectPageViewMode)
+
+
+  const visiblePages = useSelector(selectVisibleBitmapPages)
+
+  const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
+
   return (
-    <StyledReaderView ref={containerRef}>
-       <ReaderSessionController containerRef={containerRef}>
-        {({ containerRef }) => {
-          const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
-          return (
-            <Layout
+    <Wrapper ref={containerRef}>
+   
+      <ReaderSessionController containerRef={containerRef}>
+        {() => (
+          <Layout containerRef={containerRef} visiblePages={visiblePages}>
+            <RenderedPDFViewer
               containerRef={containerRef}
               visiblePages={visiblePages}
-              metadata={metadata}
+              sidebarOpen={false}
             />
-          )
-        }}
+          </Layout>
+        )}
       </ReaderSessionController>
-    </StyledReaderView>
+    </Wrapper>
   )
 }
-
-export default ReaderView
