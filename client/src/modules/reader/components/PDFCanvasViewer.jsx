@@ -1,11 +1,11 @@
 //----------------------------------------------------------------------------- 
-// PDFCanvasViewer.jsx – FINAL (streaming logic removed)
-//-----------------------------------------------------------------------------
+// PDFCanvasViewer.jsx – NO-SKELETON VERSION
+//----------------------------------------------------------------------------- 
 /**
  * Universal viewer for rendered PDF pages using <canvas>.
- * • Supports single / double / scroll view modes
- * • Does not fetch data – streaming is handled by ReaderSessionController
- * • Displays skeletons until bitmap is available
+ * • Obsługuje single / double / scroll
+ * • Nie pobiera danych – streaming w ReaderSessionController
+ * • Zawsze renderuje <canvas>; brak osobnego komponentu Skeleton.
  */
 
 //----------------------------------------------------------------------------- 
@@ -17,7 +17,6 @@ import { useSelector } from 'react-redux'
 
 import useVisiblePages from '@reader/hooks/useVisiblePages'
 import { BitmapCache } from '@reader/utils/bitmapCache'
-import Skeleton from '@/components/common/Skeleton'
 
 import {
   selectVisiblePagesByMode,
@@ -51,6 +50,8 @@ const Canvas = styled.canvas`
   margin: 1rem;
   object-fit: contain;
   display: block;
+  background: var(--bg-paper, #fff); /* jednolite tło zamiast skeletona */
+  box-shadow: 0 0 4px rgba(0,0,0,.15);
 `
 
 //----------------------------------------------------------------------------- 
@@ -61,20 +62,21 @@ export default function PDFCanvasViewer({
   sidebarOpen = false,
   direction = 'row',
 }) {
-  // scroll container (external or internal)
-  const wrapper = containerRef ?? useRef(null)
-  const pageRefs = useRef({})
+  const wrapper   = containerRef ?? useRef(null)
+  const pageRefs  = useRef({})
 
   // Redux --------------------------------------------------------------------
   const visiblePages = useSelector(selectVisiblePagesByMode)
-  const scale = useSelector(selectStreamScale)
-  const scaleKey = scale.toFixed(2)
-  const rendered = useSelector(selectRenderedPages)[scaleKey] ?? {}
+  const scale        = useSelector(selectStreamScale)
+  const scaleKey     = scale.toFixed(2)
+  const rendered     = useSelector(selectRenderedPages)[scaleKey] ?? {}
 
-  // Update visible pages in scroll mode -------------------------------------
+  // aktualizacja widocznych stron w scroll-mode ------------------------------
   useVisiblePages(wrapper, PAGE_HEIGHT)
 
-  // Draw bitmaps to canvases ------------------------------------------------
+  //---------------------------------------------------------------------------
+  // Draw bitmaps to canvases
+  //---------------------------------------------------------------------------
   useEffect(() => {
     visiblePages.forEach(page => {
       const meta   = rendered[page]
@@ -94,7 +96,12 @@ export default function PDFCanvasViewer({
     })
   }, [visiblePages, rendered, scaleKey])
 
-  // Render -------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  // Render
+  //---------------------------------------------------------------------------
+  const placeholderW = PAGE_HEIGHT * scale * 0.75 // A4 ratio ~0.707, zaokrąglone
+  const placeholderH = PAGE_HEIGHT * scale
+
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
@@ -102,19 +109,13 @@ export default function PDFCanvasViewer({
           const meta = rendered[page]
           const bmp  = meta && BitmapCache.get(meta.bitmapId)
 
-          return bmp ? (
+          return (
             <Canvas
               key={page}
               ref={el => (pageRefs.current[page] = el)}
-              width={bmp.width}
-              height={bmp.height}
+              width={bmp?.width  || placeholderW}
+              height={bmp?.height || placeholderH}
               data-page={page}
-            />
-          ) : (
-            <Skeleton
-              key={page}
-              width={PAGE_HEIGHT * scale * 0.75}
-              height={PAGE_HEIGHT * scale}
             />
           )
         })}

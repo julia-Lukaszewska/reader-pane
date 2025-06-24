@@ -1,32 +1,25 @@
+//----------------------------------------------------------------------------- 
+// ReaderSessionController.jsx  – UNIFIED STREAMING LOGIC
+//----------------------------------------------------------------------------- 
 /**
- * @file src/controllers/ReaderSessionController.jsx
- * @description
- * Manages session lifecycle for the PDF reader view.
- *
- * Responsibilities:
- * - Resolves the last opened book ID
- * - Determines the starting page for the session
- * - Tracks visible pages in scroll mode
- * - Computes and updates the current rendering range
- * - Triggers streaming for missing PDF page chunks
- *
- * Notes:
- * - Uses a stable reference to the range streamer
- * - Maintains a cache of stream keys to avoid duplicate requests
- * - Only renders children after the session is ready
+ * Kontroler sesji czytnika PDF.
+ * • Obsługuje single / double / scroll
+ * • Liczy pełny zakres widocznych stron → ustawia currentRange
+ * • Pre‑loaduje poprzedni, bieżący, następny (i ewent. chunk ostatniej strony)
+ * • Unika duplikatów dzięki cache w queuedRef
  */
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- 
 // Imports
 //-----------------------------------------------------------------------------
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useDispatch, useSelector, useStore } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
-import useLastOpenedBook from '@/modules/reader/hooks/useLastOpenedBook'
-import useStartingPage from '@/modules/reader/hooks/useStartingPage'
-import useVisiblePages from '@reader/hooks/useVisiblePages'
-import useRangeStreamer from '@reader/hooks/useRangeStreamer'
+import useLastOpenedBook  from '@/modules/reader/hooks/useLastOpenedBook'
+import useStartingPage    from '@/modules/reader/hooks/useStartingPage'
+import useVisiblePages    from '@reader/hooks/useVisiblePages'
+import useRangeStreamer   from '@reader/hooks/useRangeStreamer'
 
 import {
   selectVisiblePagesByMode,
@@ -38,96 +31,91 @@ import {
   selectPreloadedRanges,
 } from '@/store/selectors/streamSelectors'
 
-import { CHUNK_SIZE } from '@reader/utils/pdfConstants'
-import { getRangeAround } from '@reader/utils/getRangeAround'
-import { setCurrentRange } from '@/store/slices/streamSlice'
+import { CHUNK_SIZE, PAGE_HEIGHT } from '@reader/utils/pdfConstants'
+import { setCurrentRange }        from '@/store/slices/streamSlice'
+import { getRangeAround }         from '@reader/utils/getRangeAround'
 
+//----------------------------------------------------------------------------- 
+// Component
 //-----------------------------------------------------------------------------
-// Component: ReaderSessionController
-//-----------------------------------------------------------------------------
-/**
- * Initializes and manages the PDF reader session state.
- *
- * @param {Object} props
- * @param {React.RefObject} props.containerRef - Scroll container reference
- * @param {Function} props.children - Render function for children
- * @returns {JSX.Element|null}
- */
 export default function ReaderSessionController({ children, containerRef }) {
-  // Initialize book session
+  // Init książki -------------------------------------------------------------
   const { bookId: routeBookId } = useParams()
   const resolvedBookId = useLastOpenedBook(routeBookId)
-  const ready = useStartingPage(resolvedBookId)
+  const ready          = useStartingPage(resolvedBookId)
 
-  // Redux state
-  const dispatch = useDispatch()
-  const store = useStore()
-  const mode = useSelector(selectPageViewMode)
-  const visiblePages = useSelector(selectVisiblePagesByMode)
-  const currentRange = useSelector(selectCurrentRange)
-  const scale = useSelector(selectStreamScale)
-  const preloaded = useSelector(selectPreloadedRanges)[scale.toFixed(2)] ?? []
+  // Redux --------------------------------------------------------------------
+  const dispatch      = useDispatch()
+  const mode          = useSelector(selectPageViewMode)            // 'single' | 'double' | 'scroll'
+  const visiblePages  = useSelector(selectVisiblePagesByMode)      // [n,…]
+  const currentRange  = useSelector(selectCurrentRange)            // [start,end]
+  const scale         = useSelector(selectStreamScale)
+  const preloaded     = useSelector(selectPreloadedRanges)[scale.toFixed(2)] ?? []
 
-  // Track visible pages (scroll mode only)
-  useVisiblePages(containerRef, 792)
+  // Scroll‑mode: aktualizuj visiblePages -------------------------------------
+  useVisiblePages(containerRef, PAGE_HEIGHT)
 
-  // Stable reference to range streamer
-const streamRange = useRangeStreamer()
+  // Stabilna funkcja pobierająca chunk
+  const streamRange = useRangeStreamer()
 
-  // Cache of streamed keys
+  // Cache dla już zaplanowanych pobrań
   const queuedRef = useRef(new Set())
   useEffect(() => queuedRef.current.clear(), [scale])
 
-  // Update current rendering range
+  //---------------------------------------------------------------------------
+  // 1) Wyznacz i zapisz currentRange na bazie PEŁNEGO widocznego zakresu
+  //---------------------------------------------------------------------------
   useEffect(() => {
     if (!ready || !visiblePages.length) return
 
-    const range = getRangeAround(visiblePages[0], CHUNK_SIZE)
-    const cur = store.getState().stream.currentRange
+    const first = Math.min(...visiblePages)
+    const range = getRangeAround(first, CHUNK_SIZE)       // [start,end] chunk pierwszej widocznej
 
-    if (!cur || cur[0] !== range[0] || cur[1] !== range[1]) {
+    // Zapisz w store gdy się zmieni
+    if (!currentRange || currentRange[0] !== range[0] || currentRange[1] !== range[1]) {
       dispatch(setCurrentRange(range))
     }
-  }, [ready, visiblePages, dispatch, store])
+  }, [ready, visiblePages, currentRange, dispatch])
 
-  // Preload nearby chunks (prev | cur | next)
+  //---------------------------------------------------------------------------
+  // 2) Pre‑load: poprzedni | bieżący | następny (+ chunk ostatniej strony)
+  //---------------------------------------------------------------------------
   useEffect(() => {
     if (!ready || !currentRange) return
 
     const curStart = currentRange[0]
-    const curEnd = currentRange[1]
-
-    const wants = [
+    const wants = new Set([
       curStart - CHUNK_SIZE,
       curStart,
       curStart + CHUNK_SIZE,
-    ].filter(s => s >= 1)
+    ].filter(s => s >= 1))
 
-    const highest = Math.max(...visiblePages)
+    // Jeżeli ostatnia widoczna strona wpada w dalszy chunk – dodaj go
+    const lastVisible    = Math.max(...visiblePages)
+    const lastChunkStart = Math.floor((lastVisible - 1) / CHUNK_SIZE) * CHUNK_SIZE + 1
+    wants.add(lastChunkStart)
+
+    // Look‑ahead przy trybie double (przewijanie dwóch stron jednocześnie)
     const threshold = mode === 'double' ? 2 : 1
-    if (curEnd - highest <= threshold) {
-      wants.push(curStart + CHUNK_SIZE * 2)
+    if (currentRange[1] - lastVisible <= threshold) {
+      wants.add(curStart + CHUNK_SIZE * 2)
     }
 
+    // Zaplanuj pobrania -------------------------------------------------------
     wants.forEach(start => {
-      if (preloaded.some(([s]) => s === start)) return
+      if (preloaded.some(([s]) => s === start)) return            // już w cache
 
       const key = `${scale}-${start}`
-      if (queuedRef.current.has(key)) return
+      if (queuedRef.current.has(key)) return                     // już zaplanowany
 
       queuedRef.current.add(key)
       streamRange([start, start + CHUNK_SIZE - 1])
     })
-  }, [
-    ready,
-    currentRange,
-    visiblePages,
-    preloaded,
-    scale,
-    mode,
-  ])
+  }, [ready, currentRange, visiblePages, preloaded, scale, mode, streamRange])
 
-  // Block rendering until session is initialized
+  //---------------------------------------------------------------------------
+  // Render dzieci po pełnym init‑cie
+  //---------------------------------------------------------------------------
   if (!ready) return null
   return children({ containerRef })
 }
