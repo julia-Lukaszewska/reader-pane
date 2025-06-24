@@ -20,6 +20,7 @@ import { BitmapCache } from '@reader/utils/bitmapCache'
 
 import {
   selectVisiblePagesByMode,
+  selectTotalPages,
 } from '@/store/selectors/readerSelectors'
 import {
   selectRenderedPages,
@@ -67,6 +68,7 @@ export default function PDFCanvasViewer({
 
   // Redux --------------------------------------------------------------------
   const visiblePages = useSelector(selectVisiblePagesByMode)
+  const totalPages   = useSelector(selectTotalPages)
   const scale        = useSelector(selectStreamScale)
   const scaleKey     = scale.toFixed(2)
   const rendered     = useSelector(selectRenderedPages)[scaleKey] ?? {}
@@ -101,11 +103,11 @@ export default function PDFCanvasViewer({
   //---------------------------------------------------------------------------
   const placeholderW = PAGE_HEIGHT * scale * 0.75 // A4 ratio ~0.707, zaokrąglone
   const placeholderH = PAGE_HEIGHT * scale
-
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
-        {visiblePages.map(page => {
+        {pages.map(page => {
           const meta = rendered[page]
           const bmp  = meta && BitmapCache.get(meta.bitmapId)
 

@@ -39,7 +39,7 @@ export default function useStartingPage(bookId) {
   //-----------------------------------------------------
   const fileReady = !fileLoading && Boolean(fileUrl)
   const totalPages = bookData?.meta?.totalPages ?? 1
-  const currentPage = bookData?.stats?.currentPage ?? 1
+  const currentPage = bookData?.flags?.currentPage ?? 1
 
   //-----------------------------------------------------
   //------ Effect: Initialize Reader State
