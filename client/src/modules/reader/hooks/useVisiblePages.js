@@ -34,7 +34,9 @@ import { PRELOAD_OFFSETS } from '@reader/utils/pdfConstants'
 export default function useVisiblePages(containerRef, pageHeight) {
   const dispatch = useDispatch()
   const scale = useSelector(s => s.stream.scale)
-  const mode = useSelector(s => s.reader.pageViewMode) // 'scroll' | 'single' | 'double'
+  const mode = useSelector(s => s.reader.pageViewMode)
+  const current = useSelector(s => s.reader.currentPage)
+  const total = useSelector(s => s.reader.totalPages)
   const prevRef = useRef([])
 
   useEffect(() => {
@@ -49,39 +51,58 @@ export default function useVisiblePages(containerRef, pageHeight) {
      * @returns {number[]} Array of visible page numbers
      */
     const calcVisible = () => {
-      const { scrollTop, clientHeight } = el
-      const pageH = pageHeight * scale
 
-      const first = Math.max(1, Math.floor(scrollTop / pageH) + 1 - before)
-      const last = Math.floor((scrollTop + clientHeight - 1) / pageH) + 1 + after
+      if (mode === 'scroll') {
+        const { scrollTop, clientHeight } = el
+        const pageH = pageHeight * scale
+        const first = Math.max(1, Math.floor(scrollTop / pageH) + 1 - before)
+        const last = Math.floor((scrollTop + clientHeight - 1) / pageH) + 1 + after
+        const arr = []
+        for (let p = first; p <= last; p++) arr.push(p)
+        return arr
+      }
+
+      const start = Math.max(1, current - before)
+      let end = Math.min(total, current + after)
+      if (mode === 'double') end = Math.min(total, end + 1)
 
       const arr = []
-      for (let p = first; p <= last; p++) arr.push(p)
+for (let p = start; p <= end; p++) arr.push(p)
       return arr
     }
 
-    // Throttled scroll handler using requestAnimationFrame
-    let ticking = false
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        ticking = false
-        const visible = calcVisible()
+   if (mode === 'scroll') {
+      let ticking = false
+      const onScroll = () => {
+        if (ticking) return
+        ticking = true
+        requestAnimationFrame(() => {
+          ticking = false
+          const visible = calcVisible()
+          const prev = prevRef.current
+          if (
+            visible.length !== prev.length ||
+            visible.some((v, i) => v !== prev[i])
+          ) {
+            prevRef.current = visible
+            dispatch(setVisiblePages(visible))
+          }
+        })
+      }
 
-        const prev = prevRef.current
-        if (
-          visible.length !== prev.length ||
-          visible.some((v, i) => v !== prev[i])
-        ) {
-          prevRef.current = visible
-          dispatch(setVisiblePages(visible))
-        }
-      })
+      onScroll()
+      el.addEventListener('scroll', onScroll)
+      return () => el.removeEventListener('scroll', onScroll)
+ }
+
+    const visible = calcVisible()
+    const prev = prevRef.current
+    if (
+      visible.length !== prev.length ||
+      visible.some((v, i) => v !== prev[i])
+    ) {
+      prevRef.current = visible
+      dispatch(setVisiblePages(visible))
     }
-
-    onScroll() // Initial dispatch
-    el.addEventListener('scroll', onScroll)
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [containerRef, pageHeight, scale, mode, dispatch])
+  }, [containerRef, pageHeight, scale, mode, current, total, dispatch])
 }
