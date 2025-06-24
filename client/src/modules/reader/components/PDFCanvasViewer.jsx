@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
-// PDFCanvasViewer – simplified version (visiblePages passed in via props)
+// PDFCanvasViewer – full optimized version
 //-----------------------------------------------------------------------------
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 
@@ -38,59 +38,65 @@ const Canvas = styled.canvas`
 /* --- component ------------------------------------------------------------ */
 export default function PDFCanvasViewer({
   containerRef,
-  visiblePages,          // ← provided by the layout component
+  visiblePages,
   sidebarOpen = false,
-  direction   = 'row',
+  direction = 'row',
 }) {
-  const wrapper  = containerRef ?? useRef(null)
+  const wrapper = containerRef ?? useRef(null)
   const pageRefs = useRef({})
 
-  /* --- Redux (bitmaps & scale) ------------------------------------------- */
-  const scale    = useSelector(selectStreamScale)
+  const scale = useSelector(selectStreamScale)
   const scaleKey = scale.toFixed(2)
-  const rendered = useSelector(selectRenderedPages)[scaleKey] ?? {}
+  const renderedRaw = useSelector(selectRenderedPages)
 
-  /* --- draw bitmaps on canvas ------------------------------------------- */
+  // Memoized rendered cache
+  const rendered = useMemo(() => renderedRaw[scaleKey] ?? {}, [renderedRaw, scaleKey])
+
+  // Draw logic using requestAnimationFrame
   useEffect(() => {
-    visiblePages.forEach(page => {
-      const meta   = rendered[page]
-      const bmp    = meta && BitmapCache.get(meta.bitmapId)
+    const drawPage = (page) => {
+      const meta = rendered[page]
+      const bmp = meta && BitmapCache.get(meta.bitmapId)
       const canvas = pageRefs.current[page]
       if (!canvas) return
 
       const ctx = canvas.getContext('2d')
-      if (!bmp) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height) // nothing rendered yet
-        return
-      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      canvas.width  = bmp.width
-      canvas.height = bmp.height
-      ctx.drawImage(bmp, 0, 0)
+      if (bmp) {
+        canvas.width = bmp.width
+        canvas.height = bmp.height
+        ctx.drawImage(bmp, 0, 0)
+      } else {
+        ctx.font = '16px sans-serif'
+        ctx.fillStyle = '#aaa'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Ładowanie...', canvas.width / 2, canvas.height / 2)
+      }
+    }
+
+    const raf = requestAnimationFrame(() => {
+      visiblePages.forEach(drawPage)
     })
+    return () => cancelAnimationFrame(raf)
   }, [visiblePages, rendered])
 
-  /* --- placeholder dimensions ------------------------------------------- */
-  const placeholderW = PAGE_HEIGHT * scale * 0.75 // A4 aspect ~0.707
+  const placeholderW = PAGE_HEIGHT * scale * 0.75
   const placeholderH = PAGE_HEIGHT * scale
 
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
-        {visiblePages.map(page => {
-          const meta = rendered[page]
-          const bmp  = meta && BitmapCache.get(meta.bitmapId)
-
-          return (
-            <Canvas
-              key={page}
-              ref={el => (pageRefs.current[page] = el)}
-              width={bmp?.width  || placeholderW}
-              height={bmp?.height || placeholderH}
-              data-page={page}
-            />
-          )
-        })}
+        {visiblePages.map(page => (
+          <Canvas
+            key={page}
+            ref={el => (pageRefs.current[page] = el)}
+            width={placeholderW}
+            height={placeholderH}
+            data-page={page}
+          />
+        ))}
       </PagesContainer>
     </ScrollWrapper>
   )

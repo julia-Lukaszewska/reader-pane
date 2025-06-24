@@ -1,55 +1,60 @@
 //-----------------------------------------------------------------------------
-// src/modules/reader/hooks/usePreloadController.js
+// src/modules/reader/hooks/usePreloadController.js – optimized version
 //-----------------------------------------------------------------------------
-
-import { useEffect, useRef }   from 'react'
-import { useSelector }        from 'react-redux'
+import { useEffect, useRef } from 'react'
+import { useSelector } from 'react-redux'
 import {
   selectVisiblePages,
   selectPreloadedRanges,
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
-import { CHUNK_SIZE }          from '@reader/utils/pdfConstants'
-import useRangeStreamer        from './useRangeStreamer'
+import { CHUNK_SIZE } from '@reader/utils/pdfConstants'
+import useRangeStreamer from './useRangeStreamer'
 
 export default function usePreloadController() {
-  /* ---- data from Redux ------------------------------------------------- */
-  const visible   = useSelector(selectVisiblePages)            // [ …page numbers… ]
+  const visible   = useSelector(selectVisiblePages)
   const scale     = useSelector(selectStreamScale)
   const preloaded = useSelector(selectPreloadedRanges)[scale.toFixed(2)] ?? []
 
-  /* ---- range-streaming hook ------------------------------------------- */
   const streamRange = useRangeStreamer()
-  const queuedRef   = useRef(new Set())   // de-dupe within a session
+  const queuedRef = useRef(new Set())
 
-  /* ---- clear queue on scale change ------------------------------------ */
   useEffect(() => queuedRef.current.clear(), [scale])
 
-  /* ---- main preload logic --------------------------------------------- */
   useEffect(() => {
     if (!visible.length) return
 
-    /* 1 ▸ chunks where currently visible pages reside */
     const activeChunks = new Set(
       visible.map(p => Math.floor((p - 1) / CHUNK_SIZE) * CHUNK_SIZE + 1)
     )
 
-    /* 2 ▸ expand the set with previous and next chunk for each */
     const targets = new Set()
     activeChunks.forEach(start => {
-      if (start - CHUNK_SIZE >= 1) targets.add(start - CHUNK_SIZE) // prev
-      targets.add(start)                                           // current
-      targets.add(start + CHUNK_SIZE)                              // next
+      if (start - CHUNK_SIZE >= 1) targets.add(start - CHUNK_SIZE)
+      targets.add(start)
+      targets.add(start + CHUNK_SIZE)
     })
 
-    /* 3 ▸ schedule fetches if not cached or already queued */
-    targets.forEach(start => {
-      if (preloaded.some(([s]) => s === start)) return            // already cached
-      const key = `${scale}-${start}`
-      if (queuedRef.current.has(key)) return                      // already queued
-
-      queuedRef.current.add(key)
-      streamRange([start, start + CHUNK_SIZE - 1])
+    const prioritized = Array.from(targets).map(start => {
+      const priority = activeChunks.has(start)
+        ? 0
+        : activeChunks.has(start - CHUNK_SIZE) || activeChunks.has(start + CHUNK_SIZE)
+        ? 1
+        : 2
+      return { start, priority }
     })
+
+    prioritized
+      .sort((a, b) => a.priority - b.priority)
+      .slice(0, 4) // limit to 4 chunks per cycle
+      .forEach(({ start }) => {
+        const key = `${scale}-${start}`
+        if (queuedRef.current.has(key)) return
+        if (preloaded.some(([s]) => s === start)) return
+
+        queuedRef.current.add(key)
+        streamRange([start, start + CHUNK_SIZE - 1])
+        console.debug('[Preload] scheduled', key)
+      })
   }, [visible, preloaded, scale, streamRange])
 }

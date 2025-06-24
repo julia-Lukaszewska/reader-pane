@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// src/modules/reader/hooks/useRangeStreamer.js – FINAL ENGLISH VERSION
+// src/modules/reader/hooks/useRangeStreamer.js – optimized
 //-----------------------------------------------------------------------------
 /**
  * React hook that returns a stable `streamRange([start, end])` function.
@@ -10,15 +10,13 @@
  * 3. Store bitmaps in the in-memory LRU `BitmapCache`
  * 4. Register the pre-loaded chunk in `streamSlice` (max 3 chunks kept)
  * 5. Skip duplicate downloads (already cached or in-flight)
+ * 6. Mark failed ranges and avoid retrying them
+ * 7. Throttle stream bursts (e.g. rapid scrolling)
  */
 
-//-----------------------------------------------------------------------------
-// Imports
-//-----------------------------------------------------------------------------
-import { useLazyFetchPageRangeQuery } from '@/store/api/pdfStreamApi'
-import { useCallback, useRef }       from 'react'
+import { useCallback, useRef } from 'react'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-
+import { useLazyFetchPageRangeQuery } from '@/store/api/pdfStreamApi'
 import {
   setStreamStatus,
   addRenderedPage,
@@ -28,88 +26,86 @@ import {
   setError,
 } from '@/store/slices/streamSlice'
 
-import { BitmapCache }          from '@reader/utils/bitmapCache'
-import pdfjsRenderToBitmaps     from '@reader/utils/pdfjsRenderToBitmaps'
-import { v4 as uuid }           from 'uuid'
-import { selectFileUrl }        from '@/store/selectors/readerSelectors'
+import { BitmapCache } from '@reader/utils/bitmapCache'
+import pdfjsRenderToBitmaps from '@reader/utils/pdfjsRenderToBitmaps'
+import { v4 as uuid } from 'uuid'
+import { selectFileUrl } from '@/store/selectors/readerSelectors'
+import throttle from 'lodash.throttle'
 
-//-----------------------------------------------------------------------------
-// Hook
-//-----------------------------------------------------------------------------
 export default function useRangeStreamer() {
-  const dispatch   = useDispatch()
-  const store      = useStore()
-  const scale      = useSelector(s => s.stream.scale)
-  const fileUrl    = useSelector(selectFileUrl)
-  const filename   = fileUrl ? fileUrl.split('/').pop() : null
+  const dispatch = useDispatch()
+  const store = useStore()
+  const scale = useSelector(s => s.stream.scale)
+  const fileUrl = useSelector(selectFileUrl)
+  const filename = fileUrl ? fileUrl.split('/').pop() : null
 
   const [fetch] = useLazyFetchPageRangeQuery()
-  const inFlightRef = useRef(new Set()) // avoids duplicate concurrent downloads
 
-  /**
-   * Downloads and renders a chunk of pages.
-   * The function is memoised (useCallback) – stable between renders.
-   */
-  return useCallback(async ([start, end]) => {
-    if (!filename) {
-      dispatch(setError('File URL missing'))
-      return
-    }
+  const inFlightRef = useRef(new Set())
+  const failedRef = useRef(new Set())
 
-    const scaleKey  = scale.toFixed(2)
-    const chunkKey  = `${scaleKey}-${start}`
-    const preloaded = store.getState().stream.preloadedRanges[scaleKey] ?? []
+  const streamRange = useCallback(
+    throttle(async ([start, end]) => {
+      if (!filename) {
+        dispatch(setError('File URL missing'))
+        return
+      }
 
-    // Skip if already cached or currently being fetched
-    if (
-      preloaded.some(([s, e]) => s === start && e === end) ||
-      inFlightRef.current.has(chunkKey)
-    ) {
-      return
-    }
+      const scaleKey = scale.toFixed(2)
+      const chunkKey = `${scaleKey}-${start}`
+      const preloaded = store.getState().stream.preloadedRanges[scaleKey] ?? []
 
-    inFlightRef.current.add(chunkKey)
+      if (
+        preloaded.some(([s, e]) => s === start && e === end) ||
+        inFlightRef.current.has(chunkKey) ||
+        failedRef.current.has(chunkKey)
+      ) {
+        return
+      }
 
-    try {
-      dispatch(setStreamStatus('streaming'))
+      inFlightRef.current.add(chunkKey)
 
-      // 1 – Fetch the partial PDF as a Blob
-      const { data: blob } = await fetch({ filename, start, end })
-      if (!(blob instanceof Blob)) throw new Error('Invalid Blob received')
+      try {
+        dispatch(setStreamStatus('streaming'))
 
-      // 2 – Render pages into ImageBitmaps
-      const chunkSize = end - start + 1              // e.g. 8 pages
-      const pages = await pdfjsRenderToBitmaps(blob, {
-        scale,
-        start: 1,                                    // always start from 1 locally
-        end  : chunkSize                             // …up to chunk size
-      })
+        const { data: blob } = await fetch({ filename, start, end })
+        if (!(blob instanceof Blob)) throw new Error('Invalid Blob received')
 
-      pages.forEach(({ pageNumber, bitmap }) => {
-        const globalPage = start + pageNumber - 1    // convert local → global index
-        const id = uuid()
-        BitmapCache.put(id, bitmap)
-        dispatch(
-          addRenderedPage({
-            scale: scaleKey,
-            pageNumber: globalPage,
-            bitmapId: id,
-          }),
-        )
-      })
+        const chunkSize = end - start + 1
+        const pages = await pdfjsRenderToBitmaps(blob, {
+          scale,
+          start: 1,
+          end: chunkSize,
+        })
 
-      // 3 – Register the chunk in Redux (LRU handled in reducer)
-      dispatch(addPreloadedRange({ scale: scaleKey, range: [start, end] }))
-      dispatch(registerChunk   ({ scale: scaleKey, range: [start, end] }))
+        pages.forEach(({ pageNumber, bitmap }) => {
+          const globalPage = start + pageNumber - 1
+          const id = uuid()
+          BitmapCache.put(id, bitmap)
+          dispatch(
+            addRenderedPage({
+              scale: scaleKey,
+              pageNumber: globalPage,
+              bitmapId: id,
+            }),
+          )
+        })
 
-      dispatch(setLastLoadedAt(Date.now()))
-      dispatch(setStreamStatus('idle'))
-    } catch (err) {
-      console.error('[Streamer] error:', err)
-      dispatch(setError(err.message || 'stream error'))
-      dispatch(setStreamStatus('error'))
-    } finally {
-      inFlightRef.current.delete(chunkKey)
-    }
-  }, [filename, scale, dispatch, store, fetch])
+        dispatch(addPreloadedRange({ scale: scaleKey, range: [start, end] }))
+        dispatch(registerChunk({ scale: scaleKey, range: [start, end] }))
+        dispatch(setLastLoadedAt(Date.now()))
+        dispatch(setStreamStatus('idle'))
+      } catch (err) {
+        console.error('[Streamer] error:', err)
+        failedRef.current.add(chunkKey)
+        dispatch(setError(err.message || 'stream error'))
+        dispatch(setStreamStatus('error'))
+      } finally {
+        inFlightRef.current.delete(chunkKey)
+      }
+    }, 200), // 200ms throttle delay
+    [filename, scale, dispatch, store, fetch]
+  )
+
+  return streamRange
 }

@@ -49,21 +49,20 @@ export default function ReaderView() {
 
   const viewMode = useSelector(selectPageViewMode)
 
-  const Layout = (() => {
-    switch (viewMode) {
-      case 'double':
-        return DoublePageLayout
-      case 'scroll':
-        return ScrollLayout
-      default:
-        return SinglePageLayout
-    }
-  })()
+const getLayoutComponent = () => {
+  switch (viewMode) {
+    case 'double': return DoublePageLayout
+    case 'scroll': return ScrollLayout
+    default: return SinglePageLayout
+  }
+}
+const Layout = getLayoutComponent()
+
 
   return (
     <Wrapper >
       <ReaderSessionController containerRef={containerRef}>
-        {() => <Layout containerRef={containerRef} />}
+       {() => <Layout key={viewMode} containerRef={containerRef} />}
       </ReaderSessionController>
     </Wrapper>
   )

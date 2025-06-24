@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Hook: useVisiblePages  – ujednolicona wersja dla scroll / single / double
+// Hook: useVisiblePages  – unified for scroll / single / double (optimized)
 //-----------------------------------------------------------------------------
 import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,12 +10,8 @@ import {
   selectTotalPages,
 } from '@/store/selectors/readerSelectors'
 import { selectStreamScale } from '@/store/selectors/streamSelectors'
-import { PRELOAD_OFFSETS, RENDER_OFFSETS } from '@reader/utils/pdfConstants'
+import { RENDER_OFFSETS } from '@reader/utils/pdfConstants'
 
-/**
- * Oblicza listę stron, które mają być **renderowane** (widoczne + bufor).
- * Dla trybu scroll nasłuchuje scrolla z requestAnimationFrame.
- */
 export default function useVisiblePages(containerRef, pageHeight) {
   const dispatch = useDispatch()
   const mode     = useSelector(selectPageViewMode)
@@ -32,11 +28,9 @@ export default function useVisiblePages(containerRef, pageHeight) {
     const { before, after } = RENDER_OFFSETS[mode]
 
     const calcPages = () => {
-      /* --- scroll --------------------------------------------------------- */
       if (mode === 'scroll') {
         const { scrollTop, clientHeight } = el
         const pageH = pageHeight * scale
-
         const firstVis = Math.floor(scrollTop / pageH) + 1
         const lastVis  = Math.floor((scrollTop + clientHeight - 1) / pageH) + 1
 
@@ -48,7 +42,6 @@ export default function useVisiblePages(containerRef, pageHeight) {
         return arr
       }
 
-      /* --- single / double ----------------------------------------------- */
       const step  = mode === 'double' ? 2 : 1
       const last  = Math.min(total, curPage + (step - 1))
       const start = Math.max(1, curPage - before)
@@ -59,20 +52,17 @@ export default function useVisiblePages(containerRef, pageHeight) {
       return arr
     }
 
-    /* --- helper do aktualizacji store ------------------------------------ */
     const update = () => {
       const list = calcPages()
       const prevList = prev.current
-      if (
-        list.length !== prevList.length ||
-        list.some((v, i) => v !== prevList[i])
-      ) {
-        prev.current = list
-        dispatch(setVisiblePages(list))
-      }
+      const changed =
+        list.length !== prevList.length || list.some((v, i) => v !== prevList[i])
+      if (!changed) return
+
+      prev.current = list
+      dispatch(setVisiblePages(list))
     }
 
-    /* --- init + scroll listener ------------------------------------------ */
     update()
 
     if (mode !== 'scroll') return
@@ -86,6 +76,7 @@ export default function useVisiblePages(containerRef, pageHeight) {
       })
     }
     el.addEventListener('scroll', onScroll)
+
     return () => el.removeEventListener('scroll', onScroll)
   }, [containerRef, pageHeight, mode, scale, curPage, total, dispatch])
 }
