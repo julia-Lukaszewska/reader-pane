@@ -1,7 +1,8 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
+import { PDFCanvasViewer } from '../components'
 import { selectVisiblePagesByMode } from '@/store/selectors/readerSelectors'
+
 
 /**
  * SinglePageLayout
@@ -14,7 +15,7 @@ export default function SinglePageLayout({ containerRef }) {
   const pages   = visible.length ? [visible[0]] : []
 
   return (
-    <RenderedPDFViewer
+    <PDFCanvasViewer
       containerRef={containerRef}
       visiblePages={pages}
     />

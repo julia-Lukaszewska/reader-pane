@@ -61,7 +61,7 @@ export default function ReaderView() {
   })()
 
   return (
-    <Wrapper ref={containerRef}>
+    <Wrapper >
       <ReaderSessionController containerRef={containerRef}>
         {() => <Layout containerRef={containerRef} />}
       </ReaderSessionController>

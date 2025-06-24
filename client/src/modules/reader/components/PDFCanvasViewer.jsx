@@ -1,40 +1,35 @@
+//----------------------------------------------------------------------------- 
+// PDFCanvasViewer.jsx – FINAL (streaming logic removed)
+//-----------------------------------------------------------------------------
 /**
- * @file PDFCanvasViewer.jsx
- * @description
- * Universal viewer for rendered PDF pages using canvas.
- * - Supports all view modes (single, double, scroll)
- * - Streams and renders missing page ranges as ImageBitmaps
- * - Uses Redux selectors and BitmapCache
- * - Handles skeletons and canvas cleanup
- *
- * Props:
- * - containerRef (RefObject): optional external scroll container
- * - sidebarOpen (boolean): adjusts width for sidebar
- * - direction (string): layout direction, e.g. 'row' or 'column'
+ * Universal viewer for rendered PDF pages using <canvas>.
+ * • Supports single / double / scroll view modes
+ * • Does not fetch data – streaming is handled by ReaderSessionController
+ * • Displays skeletons until bitmap is available
  */
 
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- 
 // Imports
 //-----------------------------------------------------------------------------
 import React, { useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 
-import useRangeStreamer from '@reader/hooks/useRangeStreamer'
 import useVisiblePages from '@reader/hooks/useVisiblePages'
 import { BitmapCache } from '@reader/utils/bitmapCache'
-import Skeleton from '@/components/Skeleton'
+import Skeleton from '@/components/common/Skeleton'
 
-import { selectVisiblePagesByMode } from '@/store/selectors/readerSelectors'
+import {
+  selectVisiblePagesByMode,
+} from '@/store/selectors/readerSelectors'
 import {
   selectRenderedPages,
   selectStreamScale,
-  selectPreloadedRanges,
 } from '@/store/selectors/streamSelectors'
 import { PAGE_HEIGHT } from '@reader/utils/pdfConstants'
 
-//-----------------------------------------------------------------------------
-// Styled Components
+//----------------------------------------------------------------------------- 
+// Styled components
 //-----------------------------------------------------------------------------
 const ScrollWrapper = styled.div`
   width: ${({ $sidebar }) => ($sidebar ? 'calc(100vw - 20rem)' : '100vw')};
@@ -58,62 +53,32 @@ const Canvas = styled.canvas`
   display: block;
 `
 
-
-
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- 
 // Component
 //-----------------------------------------------------------------------------
-/**
- * PDFCanvasViewer
- * 
- * Displays visible PDF pages using <canvas> and ImageBitmaps.
- * Streams missing ranges dynamically based on visibility.
- *
- * @param {Object} props
- * @param {React.RefObject} [props.containerRef] - Scroll container ref
- * @param {boolean} [props.sidebarOpen=false] - Whether sidebar is open
- * @param {'row'|'column'} [props.direction='row'] - Layout direction
- */
 export default function PDFCanvasViewer({
   containerRef,
   sidebarOpen = false,
   direction = 'row',
 }) {
+  // scroll container (external or internal)
   const wrapper = containerRef ?? useRef(null)
   const pageRefs = useRef({})
 
+  // Redux --------------------------------------------------------------------
   const visiblePages = useSelector(selectVisiblePagesByMode)
   const scale = useSelector(selectStreamScale)
   const scaleKey = scale.toFixed(2)
   const rendered = useSelector(selectRenderedPages)[scaleKey] ?? {}
-  const preloadedRanges = useSelector(selectPreloadedRanges)[scaleKey] ?? []
 
-  const streamRange = useRangeStreamer()
+  // Update visible pages in scroll mode -------------------------------------
   useVisiblePages(wrapper, PAGE_HEIGHT)
 
-  //-----------------------------------------------------------------------------
-  // Streaming: load range if not already preloaded
-  //-----------------------------------------------------------------------------
-  useEffect(() => {
-    if (!visiblePages.length) return
-
-    const first = Math.min(...visiblePages)
-    const last = Math.max(...visiblePages)
-
-    const covered = preloadedRanges.some(([s, e]) => first >= s && last <= e)
-    if (!covered) {
-      const chunkStart = Math.floor((first - 1) / 8) * 8 + 1
-      streamRange([chunkStart, chunkStart + 7])
-    }
-  }, [visiblePages, preloadedRanges, scaleKey, streamRange])
-
-  //-----------------------------------------------------------------------------
-  // Rendering: draw bitmaps to canvas
-  //-----------------------------------------------------------------------------
+  // Draw bitmaps to canvases ------------------------------------------------
   useEffect(() => {
     visiblePages.forEach(page => {
-      const meta = rendered[page]
-      const bmp = meta && BitmapCache.get(meta.bitmapId)
+      const meta   = rendered[page]
+      const bmp    = meta && BitmapCache.get(meta.bitmapId)
       const canvas = pageRefs.current[page]
       if (!canvas) return
 
@@ -123,29 +88,33 @@ export default function PDFCanvasViewer({
         return
       }
 
-      canvas.width = bmp.width
+      canvas.width  = bmp.width
       canvas.height = bmp.height
       ctx.drawImage(bmp, 0, 0)
     })
   }, [visiblePages, rendered, scaleKey])
 
-  //-----------------------------------------------------------------------------
-  // Render
-  //-----------------------------------------------------------------------------
+  // Render -------------------------------------------------------------------
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
         {visiblePages.map(page => {
           const meta = rendered[page]
-          const bmp = meta && BitmapCache.get(meta.bitmapId)
+          const bmp  = meta && BitmapCache.get(meta.bitmapId)
 
-          return (
+          return bmp ? (
             <Canvas
               key={page}
               ref={el => (pageRefs.current[page] = el)}
-              width={bmp?.width || 1}
-              height={bmp?.height || 1}
+              width={bmp.width}
+              height={bmp.height}
               data-page={page}
+            />
+          ) : (
+            <Skeleton
+              key={page}
+              width={PAGE_HEIGHT * scale * 0.75}
+              height={PAGE_HEIGHT * scale}
             />
           )
         })}

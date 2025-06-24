@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
+import { PDFCanvasViewer } from '../components'
 import {
   selectVisiblePagesByMode,
   selectCurrentPage,
@@ -27,7 +27,7 @@ export default function DoublePageLayout({ containerRef }) {
   const scale   = String(useSelector(selectStreamScale))
   const rendered= useSelector(selectRenderedPages)[scale] ?? {}
 
-  /* — wybór max dwóch stron — */
+
   let pages = visible.slice(0, 2)
 
   if (pages.length === 2) {
@@ -36,12 +36,12 @@ export default function DoublePageLayout({ containerRef }) {
     const bmpB   = rendered[b] && BitmapCache.get(rendered[b].bitmapId)
 
     if (orient(bmpA) !== orient(bmpB)) {
-      pages = [a]               // inna orientacja ⇒ tylko pierwsza
+      pages = [a]       
     }
   }
 
   return (
-    <RenderedPDFViewer
+    <PDFCanvasViewer
       containerRef={containerRef}
       visiblePages={pages}
     />

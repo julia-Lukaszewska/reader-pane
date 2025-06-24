@@ -14,6 +14,7 @@
 // Imports
 //-----------------------------------------------------------------------------
 import { useLazyFetchPageRangeQuery } from '@/store/api/pdfStreamApi'
+import { useCallback, useRef } from 'react'
 import { useDispatch, useSelector, useStore } from 'react-redux'
 
 import {
@@ -40,58 +41,61 @@ import { selectFileUrl } from '@/store/selectors/readerSelectors'
  * @returns {(range: [number, number]) => Promise<void>}
  */
 export default function useRangeStreamer() {
-  const dispatch = useDispatch()
-  const store = useStore()
-  const scale = useSelector(s => s.stream.scale)
-  const fileUrl = useSelector(selectFileUrl)
-  const filename = fileUrl ? fileUrl.split('/').pop() : null
+  const dispatch  = useDispatch()
+  const store     = useStore()
+  const scale     = useSelector(s => s.stream.scale)
+  const fileUrl   = useSelector(selectFileUrl)
+  const filename  = fileUrl ? fileUrl.split('/').pop() : null
+
   const [fetch] = useLazyFetchPageRangeQuery()
 
-  /**
-   * Streams and renders a page range.
-   * - If the chunk is already present in preloadedRanges, does nothing.
-   *
-   * @param {[number, number]} range - Tuple with start and end page (inclusive)
-   */
-  return async ([start, end]) => {
-    if (!filename) {
-      dispatch(setError('File URL missing'))
-      return
-    }
+  // Prevents duplicate concurrent requests
+  const inFlightRef = useRef(new Set())
 
-    const scaleKey = scale.toFixed(2)
-    const preloaded = store.getState().stream.preloadedRanges[scaleKey] ?? []
+  return useCallback(
+    async ([start, end]) => {
+      if (!filename) { dispatch(setError('File URL missing')); return }
 
-    // Skip if this chunk is already preloaded
-    if (preloaded.some(([s, e]) => s === start && e === end)) return
+      const scaleKey   = scale.toFixed(2)
+      const chunkKey   = `${scaleKey}-${start}`
+      const preloaded  =
+        store.getState().stream.preloadedRanges[scaleKey] ?? []
 
-    try {
-      dispatch(setStreamStatus('streaming'))
-      dispatch(setCurrentRange([start, end]))
+      if (preloaded.some(([s, e]) => s === start && e === end) ||
+          inFlightRef.current.has(chunkKey)) return
 
-      // Step 1: Fetch PDF fragment as Blob
-      const { data: blob } = await fetch({ filename, start, end })
-      if (!(blob instanceof Blob)) throw new Error('Invalid blob received')
+      inFlightRef.current.add(chunkKey)
 
-      // Step 2: Render pages to bitmaps
-      const pages = await pdfjsRenderToBitmaps(blob, { scale, start, end })
+      try {
+        dispatch(setStreamStatus('streaming'))
+        // **REMOVED**: dispatch(setCurrentRange([start, end]))
 
-      pages.forEach(({ pageNumber, bitmap }) => {
-        const id = uuid()
-        BitmapCache.put(id, bitmap)
-        dispatch(addRenderedPage({ scale: scaleKey, pageNumber, bitmapId: id }))
-      })
+        // 1) Fetch the page range
+        const { data: blob } = await fetch({ filename, start, end })
+        if (!(blob instanceof Blob)) throw new Error('Invalid blob received')
 
-      // Step 3: Register the chunk in Redux
-      dispatch(addPreloadedRange({ scale: scaleKey, range: [start, end] }))
-      dispatch(registerChunk({ scale: scaleKey, range: [start, end] }))
+        // 2) Render to bitmaps
+        const pages = await pdfjsRenderToBitmaps(blob, { scale, start, end })
+        pages.forEach(({ pageNumber, bitmap }) => {
+          const id = uuid()
+          BitmapCache.put(id, bitmap)
+          dispatch(addRenderedPage({ scale: scaleKey, pageNumber, bitmapId: id }))
+        })
 
-      dispatch(setLastLoadedAt(Date.now()))
-      dispatch(setStreamStatus('idle'))
-    } catch (err) {
-      console.error('[Streamer] error', err)
-      dispatch(setError(err.message || 'stream error'))
-      dispatch(setStreamStatus('error'))
-    }
-  }
+        // 3) Register in LRU
+        dispatch(addPreloadedRange({ scale: scaleKey, range: [start, end] }))
+        dispatch(registerChunk   ({ scale: scaleKey, range: [start, end] }))
+
+        dispatch(setLastLoadedAt(Date.now()))
+        dispatch(setStreamStatus('idle'))
+      } catch (err) {
+        console.error('[Streamer] error', err)
+        dispatch(setError(err.message || 'stream error'))
+        dispatch(setStreamStatus('error'))
+      } finally {
+        inFlightRef.current.delete(chunkKey)
+      }
+    },
+    [filename, scale, dispatch, store, fetch]
+  )
 }

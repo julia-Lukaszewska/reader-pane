@@ -72,7 +72,7 @@ export default function ReaderSessionController({ children, containerRef }) {
   useVisiblePages(containerRef, 792)
 
   // Stable reference to range streamer
-  const streamRangeRef = useRef(useRangeStreamer())
+const streamRange = useRangeStreamer()
 
   // Cache of streamed keys
   const queuedRef = useRef(new Set())
@@ -116,7 +116,7 @@ export default function ReaderSessionController({ children, containerRef }) {
       if (queuedRef.current.has(key)) return
 
       queuedRef.current.add(key)
-      streamRangeRef.current([start, start + CHUNK_SIZE - 1])
+      streamRange([start, start + CHUNK_SIZE - 1])
     })
   }, [
     ready,

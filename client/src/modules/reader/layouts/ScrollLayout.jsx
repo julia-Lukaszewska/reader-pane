@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
+import { PDFCanvasViewer } from '../components'
 import { selectVisiblePagesByMode } from '@/store/selectors/readerSelectors'
 
 /**
@@ -13,7 +13,7 @@ export default function ScrollLayout({ containerRef }) {
   const visible = useSelector(selectVisiblePagesByMode)
 
   return (
-    <RenderedPDFViewer
+    <PDFCanvasViewer
       containerRef={containerRef}
       visiblePages={visible}
       direction="column"
