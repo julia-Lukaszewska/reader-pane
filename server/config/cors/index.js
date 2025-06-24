@@ -10,7 +10,7 @@
  *   import { getCorsOptions } from './config/cors/index.js';
  *   app.use(cors(getCorsOptions()));
  */
-  
+
 //-----------------------------------------------------
 //------ Whitelist Definitions
 //-----------------------------------------------------
@@ -25,20 +25,13 @@ const WHITELIST = {
   production: [
     'https://reader-pane.vercel.app',             // build
     'https://reader-pane-main.vercel.app',        // main
-    /^https:\/\/reader-pane(-[\w-]+)?\.vercel\.app$/,
+    /^https:\/\/reader-pane(-[\w-]+)?\.vercel\.app$/, // wildcard subdomains
   ],
 }
 
 //-----------------------------------------------------
 //------ Environment Normalization
 //-----------------------------------------------------
-/**
- * @function normalizeEnv
- * @description Normalize common environment aliases to one of:
- *   'development', 'staging', 'production'
- * @param {string} env
- * @returns {string}
- */
 function normalizeEnv(env) {
   if (!env) return 'development'
   const alias = env.toLowerCase()
@@ -51,38 +44,28 @@ function normalizeEnv(env) {
 //-----------------------------------------------------
 //------ CORS Options Builder
 //-----------------------------------------------------
-/**
- * @function getCorsOptions
- * @description Build CORS options for Express `cors()` middleware.
- *   - Validates `origin` against the whitelist for the given environment
- *   - Logs allow/block decisions
- * @param {string} [env=process.env.NODE_ENV] - Current NODE_ENV or branch
- * @returns {import('cors').CorsOptions}
- */
 export function getCorsOptions(env = process.env.NODE_ENV) {
   const normalized = normalizeEnv(env)
   const allowed = WHITELIST[normalized] || []
 
   return {
     origin(origin, callback) {
-      console.log('[CORS] Request from:', origin)
-      const isAllowed = !origin || allowed.some(rule =>
-        typeof rule === 'string'
-          ? rule === origin
-          : rule.test(origin)
+      const isAllowed = origin && allowed.some(rule =>
+        typeof rule === 'string' ? rule === origin : rule.test(origin)
       )
 
-      if (isAllowed) {
-        console.log('[CORS] Allowed')
-        return callback(null, true)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[CORS] Request from:', origin)
+        console.log(`[CORS] ${isAllowed ? 'Allowed' : 'Blocked'} origin`)
       }
 
-      console.warn('[CORS] Blocked origin:', origin)
-      return callback(new Error('Not allowed by CORS'))
+      return isAllowed
+        ? callback(null, true)
+        : callback(new Error('Not allowed by CORS'))
     },
     credentials: true,
-    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS','HEAD'],
-    allowedHeaders: ['Content-Type','Authorization','Range'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Range'],
     exposedHeaders: [
       'Accept-Ranges',
       'Content-Range',
