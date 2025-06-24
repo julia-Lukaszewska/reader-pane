@@ -43,14 +43,15 @@ export default function ReaderSessionController({ children, containerRef }) {
   const currentPage  = useSelector(selectCurrentPage)
   const mode         = useSelector(selectPageViewMode)
 
-  useEffect(() => {
-    if (!ready || !visiblePages.length) return
+    useEffect(() => {
+    if (!ready) return;
 
-    const pivot = mode === 'scroll'
-      ? Math.min(...visiblePages)  // scroll → first visible page
-      : currentPage                // single / double → current page
+    const fallbackPivot = currentPage
+    const pivot = visiblePages.length
+      ? (mode === 'scroll' ? Math.min(...visiblePages) : currentPage)
+      : fallbackPivot;
 
-    const range = getRangeAround(pivot, CHUNK_SIZE)
+    const range = getRangeAround(pivot, CHUNK_SIZE);
 
     if (
       !currentRange ||
@@ -60,6 +61,7 @@ export default function ReaderSessionController({ children, containerRef }) {
       dispatch(setCurrentRange(range))
     }
   }, [ready, visiblePages, currentRange, dispatch, mode, currentPage])
+
 
   /* --- trigger preloading of adjacent chunks ---------------------------- */
   usePreloadController()

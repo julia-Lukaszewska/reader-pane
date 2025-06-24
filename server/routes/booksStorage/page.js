@@ -20,6 +20,9 @@ router.get('/:filename/page/:num', cors(corsOptions), checkBookOwner, async (req
     res.send(img)
   } catch (err) {
     console.error('[PAGE IMG ERROR]', err)
+        if (err?.status === 400) {
+      return res.status(400).json({ error: err.message })
+    }
     res.status(500).json({ error: 'Failed to render page image' })
   }
 })

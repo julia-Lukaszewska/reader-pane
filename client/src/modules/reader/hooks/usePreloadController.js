@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// src/modules/reader/hooks/usePreloadController.js – optimized version
+// src/modules/reader/hooks/usePreloadController.js – final optimized version
 //-----------------------------------------------------------------------------
 import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
@@ -30,23 +30,21 @@ export default function usePreloadController() {
 
     const targets = new Set()
     activeChunks.forEach(start => {
-      if (start - CHUNK_SIZE >= 1) targets.add(start - CHUNK_SIZE)
-      targets.add(start)
-      targets.add(start + CHUNK_SIZE)
+      if (start - CHUNK_SIZE >= 1) targets.add(start - CHUNK_SIZE) // previous
+      targets.add(start)                                           // current
+      targets.add(start + CHUNK_SIZE)                              // next
     })
 
     const prioritized = Array.from(targets).map(start => {
-      const priority = activeChunks.has(start)
-        ? 0
-        : activeChunks.has(start - CHUNK_SIZE) || activeChunks.has(start + CHUNK_SIZE)
-        ? 1
-        : 2
-      return { start, priority }
+      if (activeChunks.has(start)) return { start, priority: 0 }              // current
+      if (activeChunks.has(start - CHUNK_SIZE)) return { start, priority: 1 } // next
+      if (activeChunks.has(start + CHUNK_SIZE)) return { start, priority: 2 } // previous
+      return { start, priority: 3 }                                           // other
     })
 
     prioritized
       .sort((a, b) => a.priority - b.priority)
-      .slice(0, 4) // limit to 4 chunks per cycle
+      .slice(0, 3) // limit to 3 chunk fetches per cycle
       .forEach(({ start }) => {
         const key = `${scale}-${start}`
         if (queuedRef.current.has(key)) return

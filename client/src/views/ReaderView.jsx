@@ -61,9 +61,9 @@ const Layout = getLayoutComponent()
 
   return (
     <Wrapper >
-      <ReaderSessionController containerRef={containerRef}>
-       {() => <Layout key={viewMode} containerRef={containerRef} />}
-      </ReaderSessionController>
+<ReaderSessionController containerRef={containerRef}>
+    {({ containerRef }) => <Layout key={viewMode} containerRef={containerRef} />}
+</ReaderSessionController>
     </Wrapper>
   )
 }

@@ -21,6 +21,6 @@ export async function extractPdfMetadata(bufferOrPath) {
     const rotation = page.rotate
     pages.push({ pageNumber: i, width, height, rotation, dpi: 72 })
   }
-
+await doc.destroy()
   return pages
 }

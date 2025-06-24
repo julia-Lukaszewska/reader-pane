@@ -2,21 +2,6 @@
  * @file src/store/reader/streamSlice.js
  * @description
  * Redux slice for managing PDF streaming state in the reader module.
- *
- * Responsibilities:
- * - Maintains information about:
- *   • current range of pages being rendered
- *   • visible pages in viewport (based on scroll/view mode)
- *   • rendered ImageBitmap cache (by scale)
- *   • preloaded page chunks with LRU memory eviction
- *   • pending render queue (used for background rendering)
- *   • current zoom level, stream status, and loading metadata
- *
- * Used by:
- * - ReaderSessionController (streaming control)
- * - useRangeStreamer (stream chunk management)
- * - useVisiblePages (updates visible pages)
- * - PDF rendering components (canvas logic)
  */
 
 import { createSlice } from '@reduxjs/toolkit'
@@ -35,15 +20,15 @@ const INITIAL_SCALE_INDEX = 2 // corresponds to ZOOM_LEVELS[2]
 // Initial State
 //-----------------------------------------------------------------------------
 const initialState = {
-  currentRange: null,            // Active chunk range [start, end]
-  visiblePages: [],              // Page numbers visible in the viewport
+  currentRange: null,
+  visiblePages: [],
 
-  renderedPages: {},             // { '1.00': { 9: { bitmapId, status }, ... } }
-  preloadedRanges: {},           // { '1.00': [[1,8],[9,16],...] }
+  renderedPages: {},
+  preloadedRanges: {},
 
-  pendingRenderQueue: [],        // Pages scheduled for bitmap rendering
+  pendingRenderQueue: [],
 
-  streamStatus: 'idle',          // 'idle' | 'streaming' | 'waiting' | 'error'
+  streamStatus: 'idle',
   scaleIndex: INITIAL_SCALE_INDEX,
   scale: ZOOM_LEVELS[INITIAL_SCALE_INDEX],
 
@@ -117,6 +102,9 @@ const streamSlice = createSlice({
         q => !(q.scale === scale && q.pageNumber === pageNumber)
       )
     },
+    clearRenderQueue(state) {
+      state.pendingRenderQueue = []
+    },
 
     // Zoom state
     setScaleIndex(state, { payload }) {
@@ -141,7 +129,12 @@ const streamSlice = createSlice({
     },
 
     // Reset state (e.g. on unmount)
-    resetStreamState: () => initialState,
+   resetStreamState(state) {
+  BitmapCache.gc()
+  Object.assign(state, initialState)
+}
+
+    
   },
 })
 
@@ -160,6 +153,7 @@ export const {
 
   addToRenderQueue,
   removeFromRenderQueue,
+  clearRenderQueue,
 
   setScaleIndex,
   setScale,

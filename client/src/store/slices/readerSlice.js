@@ -75,9 +75,7 @@ const readerSlice = createSlice({
       state.totalPages = 1
       state.pageViewMode = 'single'
 
-      state.renderedRanges = {}
-      state.scaleIndex = 2
-      state.fullPageFitScale = null
+
     },
   },
 })

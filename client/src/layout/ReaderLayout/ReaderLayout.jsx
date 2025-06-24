@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux'
 import { resetReaderState } from '@/store/slices/readerSlice'
 import { ReaderToolbar } from '@reader/ReaderToolbar'
 import ReaderView from '@/views/ReaderView'
-
+import { resetStreamState, clearRenderQueue } from '@/store/slices/streamSlice'
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
@@ -44,6 +44,8 @@ const ReaderLayout = () => {
   useEffect(() => {
     return () => {
       dispatch(resetReaderState())
+      dispatch(clearRenderQueue())
+          dispatch(resetStreamState())
     }
   }, [dispatch])
 

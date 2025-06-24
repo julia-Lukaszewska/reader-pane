@@ -77,3 +77,8 @@ export const selectVisibleBitmapPages = createSelector(
       })
       .filter(Boolean)
 )
+/** Returns true if currentRange is defined and non-empty */
+export const selectIsRangeReady = createSelector(
+  [selectCurrentRange],
+  (range) => Array.isArray(range) && range.length === 2 && range[0] <= range[1]
+)

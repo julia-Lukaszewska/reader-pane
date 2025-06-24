@@ -27,6 +27,11 @@ export async function renderPageImage(filename, pageNum, scale = 1) {
 
   const buffer = await getGridFSFileBuffer(filename)
   const pdf = await getDocument({ data: new Uint8Array(buffer) }).promise
+    if (!Number.isFinite(pageNum) || !Number.isInteger(pageNum) || pageNum < 1 || pageNum > pdf.numPages) {
+    const err = new Error('Page number out of range')
+    err.status = 400
+    throw err
+  }
   const page = await pdf.getPage(pageNum)
   const viewport = page.getViewport({ scale })
   const canvas = createCanvas(viewport.width, viewport.height)
@@ -36,6 +41,6 @@ export async function renderPageImage(filename, pageNum, scale = 1) {
 
   cache.set(key, { buffer: out, ts: now, last: now })
   evictIfNeeded()
-
+await pdf.destroy()
   return out
 }

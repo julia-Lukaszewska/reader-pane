@@ -41,7 +41,3 @@ export const RENDER_OFFSETS = {
   double: { before: 4, after: 4 },
   scroll: { before: 2, after: 2 },
 }
-//-----------------------------------------------------------------------------
-// Default unscaled height of A4 page at 72 DPI
-//-----------------------------------------------------------------------------
-export const PAGE_HEIGHT = 842

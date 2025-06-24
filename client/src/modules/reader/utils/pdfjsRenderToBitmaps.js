@@ -34,7 +34,7 @@ if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
 //-----------------------------------------------------------------------------
 export default async function pdfjsRenderToBitmaps(
   blob,
-  { scale = 1.0, start, end }
+  { scale = 0.6, start, end }
 ) {
   const arrayBuffer = await blob.arrayBuffer()
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
@@ -72,6 +72,7 @@ export default async function pdfjsRenderToBitmaps(
     )
   }
 
-  // Execute rendering in parallel
-  return Promise.all(tasks)
+  const results = await Promise.all(tasks)
+  await pdf.destroy()
+  return results
 }

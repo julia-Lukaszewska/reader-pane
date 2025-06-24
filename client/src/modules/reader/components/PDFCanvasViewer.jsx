@@ -44,7 +44,7 @@ export default function PDFCanvasViewer({
 }) {
   const wrapper = containerRef ?? useRef(null)
   const pageRefs = useRef({})
-
+console.log('visiblePages:', visiblePages)
   const scale = useSelector(selectStreamScale)
   const scaleKey = scale.toFixed(2)
   const renderedRaw = useSelector(selectRenderedPages)
