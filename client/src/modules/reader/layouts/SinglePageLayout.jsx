@@ -1,18 +1,15 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { PDFCanvasViewer } from '../components'
+
 import { selectVisiblePagesByMode } from '@/store/selectors/readerSelectors'
 
-
 /**
- * SinglePageLayout
- * ----------------
- * Renderuje wyłącznie pierwszą stronę z listy visiblePagesByMode
- * (w trybie 'single' to dokładnie bieżąca strona).
+ * “Single” mode – renders only the first page from the visiblePages array.
  */
 export default function SinglePageLayout({ containerRef }) {
-  const visible = useSelector(selectVisiblePagesByMode)
-  const pages   = visible.length ? [visible[0]] : []
+  const visiblePages = useSelector(selectVisiblePagesByMode)
+  const pages = visiblePages.length ? [visiblePages[0]] : []
 
   return (
     <PDFCanvasViewer

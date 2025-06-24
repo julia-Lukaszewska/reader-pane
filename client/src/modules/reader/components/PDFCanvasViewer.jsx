@@ -1,43 +1,24 @@
-//----------------------------------------------------------------------------- 
-// PDFCanvasViewer.jsx – NO-SKELETON VERSION
-//----------------------------------------------------------------------------- 
-/**
- * Universal viewer for rendered PDF pages using <canvas>.
- * • Obsługuje single / double / scroll
- * • Nie pobiera danych – streaming w ReaderSessionController
- * • Zawsze renderuje <canvas>; brak osobnego komponentu Skeleton.
- */
-
-//----------------------------------------------------------------------------- 
-// Imports
+//-----------------------------------------------------------------------------
+// PDFCanvasViewer – simplified version (visiblePages passed in via props)
 //-----------------------------------------------------------------------------
 import React, { useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 
-import useVisiblePages from '@reader/hooks/useVisiblePages'
 import { BitmapCache } from '@reader/utils/bitmapCache'
-
-import {
-  selectVisiblePagesByMode,
-  selectTotalPages,
-} from '@/store/selectors/readerSelectors'
 import {
   selectRenderedPages,
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
 import { PAGE_HEIGHT } from '@reader/utils/pdfConstants'
 
-//----------------------------------------------------------------------------- 
-// Styled components
-//-----------------------------------------------------------------------------
+/* --- styled components ---------------------------------------------------- */
 const ScrollWrapper = styled.div`
   width: ${({ $sidebar }) => ($sidebar ? 'calc(100vw - 20rem)' : '100vw')};
   height: calc(100vh - 17vh);
   overflow: auto;
   padding: 2rem;
 `
-
 const PagesContainer = styled.div`
   display: flex;
   flex-direction: ${({ $dir }) => $dir};
@@ -46,39 +27,30 @@ const PagesContainer = styled.div`
   min-height: 100%;
   gap: 0.3rem;
 `
-
 const Canvas = styled.canvas`
   margin: 1rem;
   object-fit: contain;
   display: block;
-  background: var(--bg-paper, #fff); /* jednolite tło zamiast skeletona */
-  box-shadow: 0 0 4px rgba(0,0,0,.15);
+  background: var(--bg-paper, #fff);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 `
 
-//----------------------------------------------------------------------------- 
-// Component
-//-----------------------------------------------------------------------------
+/* --- component ------------------------------------------------------------ */
 export default function PDFCanvasViewer({
   containerRef,
+  visiblePages,          // ← provided by the layout component
   sidebarOpen = false,
-  direction = 'row',
+  direction   = 'row',
 }) {
-  const wrapper   = containerRef ?? useRef(null)
-  const pageRefs  = useRef({})
+  const wrapper  = containerRef ?? useRef(null)
+  const pageRefs = useRef({})
 
-  // Redux --------------------------------------------------------------------
-  const visiblePages = useSelector(selectVisiblePagesByMode)
-  const totalPages   = useSelector(selectTotalPages)
-  const scale        = useSelector(selectStreamScale)
-  const scaleKey     = scale.toFixed(2)
-  const rendered     = useSelector(selectRenderedPages)[scaleKey] ?? {}
+  /* --- Redux (bitmaps & scale) ------------------------------------------- */
+  const scale    = useSelector(selectStreamScale)
+  const scaleKey = scale.toFixed(2)
+  const rendered = useSelector(selectRenderedPages)[scaleKey] ?? {}
 
-  // aktualizacja widocznych stron w scroll-mode ------------------------------
-  useVisiblePages(wrapper, PAGE_HEIGHT)
-
-  //---------------------------------------------------------------------------
-  // Draw bitmaps to canvases
-  //---------------------------------------------------------------------------
+  /* --- draw bitmaps on canvas ------------------------------------------- */
   useEffect(() => {
     visiblePages.forEach(page => {
       const meta   = rendered[page]
@@ -88,7 +60,7 @@ export default function PDFCanvasViewer({
 
       const ctx = canvas.getContext('2d')
       if (!bmp) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.clearRect(0, 0, canvas.width, canvas.height) // nothing rendered yet
         return
       }
 
@@ -96,18 +68,16 @@ export default function PDFCanvasViewer({
       canvas.height = bmp.height
       ctx.drawImage(bmp, 0, 0)
     })
-  }, [visiblePages, rendered, scaleKey])
+  }, [visiblePages, rendered])
 
-  //---------------------------------------------------------------------------
-  // Render
-  //---------------------------------------------------------------------------
-  const placeholderW = PAGE_HEIGHT * scale * 0.75 // A4 ratio ~0.707, zaokrąglone
+  /* --- placeholder dimensions ------------------------------------------- */
+  const placeholderW = PAGE_HEIGHT * scale * 0.75 // A4 aspect ~0.707
   const placeholderH = PAGE_HEIGHT * scale
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
-        {pages.map(page => {
+        {visiblePages.map(page => {
           const meta = rendered[page]
           const bmp  = meta && BitmapCache.get(meta.bitmapId)
 

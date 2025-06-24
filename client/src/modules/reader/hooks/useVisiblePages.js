@@ -1,108 +1,91 @@
-/**
- * @file src/modules/reader/hooks/useVisiblePages.js
- * @description
- * Hook for tracking which PDF pages are visible in a scrollable container.
- * Emits an array of visible page numbers (with buffer) to Redux streamSlice.
- * 
- * - Works only in scroll mode
- * - Automatically adjusts for zoom (scale)
- * - Emits updates only if the visible range changes
- * 
- * Buffer configuration (from PRELOAD_OFFSETS):
- * - scroll mode: ±6 pages
- * - single-page view: ±4 pages
- * - double-page view: ±6 pages
- */
-
-//-----------------------------------------------
-// Imports
-//-----------------------------------------------
+//-----------------------------------------------------------------------------
+// Hook: useVisiblePages  – ujednolicona wersja dla scroll / single / double
+//-----------------------------------------------------------------------------
 import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setVisiblePages } from '@/store/slices/streamSlice'
-import { PRELOAD_OFFSETS } from '@reader/utils/pdfConstants'
+import {
+  selectPageViewMode,
+  selectCurrentPage,
+  selectTotalPages,
+} from '@/store/selectors/readerSelectors'
+import { selectStreamScale } from '@/store/selectors/streamSelectors'
+import { PRELOAD_OFFSETS, RENDER_OFFSETS } from '@reader/utils/pdfConstants'
 
-//---------------------------------------------
-// Hook: useVisiblePages
-//-------------------------------------------------
 /**
- * Tracks visible page numbers in a scrolling container and dispatches to Redux.
- *
- * @param {React.RefObject} containerRef - Ref to the scrolling container element
- * @param {number} pageHeight - Original height of a single PDF page (before scaling)
+ * Oblicza listę stron, które mają być **renderowane** (widoczne + bufor).
+ * Dla trybu scroll nasłuchuje scrolla z requestAnimationFrame.
  */
 export default function useVisiblePages(containerRef, pageHeight) {
   const dispatch = useDispatch()
-  const scale = useSelector(s => s.stream.scale)
-  const mode = useSelector(s => s.reader.pageViewMode)
-  const current = useSelector(s => s.reader.currentPage)
-  const total = useSelector(s => s.reader.totalPages)
-  const prevRef = useRef([])
+  const mode     = useSelector(selectPageViewMode)
+  const scale    = useSelector(selectStreamScale)
+  const curPage  = useSelector(selectCurrentPage)
+  const total    = useSelector(selectTotalPages)
+
+  const prev = useRef([])
 
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
 
-    const { before, after } = PRELOAD_OFFSETS[mode]
+    const { before, after } = RENDER_OFFSETS[mode]
 
-    /**
-     * Computes visible pages with buffer based on scroll position and zoom scale.
-     * 
-     * @returns {number[]} Array of visible page numbers
-     */
-    const calcVisible = () => {
-
+    const calcPages = () => {
+      /* --- scroll --------------------------------------------------------- */
       if (mode === 'scroll') {
         const { scrollTop, clientHeight } = el
         const pageH = pageHeight * scale
-        const first = Math.max(1, Math.floor(scrollTop / pageH) + 1 - before)
-        const last = Math.floor((scrollTop + clientHeight - 1) / pageH) + 1 + after
+
+        const firstVis = Math.floor(scrollTop / pageH) + 1
+        const lastVis  = Math.floor((scrollTop + clientHeight - 1) / pageH) + 1
+
+        const start = Math.max(1, firstVis - before)
+        const end   = Math.min(total, lastVis + after)
+
         const arr = []
-        for (let p = first; p <= last; p++) arr.push(p)
+        for (let p = start; p <= end; p++) arr.push(p)
         return arr
       }
 
-      const start = Math.max(1, current - before)
-      let end = Math.min(total, current + after)
-      if (mode === 'double') end = Math.min(total, end + 1)
+      /* --- single / double ----------------------------------------------- */
+      const step  = mode === 'double' ? 2 : 1
+      const last  = Math.min(total, curPage + (step - 1))
+      const start = Math.max(1, curPage - before)
+      const end   = Math.min(total, last + after)
 
       const arr = []
-for (let p = start; p <= end; p++) arr.push(p)
+      for (let p = start; p <= end; p++) arr.push(p)
       return arr
     }
 
-   if (mode === 'scroll') {
-      let ticking = false
-      const onScroll = () => {
-        if (ticking) return
-        ticking = true
-        requestAnimationFrame(() => {
-          ticking = false
-          const visible = calcVisible()
-          const prev = prevRef.current
-          if (
-            visible.length !== prev.length ||
-            visible.some((v, i) => v !== prev[i])
-          ) {
-            prevRef.current = visible
-            dispatch(setVisiblePages(visible))
-          }
-        })
+    /* --- helper do aktualizacji store ------------------------------------ */
+    const update = () => {
+      const list = calcPages()
+      const prevList = prev.current
+      if (
+        list.length !== prevList.length ||
+        list.some((v, i) => v !== prevList[i])
+      ) {
+        prev.current = list
+        dispatch(setVisiblePages(list))
       }
-
-      onScroll()
-      el.addEventListener('scroll', onScroll)
-      return () => el.removeEventListener('scroll', onScroll)
- }
-
-    const visible = calcVisible()
-    const prev = prevRef.current
-    if (
-      visible.length !== prev.length ||
-      visible.some((v, i) => v !== prev[i])
-    ) {
-      prevRef.current = visible
-      dispatch(setVisiblePages(visible))
     }
-  }, [containerRef, pageHeight, scale, mode, current, total, dispatch])
+
+    /* --- init + scroll listener ------------------------------------------ */
+    update()
+
+    if (mode !== 'scroll') return
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        ticking = false
+        update()
+      })
+    }
+    el.addEventListener('scroll', onScroll)
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [containerRef, pageHeight, mode, scale, curPage, total, dispatch])
 }
