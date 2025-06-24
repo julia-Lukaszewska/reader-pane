@@ -14,4 +14,5 @@ export { default as useStartingPage } from './useStartingPage' //Set starting pa
 
 export { default as usePdfMetadata } from './usePdfMetadata'
 
-export {default as usePageViewMode} from './usePageViewMode'
+export { default as usePageViewMode } from './usePageViewMode'
+export { default as useSaveProgress } from './useSaveProgress'

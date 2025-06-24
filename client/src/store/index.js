@@ -65,7 +65,7 @@ const bookPersistConfig = {
 const readerPersistConfig = {
   key: 'reader',
   storage,
-  whitelist: ['scaleIndex'],
+  whitelist: ['scaleIndex', 'currentPage', 'totalPages'],
 }
 
 /**
