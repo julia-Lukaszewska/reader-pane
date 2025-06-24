@@ -1,11 +1,22 @@
 import React from 'react'
-import RenderedPDFViewer from '../components/RenderedPDFViewer'
+import { useSelector } from 'react-redux'
+import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
+import { selectVisiblePagesByMode } from '@/store/selectors/readerSelectors'
 
 /**
- * Layout for displaying a single PDF page.
- * Simply forwards the first visible page to RenderedPDFViewer.
+ * SinglePageLayout
+ * ----------------
+ * Renderuje wyłącznie pierwszą stronę z listy visiblePagesByMode
+ * (w trybie 'single' to dokładnie bieżąca strona).
  */
-export default function SinglePageLayout({ containerRef, visiblePages = [] }) {
-  const page = visiblePages.length > 0 ? [visiblePages[0]] : []
-  return <RenderedPDFViewer containerRef={containerRef} visiblePages={page} />
+export default function SinglePageLayout({ containerRef }) {
+  const visible = useSelector(selectVisiblePagesByMode)
+  const pages   = visible.length ? [visible[0]] : []
+
+  return (
+    <RenderedPDFViewer
+      containerRef={containerRef}
+      visiblePages={pages}
+    />
+  )
 }

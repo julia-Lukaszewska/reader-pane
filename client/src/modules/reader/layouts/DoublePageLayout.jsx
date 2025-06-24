@@ -1,26 +1,49 @@
 import React from 'react'
-import RenderedPDFViewer from '../components/RenderedPDFViewer'
+import { useSelector } from 'react-redux'
+import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
+import {
+  selectVisiblePagesByMode,
+  selectCurrentPage,
+  selectTotalPages,
+} from '@/store/selectors/readerSelectors'
+import {
+  selectRenderedPages,
+  selectStreamScale,
+} from '@/store/selectors/streamSelectors'
+import { BitmapCache } from '@reader/utils/bitmapCache'
 
-function getOrientation(meta) {
-  if (!meta) return 'portrait'
-  return meta.width >= meta.height ? 'landscape' : 'portrait'
-}
+/* helper: portrait / landscape */
+const orient = (bmp) =>
+  bmp && bmp.width >= bmp.height ? 'landscape' : 'portrait'
 
 /**
- * Layout for displaying two pages side by side.
- * If the orientations of the two pages differ, fallback to single page.
+ * DoublePageLayout
+ * ----------------
+ * Pokazuje dwie sąsiadujące strony obok siebie.
+ * Gdy bitmapy mają różną orientację – wraca do pojedynczej.
  */
-export default function DoublePageLayout({ containerRef, visiblePages = [], metadata }) {
-  let pages = visiblePages
+export default function DoublePageLayout({ containerRef }) {
+  const visible = useSelector(selectVisiblePagesByMode)     // [1,2,…]
+  const scale   = String(useSelector(selectStreamScale))
+  const rendered= useSelector(selectRenderedPages)[scale] ?? {}
 
-  if (visiblePages.length === 2 && Array.isArray(metadata)) {
-    const [a, b] = visiblePages
-    const metaA = metadata[a.pageNumber - 1]
-    const metaB = metadata[b.pageNumber - 1]
-    if (metaA && metaB && getOrientation(metaA) !== getOrientation(metaB)) {
-      pages = [a] // mismatch orientation -> show only first page
+  /* — wybór max dwóch stron — */
+  let pages = visible.slice(0, 2)
+
+  if (pages.length === 2) {
+    const [a, b] = pages
+    const bmpA   = rendered[a] && BitmapCache.get(rendered[a].bitmapId)
+    const bmpB   = rendered[b] && BitmapCache.get(rendered[b].bitmapId)
+
+    if (orient(bmpA) !== orient(bmpB)) {
+      pages = [a]               // inna orientacja ⇒ tylko pierwsza
     }
   }
 
-  return <RenderedPDFViewer containerRef={containerRef} visiblePages={pages} />
+  return (
+    <RenderedPDFViewer
+      containerRef={containerRef}
+      visiblePages={pages}
+    />
+  )
 }

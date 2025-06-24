@@ -1,124 +1,173 @@
-// src/store/reader/streamSlice.js
+/**
+ * @file src/store/reader/streamSlice.js
+ * @description
+ * Redux slice for managing PDF streaming state in the reader module.
+ *
+ * Responsibilities:
+ * - Maintains information about:
+ *   • current range of pages being rendered
+ *   • visible pages in viewport (based on scroll/view mode)
+ *   • rendered ImageBitmap cache (by scale)
+ *   • preloaded page chunks with LRU memory eviction
+ *   • pending render queue (used for background rendering)
+ *   • current zoom level, stream status, and loading metadata
+ *
+ * Used by:
+ * - ReaderSessionController (streaming control)
+ * - useRangeStreamer (stream chunk management)
+ * - useVisiblePages (updates visible pages)
+ * - PDF rendering components (canvas logic)
+ */
 
 import { createSlice } from '@reduxjs/toolkit'
+import {
+  ZOOM_LEVELS,
+  MAX_ACTIVE_CHUNKS,
+} from '@reader/utils/pdfConstants'
+import { BitmapCache } from '@reader/utils/bitmapCache'
 
+//-----------------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------------
+const INITIAL_SCALE_INDEX = 2 // corresponds to ZOOM_LEVELS[2]
+
+//-----------------------------------------------------------------------------
+// Initial State
+//-----------------------------------------------------------------------------
 const initialState = {
-  currentRange: null,              // e.g. [9, 16] — currently active rendered page range
-  visiblePages: [],                // e.g. [9,10,11] — pages currently visible in the viewport
-  renderedPages: {},               // e.g. { '1.0': { 9: { status, bitmapId }, ... } } — rendered pages grouped by scale
-  preloadedRanges: [],             // e.g. [[1,8], [9,16], [17,24]] — ranges already preloaded
-  pendingRenderQueue: [],          // e.g. [{ scale: '1.0', pageNumber: 12 }] — pages waiting to be rendered
-  streamStatus: 'idle',            // 'idle' | 'streaming' | 'waiting' | 'error' — current streaming state
-  scale: 1.0,                      // current zoom level
-  error: null,                     // last error encountered during streaming/rendering
-  lastLoadedAt: null,              // timestamp of last successful render
-  scaleIndex: 2,
+  currentRange: null,            // Active chunk range [start, end]
+  visiblePages: [],              // Page numbers visible in the viewport
+
+  renderedPages: {},             // { '1.00': { 9: { bitmapId, status }, ... } }
+  preloadedRanges: {},           // { '1.00': [[1,8],[9,16],...] }
+
+  pendingRenderQueue: [],        // Pages scheduled for bitmap rendering
+
+  streamStatus: 'idle',          // 'idle' | 'streaming' | 'waiting' | 'error'
+  scaleIndex: INITIAL_SCALE_INDEX,
+  scale: ZOOM_LEVELS[INITIAL_SCALE_INDEX],
+
+  error: null,
+  lastLoadedAt: null,
 }
 
+//-----------------------------------------------------------------------------
+// Slice Definition
+//-----------------------------------------------------------------------------
 const streamSlice = createSlice({
   name: 'stream',
   initialState,
   reducers: {
-    // Sets the current active page range
-    setCurrentRange(state, action) {
-      state.currentRange = action.payload
+    // Viewport state
+    setCurrentRange(state, { payload }) {
+      state.currentRange = payload
+    },
+    setVisiblePages(state, { payload }) {
+      state.visiblePages = payload
     },
 
-    // Updates currently visible pages in the viewport
-    setVisiblePages(state, action) {
-      state.visiblePages = action.payload
-    },
-
-    // Adds a rendered page for a specific scale
-    addRenderedPage(state, action) {
-      const { scale, pageNumber, bitmapId, status = 'ready' } = action.payload
-      if (!state.renderedPages[scale]) {
-        state.renderedPages[scale] = {}
-      }
+    // Bitmap cache
+    addRenderedPage(state, { payload }) {
+      const { scale, pageNumber, bitmapId, status = 'ready' } = payload
+      if (!state.renderedPages[scale]) state.renderedPages[scale] = {}
       state.renderedPages[scale][pageNumber] = { status, bitmapId }
     },
+    setPageStatus(state, { payload }) {
+      const { scale, pageNumber, status } = payload
+      const page = state.renderedPages[scale]?.[pageNumber]
+      if (page) page.status = status
+    },
 
-    // Updates the status of a specific rendered page
-    setPageStatus(state, action) {
-      const { scale, pageNumber, status } = action.payload
-      if (state.renderedPages[scale]?.[pageNumber]) {
-        state.renderedPages[scale][pageNumber].status = status
+    // Preload & LRU cache management
+    addPreloadedRange(state, { payload }) {
+      const { scale, range } = payload
+      const list = state.preloadedRanges[scale] ?? []
+
+      if (list.some(([s, e]) => s === range[0] && e === range[1])) return
+      list.push(range)
+
+      while (list.length > MAX_ACTIVE_CHUNKS) {
+        const [start, end] = list.shift()
+        for (let p = start; p <= end; p++) {
+          const meta = state.renderedPages[scale]?.[p]
+          if (meta) {
+            BitmapCache.del(meta.bitmapId)
+            delete state.renderedPages[scale][p]
+          }
+        }
       }
+
+      state.preloadedRanges[scale] = list
     },
 
-    // Adds a new preloaded range if it doesn't already exist
-    addPreloadedRange(state, action) {
-      const newRange = action.payload
-      const exists = state.preloadedRanges.some(
-        ([start, end]) => start === newRange[0] && end === newRange[1]
-      )
-      if (!exists) {
-        state.preloadedRanges.push(newRange)
-      }
+    registerChunk(state, action) {
+      streamSlice.caseReducers.addPreloadedRange(state, action)
     },
 
-    // Sets the current stream status
-    setStreamStatus(state, action) {
-      state.streamStatus = action.payload
-    },
-    setScaleIndex(state, action) {
-      state.scaleIndex = action.payload
-      state.scale = ZOOM_LEVELS[action.payload] ?? state.scale
-    },
-    // Sets the current zoom level
-    setScale(state, action) {
-      state.scale = action.payload
-    },
-
-    // Stores the latest error
-    setError(state, action) {
-      state.error = action.payload
-    },
-
-    // Sets the timestamp of the last successful page load
-    setLastLoadedAt(state, action) {
-      state.lastLoadedAt = action.payload
-    },
-
-    // Adds a page to the render queue if it's not already queued
-    addToRenderQueue(state, action) {
-      const item = action.payload
+    // Render queue
+    addToRenderQueue(state, { payload }) {
       const exists = state.pendingRenderQueue.some(
-        q => q.scale === item.scale && q.pageNumber === item.pageNumber
+        q => q.scale === payload.scale && q.pageNumber === payload.pageNumber
       )
-      if (!exists) {
-        state.pendingRenderQueue.push(item)
-      }
+      if (!exists) state.pendingRenderQueue.push(payload)
     },
-
-    // Removes a page from the render queue
-    removeFromRenderQueue(state, action) {
-      const { scale, pageNumber } = action.payload
+    removeFromRenderQueue(state, { payload }) {
+      const { scale, pageNumber } = payload
       state.pendingRenderQueue = state.pendingRenderQueue.filter(
         q => !(q.scale === scale && q.pageNumber === pageNumber)
       )
     },
 
-    // Resets the entire stream state (e.g. when switching books)
-    resetStreamState() {
-      return initialState
+    // Zoom state
+    setScaleIndex(state, { payload }) {
+      state.scaleIndex = payload
+      state.scale = ZOOM_LEVELS[payload] ?? state.scale
     },
+    setScale(state, { payload }) {
+      state.scale = payload
+      const idx = ZOOM_LEVELS.indexOf(payload)
+      if (idx !== -1) state.scaleIndex = idx
+    },
+
+    // Status / meta
+    setStreamStatus(state, { payload }) {
+      state.streamStatus = payload
+    },
+    setError(state, { payload }) {
+      state.error = payload
+    },
+    setLastLoadedAt(state, { payload }) {
+      state.lastLoadedAt = payload
+    },
+
+    // Reset state (e.g. on unmount)
+    resetStreamState: () => initialState,
   },
 })
 
+//-----------------------------------------------------------------------------
+// Exports
+//-----------------------------------------------------------------------------
 export const {
   setCurrentRange,
   setVisiblePages,
+
   addRenderedPage,
   setPageStatus,
+
   addPreloadedRange,
-  setStreamStatus,
-  setScaleIndex,
-  setScale,
-  setError,
-  setLastLoadedAt,
+  registerChunk,
+
   addToRenderQueue,
   removeFromRenderQueue,
+
+  setScaleIndex,
+  setScale,
+
+  setStreamStatus,
+  setError,
+  setLastLoadedAt,
+
   resetStreamState,
 } = streamSlice.actions
 

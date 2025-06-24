@@ -1,87 +1,72 @@
-// src/store/selectors/streamSelectors.js
-
 /**
- * Centralised selectors for streamSlice
- * -------------------------------------
- * Keeps all read-only access to the streaming state in one place.
- * Memoised selectors are created with Reselect.
+ * @file src/store/selectors/streamSelectors.js
+ * @description
+ * Centralized selectors for accessing streamSlice state.
+ *
+ * Responsibilities:
+ * - Exposes all fields from stream state (visible pages, rendered pages, scale, etc.)
+ * - Provides memoized selectors using Reselect
+ * - Encapsulates derived state such as visible bitmap pages at current scale
  */
-import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
+
 import { createSelector } from '@reduxjs/toolkit'
+import { ZOOM_LEVELS } from '@reader/utils/pdfConstants'
 
-/* ───────────────── basic field selectors ───────────────── */
+//-----------------------------------------------------------------------------
+// Basic selectors (non-memoized)
+//-----------------------------------------------------------------------------
 
-/**
- * Returns the entire stream slice state
- */
+/** Returns the full stream slice */
 export const selectStream = (state) => state.stream
 
-/**
- * Returns the currently active range of pages
- * Example: [9, 16]
- */
+/** Returns the current active chunk range (e.g. [9, 16]) */
 export const selectCurrentRange = (state) => state.stream.currentRange
 
-/**
- * Returns the list of visible pages currently in the viewport
- * Example: [9, 10]
- */
+/** Returns the list of pages currently visible in the viewport */
 export const selectVisiblePages = (state) => state.stream.visiblePages
 
-/**
- * Returns all rendered pages grouped by scale
- * Example: { '1.0': { 9: { bitmapId, status }, ... } }
- */
+/** Returns the rendered bitmap metadata per scale */
 export const selectRenderedPages = (state) => state.stream.renderedPages
 
-/**
- * Returns the list of preloaded page ranges
- * Example: [[1,8], [9,16]]
- */
+/** Returns preloaded page ranges by scale (e.g. [[1,8],[9,16]]) */
 export const selectPreloadedRanges = (state) => state.stream.preloadedRanges
 
-/**
- * Returns the queue of pages waiting to be rendered
- */
+/** Returns the queue of pages pending bitmap rendering */
 export const selectPendingRenderQ = (state) => state.stream.pendingRenderQueue
 
-/**
- * Returns the current streaming status
- * 'idle' | 'streaming' | 'waiting' | 'error'
- */
+/** Returns the current streaming status: 'idle' | 'streaming' | 'waiting' | 'error' */
 export const selectStreamStatus = (state) => state.stream.streamStatus
 
-/**
- * Returns the last error encountered during streaming/rendering
- */
+/** Returns the last stream/render error, if any */
 export const selectStreamError = (state) => state.stream.error
 
-/**
- * Returns the current zoom level (scale)
- * Example: 1.0
- */
+/** Returns the current scale factor (e.g. 1.0) */
 export const selectStreamScale = (state) => state.stream.scale
 
-/**
- * Returns the timestamp of the last successful render
- */
+/** Returns the index of the current zoom level in ZOOM_LEVELS */
+export const selectScaleIndex = (state) => state.stream.scaleIndex
+
+/** Returns the timestamp of the last completed render */
 export const selectLastLoadedAt = (state) => state.stream.lastLoadedAt
 
-export const selectScaleIndex = (state) => state.stream.scaleIndex
-/* ───────────────── derived / memoised selectors ───────────────── */
+//-----------------------------------------------------------------------------
+// Derived selectors (memoized)
+//-----------------------------------------------------------------------------
 
 /**
- * Returns an array of visible pages that are fully rendered (with bitmaps).
- *
- * Each item has the shape:
- * { pageNumber, bitmap, width, height, status }
- *
- * Only includes pages that are available at the current scale and have a bitmap.
+ * Returns the float zoom level corresponding to scaleIndex.
  */
 export const selectCurrentScale = createSelector(
   [selectScaleIndex],
   (idx) => ZOOM_LEVELS[idx] ?? 1
 )
+
+/**
+ * Returns visible pages that are fully rendered (i.e. have bitmap data).
+ * 
+ * Output shape per page:
+ * { pageNumber, bitmapId, status }
+ */
 export const selectVisibleBitmapPages = createSelector(
   [selectVisiblePages, selectRenderedPages, selectStreamScale],
   (numbers, renderedPages, scale) =>

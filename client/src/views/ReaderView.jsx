@@ -1,23 +1,37 @@
-
-
 /**
- * Wraps reader content; pulls bitmap‑enriched visiblePages via selectors.
+ * @file src/views/reader/ReaderView.jsx
+ * @description
+ * Main reader container. Selects layout based on current view mode.
+ *
+ * Responsibilities:
+ * - Chooses the correct layout: SinglePageLayout, DoublePageLayout, or ScrollLayout
+ * - Wraps content in <ReaderSessionController> to handle streaming and synchronization
+ * - Forwards containerRef to layout and controller for scroll tracking
+ *
+ * View modes:
+ * - 'single'  → SinglePageLayout
+ * - 'double'  → DoublePageLayout
+ * - 'scroll'  → ScrollLayout (continuous vertical)
  */
-import React, { useRef } from 'react'
-import styled from 'styled-components'
-import { useSelector } from 'react-redux'
 
-import { SinglePageLayout, DoublePageLayout } from '@reader/layouts'
-import RenderedPDFViewer from '@reader/components/RenderedPDFViewer'
+import React, { useRef }   from 'react'
+import styled              from 'styled-components'
+import { useSelector }     from 'react-redux'
+
 import ReaderSessionController from '@/controllers/ReaderSessionController'
+import {
+  SinglePageLayout,
+  DoublePageLayout,
+  ScrollLayout,
+} from '@reader/layouts'
 
 import { selectPageViewMode } from '@/store/selectors/readerSelectors'
-import { selectVisibleBitmapPages } from '@/store/selectors/streamSelectors'
+
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
 
-const StyledReaderView = styled.div`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: auto;
@@ -29,30 +43,28 @@ const StyledReaderView = styled.div`
 //-----------------------------------------------------------------------------
 // Component: ReaderView
 //-----------------------------------------------------------------------------
+
 export default function ReaderView() {
   const containerRef = useRef(null)
 
-  const viewMode     = useSelector(selectPageViewMode)
+  const viewMode = useSelector(selectPageViewMode)
 
+  const Layout = (() => {
+    switch (viewMode) {
+      case 'double':
+        return DoublePageLayout
+      case 'scroll':
+        return ScrollLayout
+      default:
+        return SinglePageLayout
+    }
+  })()
 
-  const visiblePages = useSelector(selectVisibleBitmapPages)
-
-  const Layout = viewMode === 'double' ? DoublePageLayout : SinglePageLayout
-
- return (
-  <StyledReaderView ref={containerRef}>
-    <ReaderSessionController containerRef={containerRef}>
-      {() => (
-        <Layout containerRef={containerRef} visiblePages={visiblePages}>
-          <RenderedPDFViewer
-            containerRef={containerRef}
-            visiblePages={visiblePages}
-            sidebarOpen={false}
-          />
-        </Layout>
-      )}
-    </ReaderSessionController>
-  </StyledReaderView>
-)
-
+  return (
+    <Wrapper ref={containerRef}>
+      <ReaderSessionController containerRef={containerRef}>
+        {() => <Layout containerRef={containerRef} />}
+      </ReaderSessionController>
+    </Wrapper>
+  )
 }

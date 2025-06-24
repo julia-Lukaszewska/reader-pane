@@ -1,48 +1,77 @@
+/**
+ * @file src/utils/pdfjsRenderToBitmaps.js
+ * @description
+ * Renders a given range of pages from a PDF Blob into ImageBitmap objects using PDF.js.
+ *
+ * Features:
+ * - Automatically configures the PDF.js worker source path
+ * - Supports OffscreenCanvas for rendering when available
+ * - Returns an array of objects with page number, bitmap, and dimensions
+ *
+ * Requirements:
+ * - Worker script (pdf.worker.min.js) must be available at the specified path
+ *
+ * @param {Blob} blob - The PDF file as a Blob
+ * @param {Object} opts - Rendering options
+ * @param {number} opts.scale - Zoom level (e.g., 1.0)
+ * @param {number} opts.start - First page number to render (1-based, inclusive)
+ * @param {number} opts.end - Last page number to render (1-based, inclusive)
+ * @returns {Promise<Array<{ pageNumber: number, bitmap: ImageBitmap, width: number, height: number }>>}
+ */
+
+//-----------------------------------------------------------------------------
+// Imports & Worker Setup
+//-----------------------------------------------------------------------------
 import * as pdfjsLib from 'pdfjs-dist'
 
-/**
- * Renders a specified range of PDF pages to ImageBitmap objects using pdf.js.
- * Useful for converting pages to bitmap format before caching or displaying.
- *
- * @param {Blob} blob - The PDF file as a Blob object
- * @param {Object} options - Configuration options
- * @param {number} options.scale - Zoom level (e.g. 1.0 = 100%)
- * @param {number} options.start - First page number to render (1-based, inclusive)
- * @param {number} options.end - Last page number to render (1-based, inclusive)
- * @returns {Promise<Array<{ pageNumber: number, bitmap: ImageBitmap }>>}
- *   An array of rendered pages as ImageBitmaps, each with its page number
- */
-export default async function pdfjsRenderToBitmaps(blob, { scale = 1.0, start, end }) {
-  // Convert blob to ArrayBuffer for use with PDF.js
-  const arrayBuffer = await blob.arrayBuffer()
+// Set the PDF.js worker source path once per project
+if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+}
 
-  // Load PDF document from the ArrayBuffer
+//-----------------------------------------------------------------------------
+// Function: pdfjsRenderToBitmaps
+//-----------------------------------------------------------------------------
+export default async function pdfjsRenderToBitmaps(
+  blob,
+  { scale = 1.0, start, end }
+) {
+  const arrayBuffer = await blob.arrayBuffer()
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
 
-  const totalPages = pdf.numPages
   const from = Math.max(1, start)
-  const to = Math.min(end, totalPages)
+  const to = Math.min(end, pdf.numPages)
 
-  const result = []
-
+  // Prepare rendering tasks
+  const tasks = []
   for (let pageNumber = from; pageNumber <= to; pageNumber++) {
-    const page = await pdf.getPage(pageNumber)
-    const viewport = page.getViewport({ scale })
+    tasks.push(
+      (async () => {
+        const page = await pdf.getPage(pageNumber)
+        const viewport = page.getViewport({ scale })
 
-    // Create an off-screen canvas
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-    canvas.width = viewport.width
-    canvas.height = viewport.height
+        const canvas =
+          'OffscreenCanvas' in window
+            ? new OffscreenCanvas(viewport.width, viewport.height)
+            : Object.assign(document.createElement('canvas'), {
+                width: viewport.width,
+                height: viewport.height,
+              })
 
-    // Render the page into the canvas
-    await page.render({ canvasContext: context, viewport }).promise
+        const ctx = canvas.getContext('2d')
+        await page.render({ canvasContext: ctx, viewport }).promise
 
-    // Convert canvas to ImageBitmap for performance and efficient storage
-    const bitmap = await createImageBitmap(canvas)
-
-    result.push({ pageNumber, bitmap })
+        const bitmap = await createImageBitmap(canvas)
+        return {
+          pageNumber,
+          bitmap,
+          width: bitmap.width,
+          height: bitmap.height,
+        }
+      })()
+    )
   }
 
-  return result
+  // Execute rendering in parallel
+  return Promise.all(tasks)
 }

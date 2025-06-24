@@ -1,65 +1,72 @@
-// src/components/PdfViewer.jsx
+/**
+ * @file src/components/PdfViewer.js
+ * @description
+ * Component for rendering PDF pages in scroll mode using pre-rendered bitmaps.
+ * 
+ * Features:
+ * - Tracks visible pages with useVisiblePages (only in scroll mode)
+ * - Streams and renders missing page ranges using useRangeStreamer
+ * - Draws ImageBitmaps from BitmapCache into <canvas> elements
+ * - Displays loading skeletons for pages not yet rendered
+ */
 
+//-----------------------------------------------------------------------------
+// Imports
+//-----------------------------------------------------------------------------
 import { useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
 import useRangeStreamer from '@reader/hooks/useRangeStreamer'
 import useVisiblePages from '@reader/hooks/useVisiblePages'
 import { BitmapCache } from '@reader/utils/bitmapCache'
-import Skeleton from '@/components/Skeleton' // loading placeholder
+import Skeleton from '@/components/Skeleton'
 
-// A4 height at 72 DPI
-const PAGE_H = 842
+import {
+  selectVisiblePagesByMode,
+} from '@/store/selectors/readerSelectors'
 
+//-----------------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------------
+const PAGE_H = 842 // A4 page height at 72 DPI (unscaled)
+
+//-----------------------------------------------------------------------------
+// Component: PdfViewer
+//-----------------------------------------------------------------------------
 /**
- * PdfViewer
- * -------------------------------------
- * High-level component for rendering a streamed PDF file.
- * Uses virtual scrolling, bitmap cache, and range preloading.
- *
- * Steps:
- * 1. Tracks visible pages using scroll and layout metrics
- * 2. Automatically streams page ranges when user scrolls into unloaded area
- * 3. Renders bitmaps from memory, falling back to <Skeleton /> if missing
- *
- * @param {Object} props
- * @param {string} props.docId – ID of the document in GridFS
+ * Renders visible PDF pages using <canvas> elements in scroll view.
+ * Handles lazy loading of missing chunks using range-based streaming.
  */
-export default function PdfViewer({ docId }) {
+export default function PdfViewer() {
   const containerRef = useRef(null)
-
-  // Step 1: Track visible pages inside scrollable container
-  useVisiblePages(containerRef, PAGE_H)
-
-  // Step 2: Prepare streamer for loading page ranges
+  useVisiblePages(containerRef, PAGE_H) // works only in 'scroll' mode
   const streamRange = useRangeStreamer()
 
-  // State: current visible pages and already loaded ranges
-  const { visiblePages, preloadedRanges } = useSelector(s => s.stream)
+  const visiblePages = useSelector(selectVisiblePagesByMode)
+  const { preloadedRanges, scale } = useSelector(s => s.stream)
 
-  /**
-   * Step 3: Detect if visible pages are outside of any preloaded range
-   * If yes → trigger streaming of the surrounding chunk (8 pages)
-   */
+  const scaleKey = scale.toFixed(2)
+  const rendered = useSelector(
+    s => s.stream.renderedPages[scaleKey] ?? {}
+  )
+
+  // Stream missing page ranges if not already covered
   useEffect(() => {
     if (!visiblePages.length) return
 
     const first = Math.min(...visiblePages)
     const last = Math.max(...visiblePages)
 
-    const covered = preloadedRanges.some(([s, e]) => first >= s && last <= e)
+    const rangesForScale = preloadedRanges[scaleKey] ?? []
+    const covered = rangesForScale.some(([s, e]) => first >= s && last <= e)
 
     if (!covered) {
-      // Compute 8-page aligned chunk start
       const chunkStart = Math.floor((first - 1) / 8) * 8 + 1
       streamRange([chunkStart, chunkStart + 7])
     }
-  }, [visiblePages, preloadedRanges])
+  }, [visiblePages, preloadedRanges, scaleKey, streamRange])
 
-  // Step 4: Render visible pages
-  const scale = useSelector(s => s.stream.scale)
-  const rendered = useSelector(s => s.stream.renderedPages[scale] || {})
-
+  // Render canvases
   return (
     <div
       ref={containerRef}
@@ -74,16 +81,16 @@ export default function PdfViewer({ docId }) {
         return (
           <div
             key={pageNum}
+            data-page={pageNum}
             style={{ height: PAGE_H * scale, margin: '0 auto' }}
           >
             {bmp ? (
               <canvas
                 ref={c => {
                   if (!c) return
-                  const ctx = c.getContext('2d')
                   c.width = bmp.width
                   c.height = bmp.height
-                  ctx.drawImage(bmp, 0, 0)
+                  c.getContext('2d').drawImage(bmp, 0, 0)
                 }}
               />
             ) : (

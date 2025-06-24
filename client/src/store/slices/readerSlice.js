@@ -1,41 +1,43 @@
 /**
- * @file readerSlice.js
- * @description Redux slice for managing PDF reader state:
- *   - Zoom levels & scale factors
- *   - View mode & page turn rate
- *   - Current page & total pages
- *   - PDF file URL & book context
- *   - Rendered page ranges cache
+ * @file src/store/reader/readerSlice.js
+ * @description
+ * Redux slice for managing PDF reader state.
+ *
+ * Responsibilities:
+ * - Page view mode: 'single', 'double', or 'scroll'
+ * - Page turn rate (optional timing/delay for auto-flipping)
+ * - Current page and total page count
+ * - File URL and book context for the active PDF
+ *
+ * Used by:
+ * - ReaderLayout and ReaderView
+ * - Navigation controls (toolbar, pagination)
+ * - usePageViewMode and other hooks
  */
+
 import { createSlice } from '@reduxjs/toolkit'
 
-
-//-----------------------------------------------------
-//------ Initial State
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Initial State
+//-----------------------------------------------------------------------------
 const initialState = {
+  pageViewMode: 'single',   // 'single' | 'double' | 'scroll'
+  pageTurnRate: null,       // Optional auto-flip timing
+  currentPage: 1,           // Current active page number
+  totalPages: 1,            // Total number of pages in the PDF
 
-
-  pageViewMode: 'single',
-  pageTurnRate: null,
-  currentPage: 1,
-  totalPages: 1,
-  fileUrl: null,
-  bookId: null,
-
+  fileUrl: null,            // Blob URL or remote file location
+  bookId: null,             // Book context (for persistence or session logic)
 }
 
-//-----------------------------------------------------
-//------ Slice: reader
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Slice: reader
+//-----------------------------------------------------------------------------
 const readerSlice = createSlice({
   name: 'reader',
   initialState,
   reducers: {
-
-    //-------------------------------------------------
-    //------ View Mode & Turn Rate
-    //-------------------------------------------------
+    // View mode and page turn rate
     setPageViewMode(state, action) {
       state.pageViewMode = action.payload
     },
@@ -43,9 +45,7 @@ const readerSlice = createSlice({
       state.pageTurnRate = action.payload
     },
 
-    //-------------------------------------------------
-    //------ Page Navigation
-    //-------------------------------------------------
+    // Page navigation
     setCurrentPage(state, action) {
       state.currentPage = action.payload
     },
@@ -53,9 +53,7 @@ const readerSlice = createSlice({
       state.totalPages = action.payload
     },
 
-    //-------------------------------------------------
-    //------ File & Book Context
-    //-------------------------------------------------
+    // File and book metadata
     setFileUrl(state, action) {
       state.fileUrl = action.payload
     },
@@ -67,45 +65,33 @@ const readerSlice = createSlice({
       state.fileUrl = fileUrl
     },
 
-    
-
     /**
-     * @action resetRenderedRanges
-     * @description Clears all renderedRanges for a given bookId.
-     * @payload {{bookId: string}}
-     */
- 
-    /**
-     * @action resetReaderState
-     * @description Resets full reader state (e.g. on reader exit)
+     * Resets the entire reader state (used on reader exit).
      */
     resetReaderState(state) {
       state.bookId = null
       state.fileUrl = null
       state.currentPage = 1
       state.totalPages = 1
+      state.pageViewMode = 'single'
+
       state.renderedRanges = {}
       state.scaleIndex = 2
-
       state.fullPageFitScale = null
-      state.pageViewMode = 'single'
     },
   },
 })
 
-//-----------------------------------------------------
-//------ Exports
-//-----------------------------------------------------
+//-----------------------------------------------------------------------------
+// Exports
+//-----------------------------------------------------------------------------
 export const {
-
   setPageViewMode,
   setPageTurnRate,
   setCurrentPage,
-
   setTotalPages,
   setFileUrl,
   setReaderState,
-
   resetReaderState,
 } = readerSlice.actions
 

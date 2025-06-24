@@ -1,25 +1,35 @@
 /**
- * @file PDFPageControls.jsx
- * @description Pagination controls for PDF viewer, allowing navigation between pages.
+ * @file src/components/PDFPageControls.jsx
+ * @description
+ * Pagination controls for the PDF viewer (← / →).
+ * 
+ * - Visible only on the `/read` route
+ * - Requires an active book in the store
+ * - Supports both single and double page modes
+ * - Handles clamped navigation using the current page and total page count
  */
 
-import React from "react"
-import styled from "styled-components"
-import { IoChevronBack, IoChevronForward } from "react-icons/io5"
-import { useLocation } from "react-router-dom"
-import { useSelector, useDispatch } from "react-redux"
-import { setCurrentPage } from "@/store/slices/readerSlice"
+//-----------------------------------------------------------------------------
+// Imports
+//-----------------------------------------------------------------------------
+import React, { useCallback } from 'react'
+import styled from 'styled-components'
+import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
+import { useLocation } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+
 import {
   selectActiveBookId,
   selectTotalPages,
   selectPageViewMode,
-} from "@/store/selectors"
+  selectCurrentPage,
+} from '@/store/selectors'
+import { setCurrentPage } from '@/store/slices/readerSlice'
 
 //-----------------------------------------------------------------------------
 // Styled Components
 //-----------------------------------------------------------------------------
-
-const StyledPagination = styled.div`
+const Pagination = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -29,17 +39,17 @@ const StyledPagination = styled.div`
     border: none;
     padding: 0.25rem;
     font-size: 1.5rem;
-    color: white;
+    color: #fff;
     cursor: pointer;
 
     &:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: default;
     }
   }
 `
 
-const PageInfo = styled.span`
+const Info = styled.span`
   font-size: 0.9rem;
   color: #fff;
 `
@@ -47,53 +57,49 @@ const PageInfo = styled.span`
 //-----------------------------------------------------------------------------
 // Component: PDFPageControls
 //-----------------------------------------------------------------------------
-
 /**
- * Renders back/next buttons and current page info.
- * Manages page state locally via Redux actions.
- * Hidden if not in /read route or missing book data.
+ * Renders left/right navigation controls for the active PDF book.
+ * Only visible inside the reader route and when page data is available.
  */
-
-const PDFPageControls = () => {
-  const location = useLocation()
+export default function PDFPageControls() {
+  const loc = useLocation()
   const dispatch = useDispatch()
 
-  // Selectors
   const bookId = useSelector(selectActiveBookId)
   const totalPages = useSelector(selectTotalPages)
-  const currentPage = useSelector((state) => state.reader.currentPage)
-  const viewMode = useSelector(selectPageViewMode)
+  const currentPage = useSelector(selectCurrentPage)
+  const viewMode = useSelector(selectPageViewMode) // 'single' | 'double'
 
-  // Clamp helper
-  const clamp = (n) => Math.max(1, Math.min(n, totalPages))
-
-  // Navigation handlers
-  const goToPage = (n) => dispatch(setCurrentPage(clamp(n)))
-  const step = viewMode === "double" ? 2 : 1
-  const prevPage = () => goToPage(currentPage - step)
-  const nextPage = () => goToPage(currentPage + step)
-
-  const isPrevDisabled = currentPage - step < 1
-  const isNextDisabled = currentPage + step > totalPages
-
-  // Guard: render only on /read and when we have pages
-  if (!location.pathname.startsWith("/read") || !bookId || totalPages <= 0) {
+  // Show only when on reader route and book/page data is valid
+  if (!loc.pathname.startsWith('/read') || !bookId || totalPages < 1) {
     return null
   }
 
+  const step = viewMode === 'double' ? 2 : 1
+
+  /**
+   * Navigate to a page number, clamped to valid range.
+   * @param {number} n - Target page number
+   */
+  const goTo = useCallback((n) => {
+    const page = Math.max(1, Math.min(totalPages, n))
+    dispatch(setCurrentPage(page))
+  }, [dispatch, totalPages])
+
+  const prevDisabled = currentPage - step < 1
+  const nextDisabled = currentPage + step > totalPages
+
   return (
-    <StyledPagination>
-      <button onClick={prevPage} disabled={isPrevDisabled}>
+    <Pagination>
+      <button onClick={() => goTo(currentPage - step)} disabled={prevDisabled}>
         <IoChevronBack />
       </button>
-      <PageInfo>
-        {currentPage} of {totalPages}
-      </PageInfo>
-      <button onClick={nextPage} disabled={isNextDisabled}>
+
+      <Info>{currentPage} / {totalPages}</Info>
+
+      <button onClick={() => goTo(currentPage + step)} disabled={nextDisabled}>
         <IoChevronForward />
       </button>
-    </StyledPagination>
+    </Pagination>
   )
 }
-
-export default PDFPageControls

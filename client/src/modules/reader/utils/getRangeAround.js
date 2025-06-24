@@ -1,9 +1,19 @@
 /**
- * Returns chunk-aligned range around a given page.
- * E.g. page 9 → [9, 16] for chunkSize = 8
+ * @file src/utils/getRangeAround.js
+ * @description
+ * Returns a page range aligned to the configured chunk size.
+ * Useful for triggering PDF streaming or rendering in fixed-size blocks.
+ *
+ * Example: page 9 with CHUNK_SIZE = 8 → [9, 16]
+ *
+ * @param {number} page - Target page number (1-based)
+ * @param {number} [chunk=CHUNK_SIZE] - Optional chunk size override
+ * @returns {[number, number]} Tuple representing the [start, end] page range
  */
-export function getRangeAround(page, chunkSize = 8) {
-  const start = Math.floor((page - 1) / chunkSize) * chunkSize + 1
-  const end = start + chunkSize - 1
-  return [start, end]
+
+import { CHUNK_SIZE } from '@reader/utils/pdfConstants'
+
+export function getRangeAround(page, chunk = CHUNK_SIZE) {
+  const start = Math.floor((page - 1) / chunk) * chunk + 1
+  return [start, start + chunk - 1]
 }

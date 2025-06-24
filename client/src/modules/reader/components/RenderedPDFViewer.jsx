@@ -1,15 +1,39 @@
+/**
+ * @file src/components/RenderedPDFViewer.jsx
+ * @description
+ * Component that displays visible PDF pages using rendered ImageBitmaps.
+ * 
+ * - Uses visible page list based on view mode (single/double/scroll)
+ * - Retrieves bitmaps from BitmapCache using IDs stored in Redux
+ * - Draws each bitmap to a <canvas> element
+ * - Clears canvas if bitmap is not available
+ *
+ * Props:
+ * - containerRef (optional): external scroll container ref
+ * - sidebarOpen (boolean): adjusts layout padding for sidebar
+ * - direction (string): flex direction, e.g. 'row' or 'column'
+ */
+
+//-----------------------------------------------------------------------------
+// Imports
+//-----------------------------------------------------------------------------
 import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
+
+import { BitmapCache } from '@reader/utils/bitmapCache'
+
 import {
-  selectVisiblePages,
+  selectVisiblePagesByMode,
+} from '@/store/selectors/readerSelectors'
+import {
   selectRenderedPages,
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
-import { BitmapCache } from '@reader/utils/bitmapCache'
 
-/* ───────────── Styled Components ───────────── */
-
+//-----------------------------------------------------------------------------
+// Styled Components
+//-----------------------------------------------------------------------------
 const ScrollWrapper = styled.div`
   width: ${({ $sidebar }) => ($sidebar ? 'calc(100vw - 20rem)' : '100vw')};
   height: calc(100vh - 17vh);
@@ -32,18 +56,16 @@ const Canvas = styled.canvas`
   display: block;
 `
 
+//-----------------------------------------------------------------------------
+// Component: RenderedPDFViewer
+//-----------------------------------------------------------------------------
 /**
- * RenderedPDFViewer
- * -------------------------
- * Displays visible PDF pages using <canvas> elements.
- * Draws ImageBitmap objects directly onto canvases.
- *
- * Pages and bitmaps come from Redux streamSlice selectors.
+ * Renders visible PDF pages to <canvas> elements using ImageBitmaps.
  *
  * @param {Object} props
- * @param {React.RefObject} [props.containerRef] – Optional ref to the scroll container
- * @param {boolean} [props.sidebarOpen=false] – Whether sidebar is open (affects layout)
- * @param {'row'|'column'} [props.direction='row'] – Page layout direction
+ * @param {React.RefObject} [props.containerRef] - Optional external scroll container
+ * @param {boolean} [props.sidebarOpen=false] - Whether the sidebar is visible
+ * @param {'row'|'column'} [props.direction='row'] - Layout direction of pages
  */
 export default function RenderedPDFViewer({
   containerRef,
@@ -53,52 +75,44 @@ export default function RenderedPDFViewer({
   const wrapper = containerRef ?? useRef(null)
   const pageRefs = useRef({})
 
-  // Metadata from Redux
-  const visiblePages = useSelector(selectVisiblePages)
+  const visible = useSelector(selectVisiblePagesByMode)
   const scale = useSelector(selectStreamScale)
-  const rendered = useSelector(selectRenderedPages)
-  /**
-   * On update of visiblePages or scale, draw all bitmaps into canvas elements.
-   */
-  // Draw image bitmaps from cache
-  useEffect(() => {
-     console.groupCollapsed('[ Viewer effect]')
-  console.log('scale:', scale)
-  console.log('visiblePages (numbers):', visiblePages)
-  console.log('rendered:', rendered)
-    visiblePages.forEach((pageNumber) => {
-      const meta = rendered?.[scale]?.[pageNumber]
-      const bitmap = meta ? BitmapCache.get(meta.bitmapId) : null
+  const scaleKey = scale.toFixed(2)
+  const rendered = useSelector(selectRenderedPages)[scaleKey] ?? {}
 
-         console.log(`→ Page ${pageNumber}`, {
-      bitmapId: meta?.bitmapId,
-      bitmapExists: !!bitmap,
-    })
-      const canvas = pageRefs.current[pageNumber]
-      if (!canvas || !bitmap) return
+  useEffect(() => {
+    visible.forEach(page => {
+      const meta = rendered[page]
+      const bmp = meta && BitmapCache.get(meta.bitmapId)
+      const canvas = pageRefs.current[page]
+      if (!canvas) return
 
       const ctx = canvas.getContext('2d')
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(bitmap, 0, 0)
-    })
+      if (!bmp) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        return
+      }
 
- console.groupEnd()
-  }, [visiblePages, rendered, scale])
+      canvas.width = bmp.width
+      canvas.height = bmp.height
+      ctx.drawImage(bmp, 0, 0)
+    })
+  }, [visible, rendered, scaleKey])
 
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
-     <PagesContainer $dir={direction}>
-        {visiblePages.map((pageNumber) => {
-          const meta = rendered?.[scale]?.[pageNumber]
-          const bitmap = meta ? BitmapCache.get(meta.bitmapId) : null
+      <PagesContainer $dir={direction}>
+        {visible.map(page => {
+          const meta = rendered[page]
+          const bmp = meta && BitmapCache.get(meta.bitmapId)
 
           return (
             <Canvas
-              key={pageNumber}
-              ref={(el) => (pageRefs.current[pageNumber] = el)}
-              width={bitmap?.width || 1}
-              height={bitmap?.height || 1}
-              data-page={pageNumber}
+              key={page}
+              ref={el => (pageRefs.current[page] = el)}
+              width={bmp?.width || 1}
+              height={bmp?.height || 1}
+              data-page={page}
             />
           )
         })}
