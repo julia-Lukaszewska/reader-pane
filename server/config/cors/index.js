@@ -1,19 +1,8 @@
 /**
  * @file config/cors/index.js
  * @description CORS whitelist per environment/branch:
- *   - development → local Vite
- *   - staging     → staging frontend on Vercel
- *   - production  → build & main frontends on Vercel
- *
- * Usage:
- *   import cors from 'cors';
- *   import { getCorsOptions } from './config/cors/index.js';
- *   app.use(cors(getCorsOptions()));
  */
 
-//-----------------------------------------------------
-//------ Whitelist Definitions
-//-----------------------------------------------------
 const WHITELIST = {
   development: [
     'https://localhost:5173',
@@ -30,7 +19,7 @@ const WHITELIST = {
 }
 
 //-----------------------------------------------------
-//------ Environment Normalization
+//------ Normalize Environment
 //-----------------------------------------------------
 function normalizeEnv(env) {
   if (!env) return 'development'
@@ -42,11 +31,14 @@ function normalizeEnv(env) {
 }
 
 //-----------------------------------------------------
-//------ CORS Options Builder
+//------ CORS Options Builder with Logging
 //-----------------------------------------------------
 export function getCorsOptions(env = process.env.NODE_ENV) {
   const normalized = normalizeEnv(env)
   const allowed = WHITELIST[normalized] || []
+
+  console.log(`[CORS] Environment: ${env} → normalized as "${normalized}"`)
+  console.log('[CORS] Allowed origins:', allowed)
 
   return {
     origin(origin, callback) {
@@ -54,15 +46,20 @@ export function getCorsOptions(env = process.env.NODE_ENV) {
         typeof rule === 'string' ? rule === origin : rule.test(origin)
       )
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[CORS] Request from:', origin)
-        console.log(`[CORS] ${isAllowed ? 'Allowed' : 'Blocked'} origin`)
+      console.log('[CORS] Incoming request from:', origin)
+      console.log(`[CORS] ${isAllowed ? '✅ ALLOWED' : '❌ BLOCKED'} origin`)
+
+      // TEMPORARY fallback for debugging – enable only while debugging!
+      if (!isAllowed && process.env.ALLOW_ALL_CORS === 'true') {
+        console.warn('[CORS] WARNING: Temporarily allowing all origins (ALLOW_ALL_CORS=true)')
+        return callback(null, true)
       }
 
       return isAllowed
         ? callback(null, true)
         : callback(new Error('Not allowed by CORS'))
     },
+
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Range'],

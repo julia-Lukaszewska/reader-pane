@@ -62,16 +62,23 @@ export const pdfStreamApi = createApi({
       query: ({ filename, start, end }) => ({
         url: `/books/storage/${filename}/pages?start=${start}&end=${end}`,
 
-        responseHandler: async res => {
-          const reader = res.body.getReader()
-          const chunks = []
-          for (;;) {
-            const { value, done } = await reader.read()
-            if (done) break
-            chunks.push(value)
-          }
-          return new Blob(chunks, { type: 'application/pdf' })
-        }
+  responseHandler: async res => {
+  if (!res.ok || !res.body) {
+    const errorText = await res.text()
+    throw new Error(`HTTP ${res.status}: ${errorText}`)
+  }
+
+  const reader = res.body.getReader()
+  const chunks = []
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    chunks.push(value)
+  }
+
+  return new Blob(chunks, { type: 'application/pdf' })
+}
+
       }),
       keepUnusedDataFor: 300, // cache for 5 minutes
     }),
