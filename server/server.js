@@ -99,17 +99,26 @@ app.use((err, _req, res, _next) => {
 // DATABASE CONNECTION & HTTPS SERVER START
 // --------------------------------------------
 const PORT = process.env.PORT || 5000
-const httpsOptions = {
-  key:  fs.readFileSync(path.join(__dirname, '..', 'client', 'localhost-key.pem')),
-  cert: fs.readFileSync(path.join(__dirname, '..', 'client', 'localhost.pem')),
-}
 
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     await gridFsBucketReady
     console.log('GridFS bucket ready')
-    https.createServer(httpsOptions, app).listen(PORT, () => {
-      console.log(`HTTPS backend listening on https://localhost:${PORT}`)
-    })
+
+    const isLocal = process.env.NODE_ENV === 'development' || process.env.BRANCH === 'dev'
+
+    if (isLocal) {
+      const httpsOptions = {
+        key:  fs.readFileSync(path.join(__dirname, '..', 'client', 'localhost-key.pem')),
+        cert: fs.readFileSync(path.join(__dirname, '..', 'client', 'localhost.pem')),
+      }
+      https.createServer(httpsOptions, app).listen(PORT, () => {
+        console.log(`HTTPS backend listening on https://localhost:${PORT}`)
+      })
+    } else {
+      app.listen(PORT, () => {
+        console.log(`HTTP backend listening on port ${PORT}`)
+      })
+    }
   })
   .catch(err => console.error('Database connection error:', err))
