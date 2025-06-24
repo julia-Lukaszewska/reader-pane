@@ -12,9 +12,15 @@ import * as Sentry from '@sentry/node'
 //-----------------------------------------------------
 //------ Sentry Initialization
 //-----------------------------------------------------
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: process.env.BRANCH || 'dev',
-  release: `${process.env.BRANCH || 'dev'}@${process.env.npm_package_version}`,
-  tracesSampleRate: 0,
-})
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.BRANCH || 'dev',
+    release: `${process.env.BRANCH || 'dev'}@${process.env.npm_package_version}`,
+    tracesSampleRate: 0,
+  })
+  console.log('[Sentry] Initialized')
+} else {
+  console.warn('[Sentry] Skipped initialization (SENTRY_DSN not defined)')
+}
+

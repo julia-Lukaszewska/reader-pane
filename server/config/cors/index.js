@@ -42,23 +42,24 @@ export function getCorsOptions(env = process.env.NODE_ENV) {
 
   return {
     origin(origin, callback) {
-      const isAllowed = origin && allowed.some(rule =>
-        typeof rule === 'string' ? rule === origin : rule.test(origin)
-      )
+  const isAllowed = origin && allowed.some(rule =>
+    typeof rule === 'string' ? rule === origin : rule.test(origin)
+  )
 
-      console.log('[CORS] Incoming request from:', origin)
-      console.log(`[CORS] ${isAllowed ? '✅ ALLOWED' : '❌ BLOCKED'} origin`)
+  console.log('[CORS] Incoming request from:', origin)
+  console.log(`[CORS] ${isAllowed ? '✅ ALLOWED' : '❌ BLOCKED'} origin`)
 
-      // TEMPORARY fallback for debugging – enable only while debugging!
-      if (!isAllowed && process.env.ALLOW_ALL_CORS === 'true') {
-        console.warn('[CORS] WARNING: Temporarily allowing all origins (ALLOW_ALL_CORS=true)')
-        return callback(null, true)
-      }
+  // Fallback dla braku `origin` – np. Postman, SSR, HEAD /
+  if (!origin) {
+    console.warn('[CORS] Missing origin → allowing (likely server-side or HEAD)')
+    return callback(null, true)
+  }
 
-      return isAllowed
-        ? callback(null, true)
-        : callback(new Error('Not allowed by CORS'))
-    },
+  return isAllowed
+    ? callback(null, true)
+    : callback(new Error('Not allowed by CORS'))
+}
+,
 
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
