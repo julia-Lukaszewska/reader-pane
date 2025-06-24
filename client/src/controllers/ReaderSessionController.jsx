@@ -9,7 +9,7 @@ import useLastOpenedBook    from '@/modules/reader/hooks/useLastOpenedBook'
 import useStartingPage      from '@/modules/reader/hooks/useStartingPage'
 import usePreloadController from '@/modules/reader/hooks/usePreloadController'
 import useVisiblePages      from '@/modules/reader/hooks/useVisiblePages'
-
+import useSaveProgress      from '@/modules/reader/hooks/useSaveProgress'
 import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
 import { setCurrentRange, resetStreamState } from '@/store/slices/streamSlice'
 import {
@@ -36,7 +36,7 @@ export default function ReaderSessionController({ children, containerRef }) {
 
   /* --- track visible pages (scroll / resize) ---------------------------- */
   useVisiblePages(containerRef, PAGE_HEIGHT)
-
+  useSaveProgress()
   /* --- update currentRange in Redux ------------------------------------- */
   const currentRange = useSelector(selectCurrentRange)
   const visiblePages = useSelector(s => s.stream.visiblePages)
