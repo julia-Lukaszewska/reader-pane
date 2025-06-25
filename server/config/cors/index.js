@@ -17,7 +17,6 @@ const WHITELIST = {
     /^https:\/\/reader-pane(-[\w-]+)?\.vercel\.app$/, // wildcard subdomains
   ],
 }
-
 //-----------------------------------------------------
 //------ Normalize Environment
 //-----------------------------------------------------
@@ -26,9 +25,11 @@ function normalizeEnv(env) {
   const alias = env.toLowerCase()
   if (alias === 'dev' || alias === 'development') return 'development'
   if (alias === 'stage' || alias === 'staging') return 'staging'
-  if (alias === 'prod' || alias === 'production') return 'production'
+  if (alias === 'prod' || alias === 'production' || alias === 'main') 
+    return 'production'
   return alias
 }
+
 
 //-----------------------------------------------------
 //------ CORS Options Builder with Logging
