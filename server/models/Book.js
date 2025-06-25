@@ -54,6 +54,7 @@ const bookSchema = new mongoose.Schema(
       ranges: {
         type: [
           {
+    
             start:   Number,
             end:     Number,
             filename: String,

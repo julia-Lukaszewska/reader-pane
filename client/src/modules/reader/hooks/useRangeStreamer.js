@@ -25,12 +25,13 @@ import {
   setLastLoadedAt,
   setError,
 } from '@/store/slices/streamSlice'
+import { useGetBookRangesQuery } from '@/store/api/booksPrivateApi'
 
 import { BitmapCache } from '@reader/utils/bitmapCache'
 import pdfjsRenderToBitmaps from '@reader/utils/pdfjsRenderToBitmaps'
 import { v4 as uuid } from 'uuid'
 import { selectFileUrl } from '@/store/selectors/readerSelectors'
-import { selectRangesForBook } from '@/store/selectors/singleBookSelectors'
+
 import throttle from 'lodash.throttle'
 
 export default function useRangeStreamer() {
@@ -38,10 +39,12 @@ export default function useRangeStreamer() {
   const store = useStore()
   const scale = useSelector(s => s.stream.scale)
   const fileUrl = useSelector(selectFileUrl)
-    const bookId = useSelector(s => s.reader.bookId)
+const bookId = useSelector(s => s.reader.bookId)
   const filename = fileUrl ? fileUrl.split('/').pop() : null
 
-    const [fetchRange] = useLazyFetchPageRangeQuery()
+  const { data: ranges = [] } = useGetBookRangesQuery(bookId, { skip: !bookId })
+
+  const [fetchRange] = useLazyFetchPageRangeQuery()
 
   const inFlightRef = useRef(new Set())
   const failedRef = useRef(new Set())
@@ -70,22 +73,25 @@ export default function useRangeStreamer() {
       try {
         dispatch(setStreamStatus('streaming'))
 
-               const state = store.getState()
-        const ranges = selectRangesForBook(bookId)(state)
+             
         console.log('[DEBUG] Looking for range in:', ranges, 'Target:', start, end)
 
         const range = ranges.find(r => r.start <= start && r.end >= end)
+let blob
 
-        let blob
-        if (range?.fileId) {
-          console.log('[FRONTEND] Using pre-generated range:', range.fileId)
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/books/storage/${range.fileId}`)
-          blob = await res.blob()
-        } else {
-          console.log('[FRONTEND] Falling back to dynamic stream:', { filename, start, end })
-          const response = await fetchRange({ filename, start, end })
-          blob = response.data
-        }
+//--- STATIC: pre-generated range file --------------------------------
+        if (range?.filename) {
+          console.log('[FRONTEND] Using pre-generated range:', range.filename)
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/books/storage/${range.filename}`)
+  blob = await res.blob()
+
+//--- DYNAMIC: stream on demand ---------------------------------------
+} else {
+  console.log('[STREAMER] Falling back to dynamic stream:', { filename, start, end })
+
+  const response = await fetchRange({ filename, start, end })
+  blob = response.data
+}
 
         if (!(blob instanceof Blob)) throw new Error('Invalid Blob received')
 
@@ -122,7 +128,7 @@ export default function useRangeStreamer() {
         inFlightRef.current.delete(chunkKey)
       }
     }, 200), // 200ms throttle delay
- [filename, scale, dispatch, store, fetchRange, bookId]
+[filename, scale, dispatch, store, fetchRange, bookId, ranges]
   )
 
   return streamRange

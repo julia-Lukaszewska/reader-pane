@@ -63,3 +63,9 @@ export {
   useUpdateProgressAutoMutation,
   useUpdateLastOpenedMutation,
 } from './bookEndopoints/bookApiStats'
+//-----------------------------------------------------
+//------ Ranges Endpoint
+//-----------------------------------------------------
+export {
+  useGetBookRangesQuery,
+} from './bookEndopoints/bookApiRanges'
