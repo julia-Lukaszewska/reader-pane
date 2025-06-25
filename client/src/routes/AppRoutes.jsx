@@ -4,18 +4,18 @@
  */
 
 import React, { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { LoadingSpinner } from '@/components'
 import PrivateRoute from './PrivateRoute'
 import libraryRoutes from './LibraryRoutes'
-
 //-----------------------------------------------------------------------------
 // Lazy-loaded Layouts
 //-----------------------------------------------------------------------------
 const HomeLayout    = lazy(() => import('@/layout/HomeLayout'))
 const MainLayout    = lazy(() => import('@/layout/MainLayout'))
+const LibraryLayout = lazy(() => import('@/layout/LibraryLayout'))
 const ReaderLayout  = lazy(() => import('@/layout/ReaderLayout'))
-
+   
 //-----------------------------------------------------------------------------
 // Views
 //-----------------------------------------------------------------------------
@@ -34,67 +34,33 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <Suspense fallback={<LoadingSpinner />}>
-        {/* common root outlet */}
-        <Outlet />
+        <HomeLayout />
       </Suspense>
     ),
     children: [
-      // Public Home page at '/'
+      { index: true, element: <HomeView /> }, // Public: Home page
+    ],
+  },
+  {
+    path: '/',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <MainLayout />
+      </Suspense>
+    ),
+    errorElement: <PageNotFoundView />, // 404 under MainLayout
+    children: [
       {
-        index: true,
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <HomeLayout>
-              <HomeView />
-            </HomeLayout>
-          </Suspense>
-        ),
-      },
-
-      // Protected section under MainLayout
-      {
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <MainLayout>
-              <Outlet />
-            </MainLayout>
-          </Suspense>
-        ),
-        errorElement: <PageNotFoundView />,
+        element: <PrivateRoute />, // Protect all nested routes
         children: [
-          {
-            element: <PrivateRoute />,
-            children: [
-              // Library routes (spread if array)
-              ...libraryRoutes,
-
-              // Reader route '/read/:bookId?'
-              {
-                path: 'read/:bookId?',
-                element: (
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <ReaderLayout>
-                      <Outlet />
-                    </ReaderLayout>
-                  </Suspense>
-                ),
-                children: [
-                  { index: true, element: <ReaderView /> },
-                ],
-              },
-
-              // Settings route '/settings'
-              {
-                path: 'settings',
-                element: <SettingsView />,
-              },
-            ],
-          },
-
-          // Catch-all 404 for protected section
-          { path: '*', element: <PageNotFoundView /> },
+           libraryRoutes,
+            { path: 'read/:bookId?', element: <ReaderLayout />, children: [
+            { index: true, element: <ReaderView /> }, 
+          ]},
+          { path: 'settings', element: <SettingsView /> },         // /settings
         ],
       },
+      { path: '*', element: <PageNotFoundView /> }, // Catch-all 404
     ],
   },
 ])
