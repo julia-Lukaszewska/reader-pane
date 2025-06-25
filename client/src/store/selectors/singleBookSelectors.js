@@ -99,3 +99,14 @@ export const selectBookMetaById = (id) =>
  */
 export const selectBookTitleById = (id) =>
   createSelector(selectBookById(id), (book) => book?.title ?? '')
+
+//-----------------------------------------------------------------------------
+// Book: file ranges
+//-----------------------------------------------------------------------------
+
+/**
+ * Returns the list of pre-generated ranges for a book.
+ * @param {string} id - Book ID
+ */
+export const selectRangesForBook = (id) =>
+  createSelector(selectBookById(id), (book) => book?.file?.ranges ?? [])
