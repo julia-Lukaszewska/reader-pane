@@ -42,7 +42,12 @@ export default function useRangeStreamer() {
 const bookId = useSelector(s => s.reader.bookId)
   const filename = fileUrl ? fileUrl.split('/').pop() : null
 
-  const { data: ranges = [] } = useGetBookRangesQuery(bookId, { skip: !bookId })
+const { data: ranges = [], isFetching } = useGetBookRangesQuery(bookId, { skip: !bookId })
+
+if (isFetching) {
+  console.log('[STREAMER] Waiting for ranges...')
+  return
+}
 
   const [fetchRange] = useLazyFetchPageRangeQuery()
 
@@ -59,6 +64,9 @@ const bookId = useSelector(s => s.reader.bookId)
       const scaleKey = scale.toFixed(2)
       const chunkKey = `${scaleKey}-${start}`
       const preloaded = store.getState().stream.preloadedRanges[scaleKey] ?? []
+ranges.forEach(r =>
+  console.log(`[CHECK] Range: ${r.start}-${r.end} ← includes ${start}-${end}?`, start >= r.start && end <= r.end)
+)
 
       if (
         preloaded.some(([s, e]) => s === start && e === end) ||
@@ -75,8 +83,8 @@ const bookId = useSelector(s => s.reader.bookId)
 
              
         console.log('[DEBUG] Looking for range in:', ranges, 'Target:', start, end)
+const range = ranges.find(r => start >= r.start && end <= r.end)
 
-        const range = ranges.find(r => r.start <= start && r.end >= end)
 let blob
 
 //--- STATIC: pre-generated range file --------------------------------
@@ -86,7 +94,8 @@ let blob
   blob = await res.blob()
 
 //--- DYNAMIC: stream on demand ---------------------------------------
-} else {
+} else {console.log('[DEBUG] Pre-generated ranges:', ranges)
+
   console.log('[STREAMER] Falling back to dynamic stream:', { filename, start, end })
 
   const response = await fetchRange({ filename, start, end })

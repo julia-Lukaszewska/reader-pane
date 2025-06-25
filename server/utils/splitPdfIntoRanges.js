@@ -23,11 +23,15 @@ export async function splitPdfIntoRanges(buffer, bucket, baseName, rangeSize = 2
   }
 
   const settled = await Promise.allSettled(tasks.map(t => t()))
-  const ranges = []
-  for (const r of settled) {
-    if (r.status === 'fulfilled') ranges.push(r.value)
-    else console.error('[RANGE UPLOAD FAIL]', r.reason)
-  }
+const ranges = []
+for (const r of settled) {
+  if (r.status === 'fulfilled') ranges.push(r.value)
+  else console.error('[RANGE UPLOAD FAIL]', r.reason)
+}
 
-  return { totalPages, ranges }
+return {
+  totalPages,
+  rangeSize,
+  ranges,
+}
 }

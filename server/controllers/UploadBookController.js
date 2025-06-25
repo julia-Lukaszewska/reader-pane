@@ -93,6 +93,7 @@ if (coverFile && coverFile.buffer) {
         filename,
         fileId,
           ranges,
+           rangeSize: 24,
       },
       flags: {
         isArchived: false,

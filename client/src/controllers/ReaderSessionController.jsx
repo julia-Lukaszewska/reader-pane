@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// ReaderSessionController – lightweight, post-refactor version
+// ReaderSessionController – dynamic rangeSize version
 //-----------------------------------------------------------------------------
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,12 +10,14 @@ import useStartingPage      from '@/modules/reader/hooks/useStartingPage'
 import usePreloadController from '@/modules/reader/hooks/usePreloadController'
 import useVisiblePages      from '@/modules/reader/hooks/useVisiblePages'
 import useSaveProgress      from '@/modules/reader/hooks/useSaveProgress'
+
 import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
-import { setCurrentRange, resetStreamState } from '@/store/slices/streamSlice'
+import { selectBookById }          from '@/store/selectors/singleBookSelectors'
 import {
   selectCurrentPage,
   selectPageViewMode,
 } from '@/store/selectors/readerSelectors'
+import { setCurrentRange, resetStreamState } from '@/store/slices/streamSlice'
 
 import { CHUNK_SIZE, PAGE_HEIGHT } from '@reader/utils/pdfConstants'
 import { getRangeAround }          from '@reader/utils/getRangeAround'
@@ -28,6 +30,11 @@ export default function ReaderSessionController({ children, containerRef }) {
   /* --- ensure starting page is set -------------------------------------- */
   const ready = useStartingPage(resolvedBookId)
 
+  /* --- pull dynamic rangeSize from store -------------------------------- */
+  const book       = useSelector(selectBookById(resolvedBookId))
+  const rangeSize  = book?.file?.rangeSize ?? CHUNK_SIZE   // ← NEW
+  const chunkSize  = rangeSize                            // alias for clarity
+
   /* --- reset stream state when book changes ----------------------------- */
   const dispatch = useDispatch()
   useEffect(() => {
@@ -37,13 +44,14 @@ export default function ReaderSessionController({ children, containerRef }) {
   /* --- track visible pages (scroll / resize) ---------------------------- */
   useVisiblePages(containerRef, PAGE_HEIGHT)
   useSaveProgress()
+
   /* --- update currentRange in Redux ------------------------------------- */
   const currentRange = useSelector(selectCurrentRange)
   const visiblePages = useSelector(s => s.stream.visiblePages)
   const currentPage  = useSelector(selectCurrentPage)
   const mode         = useSelector(selectPageViewMode)
 
-    useEffect(() => {
+  useEffect(() => {
     if (!ready) return
 
     const fallbackPivot = currentPage
@@ -51,7 +59,7 @@ export default function ReaderSessionController({ children, containerRef }) {
       ? (mode === 'scroll' ? Math.min(...visiblePages) : currentPage)
       : fallbackPivot
 
-    const range = getRangeAround(pivot, CHUNK_SIZE)
+    const range = getRangeAround(pivot, chunkSize)        // ← NEW
 
     if (
       !currentRange ||
@@ -60,8 +68,7 @@ export default function ReaderSessionController({ children, containerRef }) {
     ) {
       dispatch(setCurrentRange(range))
     }
-  }, [ready, visiblePages, currentRange, dispatch, mode, currentPage])
-
+  }, [ready, visiblePages, currentRange, dispatch, mode, currentPage, chunkSize])
 
   /* --- trigger preloading of adjacent chunks ---------------------------- */
   usePreloadController()
