@@ -74,6 +74,7 @@ export const bookApiSingle = booksApi.injectEndpoints({
      *   { type: 'BooksStatic', id: 'LIST' }
      * ]
      */
+  // Delete a book by ID
     deleteBook: builder.mutation({
       query: id => ({
         url: `/books/all/book/${id}`,
@@ -84,12 +85,20 @@ export const bookApiSingle = booksApi.injectEndpoints({
         { type: 'Books', id: 'LIST' },
         { type: 'BooksStatic', id: 'LIST' },
       ],
+      // Optimistic cache update
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        const patch = dispatch(
+        // 1) Remove from the list cache
+        const patchList = dispatch(
           booksApi.util.updateQueryData('getBooks', undefined, draft => {
             if (!draft) return
-            draft.ids = draft.ids.filter(bookId => bookId !== id)
-            delete draft.entities[id]
+            // If using normalized state (entity adapter):
+            if (draft.entities) {
+              delete draft.entities[id]
+              draft.ids = draft.ids.filter(existingId => existingId !== id)
+            } else {
+              // Fallback for array-based cache
+              return draft.filter(book => book._id !== id)
+            }
           })
         )
         try {
