@@ -44,14 +44,14 @@ export default function ReaderSessionController({ children, containerRef }) {
   const mode         = useSelector(selectPageViewMode)
 
     useEffect(() => {
-    if (!ready) return;
+    if (!ready) return
 
     const fallbackPivot = currentPage
     const pivot = visiblePages.length
       ? (mode === 'scroll' ? Math.min(...visiblePages) : currentPage)
-      : fallbackPivot;
+      : fallbackPivot
 
-    const range = getRangeAround(pivot, CHUNK_SIZE);
+    const range = getRangeAround(pivot, CHUNK_SIZE)
 
     if (
       !currentRange ||

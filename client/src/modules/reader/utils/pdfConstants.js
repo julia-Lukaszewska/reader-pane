@@ -41,3 +41,4 @@ export const RENDER_OFFSETS = {
   double: { before: 4, after: 4 },
   scroll: { before: 2, after: 2 },
 }
+export const PAGE_HEIGHT = 920

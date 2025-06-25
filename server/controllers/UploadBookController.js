@@ -10,14 +10,16 @@
 import { getGridFsBucket } from '../config/gridfs.js'
 import Book from '../models/Book.js'
 import { Readable } from 'stream'
-
+import mongoose from 'mongoose'
+import { splitPdfIntoRanges } from '../utils/splitPdfIntoRanges.js'
 // -----------------------------------------------------------------------------
 // UploadBook Controller
 // -----------------------------------------------------------------------------
 export const UploadBookController = async (req, res) => {
   let fileId = null
   const gridFsBucket = getGridFsBucket()
-
+ const bookId = new mongoose.Types.ObjectId()
+  const rangeIds = []
   try {
     // 1) Basic validation
     const pdfFile = req.files?.pdf?.[0]
@@ -32,14 +34,9 @@ let coverBuffer = null
 if (coverFile && coverFile.buffer) {
   coverBuffer = coverFile.buffer
 }
-
-    const totalPages = parseInt(req.body.totalPages, 10) || 1
-    if (totalPages < 1) {
-      return res.status(400).json({ error: 'totalPages must be > 0' })
-    }
-
-    // 2) Upload PDF to GridFS
-    const filename = `${req.user.id}_${Date.now()}_${pdfFile.originalname.replace(/[/\\]+/g, '_')}`
+// 2) Upload PDF to GridFS
+   const baseName = `book_${bookId}`
+    const filename = `${baseName}.pdf`
     await new Promise((resolve, reject) => {
       const readableStream = Readable.from(pdfFile.buffer)
       const uploadStream = gridFsBucket.openUploadStream(filename, {
@@ -50,7 +47,15 @@ if (coverFile && coverFile.buffer) {
       uploadStream.on('finish', resolve)
       uploadStream.on('error', reject)
     })
+  console.log(`[UPLOAD] stored main ${filename}`)
 
+    const { totalPages, ranges } = await splitPdfIntoRanges(
+      pdfFile.buffer,
+      gridFsBucket,
+      baseName,
+    )
+    console.log(`[SPLIT] created ${ranges.length} ranges for ${filename}`)
+    rangeIds.push(...ranges.map(r => r.fileId))
     // 3) Build new Book document
     const {
       title = pdfFile.originalname,
@@ -67,6 +72,7 @@ if (coverFile && coverFile.buffer) {
       .filter(Boolean)
 
     const newBook = new Book({
+       _id: bookId,
       owner: req.user.id,
       meta: {
         title,
@@ -86,6 +92,7 @@ if (coverFile && coverFile.buffer) {
       file: {
         filename,
         fileId,
+          ranges,
       },
       flags: {
         isArchived: false,
@@ -109,7 +116,15 @@ if (coverFile && coverFile.buffer) {
       } catch (cleanupErr) {
         console.error('[ROLLBACK ERROR] Failed to delete orphaned file:', cleanupErr)
       }
+    }    for (const id of rangeIds) {
+      try {
+        await gridFsBucket.delete(id)
+        console.log(`[ROLLBACK] deleted range ${id}`)
+      } catch (e) {
+        console.warn('[ROLLBACK ERROR]', e)
+      }
     }
+
     console.error('[UPLOAD BOOK ERROR]', err)
     res.status(500).json({ error: 'Upload failed' })
   }

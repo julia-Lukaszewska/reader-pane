@@ -43,8 +43,7 @@ export const selectPageViewMode = (state) => selectReader(state).pageViewMode
 /** Returns the configured page turn rate (if any) */
 export const selectPageTurnRate = (state) => selectReader(state).pageTurnRate
 
-/** Legacy (unused in scroll mode) – visiblePages was formerly tracked per mode */
-export const selectVisiblePages = (state) => selectReader(state).visiblePages
+
 
 //-----------------------------------------------------------------------------
 // Memoized: Visible pages based on current view mode

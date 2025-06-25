@@ -13,7 +13,8 @@ import { getGridFSFileBuffer } from '../../utils/gridFSFile.js'
 import { getGridFsBucket, deleteFile } from '../../config/gridfs.js'
 import { PDFDocument } from 'pdf-lib'
 import { StreamBookController } from '../../controllers/StreamBookController.js'
-
+import Book from '../../models/Book.js'
+import { getExistingRange } from '../../utils/getExistingRange.js'
 const router = express.Router()
 const corsOptions = getCorsOptions(process.env.BRANCH || process.env.NODE_ENV)
 
@@ -24,6 +25,14 @@ router.get('/:filename/pages', cors(corsOptions), checkBookOwner, async (req, re
     return res.status(400).json({ error: 'Invalid start or end parameters' })
   }
   try {
+         const pre = await getExistingRange(req.params.filename, start, end)
+    if (pre) {
+      console.log(`[RANGE CACHE] ${pre.filename}`)
+      req.params.filename = pre.filename
+      return StreamBookController(req, res)
+    }
+
+    console.log(`[RANGE DYNAMIC] ${req.params.filename} pages ${start}-${end}`)
     const buffer = await getGridFSFileBuffer(req.params.filename)
     const srcDoc = await PDFDocument.load(buffer)
     const total = srcDoc.getPageCount()
@@ -46,7 +55,7 @@ router.get('/:filename/pages', cors(corsOptions), checkBookOwner, async (req, re
     res.on('finish', async () => {
       try { await deleteFile(fileId) } catch (err) { console.error('[RANGE CLEANUP ERROR]', err) }
     })
-
+console.log(`[RANGE TEMP STREAM] ${tempName}`)
     await StreamBookController(req, res)
   } catch (err) {
     next(err)

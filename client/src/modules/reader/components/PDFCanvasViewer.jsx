@@ -42,7 +42,9 @@ export default function PDFCanvasViewer({
   sidebarOpen = false,
   direction = 'row',
 }) {
-  const wrapper = containerRef ?? useRef(null)
+const fallbackRef = useRef(null)
+const wrapper = containerRef || fallbackRef
+
   const pageRefs = useRef({})
 console.log('visiblePages:', visiblePages)
   const scale = useSelector(selectStreamScale)
