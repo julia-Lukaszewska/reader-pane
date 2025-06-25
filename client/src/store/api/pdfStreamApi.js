@@ -63,6 +63,10 @@ export const pdfStreamApi = createApi({
         url: `/books/storage/${filename}/pages?start=${start}&end=${end}`,
 
         responseHandler: async res => {
+             if (!res.ok) {
+            const msg = await res.text()
+            throw new Error(msg || 'stream failed')
+          }
           const reader = res.body.getReader()
           const chunks = []
           for (;;) {
