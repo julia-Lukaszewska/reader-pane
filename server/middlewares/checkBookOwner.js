@@ -20,8 +20,12 @@ export default async function checkBookOwner(req, res, next) {
   try {
     const { filename } = req.params
     const book = await Book.findOne({
-      'file.filename': filename,
+      
       owner: req.user.id,
+      $or: [
+        { 'file.filename': filename },
+        { 'file.ranges.filename': filename },
+      ],
     })
     if (!book) {
       return res.sendStatus(404)

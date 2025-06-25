@@ -42,12 +42,9 @@ export default function useRangeStreamer() {
 const bookId = useSelector(s => s.reader.bookId)
   const filename = fileUrl ? fileUrl.split('/').pop() : null
 
-const { data: ranges = [], isFetching } = useGetBookRangesQuery(bookId, { skip: !bookId })
+const { data: ranges = [] } = useGetBookRangesQuery(bookId, { skip: !bookId })
 
-if (isFetching) {
-  console.log('[STREAMER] Waiting for ranges...')
-  return
-}
+
 
   const [fetchRange] = useLazyFetchPageRangeQuery()
 
@@ -64,9 +61,6 @@ if (isFetching) {
       const scaleKey = scale.toFixed(2)
       const chunkKey = `${scaleKey}-${start}`
       const preloaded = store.getState().stream.preloadedRanges[scaleKey] ?? []
-ranges.forEach(r =>
-  console.log(`[CHECK] Range: ${r.start}-${r.end} ← includes ${start}-${end}?`, start >= r.start && end <= r.end)
-)
 
       if (
         preloaded.some(([s, e]) => s === start && e === end) ||
@@ -82,25 +76,21 @@ ranges.forEach(r =>
         dispatch(setStreamStatus('streaming'))
 
              
-        console.log('[DEBUG] Looking for range in:', ranges, 'Target:', start, end)
-const range = ranges.find(r => start >= r.start && end <= r.end)
+         const range = ranges.find(r => start >= r.start && end <= r.end)
 
 let blob
 
 //--- STATIC: pre-generated range file --------------------------------
         if (range?.filename) {
-          console.log('[FRONTEND] Using pre-generated range:', range.filename)
+         
           const res = await fetch(`${import.meta.env.VITE_API_URL}/books/storage/${range.filename}`)
   blob = await res.blob()
 
 //--- DYNAMIC: stream on demand ---------------------------------------
-} else {console.log('[DEBUG] Pre-generated ranges:', ranges)
-
-  console.log('[STREAMER] Falling back to dynamic stream:', { filename, start, end })
-
-  const response = await fetchRange({ filename, start, end })
-  blob = response.data
-}
+   } else {
+          const response = await fetchRange({ filename, start, end })
+          blob = response.data
+        }
 
         if (!(blob instanceof Blob)) throw new Error('Invalid Blob received')
 
