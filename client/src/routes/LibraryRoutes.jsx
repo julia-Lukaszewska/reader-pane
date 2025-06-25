@@ -23,10 +23,16 @@ const libraryRoutes = {
     </Suspense>
   ),
   children: [
+    // GET /library
     { index: true, element: <MyLibraryView /> },
-    { path: 'library', element: <MyLibraryView /> },
+
+    // GET /library/import
     { path: 'import', element: <ImportBooksView /> },
+
+    // GET /library/archive
     { path: 'archive', element: <ArchiveView /> },
+
+    // GET /library/favorites
     { path: 'favorites', element: <FavoritesView /> },
   ],
 }
