@@ -48,7 +48,7 @@ const IconTd = styled(Td)`
  * @returns {JSX.Element}
  */
 const TableRow = ({ book, onOpenPreview, onRemoveClick }) => {
-  if (!book || !book._id) return null
+ 
   const isManageMode = useSelector(selectIsManageMode)
 
   const formattedDate = new Date(book.meta.createdAt).toLocaleDateString()

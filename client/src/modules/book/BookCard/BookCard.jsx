@@ -20,7 +20,7 @@ import useBookActions from '../hooks/useBookActions'
 //-----------------------------------------------------------------------------
 
 const BookCard = ({ book, viewType }) => {
-  if (!book || !book._id) return null
+
   const dispatch = useDispatch()
   const [deleteBook] = useDeleteBookMutation()
   const [isConfirmOpen, setConfirm] = useState(false)

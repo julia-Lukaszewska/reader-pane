@@ -91,7 +91,7 @@ const ProgressWrapper = styled.div`
  * @returns {JSX.Element}
  */
 export default function RatingSection({ form, onChange, handleRead }) {
-  if (!book || !book._id) return null
+
   const bookId = form._id
 
   // Prefer cached book data to avoid unnecessary queries

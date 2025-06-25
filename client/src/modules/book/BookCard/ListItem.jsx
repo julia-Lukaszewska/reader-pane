@@ -30,7 +30,7 @@ import { selectIsManageMode } from '@/store/selectors'
  * @returns {JSX.Element}
  */
 const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
-  if (!book || !book._id) return null
+
   const isManageMode = useSelector(selectIsManageMode)
 
   const formattedDate = useMemo(() => {
