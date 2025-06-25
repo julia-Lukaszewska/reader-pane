@@ -1,22 +1,8 @@
 //-----------------------------------------------------------------------------
-// src/modules/reader/hooks/useRangeStreamer.js – optimized
+// src/modules/reader/hooks/useRangeStreamer.js
 //-----------------------------------------------------------------------------
-/**
- * React hook that returns a stable `streamRange([start, end])` function.
- *
- * Responsibilities
- * 1. Download a partial PDF (pages start–end) via RTK Query
- * 2. Render each page into an ImageBitmap (pdf.js helper)
- * 3. Store bitmaps in the in-memory LRU `BitmapCache`
- * 4. Register the pre-loaded chunk in `streamSlice` (max 3 chunks kept)
- * 5. Skip duplicate downloads (already cached or in-flight)
- * 6. Mark failed ranges and avoid retrying them
- * 7. Throttle stream bursts (e.g. rapid scrolling)
- */
-
 import { useCallback, useRef } from 'react'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-import { useLazyFetchPageRangeQuery } from '@/store/api/pdfStreamApi'
 import {
   setStreamStatus,
   addRenderedPage,
@@ -26,12 +12,12 @@ import {
   setError,
 } from '@/store/slices/streamSlice'
 import { useGetBookRangesQuery } from '@/store/api/booksPrivateApi'
+import { selectAccessToken } from '@/store/selectors/authSelectors'
 
 import { BitmapCache } from '@reader/utils/bitmapCache'
 import pdfjsRenderToBitmaps from '@reader/utils/pdfjsRenderToBitmaps'
 import { v4 as uuid } from 'uuid'
 import { selectFileUrl } from '@/store/selectors/readerSelectors'
-
 import throttle from 'lodash.throttle'
 
 export default function useRangeStreamer() {
@@ -39,14 +25,11 @@ export default function useRangeStreamer() {
   const store = useStore()
   const scale = useSelector(s => s.stream.scale)
   const fileUrl = useSelector(selectFileUrl)
-const bookId = useSelector(s => s.reader.bookId)
+  const bookId = useSelector(s => s.reader.bookId)
   const filename = fileUrl ? fileUrl.split('/').pop() : null
 
-const { data: ranges = [] } = useGetBookRangesQuery(bookId, { skip: !bookId })
-
-
-
-  const [fetchRange] = useLazyFetchPageRangeQuery()
+  const { data } = useGetBookRangesQuery(bookId, { skip: !bookId })
+  const ranges = data?.ranges ?? []
 
   const inFlightRef = useRef(new Set())
   const failedRef = useRef(new Set())
@@ -71,28 +54,35 @@ const { data: ranges = [] } = useGetBookRangesQuery(bookId, { skip: !bookId })
       }
 
       inFlightRef.current.add(chunkKey)
+      dispatch(setStreamStatus('streaming'))
 
       try {
-        dispatch(setStreamStatus('streaming'))
+        // Choose static pre-generated or dynamic
+        let blob
+        const rangeMeta = ranges.find(r => start >= r.start && end <= r.end)
+        const token = selectAccessToken(store.getState())
+        const url = rangeMeta
+          ? `${import.meta.env.VITE_API_URL}/books/storage/${rangeMeta.filename}`
+          : `${import.meta.env.VITE_API_URL}/books/storage/${filename}/pages?start=${start}&end=${end}`
+if (rangeMeta) {
+  console.log('[Streamer]  static range:', rangeMeta.filename, rangeMeta)
+} else {
+  console.log('[Streamer]  dynamic range:', { start, end })
+}
+        const res = await fetch(url, {
+          credentials: 'include',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
 
-             
-         const range = ranges.find(r => start >= r.start && end <= r.end)
-
-let blob
-
-//--- STATIC: pre-generated range file --------------------------------
-        if (range?.filename) {
-         
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/books/storage/${range.filename}`)
-  blob = await res.blob()
-
-//--- DYNAMIC: stream on demand ---------------------------------------
-   } else {
-          const response = await fetchRange({ filename, start, end })
-          blob = response.data
+        if (!res.ok) {
+          const msg = await res.text()
+          throw new Error(msg || 'stream failed')
         }
+        blob = await res.blob()
 
-        if (!(blob instanceof Blob)) throw new Error('Invalid Blob received')
+        if (!(blob instanceof Blob)) {
+          throw new Error('Invalid Blob received')
+        }
 
         const chunkSize = end - start + 1
         const pages = await pdfjsRenderToBitmaps(blob, {
@@ -110,7 +100,7 @@ let blob
               scale: scaleKey,
               pageNumber: globalPage,
               bitmapId: id,
-            }),
+            })
           )
         })
 
@@ -126,8 +116,8 @@ let blob
       } finally {
         inFlightRef.current.delete(chunkKey)
       }
-    }, 200), // 200ms throttle delay
-[filename, scale, dispatch, store, fetchRange, bookId, ranges]
+    }, 200),
+    [filename, scale, dispatch, store, bookId, ranges]
   )
 
   return streamRange
