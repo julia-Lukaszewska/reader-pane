@@ -70,20 +70,25 @@ export default function PDFPageControls() {
   const currentPage = useSelector(selectCurrentPage)
   const viewMode = useSelector(selectPageViewMode) // 'single' | 'double'
 
+  
   const step = viewMode === 'double' ? 2 : 1
-
-  const goTo = useCallback((n) => {
-    const page = Math.max(1, Math.min(totalPages, n))
-    dispatch(setCurrentPage(page))
+  
+  /**
+   * Navigate to a page number, clamped to valid range.
+   * @param {number} n - Target page number
+  */
+ const goTo = useCallback((n) => {
+   const page = Math.max(1, Math.min(totalPages, n))
+   dispatch(setCurrentPage(page))
   }, [dispatch, totalPages])
-
-  if (!loc.pathname.startsWith('/read') || !bookId || totalPages < 1) {
-    return null
-  }
 
   const prevDisabled = currentPage - step < 1
   const nextDisabled = currentPage + step > totalPages
-
+  
+  // Show only when on reader route and book/page data is valid
+  if (!loc.pathname.startsWith('/read') || !bookId || totalPages < 1) {
+    return null
+  }
   return (
     <Pagination>
       <button onClick={() => goTo(currentPage - step)} disabled={prevDisabled}>

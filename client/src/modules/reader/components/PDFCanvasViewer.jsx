@@ -42,8 +42,8 @@ export default function PDFCanvasViewer({
   sidebarOpen = false,
   direction = 'row',
 }) {
- const internalRef = useRef(null)
-const wrapper = containerRef || internalRef
+const fallbackRef = useRef(null)
+const wrapper = containerRef || fallbackRef
 
   const pageRefs = useRef({})
 console.log('visiblePages:', visiblePages)

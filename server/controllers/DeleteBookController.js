@@ -21,11 +21,24 @@ export const DeleteBookController = async (req, res) => {
     if (fileId) {
       try {
         await deleteFile(fileId)
+      console.log(`[DELETE] main file ${fileId}`)
       } catch (err) {
         console.warn('[GridFS DELETE ERROR]', err)
       }
     }
+    for (const r of book.file?.ranges || []) {
+      try {
+        await deleteFile(r.fileId)
+        console.log(`[DELETE] range ${r.filename}`)
 
+
+      } catch (err) {
+        console.warn('[GridFS DELETE ERROR]', err)
+      }
+    }
+    for (const r of book.file?.ranges || []) {
+      try { await deleteFile(r.fileId) } catch (err) { console.warn('[GridFS DELETE ERROR]', err) }
+    }
     await book.deleteOne()
     res.json({ message: 'Book removed' })
   } catch (err) {

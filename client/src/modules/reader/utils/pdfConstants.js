@@ -17,7 +17,7 @@ export const ZOOM_LEVELS = [0.5, 0.75, 1.0, 1.25, 1.5]
 //-----------------------------------------------------------------------------
 // Number of pages to fetch in a chunk (for streaming/rendering)
 //-----------------------------------------------------------------------------
-export const CHUNK_SIZE = 8
+export const CHUNK_SIZE = 24
 
 //-----------------------------------------------------------------------------
 // Maximum number of active chunks kept in memory (LRU-managed)

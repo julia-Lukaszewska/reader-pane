@@ -50,7 +50,19 @@ const bookSchema = new mongoose.Schema(
     // -------------------------------------------------------------------------
     file: {
       filename:  { type: String, required: true },                  // books_files.files.filename
-     fileId:   { type: mongoose.Types.ObjectId, required: true },
+         fileId:    { type: mongoose.Types.ObjectId, required: true },
+   ranges: {
+    type: [
+      {
+        start:   Number,
+        end:     Number,
+        filename: String,
+        fileId:  mongoose.Types.ObjectId,
+      },
+        ],
+        default: [],
+      },
+       rangeSize: { type: Number, default: 24 },
     },
 
     // -------------------------------------------------------------------------

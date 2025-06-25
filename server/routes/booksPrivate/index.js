@@ -9,7 +9,7 @@ import bookCollection from './booksCollection.js' // ← połączony plik
 import bookStats      from './bookStats.js'
 import bookForm       from './bookForm.js'
 import bookFileUrl    from './bookFileUrl.js'
-
+import bookRanges     from './bookRanges.js'
 const router = express.Router()
 
 //-----------------------------------------------------
@@ -28,7 +28,7 @@ router.use(passport.authenticate('jwt', { session: false }))
  * @description Retrieve the signed URL and file metadata for a book.
  */
 router.use('/', bookFileUrl)
-
+router.use('/', bookRanges)
 //-----------------------------------------------------
 //------ Collection + Single Book Endpoints
 //-----------------------------------------------------

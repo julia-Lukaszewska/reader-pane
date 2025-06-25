@@ -10,7 +10,7 @@ import express from 'express'
 import cors from 'cors'
 import checkBookOwner from '../../middlewares/checkBookOwner.js'
 import { getGridFsBucket } from '../../config/gridfs.js'
-import { StreamBookController } from '../../controllers/StreamBookController.js'
+import { fullFile } from '../../controllers/stream/fullFile.js'
 import { getCorsOptions } from '../../config/cors/index.js'
 
 //-----------------------------------------------------
@@ -77,7 +77,7 @@ router.get(
     next()
   },
   checkBookOwner,
-  StreamBookController
+   fullFile
 )
 
 export default router
