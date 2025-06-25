@@ -22,6 +22,7 @@ import { useOpenReader } from '@/modules/reader/hooks'
  * @returns {UseBookCardModalResult}
  */
 export function useBookCardModal(book, onClose) {
+  if (!book || !book._id) return null
   const [updateBook] = useUpdateBookMutation()
  
   const dispatch = useDispatch()

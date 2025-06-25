@@ -125,6 +125,7 @@ const Footer = styled.div`
  * @returns {JSX.Element}
  */
 const Tile = ({ book, onOpenPreview, onRemoveClick }) => {
+  if (!book || !book._id) return null
   const isManageMode = useSelector(selectIsManageMode)
 
   return (
