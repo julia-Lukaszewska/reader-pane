@@ -10,7 +10,7 @@ import useStartingPage      from '@/modules/reader/hooks/useStartingPage'
 import usePreloadController from '@/modules/reader/hooks/usePreloadController'
 import useVisiblePages      from '@/modules/reader/hooks/useVisiblePages'
 import useSaveProgress      from '@/modules/reader/hooks/useSaveProgress'
-
+import useCurrentRangeLoader from '@/modules/reader/hooks/useCurrentRangeLoader'
 import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
 import { selectBookById }          from '@/store/selectors/singleBookSelectors'
 import {
@@ -44,6 +44,7 @@ export default function ReaderSessionController({ children, containerRef }) {
   /* --- track visible pages (scroll / resize) ---------------------------- */
   useVisiblePages(containerRef, PAGE_HEIGHT)
   useSaveProgress()
+useCurrentRangeLoader(ready)
 
   /* --- update currentRange in Redux ------------------------------------- */
   const currentRange = useSelector(selectCurrentRange)
