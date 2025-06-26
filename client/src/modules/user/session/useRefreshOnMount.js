@@ -11,7 +11,7 @@ import { useRefreshMutation } from '@/store/api/authApi/authApi'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCredentials , setAuthChecked} from '@/store/slices/authSlice'
 import { selectAccessToken } from '@/store/selectors/authSelectors'
-
+import { getAuth } from '@/utils/storageService'
 
 export default function useRefreshOnMount() {
   const dispatch = useDispatch()
@@ -19,17 +19,21 @@ export default function useRefreshOnMount() {
   const accessToken = useSelector(selectAccessToken)
 
  useEffect(() => {
-  if (!accessToken) {
-    refresh()
-      .unwrap()
-      .then(({ access, user }) => {
-        dispatch(setCredentials({ access, user }))
-      })
-      .finally(() => {
-        dispatch(setAuthChecked(true))
-      })
-  } else {
-    dispatch(setAuthChecked(true)) 
-  }
-}, [accessToken, refresh, dispatch])
+    if (!accessToken) {
+      const stored = getAuth()
+      if (!stored?.access) {
+        refresh()
+          .unwrap()
+          .then(({ access, user }) => {
+            dispatch(setCredentials({ access, user }))
+          })
+          .finally(() => {
+            dispatch(setAuthChecked(true))
+          })
+          }
+    } else {
+      dispatch(setAuthChecked(true))
+    }
+  }, [accessToken, refresh, dispatch])
 }
+
