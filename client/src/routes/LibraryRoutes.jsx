@@ -2,7 +2,7 @@
  * @file LibraryRoutes.jsx
  * @description Route configuration for the Library section.
  */
-
+import { Outlet } from 'react-router-dom';
 import React, { lazy, Suspense } from 'react';
 import { LoadingSpinner } from '@/components';
 
