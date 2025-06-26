@@ -18,17 +18,18 @@ export default function useRefreshOnMount() {
   const [refresh] = useRefreshMutation()
   const accessToken = useSelector(selectAccessToken)
 
-  useEffect(() => {
-    if (!accessToken) {
-      refresh()
-        .unwrap()
-       .then(({ access, user }) => {
-  dispatch(setCredentials({ access, user }))
-   dispatch(setAuthChecked(true))   
-})
-        .catch(() => {dispatch(setAuthChecked(true))
-          // no action on failure
-        })
-    }
-  }, [accessToken, refresh, dispatch])
+ useEffect(() => {
+  if (!accessToken) {
+    refresh()
+      .unwrap()
+      .then(({ access, user }) => {
+        dispatch(setCredentials({ access, user }))
+      })
+      .finally(() => {
+        dispatch(setAuthChecked(true))
+      })
+  } else {
+    dispatch(setAuthChecked(true)) 
+  }
+}, [accessToken, refresh, dispatch])
 }
