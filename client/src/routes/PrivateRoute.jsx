@@ -22,9 +22,7 @@ import { LoadingSpinner } from '@/components';
 const PrivateRoute = () => {
   const { isLoggedIn, authChecked } = useAuth();
 
-  // Debug logs
-  console.log('[PRIVATE ROUTE] authChecked:', authChecked);
-  console.log('[PRIVATE ROUTE] isLoggedIn:', isLoggedIn);
+
 
   if (!authChecked) return <LoadingSpinner fullScreen />;
 

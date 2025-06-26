@@ -64,7 +64,7 @@ const router = createBrowserRouter([
     ],
   },
 ])
-console.log('[ROUTES] router configuration created:', router.routes);
+
 //-----------------------------------------------------------------------------
 // Component: AppRoutes
 //-----------------------------------------------------------------------------
@@ -75,6 +75,6 @@ console.log('[ROUTES] router configuration created:', router.routes);
  * @returns {JSX.Element}
  */
 export default function AppRoutes() {
-   console.log('[ROUTES] AppRoutes rendered (RouterProvider mounted)');
+   
   return <RouterProvider router={router} />
 }
