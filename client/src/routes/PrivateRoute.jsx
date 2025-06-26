@@ -1,14 +1,15 @@
 /**
  * @file PrivateRoute.jsx
  * @description
- * Wrapper for protecting private routes.
+ * Wrapper component that protects private routes.
  * Redirects unauthenticated users to the login page.
  */
 
-import React from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
-import { useAuth } from '@/modules/user/hooks'
-import { LoadingSpinner } from '@/components'
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '@/modules/user/hooks';
+import { LoadingSpinner } from '@/components';
+
 // -----------------------------------------------------------------------------
 // Component: PrivateRoute
 // -----------------------------------------------------------------------------
@@ -19,11 +20,15 @@ import { LoadingSpinner } from '@/components'
  * @returns {JSX.Element}
  */
 const PrivateRoute = () => {
-  const { isLoggedIn,  authChecked  } = useAuth()
+  const { isLoggedIn, authChecked } = useAuth();
 
-   if (!authChecked) return <LoadingSpinner fullScreen /> 
-   
-  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />
-}
+  // Debug logs
+  console.log('[PRIVATE ROUTE] authChecked:', authChecked);
+  console.log('[PRIVATE ROUTE] isLoggedIn:', isLoggedIn);
 
-export default PrivateRoute
+  if (!authChecked) return <LoadingSpinner fullScreen />;
+
+  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
+export default PrivateRoute;

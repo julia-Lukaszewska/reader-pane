@@ -135,7 +135,12 @@ export const store = configureStore({
   middleware,
   devTools: process.env.NODE_ENV !== 'production',
 })
-
+if (import.meta.env.DEV) {
+  store.subscribe(() => {
+    const { auth } = store.getState()
+    console.log('[STORE] auth.access:', auth.access, 'authChecked:', auth.authChecked)
+  })
+}
 export const persistor = persistStore(store)
 
 //-----------------------------------------------------------------------------

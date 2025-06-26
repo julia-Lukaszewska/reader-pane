@@ -14,6 +14,7 @@ const storage = localStorage
  * @param {Object} user - User object to store.
  */
 export const saveAuth = (access, user) => {
+  console.log('[STORAGE] saveAuth → access:', access, 'user:', user)
   storage.setItem('access', access)
   storage.setItem('user', JSON.stringify(user))
 }
@@ -22,6 +23,7 @@ export const saveAuth = (access, user) => {
  * Clears authentication data from localStorage.
  */
 export const clearAuth = () => {
+  console.log('[STORAGE] clearAuth – usuwam access i user z localStorage')
   storage.removeItem('access')
   storage.removeItem('user')
 }
@@ -34,6 +36,7 @@ export const clearAuth = () => {
 export const getAuth = () => {
   const access = storage.getItem('access')
   const userJson = storage.getItem('user')
+   console.log('[STORAGE] getAuth → access:', access, 'userJson:', userJson)
     if (!access || !userJson) return null
 
   try {

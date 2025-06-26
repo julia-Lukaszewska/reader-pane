@@ -62,6 +62,7 @@ export const authApi = createApi({
       query: () => ({
         url: '/auth/refresh',
         method: 'POST'
+        
       })
       // no invalidatesTags to avoid auto refetch
     }),

@@ -31,6 +31,7 @@ const authSlice = createSlice({
      */
     setCredentials(state, action) {
       state.access = action.payload.access
+      console.log('[AUTH] setCredentials → access set:', state.access)
     },
     /**
      * Clears the stored access token.
@@ -38,6 +39,7 @@ const authSlice = createSlice({
      */
     clearCredentials(state) {
       state.access = null
+      console.log('[AUTH] clearCredentials → access cleared')
     },
     /**
      * Sets the authChecked flag based on payload.
@@ -82,6 +84,7 @@ const authSlice = createSlice({
         authApi.endpoints.refresh.matchFulfilled,
         (state, { payload }) => {
           state.access = payload.access
+          console.log('[AUTH] refresh.matchFulfilled → new access:', payload.access)
            saveAuth(payload.access, payload.user)
         }
       )
