@@ -2,36 +2,45 @@ import { useOpenReader } from '@/modules/reader/hooks'
 import { useUpdateBookFlagsMutation } from '@/store/api/booksPrivateApi'
 
 /**
- * Hook providing book-related actions: open reader, toggle archive/favorite.
- * @param {object} book - Book entity with flags and _id properties
- * @returns {{openReader: function, toggleArchive: function, toggleFavorite: function}}
+ * Returns helpers for opening the reader and toggling archive / favorite flags.
+ *
+ * @param {object | undefined} book
+ * @returns {{
+ *   openReader: () => void,
+ *   toggleArchive: () => void,
+ *   toggleFavorite: () => void
+ * }}
  */
 export default function useBookActions(book) {
+  const id    = book?._id
+  const flags = book?.flags ?? {}
 
   const [updateFlags] = useUpdateBookFlagsMutation()
 
- const openReader = useOpenReader(book._id)
+  // Call hook unconditionally (rules of hooks); id may be undefined
+  const readerHook = useOpenReader(id)
 
-  /**
-   * Toggles the archived state of the book.
-   */
-const toggleArchive = () => {
-  const isArchived = book.flags?.isArchived
-  updateFlags({
-    id: book._id,
-    flags: {
-      isArchived: !isArchived,
-      isFavorited: false // reset favorites in archive
-    }
-  })
-}
+  const openReader = () => {
+    if (id) readerHook()
+  }
 
-  /**
-   * Toggles the favorited state of the book.
-   */
+  const toggleArchive = () => {
+    if (!id) return
+    updateFlags({
+      id,
+      flags: {
+        isArchived: !flags.isArchived,
+        isFavorited: false, // clear favorite when archiving
+      },
+    })
+  }
+
   const toggleFavorite = () => {
-    const isFavorited = book.flags?.isFavorited
-    updateFlags({ id: book._id, flags: { isFavorited: !isFavorited } })
+    if (!id) return
+    updateFlags({
+      id,
+      flags: { isFavorited: !flags.isFavorited },
+    })
   }
 
   return { openReader, toggleArchive, toggleFavorite }
