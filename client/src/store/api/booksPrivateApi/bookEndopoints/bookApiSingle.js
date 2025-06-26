@@ -55,8 +55,18 @@ export const bookApiSingle = booksApi.injectEndpoints({
       }),
       invalidatesTags: (_, __, { id }) => [{ type: 'Progress', id }],
       async onQueryStarted({ id, changes }, { dispatch, queryFulfilled }) {
-        const undo = patchBookCache(dispatch, id, book => Object.assign(book, changes))
-        try { await queryFulfilled } catch { undo() }
+    const patchResult = dispatch(
+  booksApi.util.updateQueryData('getBookById', id, draft => {
+    Object.assign(draft, changes)
+  })
+)
+
+try {
+  await queryFulfilled
+} catch {
+  patchResult.undo()
+}
+
       }
     }),
 
@@ -92,9 +102,7 @@ export const bookApiSingle = booksApi.injectEndpoints({
             delete draft.entities[id]
           })
         )
-        const patchOne = dispatch(
-          booksApi.util.updateQueryData('getBookById', id, () => undefined)
-        )
+      
         try {
           await queryFulfilled
         } catch {
