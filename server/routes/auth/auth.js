@@ -166,17 +166,18 @@ router.post('/refresh', async (req, res) => {
     console.log('[REFRESH] Token valid for user ID:', id)
    const user = await User.findById(id)
     const tokenEntry = user?.refresh.find(r => r.token === rt)
-    if (!tokenEntry || tokenEntry.exp < new Date()) {
-      return res.sendStatus(401)
-    }
+   if (!tokenEntry || tokenEntry.exp < new Date()) {
+  return res.status(401).json({ error: 'Expired or invalid refresh token' }) 
+}
+
 
     const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, { expiresIn: '15m' })
     const userData = await User.findById(id).select('-password')
    return res.json({ access: accessToken, user: userData }) 
-  } catch (err) {
-    console.error('[REFRESH] Invalid refresh token:', err.message)
-    return res.sendStatus(401)
-  }
+  }catch (err) {
+  console.error('[REFRESH] Invalid refresh token:', err.message)
+  return res.status(401).json({ error: 'Invalid or malformed refresh token' }) 
+}
 })
 
 
