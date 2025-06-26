@@ -35,30 +35,25 @@ export function useBookCardModal(book, onClose) {
   }, [book])
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => {
-      if (name in prev.meta) {
-        return { ...prev, meta: { ...prev.meta, [name]: value } }
+  const { name, value } = e.target
+  setForm((prev) => {
+    if (name in prev.meta) {
+      return { ...prev, meta: { ...prev.meta, [name]: value } }
+    }
+    if (name in prev.flags) {
+      const currentType = typeof prev.flags[name]
+      let parsed = value
+      if (currentType === 'boolean' && typeof value !== 'boolean') {
+        parsed = value === 'true' || value === true
+      } else if (currentType === 'number') {
+        parsed = Number(value)
       }
-      if (name in prev.flags) {
-        const currentType = typeof prev.flags[name]
-        const parsed =
-          currentType === 'boolean' ? value === 'true' :
-          currentType === 'number' ? Number(value) : value
-        return { ...prev, flags: { ...prev.flags, [name]: parsed } }
-      }
-      if (name in prev.stats) {
-        return {
-          ...prev,
-          stats: {
-            ...prev.stats,
-            [name]: typeof prev.stats[name] === 'number' ? Number(value) : value,
-          },
-        }
-      }
-      return prev
-    })
-  }
+      return { ...prev, flags: { ...prev.flags, [name]: parsed } }
+    }
+    return prev
+  })
+}
+
 
   const handleNotesChange = async (notesArray) => {
     setForm((prev) => ({
