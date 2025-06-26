@@ -126,6 +126,10 @@ const bookSchema = new mongoose.Schema(
       currentPage:    { type: Number, default: 1 },
       maxVisitedPage: { type: Number, default: 1 },
       isCompleted:    { type: Boolean, default: false },
+       currentRange: {
+      start: { type: Number, default: 1 },
+      end:   { type: Number, default: 1 },
+    },
     },
   },
   { timestamps: true }
