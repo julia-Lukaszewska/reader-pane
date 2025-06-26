@@ -9,7 +9,7 @@
 import { useEffect } from 'react'
 import { useRefreshMutation } from '@/store/api/authApi/authApi'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCredentials } from '@/store/slices/authSlice'
+import { setCredentials , setAuthChecked} from '@/store/slices/authSlice'
 import { selectAccessToken } from '@/store/selectors/authSelectors'
 
 
