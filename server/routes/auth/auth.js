@@ -41,7 +41,9 @@ const issueTokens = async (user, res) => {
     process.env.JWT_REFRESH_KEY,
     { expiresIn: '30d' }
   )
- // Save refresh token with expiry on the user
+   await User.updateOne({ _id: user._id }, { $pull: { refresh: { token: { $ne: null } } } })
+  user.refresh = []
+  // Save refresh token with expiry on the user
   user.refresh.push({
     token: refreshToken,
     exp: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
