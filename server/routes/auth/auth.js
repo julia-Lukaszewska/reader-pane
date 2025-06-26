@@ -61,6 +61,7 @@ const issueTokens = async (user, res) => {
     sameSite: 'None', // Changed from Strict to None for cross-origin
     path: '/',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    encode: v => v
   })
 
   res.json({ access: accessToken })
@@ -129,7 +130,7 @@ router.get('/me', passport.authenticate('jwt', { session: false }), async (req, 
 // -----------------------------------------------------------------------------
 
 router.post('/logout', async (req, res) => {
-  const { rt } = req.cookies
+   const rt = req.cookies.rt?.replace(/^"|"$/g, '')
 
   if (rt) {
     try {
@@ -139,7 +140,7 @@ router.post('/logout', async (req, res) => {
       console.error('[LOGOUT] Failed to verify token:', err.message)
     }
   }
- res.header('Access-Control-Allow-Credentials', 'true')
+
   res.clearCookie('rt', {
     httpOnly: true,
     secure: true,
@@ -156,29 +157,29 @@ router.post('/logout', async (req, res) => {
 router.post('/refresh', async (req, res) => {
   let rt = req.cookies.rt
   if (Array.isArray(rt)) rt = rt.slice(-1)[0]
-  if (typeof rt === 'string' && rt.includes(',')) rt = rt.split(',').pop().trim()
-  console.log('[REFRESH] Cookie received:', !!rt)
+  rt = typeof rt === 'string' ? rt.replace(/^"|"$/g, '').trim() : rt
 
   if (!rt) return res.status(401).json({ error: 'No refresh token.' })
 
   try {
     const { id } = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
-    console.log('[REFRESH] Token valid for user ID:', id)
-   const user = await User.findById(id)
-    const tokenEntry = user?.refresh.find(r => r.token === rt)
-   if (!tokenEntry || tokenEntry.exp < new Date()) {
-  return res.status(401).json({ error: 'Expired or invalid refresh token' }) 
-}
+    const user = await User.findById(id);
+    const entry = user?.refresh.find(r => r.token === rt)
 
+    if (!entry || entry.exp < new Date())
+      return res.status(401).json({ error: 'Expired or invalid refresh token' })
 
-    const accessToken = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, { expiresIn: '15m' })
-    const userData = await User.findById(id).select('-password')
-   return res.json({ access: accessToken, user: userData }) 
-  }catch (err) {
-  console.error('[REFRESH] Invalid refresh token:', err.message)
-  return res.status(401).json({ error: 'Invalid or malformed refresh token' }) 
-}
+    const access = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, {
+      expiresIn: '15m',
+    })
+    return res.json({ access, user: await User.findById(id).select('-password') })
+  } catch (err) {
+    console.error('[REFRESH]', err.message)
+    return res.status(401).json({ error: 'Invalid or malformed refresh token' })
+  }
 })
+
+
 
 
 // -----------------------------------------------------------------------------
