@@ -12,6 +12,7 @@ import useRefreshOnMount from '@user/session/useRefreshOnMount'
 import useBooksPreloadAfterLogin from '@user/session/useBooksPreloadAfterLogin'
 import useAuthCleanupOnLogout from '@user/session/useAuthCleanupOnLogout'
 import useAuthFinalizer from '@user/session/useAuthFinalizer'
+import useAuthFromStorage from '@user/session/useAuthFromStorage'
 //-----------------------------------------------------
 //------ AuthController Component
 //-----------------------------------------------------
@@ -21,7 +22,7 @@ import useAuthFinalizer from '@user/session/useAuthFinalizer'
  * @returns {null}
  */
 export default function AuthController() {
-
+ useAuthFromStorage()
   useRefreshOnMount()
   useBooksPreloadAfterLogin()
   useAuthCleanupOnLogout()
