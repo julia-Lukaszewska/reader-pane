@@ -65,17 +65,13 @@ const ModalWrapper = styled.div`
  */
 export default function BookCardPreviewModal({ book, onClose }) {
   //--- Hook for form state and handlers
-  const {
-    form,
-    isEditingMain,
-    isEditingNotes,
-    handleChange,
-    handleEdit,
-    handleCancel,
-    handleSave,
-    handleRead,
-    handleNotesChange,
-  } = useBookCardModal(book, onClose)
+const currentBook = useSelector(selectBookById(book?._id))
+
+  useEffect(() => {
+    if (!currentBook) onClose?.()
+  }, [currentBook, onClose])
+
+  const modalState = useBookCardModal(currentBook ?? {}, onClose)
 
   //--- Don't render modal if book is null
   if (!book) return null

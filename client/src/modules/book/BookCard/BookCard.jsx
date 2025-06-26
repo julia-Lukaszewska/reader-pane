@@ -14,7 +14,7 @@ import { selectIsManageMode } from '@/store/selectors'
 import { useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 import { toggleSelect, setPreviewBookId } from '@/store/slices/bookSlice'
 import useBookActions from '../hooks/useBookActions'
-
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 //-----------------------------------------------------------------------------
 // Component: BookCard
 //-----------------------------------------------------------------------------
@@ -46,6 +46,7 @@ const handleConfirmDelete = async () => {
 
   try {
     await deleteBook(book._id).unwrap()
+     dispatch(clearPreviewBook())
   } catch (err) {
     console.error('[Delete Error]', err)
   }
