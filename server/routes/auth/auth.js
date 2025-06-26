@@ -47,7 +47,12 @@ const issueTokens = async (user, res) => {
     exp: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   })
   await user.save()
-
+  res.clearCookie('rt', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+  })
   res.cookie('rt', refreshToken, {
     httpOnly: true,
     secure: true,
