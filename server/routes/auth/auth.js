@@ -152,7 +152,9 @@ router.post('/logout', async (req, res) => {
 // -----------------------------------------------------------------------------
 
 router.post('/refresh', async (req, res) => {
-  const { rt } = req.cookies
+  let rt = req.cookies.rt
+  if (Array.isArray(rt)) rt = rt.slice(-1)[0]
+  if (typeof rt === 'string' && rt.includes(',')) rt = rt.split(',').pop().trim()
   console.log('[REFRESH] Cookie received:', !!rt)
 
   if (!rt) return res.status(401).json({ error: 'No refresh token.' })

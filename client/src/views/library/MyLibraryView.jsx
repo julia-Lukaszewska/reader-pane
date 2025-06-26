@@ -40,9 +40,8 @@ const MyLibraryView = () => {
   const dispatch = useDispatch()
 
   const status = useSelector(selectBooksResult).status
-       useLibraryFilter('all')
- const allBooks = useSelector(selectVisibleBooks)
-const books = allBooks.filter(book => !book.flags?.isArchived)
+   useLibraryFilter('all')
+  const books = useSelector(selectVisibleBooks)
 
   const isOpen = useSelector(selectIsPreviewOpen)
   const previewId = useSelector(selectPreviewBookId)
