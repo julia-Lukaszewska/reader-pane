@@ -21,7 +21,7 @@ import useAuthFinalizer from '@user/session/useAuthFinalizer'
  * @returns {null}
  */
 export default function AuthController() {
-  useAuthFromStorage()
+
   useRefreshOnMount()
   useBooksPreloadAfterLogin()
   useAuthCleanupOnLogout()
