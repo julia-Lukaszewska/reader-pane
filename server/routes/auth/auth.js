@@ -139,7 +139,7 @@ router.post('/logout', async (req, res) => {
       console.error('[LOGOUT] Failed to verify token:', err.message)
     }
   }
-
+ res.header('Access-Control-Allow-Credentials', 'true')
   res.clearCookie('rt', {
     httpOnly: true,
     secure: true,
