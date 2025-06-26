@@ -29,7 +29,7 @@ const StyledApp = styled.div`
  * Wraps the application with global styles and renders the main route component.
  */
 const App = () => {
-
+  if (!authChecked) return <LoadingSpinner fullScreen />
   return (
     <>
       <GlobalStyles />
