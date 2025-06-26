@@ -23,12 +23,7 @@ export const selectAccessToken = state => {
  * @param {Object} state - Redux state
  * @returns {boolean} True if auth check is complete
  */
-export const selectAuthChecked = state => {
-  if (import.meta.env.DEV) {
-    console.log('[SELECTOR] selectAuthChecked →', state.auth.authChecked)
-  }
-  return state.auth.authChecked
-}
+export const selectAuthChecked = state => state.auth.authChecked
 
 /**
  * @function selectIsLoggedIn
@@ -37,10 +32,5 @@ export const selectAuthChecked = state => {
  */
 export const selectIsLoggedIn = createSelector(
   selectAccessToken,
-  access => {
-    if (import.meta.env.DEV) {
-      console.log('[SELECTOR] selectIsLoggedIn →', Boolean(access))
-    }
-    return Boolean(access)
-  }
+  access => Boolean(access)
 )

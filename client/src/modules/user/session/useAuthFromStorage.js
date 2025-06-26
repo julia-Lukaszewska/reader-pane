@@ -20,7 +20,7 @@ export default function useAuthFromStorage() {
       if (data?.access) {
         dispatch(setCredentials({ access: data.access, user: data.user  }))
       }
-      dispatch(setAuthChecked(true)) 
+    
     }
   }, [accessToken, dispatch])
 }
