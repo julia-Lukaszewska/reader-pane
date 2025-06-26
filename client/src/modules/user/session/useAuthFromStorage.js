@@ -7,7 +7,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAccessToken } from '@/store/selectors/authSelectors'
-import { setCredentials } from '@/store/slices/authSlice'
+import { setCredentials, setAuthChecked } from '@/store/slices/authSlice'
 import { getAuth } from '@/utils/storageService'
 
 export default function useAuthFromStorage() {
