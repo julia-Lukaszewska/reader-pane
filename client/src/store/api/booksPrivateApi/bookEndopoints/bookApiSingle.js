@@ -92,6 +92,9 @@ export const bookApiSingle = booksApi.injectEndpoints({
             delete draft.entities[id]
           })
         )
+        const patchOne = dispatch(
+          booksApi.util.updateQueryData('getBookById', id, () => undefined)
+        )
         try {
           await queryFulfilled
         } catch {
