@@ -1,34 +1,39 @@
 /**
  * @file AppRoutes.jsx
- * @description Defines application routes and layouts using React Router v6 with lazy loading and route protection.
+ * @description Defines application routes and layouts using React Router v6
+ *              with lazy loading and route protection.
  */
 
-import React, { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
-import { LoadingSpinner } from '@/components'
-import PrivateRoute from './PrivateRoute'
-import libraryRoutes from './LibraryRoutes'
+import React, { lazy, Suspense } from 'react';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+} from 'react-router-dom';
+import { LoadingSpinner } from '@/components';
+import PrivateRoute from './PrivateRoute';
+import libraryRoutes from './LibraryRoutes';
 
-//-----------------------------------------------------------------------------
-// Lazy-loaded Layouts
-//-----------------------------------------------------------------------------
-const HomeLayout    = lazy(() => import('@/layout/HomeLayout'))
-const MainLayout    = lazy(() => import('@/layout/MainLayout'))
-const ReaderLayout  = lazy(() => import('@/layout/ReaderLayout'))
+// -----------------------------------------------------------------------------
+// Lazy-loaded layouts
+// -----------------------------------------------------------------------------
+const HomeLayout   = lazy(() => import('@/layout/HomeLayout'));
+const MainLayout   = lazy(() => import('@/layout/MainLayout'));
+const ReaderLayout = lazy(() => import('@/layout/ReaderLayout'));
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Views
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 import {
   HomeView,
   ReaderView,
   SettingsView,
   PageNotFoundView,
-} from '@/views'
+} from '@/views';
 
-//-----------------------------------------------------------------------------
-// Route Configuration
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Route configuration
+// -----------------------------------------------------------------------------
 const router = createBrowserRouter([
   {
     path: '/',
@@ -39,7 +44,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     children: [
-      // Public Home page at '/'
+      // Public Home page  '/'
       {
         index: true,
         element: (
@@ -51,7 +56,7 @@ const router = createBrowserRouter([
         ),
       },
 
-      // Protected section under MainLayout
+      // Protected section  '/library', '/read', '/settings', …
       {
         element: (
           <Suspense fallback={<LoadingSpinner />}>
@@ -65,10 +70,10 @@ const router = createBrowserRouter([
           {
             element: <PrivateRoute />,
             children: [
-              // Library routes (spread if array)
+              // Library-related routes
               ...libraryRoutes,
 
-              // Reader route '/read/:bookId?'
+              // Reader  '/read/:bookId?'
               {
                 path: 'read/:bookId?',
                 element: (
@@ -78,36 +83,28 @@ const router = createBrowserRouter([
                     </ReaderLayout>
                   </Suspense>
                 ),
-                children: [
-                  { index: true, element: <ReaderView /> },
-                ],
+                children: [{ index: true, element: <ReaderView /> }],
               },
 
-              // Settings route '/settings'
-              {
-                path: 'settings',
-                element: <SettingsView />,
-              },
+              // Settings  '/settings'
+              { path: 'settings', element: <SettingsView /> },
             ],
           },
 
-          // Catch-all 404 for protected section
+          // Catch-all 404 inside protected section
           { path: '*', element: <PageNotFoundView /> },
         ],
       },
+
+   
     ],
   },
-])
+]);
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Component: AppRoutes
-//-----------------------------------------------------------------------------
-/**
- * Wraps the router configuration into a RouterProvider.
- *
- * @component
- * @returns {JSX.Element}
- */
+// -----------------------------------------------------------------------------
+/** Wraps the router configuration in a RouterProvider. */
 export default function AppRoutes() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }
