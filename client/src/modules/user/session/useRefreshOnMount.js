@@ -24,8 +24,9 @@ export default function useRefreshOnMount() {
         .unwrap()
        .then(({ access, user }) => {
   dispatch(setCredentials({ access, user }))
+   dispatch(setAuthChecked(true))   
 })
-        .catch(() => {
+        .catch(() => {dispatch(setAuthChecked(true))
           // no action on failure
         })
     }

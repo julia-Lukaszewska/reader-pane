@@ -8,7 +8,7 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '@/modules/user/hooks'
-
+import { LoadingSpinner } from '@/components'
 // -----------------------------------------------------------------------------
 // Component: PrivateRoute
 // -----------------------------------------------------------------------------
@@ -19,8 +19,10 @@ import { useAuth } from '@/modules/user/hooks'
  * @returns {JSX.Element}
  */
 const PrivateRoute = () => {
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn,  authChecked  } = useAuth()
 
+   if (!authChecked) return <LoadingSpinner fullScreen /> 
+   
   return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />
 }
 

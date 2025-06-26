@@ -18,8 +18,9 @@ export default function useAuthFromStorage() {
     if (!accessToken) {
       const data = getAuth()
       if (data?.access) {
-        dispatch(setCredentials({ access: data.access }))
+        dispatch(setCredentials({ access: data.access, user: data.user  }))
       }
+      dispatch(setAuthChecked(true)) 
     }
   }, [accessToken, dispatch])
 }
