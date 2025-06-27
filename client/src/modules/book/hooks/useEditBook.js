@@ -13,8 +13,10 @@ export default function useEditBook() {
       patchBook(bookId, updates)
       dispatch(updateFormFields(updates))
       await updateBook({ id: bookId, changes: updates }).unwrap()
+       return true
     } catch (err) {
       console.error('[EDIT BOOK ERROR]', err)
+         return false
     }
   }
 

@@ -12,30 +12,28 @@ export default function useBookCache() {
   const dispatch = useDispatch()
 
   /** shallow-merge only the meta/flags/stats keys */
-  const mergeBook = (target, changes) => {
+   const mergeBook = (target, changes) => {
     if (!target || typeof target !== 'object') return
-    if (changes.meta)  Object.assign(target.meta,  changes.meta)
-    if (changes.flags) Object.assign(target.flags, changes.flags)
-    if (changes.stats) Object.assign(target.stats, changes.stats)
+    if (changes.meta)  Object.assign(target.meta  ??= {}, changes.meta)
+    if (changes.flags) Object.assign(target.flags ??= {}, changes.flags)
+    if (changes.stats) Object.assign(target.stats ??= {}, changes.stats)
   }
 
+   
   const patchBook = (bookId, changes) => {
-    // 1) paginated list → draft.data is an array
+
     const undoList = dispatch(
       booksApi.util.updateQueryData('getBooks', undefined, draft => {
-        if (Array.isArray(draft?.data)) {
-          const book = draft.data.find(b => b._id === bookId)
-          mergeBook(book, changes)
-        }
+        if (!draft?.entities) return
+        const book = draft.entities[bookId]
+        if (book) mergeBook(book, changes)
       })
     )
 
     // 2) single-book cache → draft.data is the book object
     const undoOne = dispatch(
       booksApi.util.updateQueryData('getBookById', bookId, draft => {
-        if (draft?.data) {
-          mergeBook(draft.data, changes)
-        }
+        if (draft?.data) mergeBook(draft.data, changes)
       })
     )
 

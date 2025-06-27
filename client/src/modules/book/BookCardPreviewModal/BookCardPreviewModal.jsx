@@ -5,23 +5,20 @@
  *              and logic remain untouched; only the public API surface has been unified.
  */
 
-import React from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import styled, { keyframes } from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-
-//-----------------------------------------------------------------------------
-// Redux selectors & actions
-//----------------------------------------------------------------------------- 
+import { clearPreviewBook } from '@/store/slices/bookSlice'
+import { resetForm } from '@/store/slices/bookModalSlice'
 import {
-  selectPreviewBook,
+  selectPreviewBookId,
   selectBookModalForm,
   selectIsEditingMain,
   selectIsEditingNotes,
 } from '@/store/selectors'
-import { clearPreviewBook } from '@/store/slices/bookSlice'
-import { resetForm } from '@/store/slices/bookModalSlice'
 import useEditBook from '@/modules/book/hooks/useEditBook'
+import { useGetBookByIdQuery } from '@/store/api/booksPrivateApi'
 //-----------------------------------------------------------------------------
 // Domain hooks
 //----------------------------------------------------------------------------- 
@@ -103,57 +100,60 @@ const ModalGrid = styled.div`
 //-----------------------------------------------------------------------------
 // Component
 //----------------------------------------------------------------------------- 
-
 export default function BookCardPreviewModal() {
-  // Redux state ---------------------------------------------------------
-  const dispatch        = useDispatch()
-  const book            = useSelector(selectPreviewBook)
-  const form            = useSelector(selectBookModalForm)
-  const isEditingMain   = useSelector(selectIsEditingMain)
-  const isEditingNotes  = useSelector(selectIsEditingNotes)
-  const { editBook }    = useEditBook()
+  const dispatch = useDispatch()
 
+  // 1) Only render if previewBookId exists
+  const previewBookId = useSelector(selectPreviewBookId)
+  if (!previewBookId) return null
 
-  // Close handler --------------------------------------------------------------
-  const onClose = async () => {
+  // 2) Fetch book data via RTK Query
+  const { data: book } = useGetBookByIdQuery(previewBookId)
+  const form           = useSelector(selectBookModalForm)
+  const isEditingMain  = useSelector(selectIsEditingMain)
+  const isEditingNotes = useSelector(selectIsEditingNotes)
+  const { editBook }   = useEditBook()
+
+  // 3) Close modal (with optimistic save if editing)
+  const closeModal = useCallback(async () => {
     if (book && (isEditingMain || isEditingNotes)) {
       if (isEditingMain) {
-        const updates = {
-          meta: { ...form.meta, updatedAt: new Date().toISOString() },
+        const ok = await editBook(book._id, {
+          meta:  { ...form.meta,  updatedAt: new Date().toISOString() },
           flags: { ...form.flags },
           stats: { ...form.stats },
-        }
-        await editBook(book._id, updates)
+        })
+        if (!ok) return
       }
       if (isEditingNotes) {
-        const notesArray = Array.isArray(form.flags.notes) ? form.flags.notes : []
-        await editBook(book._id, { flags: { notes: notesArray } })
+        const notes = Array.isArray(form.flags.notes) ? form.flags.notes : []
+        const ok = await editBook(book._id, { flags: { notes } })
+        if (!ok) return
       }
     }
     dispatch(clearPreviewBook())
     dispatch(resetForm())
-  }
+  }, [book, form, isEditingMain, isEditingNotes, editBook, dispatch])
 
+  // Close on Escape key for extra UX polish
+  useEffect(() => {
+    const onKey = e => e.key === 'Escape' && closeModal()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [closeModal])
 
-  // Guard: render nothing when there is no book --------------------------------
-  if (!book) return null;
-
-  // Mount node (falls back to body) -------------------------------------------
+  // 4) Mount via portal
   const container = document.getElementById('modal-root') || document.body
-
-  // Portal render -------------------------------------------------------------
   return createPortal(
-    <Overlay onClick={onClose}>
-        <ModalWrapper onClick={e => e.stopPropagation()}>
+    <Overlay onClick={closeModal}>
+      <ModalWrapper onClick={e => e.stopPropagation()}>
         <ModalGrid>
-          <LeftSection />
-
-          <RightSection />
-
-          <FooterSection />
+          <LeftSection   book={book} />
+          <RightSection  book={book} />
+          <FooterSection book={book} onClose={closeModal} />
         </ModalGrid>
       </ModalWrapper>
     </Overlay>,
-    container,
-  );
+    container
+  )
 }

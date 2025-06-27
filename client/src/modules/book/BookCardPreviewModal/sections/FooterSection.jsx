@@ -14,6 +14,7 @@ import {
 import {
   setEditingMain,
   setForm,
+  resetForm,
 } from '@/store/slices/bookModalSlice'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 
@@ -78,28 +79,29 @@ const { editBook, isLoading } = useEditBook()
     dispatch(setEditingMain(false))
   }
 const handleSave = async () => {
-  if (!previewBookId) return
-  try {
-    const updates = {
-      meta: {
-        ...form.meta,
-        updatedAt: new Date().toISOString(),
-      },
-    }
-
-    await editBook(previewBookId, updates)
-    dispatch(setEditingMain(false))
-  } catch (error) {
-    console.error('Failed to save book meta:', error)
+  if (!previewBookId) return false
+  const updates = {
+    meta: {
+      ...form.meta,
+      updatedAt: new Date().toISOString(),
+    },
   }
+
+  const success = await editBook(previewBookId, updates)
+  if (success) {
+    dispatch(setEditingMain(false))
+  }
+  return success
 }
 
 
- const handleClose = async () => {
+
+
+const handleClose = async () => {
   if (isEditing) await handleSave()
   dispatch(clearPreviewBook())
+  dispatch(resetForm())
 }
-
 
   return (
     <Footer>

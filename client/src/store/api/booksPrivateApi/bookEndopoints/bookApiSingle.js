@@ -53,21 +53,38 @@ export const bookApiSingle = booksApi.injectEndpoints({
         method: 'PATCH',
         body: changes,
       }),
-      invalidatesTags: (_, __, { id }) => [{ type: 'Progress', id }],
+     
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'Books', id },
+        { type: 'Books', id: 'LIST' },
+        { type: 'BooksStatic', id: 'LIST' }, 
+        { type: 'Progress', id },
+      ],
+
+     
       async onQueryStarted({ id, changes }, { dispatch, queryFulfilled }) {
-    const patchResult = dispatch(
-  booksApi.util.updateQueryData('getBookById', id, draft => {
-    Object.assign(draft, changes)
-  })
-)
+        // 1) pojedyncza książka
+        const patchSingle = dispatch(
+          booksApi.util.updateQueryData('getBookById', id, draft => {
+            if (draft?.data) Object.assign(draft.data, changes)
+          })
+        )
 
-try {
-  await queryFulfilled
-} catch {
-  patchResult.undo()
-}
+      
+        const patchList = dispatch(
+          booksApi.util.updateQueryData('getBooks', undefined, draft => {
+            const book = draft?.entities?.[id]
+            if (book) Object.assign(book, changes)
+          })
+        )
 
-      }
+        try {
+          await queryFulfilled           
+        } catch {
+          patchSingle.undo()             
+          patchList.undo()
+        }
+      },
     }),
 
     //-------------------------------------------------

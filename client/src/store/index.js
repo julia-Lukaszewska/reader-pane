@@ -50,8 +50,8 @@ const bookPersistConfig = {
   key: 'book',
   storage,
   whitelist: [
-    'activeBookId',
-    'previewBookId',
+   
+    
     'libraryViewMode',
     'sortMode',
     'selectedIds',
