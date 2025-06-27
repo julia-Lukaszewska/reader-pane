@@ -4,10 +4,14 @@
  */
 
 import styled from 'styled-components'
+import { useSelector, useDispatch } from 'react-redux'
 import { FaHeart } from 'react-icons/fa'
 import { BookField } from '../fields/BookField'
 import { Input } from '../fields/TextInput'
-
+import { selectBookModalForm, selectIsEditingMain } from '@/store/selectors'
+import { updateMetaField } from '@/store/slices/bookModalSlice'
+import useBookActions from '@book/hooks/useBookActions'
+import useUpdateSingleBookFlag from '@book/hooks/useUpdateSingleBookFlag'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -86,33 +90,49 @@ const Placeholder = styled.span`
  * @param {boolean} props.isEditing - Determines if fields are editable
  * @param {Function} props.handleChange - Change handler for editable fields
  */
-const HeaderSection = ({ form, isEditing, handleChange }) => {
-  const { meta = {}, flags = {} } = form
+const HeaderSection = () => {
+ const dispatch = useDispatch()
+
+  const form = useSelector(selectBookModalForm)
+  const isEditing = useSelector(selectIsEditingMain)
+
+  const { meta = {}, flags = {}, _id } = form
   const isFavorited = flags.isFavorited ?? false
 
-  const toggleFavorite = () =>
-    handleChange({ target: { name: 'isFavorited', value: !isFavorited } })
+  const setIsFavorited = useUpdateSingleBookFlag(_id, 'isFavorited')
+
+  const toggleFavorite = () => {
+    setIsFavorited(!isFavorited)
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    dispatch(updateMetaField({ name, value }))
+  }
+
 
   return (
     <Wrapper>
       <TitleArea>
-        <BookField label='Title' $editable={isEditing}>
+        <BookField label="Title" $editable={isEditing}>
           {isEditing ? (
-            <Input name='title' value={meta.title || ''} onChange={handleChange} />
+            <Input name="title" value={meta.title || ''} onChange={handleChange} />
           ) : (
             meta.title || <Placeholder>—</Placeholder>
           )}
         </BookField>
       </TitleArea>
 
-      <YearArea label='Year of Publication'>
-        {meta.publishedYear || <Placeholder>—</Placeholder>}
+      <YearArea>
+        <BookField label="Year of Publication">
+          {meta.publishedYear || <Placeholder>—</Placeholder>}
+        </BookField>
       </YearArea>
 
       <AuthorArea>
-        <BookField label='Author' $editable={isEditing}>
+        <BookField label="Author" $editable={isEditing}>
           {isEditing ? (
-            <Input name='author' value={meta.author || ''} onChange={handleChange} />
+            <Input name="author" value={meta.author || ''} onChange={handleChange} />
           ) : (
             meta.author || <Placeholder>—</Placeholder>
           )}
@@ -121,9 +141,9 @@ const HeaderSection = ({ form, isEditing, handleChange }) => {
 
       <HeartArea>
         <HeartButton
-          type='button'
+          type="button"
           $active={isFavorited}
-          title={isFavorited ? 'delete from favorites' : 'add to favorites'}
+          title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
           onClick={toggleFavorite}
         >
           <FaHeart />
@@ -132,5 +152,4 @@ const HeaderSection = ({ form, isEditing, handleChange }) => {
     </Wrapper>
   )
 }
-
 export default HeaderSection

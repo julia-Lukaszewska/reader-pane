@@ -5,8 +5,10 @@
 
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectBookModalForm } from '@/store/selectors'
+import { updateFlagField } from '@/store/slices/bookModalSlice'
 import NoteItem from './NoteItem'
-
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -43,12 +45,10 @@ function ensureId(notes) {
  * @param {Function} props.handleNotesChange - Callback to save notes externally
  * @param {boolean} [props.readOnly=false] - If true, disables editing
  */
-export default function NotesSection({
-  form,
-  handleNotesChange,
-  readOnly = false,
-}) {
-  //--- Initialize notes state with fallback if missing
+export default function NotesSection({ readOnly = false }) {
+  const dispatch = useDispatch()
+  const form = useSelector(selectBookModalForm)
+
   const [localNotes, setLocalNotes] = useState(() =>
     ensureId(
       Array.isArray(form.flags?.notes) && form.flags.notes.length > 0
@@ -57,7 +57,6 @@ export default function NotesSection({
     )
   )
 
-  //--- Update localNotes when form.notes changes
   useEffect(() => {
     setLocalNotes(
       ensureId(
@@ -68,14 +67,12 @@ export default function NotesSection({
     )
   }, [form.flags?.notes])
 
-  //--- Save updated note
   const handleNoteSave = (id, value) => {
     const updated = [{ id, text: value, createdAt: new Date().toISOString() }]
     setLocalNotes(updated)
-    if (handleNotesChange) handleNotesChange(updated)
+    dispatch(updateFlagField({ name: 'notes', value: updated }))
   }
 
-  //--- Get the first (and only) note
   const note = localNotes[0]
 
   return (

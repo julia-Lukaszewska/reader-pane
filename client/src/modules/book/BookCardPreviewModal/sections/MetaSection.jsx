@@ -13,6 +13,9 @@ import CustomSelectInput from '@book/BookCardPreviewModal/fields/CustomSelectInp
 import { TagsInput } from '../fields/TagsInput'
 import TagsSection from './TagsSection'
 
+import { selectBookModalForm, selectIsEditingMain } from '@/store/selectors'
+import { updateMetaField } from '@/store/slices/bookModalSlice'
+import { useDispatch, useSelector } from 'react-redux'
 // -----------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------
@@ -64,17 +67,16 @@ const TagsArea = styled(BookField)` grid-area: tags; `
  * @param {Function} props.handleChange - Callback for handling field changes
  * @returns {JSX.Element}
  */
-const MetaSection = ({ form, isEditing, handleChange }) => {
+const MetaSection = () => {
+  const dispatch = useDispatch()
+  const form = useSelector(selectBookModalForm)
+  const isEditing = useSelector(selectIsEditingMain)
   const meta = useMemo(() => form?.meta || {}, [form?.meta])
 
-  useEffect(() => {
-    if (!meta || Object.keys(meta).length === 0) {
-      console.log('[MetaSection] meta is empty at mount')
-    } else {
-      console.log('[MetaSection] meta:', meta)
-      console.log('[MetaSection] meta.addedAt:', meta.addedAt)
-    }
-  }, [meta])
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    dispatch(updateMetaField({ name, value }))
+  }
 
   return (
     <Wrapper>

@@ -37,6 +37,7 @@ import readerReducer from './slices/readerSlice'
 import mainUiReducer from './slices/mainUiSlice'
 import authReducer from './slices/authSlice'
 import streamReducer from './slices/streamSlice'
+import bookModalReducer from './slices/bookModalSlice'
 
 //-----------------------------------------------------------------------------
 // Persistence Configurations
@@ -88,6 +89,7 @@ const rootReducer = combineReducers({
   reader: persistReducer(readerPersistConfig, readerReducer),
   auth: authReducer, // auth is kept in memory only
   stream: streamReducer,
+   bookModal: bookModalReducer,
   [booksApi.reducerPath]: booksApi.reducer,
   [externalApi.reducerPath]: externalApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
@@ -135,12 +137,7 @@ export const store = configureStore({
   middleware,
   devTools: process.env.NODE_ENV !== 'production',
 })
-if (import.meta.env.DEV) {
-  store.subscribe(() => {
-    const { auth } = store.getState()
-    console.log('[STORE] auth.access:', auth.access, 'authChecked:', auth.authChecked)
-  })
-}
+
 export const persistor = persistStore(store)
 
 //-----------------------------------------------------------------------------

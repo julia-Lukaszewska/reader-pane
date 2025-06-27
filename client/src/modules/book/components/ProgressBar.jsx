@@ -92,12 +92,7 @@ export default function ProgressBar({ bookId, totalPages }) {
 
   const value = mode === 'max' ? stats.maxVisitedPage : stats.currentPage
 
-  if (bookId) {
-    console.log(
-      `[ProgressBar] Book ${bookId} progress from:`,
-      hasStats ? 'cache' : 'backend'
-    )
-  }
+  
 
   const pct =
     totalPages >= 2

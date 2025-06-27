@@ -7,7 +7,8 @@ import styled from 'styled-components'
 import HeaderSection from './HeaderSection'
 import MetaSection from './MetaSection'
 import NotesSection from './NotesSection'
-
+import { useSelector } from 'react-redux'
+import { selectIsEditingMain } from '@/store/selectors'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -52,35 +53,15 @@ const Wrapper = styled.div`
  * @param {Function} props.handleNotesChange - Callback for note save
  * @param {Function} props.handleCancel - Cancel editing notes
  */
-export default function RightSection({
-  form,
-  isEditingNotes,
-  isEditingMain,
-  handleChange,
-  handleEdit,
-  handleNotesChange,
-  handleCancel,
-}) {
+export default function RightSection(){
+const isEditingMain = useSelector(selectIsEditingMain)
+
   return (
     <Wrapper $editing={isEditingMain}>
-      <HeaderSection
-        form={form}
-        isEditing={isEditingMain}
-        handleChange={handleChange}
-      />
-      <MetaSection
-        form={form}
-        isEditing={isEditingMain}
-        handleChange={handleChange}
-      />
+      <HeaderSection />
+      <MetaSection  />
       {!isEditingMain && (
-        <NotesSection
-          form={form}
-          isEditingNotes={isEditingNotes}
-          handleNotesChange={handleNotesChange}
-          handleEdit={handleEdit}
-          handleCancel={handleCancel}
-        />
+     <NotesSection />
       )}
     </Wrapper>
   )

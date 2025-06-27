@@ -3,13 +3,13 @@
  * @description
  * Redux slice for managing JWT access token after login and token refresh.
  * Provides actions to store and clear token used in authenticated requests,
-* and flag when auth check is complete.
-
+ * and flag when auth check is complete.
  */
 
 import { createSlice } from '@reduxjs/toolkit'
 import { authApi } from '@/store/api/authApi/authApi'
 import { saveAuth, clearAuth } from '@/utils/storageService'
+
 //----------------------------------------------------------------------------- 
 // Initial State
 //-----------------------------------------------------------------------------  
@@ -31,7 +31,6 @@ const authSlice = createSlice({
      */
     setCredentials(state, action) {
       state.access = action.payload.access
-      console.log('[AUTH] setCredentials → access set:', state.access)
     },
     /**
      * Clears the stored access token.
@@ -68,7 +67,7 @@ const authSlice = createSlice({
         (state, { payload }) => {
           state.access = payload.access
           state.authChecked = true
-           saveAuth(payload.access, payload.user)
+          saveAuth(payload.access, payload.user)
         }
       )
       .addMatcher(
@@ -76,14 +75,14 @@ const authSlice = createSlice({
         (state, { payload }) => {
           state.access = payload.access
           state.authChecked = true
-           saveAuth(payload.access, payload.user)
+          saveAuth(payload.access, payload.user)
         }
       )
       .addMatcher(
         authApi.endpoints.refresh.matchFulfilled,
         (state, { payload }) => {
           state.access = payload.access
-           saveAuth(payload.access, payload.user)
+          saveAuth(payload.access, payload.user)
         }
       )
       .addMatcher(
@@ -91,7 +90,7 @@ const authSlice = createSlice({
         state => {
           state.access = null
           state.authChecked = true
-           clearAuth()
+          clearAuth()
         }
       )
   },
@@ -105,7 +104,7 @@ export const {
   clearCredentials,
   setAuthChecked,
   markAuthChecked,
-  resetAuth,         
+  resetAuth,
 } = authSlice.actions
 
 export default authSlice.reducer

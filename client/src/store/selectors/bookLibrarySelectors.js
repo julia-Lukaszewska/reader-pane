@@ -138,7 +138,10 @@ export const selectLastOpenedBookId = (state) => state.book.lastOpenedBookId
  * Returns the ID of the previewed book.
  */
 export const selectPreviewBookId = (state) => state.book.previewBookId
-
+export const selectPreviewBook = createSelector(
+  [selectPreviewBookId, selectBooksData],
+  (id, data) => booksAdapter.getSelectors().selectById(data, id)
+)
 /**
  * Returns true if the book preview modal is open.
  */

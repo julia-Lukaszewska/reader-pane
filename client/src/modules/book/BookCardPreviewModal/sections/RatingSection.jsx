@@ -12,14 +12,13 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import ProgressBar from '@book/components/ProgressBar'
 import RatingStars from '@/components/common/RatingStars'
-import {
-  useGetBookByIdQuery,
-  useUpdateBookRatingMutation,
-} from '@/store/api/booksPrivateApi'
-import { selectBookById } from '@/store/selectors'
+import { useUpdateBookRatingMutation} from '@/store/api/booksPrivateApi'
+import { selectBookById, selectPreviewBookId, selectBookModalForm } from '@/store/selectors'
+import { updateFlagField } from '@/store/slices/bookModalSlice'
+import {useOpenReader} from '@reader/hooks'
 
 // -----------------------------------------------------------------------------
 // Styled Components
@@ -90,40 +89,28 @@ const ProgressWrapper = styled.div`
  * @param {Function} props.handleRead - Callback when the "Read" button is clicked
  * @returns {JSX.Element}
  */
-export default function RatingSection({ form, onChange, handleRead }) {
 
-  const bookId = form._id
+export default function RatingSection() {
+  const dispatch = useDispatch()
 
-  // Prefer cached book data to avoid unnecessary queries
-  const cachedBook = useSelector((state) =>
-    selectBookById(bookId)(state)
-  )
-
-  const { data: bookData } = useGetBookByIdQuery(bookId, {
-    skip: !bookId || !!cachedBook,
-  })
-
-  const book = cachedBook ?? bookData
-  const [updateBookRating] = useUpdateBookRatingMutation()
+  const bookId = useSelector(selectPreviewBookId)
+  const book = useSelector((state) => selectBookById(bookId)(state))
+  const form = useSelector(selectBookModalForm)
+const openReader = useOpenReader(bookId)
 
   const rating = form.flags?.rating ?? 0
   const totalPages = book?.meta?.totalPages ?? 0
 
-  /**
-   * Optimistically updates book rating locally and in the cache.
-   *
-   * @param {number} value - New rating value
-   */
-const setRating = (value) => {
-  handleFlagFieldChange('rating', value)
-  updateBookRating({ id: bookId, rating: value })
-}
+  const [updateBookRating] = useUpdateBookRatingMutation()
 
-
+  const setRating = (value) => {
+    dispatch(updateFlagField({ name: 'rating', value }))
+    updateBookRating({ id: bookId, rating: value })
+  }
 
   return (
     <RatingGrid>
-      <ReadButton onClick={handleRead}>Read</ReadButton>
+      <ReadButton onClick={openReader}>Read</ReadButton>
 
       <Row>
         <RatingStars

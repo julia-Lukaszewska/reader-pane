@@ -4,7 +4,8 @@
  */
 
 import styled from 'styled-components'
-
+import { useSelector } from 'react-redux'
+import { selectBookModalForm } from '@/store/selectors'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -47,7 +48,10 @@ const Img = styled.img`
  * @param {string} props.cover - URL of the cover image
  * @param {string} props.title - Book title (used for alt text)
  */
-export default function CoverSection({ cover, title }) {
+export default function CoverSection() {
+    const form = useSelector(selectBookModalForm)
+  const cover = form?.meta?.cover
+  const title = form?.meta?.title ?? 'Book cover'
   return (
     <CoverWrapper>
       {cover ? (

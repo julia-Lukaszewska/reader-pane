@@ -50,19 +50,14 @@ const SectionArea = styled.div`
  * @param {Function} props.handleChange - Form field change handler
  * @param {Function} props.handleRead - Handler for "Mark as read" or similar action
  */
-const LeftSection = ({ form, isEditing, handleChange, handleRead }) => (
+const LeftSection = () => (
   <LeftBox>
     <SectionArea style={{ gridArea: 'cover' }}>
-      <CoverSection cover={form.meta.cover} title={form.meta.title} />
+      <CoverSection />
     </SectionArea>
 
     <SectionArea style={{ gridArea: 'rating' }}>
-      <RatingSection
-        form={form}
-        isEditing={isEditing}
-        onChange={handleChange}
-        handleRead={handleRead}
-      />
+      <RatingSection />
     </SectionArea>
   </LeftBox>
 )

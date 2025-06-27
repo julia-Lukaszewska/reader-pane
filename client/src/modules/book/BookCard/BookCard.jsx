@@ -10,14 +10,19 @@ import Tile from './Tile'
 import ListItem from './ListItem'
 import TableRow from './TableRow'
 import { selectIsManageMode } from '@/store/selectors'
-import { toggleSelect, setPreviewBookId, setConfirmDelete } from '@/store/slices/bookSlice'
+import {
+  toggleSelect,
+  setPreviewBookId,
+  setConfirmDelete,
+} from '@/store/slices/bookSlice'
+import { setForm } from '@/store/slices/bookModalSlice'
 import useBookActions from '../hooks/useBookActions'
+
 //-----------------------------------------------------------------------------
 // Component: BookCard
 //-----------------------------------------------------------------------------
 
 const BookCard = ({ book, viewType }) => {
-
   const dispatch = useDispatch()
   const isManageMode = useSelector(selectIsManageMode)
   const { openReader } = useBookActions(book)
@@ -25,20 +30,24 @@ const BookCard = ({ book, viewType }) => {
   //--- Toggle book selection
   const handleSelect = () => dispatch(toggleSelect(book._id))
 
-  //--- Open preview modal
+  //--- Open preview modal (only if not in manage mode)
   const handleOpenPreview = () => {
-    if (!isManageMode) dispatch(setPreviewBookId(book._id))
+    if (isManageMode) return
+    dispatch(setPreviewBookId(book._id))
+    dispatch(setForm(book)) // kluczowe!
   }
 
-  //--- Show confirmation modal
+  //--- Show confirmation modal for delete
   const handleRemoveClick = () => {
-    dispatch(setConfirmDelete({
-      id: book._id,
-      variant: book.flags?.isArchived ? 'permanent-delete' : 'library'
-    }))
+    dispatch(
+      setConfirmDelete({
+        id: book._id,
+        variant: book.flags?.isArchived ? 'permanent-delete' : 'library',
+      })
+    )
   }
 
-  //--- Common props for all view types
+  //--- Common props passed to view components
   const commonProps = {
     book,
     onSelect: handleSelect,
@@ -50,9 +59,9 @@ const BookCard = ({ book, viewType }) => {
 
   return (
     <>
-      {viewType === 'grid' && <Tile {...commonProps} onClick={handleOpenPreview} />}
-      {viewType === 'list' && <ListItem {...commonProps} onClick={handleOpenPreview} />}
-      {viewType === 'table' && <TableRow {...commonProps} onClick={handleOpenPreview} />}
+      {viewType === 'grid' && <Tile {...commonProps} />}
+      {viewType === 'list' && <ListItem {...commonProps} />}
+      {viewType === 'table' && <TableRow {...commonProps} />}
     </>
   )
 }

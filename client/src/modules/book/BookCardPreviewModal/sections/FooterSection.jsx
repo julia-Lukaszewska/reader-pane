@@ -4,12 +4,23 @@
  */
 
 import styled from 'styled-components'
+import useEditBook from '@/modules/book/hooks/useEditBook'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectIsEditingMain,
+  selectBookModalForm,
+  selectPreviewBookId,
+} from '@/store/selectors'
+import {
+  setEditingMain,
+  setForm,
+} from '@/store/slices/bookModalSlice'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
 
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
 
-//--- Wrapper for the modal footer
 const Footer = styled.div`
   grid-area: footer;
   display: flex;
@@ -23,22 +34,17 @@ const Footer = styled.div`
   backdrop-filter: blur(12px) saturate(115%);
 `
 
-//--- Action button (primary or secondary style)
 const Button = styled.button`
   padding: 0.5em 1.8em;
   border: none;
-
   background: ${({ $primary }) => $primary
     ? 'var(--gradient-main-v6), linear-gradient(90deg,rgba(40,130,255,.32),rgba(100,190,255,.18))'
     : 'rgba(255,255,255,0.07)'};
-
   color: ${({ $primary }) => $primary ? '#fff' : 'var(--color-light-0)'};
   font-weight: 600;
-
   box-shadow: ${({ $primary }) => $primary
     ? '0 0 18px 1.5px rgba(34,124,255,0.14)'
     : '0 0 6px 0 rgba(0,0,0,0.08)'};
-
   transition: background .13s, box-shadow .15s, filter .14s;
   cursor: pointer;
   filter: blur(0) brightness(1.04);
@@ -53,40 +59,62 @@ const Button = styled.button`
 `
 
 //-----------------------------------------------------------------------------
-// Component: FooterSection
+// Component
 //-----------------------------------------------------------------------------
 
-/**
- * Renders the footer section with action buttons for the book preview modal.
- *
- * @component
- * @param {Object} props
- * @param {boolean} props.isEditing - Whether edit mode is active.
- * @param {Function} props.onCancel - Cancel edit action.
- * @param {Function} props.onSave - Save changes action.
- * @param {Function} props.onEdit - Enter edit mode.
- * @param {Function} props.onClose - Close the modal.
- */
-const FooterSection = ({
-  isEditing,
-  onCancel,
-  onSave,
-  onEdit,
-  onClose
-}) => (
-  <Footer>
-    {isEditing ? (
-      <>
-        <Button onClick={onCancel}>Cancel</Button>
-        <Button $primary onClick={onSave}>Save Changes</Button>
-      </>
-    ) : (
-      <>
-        <Button onClick={onClose}>Close</Button>
-        <Button $primary onClick={onEdit}>Edit</Button>
-      </>
-    )}
-  </Footer>
-)
+const FooterSection = () => {
+   const dispatch = useDispatch()
+  const isEditing = useSelector(selectIsEditingMain)
+  const form = useSelector(selectBookModalForm)
+  const previewBookId = useSelector(selectPreviewBookId)
+const { editBook, isLoading } = useEditBook()
+
+  const handleEdit = () => {
+    dispatch(setEditingMain(true))
+  }
+
+  const handleCancel = () => {
+    dispatch(setForm(form)) // restores current snapshot
+    dispatch(setEditingMain(false))
+  }
+const handleSave = async () => {
+  if (!previewBookId) return
+  try {
+    const updates = {
+      meta: {
+        ...form.meta,
+        updatedAt: new Date().toISOString(),
+      },
+    }
+
+    await editBook(previewBookId, updates)
+    dispatch(setEditingMain(false))
+  } catch (error) {
+    console.error('Failed to save book meta:', error)
+  }
+}
+
+
+  const handleClose = () => {
+    dispatch(clearPreviewBook())
+  }
+
+
+  return (
+    <Footer>
+      {isEditing ? (
+        <>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button $primary onClick={handleSave}>Save Changes</Button>
+        </>
+      ) : (
+        <>
+          <Button onClick={handleClose}>Close</Button>
+          <Button $primary onClick={handleEdit}>Edit</Button>
+        </>
+      )}
+    </Footer>
+  )
+}
 
 export default FooterSection

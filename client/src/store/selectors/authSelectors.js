@@ -11,9 +11,6 @@ import { createSelector } from 'reselect'
  * @returns {string|null} JWT access token or null if not set
  */
 export const selectAccessToken = state => {
-  if (import.meta.env.DEV) {
-    console.log('[SELECTOR] selectAccessToken →', state.auth.access)
-  }
   return state.auth.access
 }
 
@@ -28,6 +25,7 @@ export const selectAuthChecked = state => state.auth.authChecked
 /**
  * @function selectIsLoggedIn
  * @description Returns true if the user is logged in (access token exists).
+ * @param {Object} state - Redux state
  * @returns {boolean}
  */
 export const selectIsLoggedIn = createSelector(
