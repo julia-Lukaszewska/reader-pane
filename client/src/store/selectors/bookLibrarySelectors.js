@@ -54,7 +54,15 @@ export const selectBookStaticById = (id) =>
     booksApi.endpoints.getBooksStatic.select(),
     (res) => res?.data ? booksAdapter.getSelectors().selectById(res.data, id) : undefined
   )
-
+/**
+ * Returns a book by ID from normalized getBooks query.
+ * @param {string} id - Book ID
+ */
+export const selectBookById = (id) =>
+  createSelector(
+    selectBooksData,
+    (data) => booksAdapter.getSelectors().selectById(data, id)
+  )
 //-----------------------------------------------------------------------------
 // Library Filtered View
 //-----------------------------------------------------------------------------

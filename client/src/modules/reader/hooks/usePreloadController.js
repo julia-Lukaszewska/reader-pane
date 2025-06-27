@@ -10,7 +10,7 @@ import {
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
 import { selectBookId }      from '@/store/selectors/readerSelectors'
-import { selectBookById }    from '@/store/selectors/singleBookSelectors'
+import { selectBookById }    from '@/store/selectors'
 import { useGetBookRangesQuery } from '@/store/api/booksPrivateApi'  
 import { CHUNK_SIZE }        from '@reader/utils/pdfConstants'
 import useRangeStreamer      from './useRangeStreamer'

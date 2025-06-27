@@ -5,22 +5,18 @@
  * Uses selector-based filtering and sets the correct library filter on mount.
  */
 
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   selectBooksResult,
   selectVisibleBooks,
   selectIsPreviewOpen,
-  selectPreviewBookId,
-    selectConfirmDeleteId,
-  selectConfirmDeleteVariant,
-  selectBookById,
 } from '@/store/selectors'
-import { clearPreviewBook, clearConfirmDelete, setConfirmDelete } from '@/store/slices/bookSlice'
+import { setConfirmDelete } from '@/store/slices/bookSlice'
 import { useLibraryFilter } from '@library/hooks'
 
-import { useUpdateBookMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi'
+import { useUpdateBookMutation } from '@/store/api/booksPrivateApi'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import ConfirmModal from '@/components/ConfirmModal'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
@@ -51,20 +47,15 @@ const Container = styled.div`
 const ArchiveView = () => {
   const dispatch = useDispatch()
 
-
- useLibraryFilter('archived')
+  useLibraryFilter('archived')
 
   const { status } = useSelector(selectBooksResult)
   const books = useSelector(selectVisibleBooks)
 
   const isOpen = useSelector(selectIsPreviewOpen)
-  const confirmId = useSelector(selectConfirmDeleteId)
-  const confirmVariant = useSelector(selectConfirmDeleteVariant)
-  const confirmBook = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
 
   const [updateBook] = useUpdateBookMutation()
-  const [deleteBook] = useDeleteBookMutation()
-  const [isDeleting, setDeleting] = useState(false)
+
   if (status === 'pending' || status === 'uninitialized') {
     return <LoadingSpinner />
   }
@@ -89,18 +80,6 @@ const ArchiveView = () => {
   /**
    * Permanently delete a book after confirmation.
    */
-  const handleDelete = async () => {
-    if (!confirmBook || isDeleting) return
-    setDeleting(true)
-    try {
-      await deleteBook(confirmBook._id).unwrap()
-      dispatch(clearPreviewBook())
-    } catch (err) {
-      console.error('Delete error:', err)
-    }
-    setDeleting(false)
-    dispatch(clearConfirmDelete())
-  }
 
   return (
     <Container>
@@ -111,15 +90,7 @@ const ArchiveView = () => {
         hideAddTile
       />
 
-      {confirmId && confirmBook && (
-        <ConfirmModal
-          variant={confirmVariant}
-          bookTitle={confirmBook.meta.title}
-          onConfirm={handleDelete}
-          onCancel={() => dispatch(clearConfirmDelete())}
-          isLoading={isDeleting}
-        />
-      )}
+      <ConfirmModal />
 
       {isOpen && <BookCardPreviewModal />}
     </Container>

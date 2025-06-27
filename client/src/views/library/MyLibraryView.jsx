@@ -3,25 +3,18 @@
  * @description Displays non-archived books in the selected view mode.
  */
 
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useLibraryFilter } from '@library/hooks'
 import {
-
   selectBooksResult,
   selectIsPreviewOpen,
-
-    selectConfirmDeleteId,
-  selectConfirmDeleteVariant,
-  selectBookById,
 } from '@/store/selectors'
 
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { LoadingSpinner, ConfirmModal } from '@/components'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
-import { clearPreviewBook, clearConfirmDelete } from '@/store/slices/bookSlice'
-import { useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 
 /* --------------------------------------------------------------------------- */
 /*  STYLED COMPONENTS                                                          */
@@ -41,29 +34,9 @@ const Container = styled.div`
 
 const MyLibraryView = () => {
   
-  const dispatch = useDispatch()
-
+  useLibraryFilter('all')
   const status = useSelector(selectBooksResult).status
-   useLibraryFilter('all')
-   const isOpen = useSelector(selectIsPreviewOpen)
-  const confirmId = useSelector(selectConfirmDeleteId)
-  const confirmVariant = useSelector(selectConfirmDeleteVariant)
-  const confirmBook = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
-  const [deleteBook] = useDeleteBookMutation()
-  const [isDeleting, setDeleting] = useState(false)
-
-  const handleDelete = async () => {
-    if (!confirmBook || isDeleting) return
-    setDeleting(true)
-    try {
-      await deleteBook(confirmBook._id).unwrap()
-      dispatch(clearPreviewBook())
-    } catch (err) {
-      console.error('[Delete Error]', err)
-    }
-    setDeleting(false)
-    dispatch(clearConfirmDelete())
-  }
+  const isOpen = useSelector(selectIsPreviewOpen)
 
   if (status === 'pending' || status === 'uninitialized') {
     return <LoadingSpinner />
@@ -78,16 +51,7 @@ const MyLibraryView = () => {
 
       {isOpen && <BookCardPreviewModal />}
 
-      {confirmId && confirmBook && (
-        <ConfirmModal
-          bookId={confirmBook._id}
-          bookTitle={confirmBook.meta?.title}
-          variant={confirmVariant}
-          onConfirm={handleDelete}
-          onCancel={() => dispatch(clearConfirmDelete())}
-          isLoading={isDeleting}
-        />
-      )}
+      <ConfirmModal />
     </Container>
   )
 }

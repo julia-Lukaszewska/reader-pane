@@ -12,7 +12,7 @@ import useVisiblePages      from '@/modules/reader/hooks/useVisiblePages'
 import useSaveProgress      from '@/modules/reader/hooks/useSaveProgress'
 
 import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
-import { selectBookById }          from '@/store/selectors/singleBookSelectors'
+import { selectBookById }          from '@/store/selectors'
 import {
   selectCurrentPage,
   selectPageViewMode,

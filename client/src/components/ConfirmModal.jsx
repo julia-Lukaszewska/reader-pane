@@ -1,12 +1,20 @@
-import React from 'react'
+
+
+import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-
-import { useUpdateBookFlagsMutation} from '@/store/api/booksPrivateApi'
+import { useSelector, useDispatch } from 'react-redux'
 import { Button } from '@/components'
-
-// -----------------------------------------------------------------------------
-// Styled Components
-// -----------------------------------------------------------------------------
+import {
+  selectConfirmDeleteId,
+  selectConfirmDeleteVariant,
+  selectBookById,
+  selectPreviewBookId
+} from '@/store/selectors'
+import {
+  clearConfirmDelete,
+  clearPreviewBook
+} from '@/store/slices/bookSlice'
+import { useUpdateBookFlagsMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 
 const Overlay = styled.div`
   position: fixed;
@@ -45,76 +53,78 @@ const BtnRow = styled.div`
   flex-wrap: wrap;
 `
 
-// -----------------------------------------------------------------------------
-// Component: ConfirmModal
-// -----------------------------------------------------------------------------
+const ConfirmModal = () => {
+  const dispatch = useDispatch()
+  const confirmId = useSelector(selectConfirmDeleteId)
+  const variant = useSelector(selectConfirmDeleteVariant)
+  const book = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
+  const previewId = useSelector(selectPreviewBookId)
+  const [updateFlags] = useUpdateBookFlagsMutation()
+  const [deleteBook] = useDeleteBookMutation()
+  const [isLoading, setLoading] = useState(false)
 
-/**
- * Modal component for confirming actions related to a book.
- *
- * @param {Object} props
- * @param {string} props.bookId - Target book ID
- * @param {string} props.bookTitle - Book title displayed in the modal
- * @param {Function} props.onCancel - Handler for cancel/close
- * @param {Function} [props.onConfirm] - Optional handler for confirming
- * @param {Function} [props.onTrash] - Optional override for archive action
- * @param {'library'|'permanent-delete'|'restore'} [props.variant='library'] - Modal type
- * @returns {JSX.Element}
- */
-const ConfirmModal = ({
-  bookId,
-  bookTitle,
-  onCancel,
-  variant = 'library',
-  onTrash,
-  onConfirm,
-  isLoading = false
-}) => {
-  const [updateBookFlags] = useUpdateBookFlagsMutation()
-
-
-
+  if (!confirmId || !book) return null
 
   const isLibrary = variant === 'library'
   const isPermanent = variant === 'permanent-delete'
   const isRestore = variant === 'restore'
 
+  const close = () => dispatch(clearConfirmDelete())
 
+  const closeAll = () => {
+    close()
+    if (previewId === confirmId) dispatch(clearPreviewBook())
+  }
 
   const handleArchive = async () => {
-    if (onTrash) {
-      onTrash()
-    } else {
-      await updateBookFlags({ id: bookId, flags: { isArchived: true } }).unwrap()
+    setLoading(true)
+    try {
+      await updateFlags({ id: confirmId, flags: { isArchived: true } }).unwrap()
+    } catch (err) {
+      console.error('Archive error:', err)
     }
-    onCancel()
+    setLoading(false)
+    closeAll()
+  }
+
+  const handlePermanentDelete = async () => {
+    setLoading(true)
+    try {
+      await deleteBook(confirmId).unwrap()
+    } catch (err) {
+      console.error('Delete error:', err)
+    }
+    setLoading(false)
+    closeAll()
   }
 
   const handleRestore = async () => {
-    if (onConfirm) {
-      onConfirm()
-    } else {
-      await updateBookFlags({ id: bookId, flags: { isArchived: false } }).unwrap()
+    setLoading(true)
+    try {
+      await updateFlags({ id: confirmId, flags: { isArchived: false } }).unwrap()
+    } catch (err) {
+      console.error('Restore error:', err)
     }
-    onCancel()
+    setLoading(false)
+    closeAll()
   }
 
   return (
-    <Overlay onClick={onCancel}>
-      <ModalBox onClick={(e) => e.stopPropagation()}>
+    <Overlay onClick={close}>
+      <ModalBox onClick={e => e.stopPropagation()}>
         <Title>
-          {isLibrary && `What do you want to do with “${bookTitle}”?`}
-          {isPermanent && `Permanently delete “${bookTitle}”?`}
-          {isRestore && `Restore “${bookTitle}” to library?`}
+          {isLibrary && `What do you want to do with “${book.meta.title}”?`}
+          {isPermanent && `Permanently delete “${book.meta.title}”?`}
+          {isRestore && `Restore “${book.meta.title}” to library?`}
         </Title>
 
         <BtnRow>
           {isLibrary && (
             <>
-              <Button $variant="button_secondary" onClick={handleArchive}>
+              <Button $variant="button_secondary" onClick={handleArchive} disabled={isLoading}>
                 Archive
               </Button>
-              <Button $variant="button_primary" onClick={onConfirm}disabled={isLoading}>
+              <Button $variant="button_primary" onClick={handlePermanentDelete} disabled={isLoading}>
                 Delete
               </Button>
             </>
@@ -122,10 +132,10 @@ const ConfirmModal = ({
 
           {isPermanent && (
             <>
-              <Button $variant="button_primary" onClick={onConfirm} disabled={isLoading}>
+              <Button $variant="button_primary" onClick={handlePermanentDelete} disabled={isLoading}>
                 Yes
               </Button>
-              <Button $variant="button_secondary" onClick={onCancel}>
+              <Button $variant="button_secondary" onClick={close}>
                 Cancel
               </Button>
             </>
@@ -133,10 +143,10 @@ const ConfirmModal = ({
 
           {isRestore && (
             <>
-              <Button $variant="button_primary" onClick={handleRestore}>
+              <Button $variant="button_primary" onClick={handleRestore} disabled={isLoading}>
                 Yes
               </Button>
-              <Button $variant="button_secondary" onClick={onCancel}>
+              <Button $variant="button_secondary" onClick={close}>
                 Cancel
               </Button>
             </>
@@ -146,7 +156,7 @@ const ConfirmModal = ({
         {isLibrary && (
           <Button
             $variant="button_link"
-            onClick={onCancel}
+            onClick={close}
             style={{ marginTop: '1.4rem' }}
           >
             Cancel
@@ -156,10 +166,6 @@ const ConfirmModal = ({
     </Overlay>
   )
 }
-
-// -----------------------------------------------------------------------------
-// Export
-// -----------------------------------------------------------------------------
 
 ConfirmModal.displayName = 'ConfirmModal'
 export default React.memo(ConfirmModal)

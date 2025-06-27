@@ -9,11 +9,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import Tile from './Tile'
 import ListItem from './ListItem'
 import TableRow from './TableRow'
-import { toggleSelect, setPreviewBookId, setConfirmDelete } from '@/store/slices/bookSlice'
 import { selectIsManageMode } from '@/store/selectors'
-
+import { toggleSelect, setPreviewBookId, setConfirmDelete } from '@/store/slices/bookSlice'
 import useBookActions from '../hooks/useBookActions'
-
 //-----------------------------------------------------------------------------
 // Component: BookCard
 //-----------------------------------------------------------------------------
@@ -21,7 +19,6 @@ import useBookActions from '../hooks/useBookActions'
 const BookCard = ({ book, viewType }) => {
 
   const dispatch = useDispatch()
-
   const isManageMode = useSelector(selectIsManageMode)
   const { openReader } = useBookActions(book)
 
@@ -34,11 +31,13 @@ const BookCard = ({ book, viewType }) => {
   }
 
   //--- Show confirmation modal
-   const handleRemoveClick = () => {
+  const handleRemoveClick = () => {
     dispatch(setConfirmDelete({
       id: book._id,
       variant: book.flags?.isArchived ? 'permanent-delete' : 'library'
-    }))}
+    }))
+  }
+
   //--- Common props for all view types
   const commonProps = {
     book,
@@ -48,12 +47,12 @@ const BookCard = ({ book, viewType }) => {
     onRemoveClick: handleRemoveClick,
     isManageMode,
   }
- return (
+
+  return (
     <>
       {viewType === 'grid' && <Tile {...commonProps} onClick={handleOpenPreview} />}
       {viewType === 'list' && <ListItem {...commonProps} onClick={handleOpenPreview} />}
       {viewType === 'table' && <TableRow {...commonProps} onClick={handleOpenPreview} />}
-
     </>
   )
 }

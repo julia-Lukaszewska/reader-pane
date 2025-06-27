@@ -1,17 +1,11 @@
 // src/store/selectors/singleBookSelectors.js
 import { createSelector } from '@reduxjs/toolkit'
 import { selectBooksData } from './bookLibrarySelectors' // Required to access normalized book data from RTK Query
-
+import { selectBookById } from './bookLibrarySelectors'
 //----------------------------------------------------------------------------- 
 // Base: select single book
 //----------------------------------------------------------------------------- 
 
-/**
- * Returns the entire book object by ID.
- * @param {string} id - Book ID
- */
-export const selectBookById = (id) =>
-  createSelector(selectBooksData, (data) => data.entities[id])
 
 //----------------------------------------------------------------------------- 
 // Book: flags
