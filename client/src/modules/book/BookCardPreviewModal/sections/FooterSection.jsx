@@ -95,9 +95,10 @@ const handleSave = async () => {
 }
 
 
-  const handleClose = () => {
-    dispatch(clearPreviewBook())
-  }
+ const handleClose = async () => {
+  if (isEditing) await handleSave()
+  dispatch(clearPreviewBook())
+}
 
 
   return (

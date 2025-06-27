@@ -5,10 +5,10 @@
  *              and logic remain untouched; only the public API surface has been unified.
  */
 
-import React from 'react';
-import { createPortal } from 'react-dom';
-import styled, { keyframes } from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react'
+import { createPortal } from 'react-dom'
+import styled, { keyframes } from 'styled-components'
+import { useSelector, useDispatch } from 'react-redux'
 
 //-----------------------------------------------------------------------------
 // Redux selectors & actions
@@ -18,21 +18,21 @@ import {
   selectBookModalForm,
   selectIsEditingMain,
   selectIsEditingNotes,
-} from '@/store/selectors';
-import { clearPreviewBook } from '@/store/slices/bookSlice';
-import { resetForm } from '@/store/slices/bookModalSlice';
-
+} from '@/store/selectors'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
+import { resetForm } from '@/store/slices/bookModalSlice'
+import useEditBook from '@/modules/book/hooks/useEditBook'
 //-----------------------------------------------------------------------------
 // Domain hooks
 //----------------------------------------------------------------------------- 
-import useBookCardModal from '@book/hooks/useBookCardModal';
+
 
 //-----------------------------------------------------------------------------
 // UI sections (left, right, footer)
 //----------------------------------------------------------------------------- 
-import LeftSection   from './sections/LeftSection';
-import RightSection  from './sections/RightSection';
-import FooterSection from './sections/FooterSection';
+import LeftSection   from './sections/LeftSection'
+import RightSection  from './sections/RightSection'
+import FooterSection from './sections/FooterSection'
 
 //-----------------------------------------------------------------------------
 // Animation
@@ -106,27 +106,45 @@ const ModalGrid = styled.div`
 
 export default function BookCardPreviewModal() {
   // Redux state ---------------------------------------------------------
-  const dispatch        = useDispatch();
-  const book            = useSelector(selectPreviewBook);
+  const dispatch        = useDispatch()
+  const book            = useSelector(selectPreviewBook)
+  const form            = useSelector(selectBookModalForm)
+  const isEditingMain   = useSelector(selectIsEditingMain)
+  const isEditingNotes  = useSelector(selectIsEditingNotes)
+  const { editBook }    = useEditBook()
 
 
   // Close handler --------------------------------------------------------------
-  const onClose = () => {
-    dispatch(clearPreviewBook());
-    dispatch(resetForm());
-  };
+  const onClose = async () => {
+    if (book && (isEditingMain || isEditingNotes)) {
+      if (isEditingMain) {
+        const updates = {
+          meta: { ...form.meta, updatedAt: new Date().toISOString() },
+          flags: { ...form.flags },
+          stats: { ...form.stats },
+        }
+        await editBook(book._id, updates)
+      }
+      if (isEditingNotes) {
+        const notesArray = Array.isArray(form.flags.notes) ? form.flags.notes : []
+        await editBook(book._id, { flags: { notes: notesArray } })
+      }
+    }
+    dispatch(clearPreviewBook())
+    dispatch(resetForm())
+  }
 
 
   // Guard: render nothing when there is no book --------------------------------
   if (!book) return null;
 
   // Mount node (falls back to body) -------------------------------------------
-  const container = document.getElementById('modal-root') || document.body;
+  const container = document.getElementById('modal-root') || document.body
 
   // Portal render -------------------------------------------------------------
   return createPortal(
     <Overlay onClick={onClose}>
-      <ModalWrapper onClick={(e) => e.stopPropagation()}>
+        <ModalWrapper onClick={e => e.stopPropagation()}>
         <ModalGrid>
           <LeftSection />
 
