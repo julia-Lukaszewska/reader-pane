@@ -7,10 +7,12 @@
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { toggleTheme, toggleSidebar } from '@/store/slices/mainUiSlice'
+import { toggleTheme, toggleSidebar, setAuthModalMode  } from '@/store/slices/mainUiSlice'
 import { Switch, Button } from '@/components'
 import { SlHome, SlMenu } from 'react-icons/sl'
 
+import { useAuth } from '@/modules/user/hooks'
+import useCurrentUser from '@/modules/user/hooks/useCurrentUser'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -94,7 +96,8 @@ const Header = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const isHomeView = location.pathname === '/'
-
+ const { isLoggedIn } = useAuth()
+  const { user } = useCurrentUser()
   const goHome = () => navigate('/')
   const handleToggleSidebar = () => dispatch(toggleSidebar())
   const handleToggleTheme = () => dispatch(toggleTheme())
@@ -125,6 +128,13 @@ const Header = () => {
       <Title>Pane</Title>
 
       <BtnGroup>
+           {!isLoggedIn ? (
+          <Button onClick={() => dispatch(setAuthModalMode('login'))}>
+            login
+          </Button>
+        ) : (
+          <span>{user?.name}</span>
+        )}
         <Switch variant="theme" onClick={handleToggleTheme} />
       </BtnGroup>
     </HeaderStyled>
