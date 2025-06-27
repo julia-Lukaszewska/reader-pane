@@ -103,9 +103,14 @@ const openReader = useOpenReader(bookId)
 
   const [updateBookRating] = useUpdateBookRatingMutation()
 
-  const setRating = (value) => {
+  const setRating = async value => {
+    const prev = rating
     dispatch(updateFlagField({ name: 'rating', value }))
-    updateBookRating({ id: bookId, rating: value })
+    try {
+      await updateBookRating({ id: bookId, rating: value }).unwrap()
+    } catch {
+      dispatch(updateFlagField({ name: 'rating', value: prev }))
+    }
   }
 
   return (

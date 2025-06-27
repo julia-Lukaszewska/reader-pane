@@ -10,6 +10,7 @@ import {
   selectIsEditingMain,
   selectBookModalForm,
   selectPreviewBookId,
+  selectBookById,
 } from '@/store/selectors'
 import {
   setEditingMain,
@@ -68,7 +69,8 @@ const FooterSection = () => {
   const isEditing = useSelector(selectIsEditingMain)
   const form = useSelector(selectBookModalForm)
   const previewBookId = useSelector(selectPreviewBookId)
-const { editBook, isLoading } = useEditBook()
+  const originalBook = useSelector(state => selectBookById(previewBookId)(state))
+  const { editBook } = useEditBook()
 
   const handleEdit = () => {
     dispatch(setEditingMain(true))
@@ -98,7 +100,10 @@ const handleSave = async () => {
 
 
 const handleClose = async () => {
-  if (isEditing) await handleSave()
+ if (isEditing) {
+    const ok = await handleSave()
+    if (!ok) return
+  }
   dispatch(clearPreviewBook())
   dispatch(resetForm())
 }

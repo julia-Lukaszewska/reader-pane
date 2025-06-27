@@ -6,9 +6,10 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectBookModalForm } from '@/store/selectors'
+import { selectBookModalForm, selectPreviewBookId } from '@/store/selectors'
 import { updateFlagField } from '@/store/slices/bookModalSlice'
 import NoteItem from './NoteItem'
+import useEditBook from '@book/hooks/useEditBook'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -25,13 +26,14 @@ const Wrapper = styled.div`
 // Helper: ensureId
 //-----------------------------------------------------------------------------
 
-//--- Ensures that each note has an `id` (based on `createdAt` or random UUID)
-function ensureId(notes) {
-  return notes.map(n =>
-    n.id ? n : { ...n, id: n.createdAt || crypto.randomUUID() }
-  )
+function genId() {
+  if (crypto.randomUUID) return crypto.randomUUID()
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
+function ensureId(notes) {
+  return notes.map(n => (n.id ? n : { ...n, id: n.createdAt || genId() }))
+}
 //-----------------------------------------------------------------------------
 // Component: NotesSection
 //-----------------------------------------------------------------------------
@@ -48,7 +50,8 @@ function ensureId(notes) {
 export default function NotesSection({ readOnly = false }) {
   const dispatch = useDispatch()
   const form = useSelector(selectBookModalForm)
-
+  const bookId = useSelector(selectPreviewBookId)
+  const { editBook } = useEditBook()
   const [localNotes, setLocalNotes] = useState(() =>
     ensureId(
       Array.isArray(form.flags?.notes) && form.flags.notes.length > 0
@@ -62,15 +65,16 @@ export default function NotesSection({ readOnly = false }) {
       ensureId(
         Array.isArray(form.flags?.notes) && form.flags.notes.length > 0
           ? form.flags.notes
-          : [{ id: crypto.randomUUID(), text: '', createdAt: new Date().toISOString() }]
+             : [{ id: genId(), text: '', createdAt: new Date().toISOString() }]
       )
     )
   }, [form.flags?.notes])
 
-  const handleNoteSave = (id, value) => {
+  const handleNoteSave = async (id, value) => {
     const updated = [{ id, text: value, createdAt: new Date().toISOString() }]
     setLocalNotes(updated)
     dispatch(updateFlagField({ name: 'notes', value: updated }))
+        if (bookId) await editBook(bookId, { flags: { notes: updated } })
   }
 
   const note = localNotes[0]

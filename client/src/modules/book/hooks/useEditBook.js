@@ -9,13 +9,15 @@ export default function useEditBook() {
   const dispatch = useDispatch()
 
   const editBook = async (bookId, updates) => {
+    const undo = patchBook(bookId, updates)
+    dispatch(updateFormFields(updates))
     try {
-      patchBook(bookId, updates)
-      dispatch(updateFormFields(updates))
+ 
       await updateBook({ id: bookId, changes: updates }).unwrap()
        return true
     } catch (err) {
       console.error('[EDIT BOOK ERROR]', err)
+      undo()
          return false
     }
   }

@@ -9,7 +9,7 @@ import React, { useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 import { IoCloseOutline } from 'react-icons/io5'
 import { useSelector } from 'react-redux'
-
+import { useUpdateBookRatingMutation } from '@/store/api/booksPrivateApi'
 import SelectCheckbox from './SelectCheckbox'
 import CardButtons from './CardButtons'
 import RatingStars from '@/components/common/RatingStars'
@@ -32,7 +32,11 @@ import { selectIsManageMode } from '@/store/selectors'
 const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
 
   const isManageMode = useSelector(selectIsManageMode)
+  const [updateBookRating] = useUpdateBookRatingMutation()
 
+  const handleRatingChange = (value) => {
+    updateBookRating({ id: book._id, rating: value })
+  }
   const formattedDate = useMemo(() => {
     const dateRaw = book?.meta?.createdAt
     return dateRaw
@@ -65,7 +69,11 @@ const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
         </Info>
 
         <ExtraInfo>
-          <RatingStars value={book.flags?.rating || 0} />
+           <RatingStars
+            value={book.flags?.rating || 0}
+            editable={!isManageMode}
+            onChange={handleRatingChange}
+          />
           <ProgressBar bookId={book._id} totalPages={book.meta?.totalPages || 0} />
         </ExtraInfo>
 
