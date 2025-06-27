@@ -64,7 +64,7 @@ const router = createBrowserRouter([
     ],
   },
 ])
-console.log('[ROUTES] router configuration created:', router.routes);
+console.log('[ROUTES] router configuration created:', router.routes)
 //-----------------------------------------------------------------------------
 // Component: AppRoutes
 //-----------------------------------------------------------------------------

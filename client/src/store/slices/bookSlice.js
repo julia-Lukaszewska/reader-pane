@@ -32,7 +32,8 @@ const initialState = {
   sortMode: 'title-asc',
   progressMode: 'current',
   lastOpenedBookId: null,
-
+  confirmDeleteId: null,
+  confirmDeleteVariant: 'library',
 }
 
 //-----------------------------------------------------------------------------
@@ -93,7 +94,14 @@ const bookSlice = createSlice({
     setLastOpenedBookId: (state, action) => {
       state.lastOpenedBookId = action.payload
     },
-  
+     setConfirmDelete: (state, action) => {
+      state.confirmDeleteId = action.payload.id
+      state.confirmDeleteVariant = action.payload.variant || 'library'
+    },
+    clearConfirmDelete: (state) => {
+      state.confirmDeleteId = null
+      state.confirmDeleteVariant = 'library'
+    },
   },
 })
 
@@ -116,6 +124,8 @@ export const {
   setLibraryFilter,
   setProgressMode,
   setLastOpenedBookId,
+    setConfirmDelete,
+  clearConfirmDelete,
 
 } = bookSlice.actions
 

@@ -4,8 +4,7 @@
  * Renders favorited, non-archived books in the selected view mode (grid, list, table).
  * Uses selector-based filtering and sets the correct library filter on mount.
  */
-
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -13,12 +12,16 @@ import {
   selectVisibleBooks,
   selectIsPreviewOpen,
   selectPreviewBookId,
+    selectConfirmDeleteId,
+  selectConfirmDeleteVariant,
+  selectBookById,
 } from '@/store/selectors'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
 import { useLibraryFilter } from '@library/hooks'
 import LibraryBooksRenderer from '@/modules/library/components/LibraryBooksRenderer/BooksRenderer'
 import { BookCardPreviewModal } from '@book/BookCardPreviewModal'
-import { LoadingSpinner } from '@/components'
+import { LoadingSpinner, ConfirmModal } from '@/components'
+import { useDeleteBookMutation } from '@/store/api/booksPrivateApi'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -51,21 +54,41 @@ useLibraryFilter('favorites')
   const books = useSelector(selectVisibleBooks)
 
   const isOpen = useSelector(selectIsPreviewOpen)
-  const previewId = useSelector(selectPreviewBookId)
-  const previewBook = books.find(b => b._id === previewId)
+   const confirmId = useSelector(selectConfirmDeleteId)
+  const confirmVariant = useSelector(selectConfirmDeleteVariant)
+  const confirmBook = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
+  const [deleteBook] = useDeleteBookMutation()
+  const [isDeleting, setDeleting] = useState(false)
 
   if (status === 'pending' || status === 'uninitialized') {
     return <LoadingSpinner />
   }
-
+const handleDelete = async () => {
+    if (!confirmBook || isDeleting) return
+    setDeleting(true)
+    try {
+      await deleteBook(confirmBook._id).unwrap()
+      dispatch(clearPreviewBook())
+    } catch (err) {
+      console.error('[Delete Error]', err)
+    }
+    setDeleting(false)
+    dispatch(clearConfirmDelete())
+  }
   return (
     <Container>
       <LibraryBooksRenderer books={books} hideAddTile />
 
-      {isOpen && previewBook && (
-        <BookCardPreviewModal
-          book={previewBook}
-          onClose={() => dispatch(clearPreviewBook())}
+       {isOpen && <BookCardPreviewModal />}
+
+      {confirmId && confirmBook && (
+        <ConfirmModal
+          bookId={confirmBook._id}
+          bookTitle={confirmBook.meta?.title}
+          variant={confirmVariant}
+          onConfirm={handleDelete}
+          onCancel={() => dispatch(clearConfirmDelete())}
+          isLoading={isDeleting}
         />
       )}
     </Container>

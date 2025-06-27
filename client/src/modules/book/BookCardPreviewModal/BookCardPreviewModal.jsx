@@ -3,11 +3,13 @@
  * @description Root modal component for viewing and editing book details via portal.
  */
 
-import React from 'react'
+import React ,{useMemo} from 'react'
 import { createPortal } from 'react-dom'
 import styled, { keyframes } from 'styled-components'
-
-import { useBookCardModal } from './useBookCardModal'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectPreviewBookId, selectBookById } from '@/store/selectors'
+import { clearPreviewBook } from '@/store/slices/bookSlice'
+import useBookCardModal  from '@book/hooks/useBookCardModal'
 import ModalBox from './ModalBox'
 
 //-----------------------------------------------------------------------------
@@ -63,8 +65,11 @@ const ModalWrapper = styled.div`
  * @param {Object} props.book - Book object to display in the modal
  * @param {Function} props.onClose - Callback to close the modal
  */
-export default function BookCardPreviewModal({ book, onClose }) {
-  //--- Hook for form state and handlers
+export default function BookCardPreviewModal() {
+  const dispatch = useDispatch()
+  const previewId = useSelector(selectPreviewBookId)
+  const book = useSelector(useMemo(() => selectBookById(previewId), [previewId]))
+  const onClose = () => dispatch(clearPreviewBook())
   const {
     form,
     isEditingMain,
@@ -74,6 +79,7 @@ export default function BookCardPreviewModal({ book, onClose }) {
     handleCancel,
     handleSave,
     handleRead,
+    handleFlagFieldChange,
     handleNotesChange,
   } = useBookCardModal(book, onClose)
 

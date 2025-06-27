@@ -145,3 +145,17 @@ export const selectSelectedBookIds = (state) => state.book.selectedIds
  * Returns the progress mode used in the reader ('current' or 'max').
  */
 export const selectProgressMode = (state) => state.book.progressMode
+/**
+ * Returns the ID of the book pending delete confirmation.
+ */
+export const selectConfirmDeleteId = (state) => state.book.confirmDeleteId
+
+/**
+ * Returns the variant for delete confirmation modal.
+ */
+export const selectConfirmDeleteVariant = (state) => state.book.confirmDeleteVariant
+
+/**
+ * Returns true if delete confirmation modal is open.
+ */
+export const selectIsConfirmOpen = (state) => Boolean(state.book.confirmDeleteId)

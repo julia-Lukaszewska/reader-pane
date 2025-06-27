@@ -114,10 +114,12 @@ export default function RatingSection({ form, onChange, handleRead }) {
    *
    * @param {number} value - New rating value
    */
-  const setRating = (value) => {
-    onChange({ target: { name: 'rating', value } })
-    updateBookRating({ id: bookId, rating: value })
-  }
+const setRating = (value) => {
+  handleFlagFieldChange('rating', value)
+  updateBookRating({ id: bookId, rating: value })
+}
+
+
 
   return (
     <RatingGrid>
