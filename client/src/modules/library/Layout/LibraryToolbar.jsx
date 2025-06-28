@@ -27,13 +27,15 @@ import {
 import {
   selectIsManageMode,
   selectSelectedBookIds,
-  selectVisibleBooks,
   selectLibraryViewMode,
   selectSortMode,
-    selectLibraryPage,
+  selectVisibleBooks,
+  selectLibraryPage,
   selectLibraryTotalPages,
   selectLibraryTotalBooks,
+  selectLibraryPageBookCount,
 } from '@/store/selectors'
+
 
 /* --------------------------------------------------------------------------- */
 /*  STYLED COMPONENTS                                                          */
@@ -119,7 +121,7 @@ const PaginationInfo = styled.span`
 
 const LibraryToolbar = () => {
   const dispatch = useDispatch()
-  const { archiveAll } = useBulkBookActions()
+
 
   const isManaging = useSelector(selectIsManageMode)
   const selected   = useSelector(selectSelectedBookIds)
@@ -127,14 +129,13 @@ const LibraryToolbar = () => {
   const sortMode   = useSelector(selectSortMode)
   const visible    = useSelector(selectVisibleBooks)
   const visibleIds = visible.map(b => b._id)
-  const allSelected = visibleIds.length > 0 && visibleIds.every(id => selected.includes(id))
+
   const page       = useSelector(selectLibraryPage)
   const totalPages = useSelector(selectLibraryTotalPages)
   const totalBooks = useSelector(selectLibraryTotalBooks)
+  const pageBooks  = useSelector(selectLibraryPageBookCount)
 
-  const handleToggleSelectAll = () => {
-    dispatch(setSelectedIds(allSelected ? [] : visibleIds))
-  }
+
 
 const { pathname } = useLocation()
 
@@ -146,23 +147,25 @@ const section = useMemo(() => {
 
   const inLibrary = true
 
-  const handleBatchDelete = () => {
-    archiveAll(selected)
-    dispatch(clearSelected())
-  }
+
 
   return (
     <ToolbarWrapper>
-      <SectionTitle>{section}</SectionTitle>
-      
-            <PageNav>
+      <SectionTitle>{section}
+
+      </SectionTitle>
+
+                       <PageNav>
               <NavButton onClick={() => dispatch(setLibraryPage(page - 1))} disabled={page <= 1}>
                 <IoChevronBack />
               </NavButton>
-              <PaginationInfo>{page} / {totalPages} </PaginationInfo>
+              <PaginationInfo>
+                {page} / {totalPages} 
+              </PaginationInfo>
               <NavButton onClick={() => dispatch(setLibraryPage(page + 1))} disabled={page >= totalPages}>
                 <IoChevronForward />
               </NavButton>
+                {pageBooks} of {totalBooks} books
             </PageNav>
       <ToolbarActions>
         {viewMode === 'list' && !isManaging && (
@@ -171,29 +174,20 @@ const section = useMemo(() => {
 
         {inLibrary && (
           <LibraryToolbarButton
-            onClick={() => dispatch(toggleManageMode())}
-            $active={isManaging}
+          onClick={() => dispatch(toggleManageMode())}
+          $active={isManaging}
           >
             {isManaging ? 'Done' : 'Manage'}
           </LibraryToolbarButton>
         )}
-       {isManaging && visibleIds.length > 0 && (
-          <LibraryToolbarButton onClick={handleToggleSelectAll}>
-            {allSelected ? 'Deselect All' : 'Select All'}
-          </LibraryToolbarButton>
-        )}
-        {isManaging && selected.length > 0 && (
-          <LibraryToolbarButton onClick={handleBatchDelete} $danger>
-            <IoTrash /> Delete selected
-          </LibraryToolbarButton>
-        )}
+    
 
         {inLibrary && (
           <>
             <LibraryToolbarSelect
               value={sortMode}
               onChange={(e) => dispatch(setSortMode(e.target.value))}
-            >
+              >
               <option value="title-asc">Title A–Z</option>
               <option value="title-desc">Title Z–A</option>
               <option value="author-asc">Author A–Z</option>

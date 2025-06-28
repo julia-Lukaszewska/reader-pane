@@ -164,7 +164,13 @@ export const selectLibraryTotalPages = createSelector(
   selectVisibleBooksCount,
   count => Math.max(1, Math.ceil(count / LIBRARY_PAGE_SIZE))
 )
-
+export const selectLibraryPageBookCount = createSelector(
+  [selectVisibleBooks, selectLibraryPage],
+  (books, page) => {
+    const start = (page - 1) * LIBRARY_PAGE_SIZE
+    return books.slice(start, start + LIBRARY_PAGE_SIZE).length
+  }
+)
 /**
  * Returns the progress mode used in the reader ('current' or 'max').
  */
