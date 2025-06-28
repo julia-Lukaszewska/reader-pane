@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
@@ -9,6 +9,7 @@ import {
   LibraryGridLayout,
   LibraryListLayout,
   LibraryTableLayout,
+  PaginationControls,
 } from '@library/components'
 
 /* --------------------------------------------- */
@@ -27,13 +28,18 @@ const LibraryBooksRenderer = ({
   onRestore,
   onDelete,
   viewMode: viewModeProp,
+   pageSize = 12,
 }) => {
   const { pathname } = useLocation()
   const { data: bookData } = useGetBooksQuery()
   const sortMode = useSelector(selectSortMode)
   const stateViewMode = useSelector(selectLibraryViewMode)
   const viewMode = viewModeProp ?? stateViewMode
+  const [page, setPage] = useState(1)
 
+  useEffect(() => {
+    setPage(1)
+  }, [pathname, sortMode, pageSize])
   /* --------------------------------------------- */
   /* FILTER BOOKS BY PATH                          */
   /* --------------------------------------------- */
@@ -58,7 +64,12 @@ const LibraryBooksRenderer = ({
   /* SORT BOOKS                                    */
   /* --------------------------------------------- */
   const sortedBooks = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
-
+  const totalPages = Math.max(1, Math.ceil(sortedBooks.length / pageSize))
+  const paginatedBooks = useMemo(() => {
+    const start = (page - 1) * pageSize
+    const end = start + pageSize
+    return sortedBooks.slice(start, end)
+  }, [sortedBooks, page, pageSize])
   /* --------------------------------------------- */
   /* UI FLAGS                                      */
   /* --------------------------------------------- */
@@ -73,7 +84,7 @@ const LibraryBooksRenderer = ({
   /* RENDER LAYOUT                                 */
   /* --------------------------------------------- */
   const commonProps = {
-    books: sortedBooks,
+      books: paginatedBooks,
     hideAddTile: shouldHideAddTile,
     onRestore,
     onDelete,
@@ -82,11 +93,26 @@ const LibraryBooksRenderer = ({
 
   switch (viewMode) {
     case 'grid':
-      return <LibraryGridLayout {...commonProps} />
+            return (
+        <>
+          <PaginationControls page={page} totalPages={totalPages} onChange={setPage} />
+          <LibraryGridLayout {...commonProps} />
+        </>
+      )
     case 'list':
-      return <LibraryListLayout {...commonProps} />
+        return (
+        <>
+          <PaginationControls page={page} totalPages={totalPages} onChange={setPage} />
+          <LibraryListLayout {...commonProps} />
+        </>
+      )
     case 'table':
-      return <LibraryTableLayout {...commonProps} />
+            return (
+        <>
+          <PaginationControls page={page} totalPages={totalPages} onChange={setPage} />
+          <LibraryTableLayout {...commonProps} />
+        </>
+      )
     default:
       return <EmptyMessage>Invalid view mode: {viewMode}</EmptyMessage>
   }

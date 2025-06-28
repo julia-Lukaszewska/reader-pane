@@ -20,6 +20,7 @@ const TableWrapper = styled.div`
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
   overflow-x: auto;
+  overflow-y: scroll;
 `
 
 //--- Main table element

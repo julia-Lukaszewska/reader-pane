@@ -18,6 +18,7 @@ const BooksGrid = styled.div`
   gap: 1.5rem;
   padding: 2rem;
   width: 100%;
+  overflow-y: scroll;
   justify-content: start;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);

@@ -25,7 +25,7 @@ const Container = styled.div`
   height: 100%;
   flex: 1;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: scroll;
 `
 
 /* --------------------------------------------------------------------------- */
