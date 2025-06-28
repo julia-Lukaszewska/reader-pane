@@ -70,14 +70,7 @@ const authSlice = createSlice({
           saveAuth(payload.access, payload.user)
         }
       )
-      .addMatcher(
-        authApi.endpoints.register.matchFulfilled,
-        (state, { payload }) => {
-          state.access = payload.access
-          state.authChecked = true
-          saveAuth(payload.access, payload.user)
-        }
-      )
+   
       .addMatcher(
         authApi.endpoints.refresh.matchFulfilled,
         (state, { payload }) => {

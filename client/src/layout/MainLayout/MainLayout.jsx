@@ -10,10 +10,10 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Header, Sidebar } from '@/layout/MainLayout'
-import { setSidebar, setAuthModalMode } from '@/store/slices/mainUiSlice'
+import { setSidebar, setAuthModalMode,  setAuthModalMessage } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
-import { selectAuthModalMode } from '@/store/selectors'
+import { selectAuthModalMode, selectAuthModalMessage } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -55,7 +55,9 @@ const MainLayout = () => {
   const location = useLocation()
   const isHome = location.pathname === '/'
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
-   const authModalMode = useSelector(selectAuthModalMode)
+  const authModalMode = useSelector(selectAuthModalMode)
+  const authModalMessage = useSelector(selectAuthModalMessage)
+   
   const { isLoggedIn } = useAuth()
 
 
@@ -74,10 +76,14 @@ const MainLayout = () => {
         <Outlet />
       </MainContent>
 
-          {authModalMode && (
+         {authModalMode && (
         <AuthModal
           mode={authModalMode}
-          onClose={() => dispatch(setAuthModalMode(null))}
+          message={authModalMessage}
+          onClose={() => {
+            dispatch(setAuthModalMode(null))
+            dispatch(setAuthModalMessage(null))
+          }}
         />
       )}
     </LayoutWrapper>

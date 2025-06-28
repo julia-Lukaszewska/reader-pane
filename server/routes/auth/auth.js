@@ -105,7 +105,7 @@ router.post('/register', registerValidators, handleValidationErrors, async (req,
 
     const user = await User.create({ email, password, name })
     console.log('[REGISTER] User created:', user._id)
-    return await issueTokens(user, res)
+       return res.status(201).json({ message: 'Registration successful' })
   } catch (err) {
     console.error('[REGISTER] Error:', err)
      if (err.name === 'ValidationError') {

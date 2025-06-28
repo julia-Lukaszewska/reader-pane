@@ -39,3 +39,7 @@ export const selectRegisterModalOpen = (state) => state.ui.registerModalOpen
  * Returns the current mode of the authentication modal.
  */
 export const selectAuthModalMode = (state) => state.ui.authModalMode
+/**
+ * Returns the info message for the auth modal.
+ */
+export const selectAuthModalMessage = (state) => state.ui.authModalMessage

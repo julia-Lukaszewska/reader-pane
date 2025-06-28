@@ -3,7 +3,7 @@
  * @description Modal for login/register with top tab switcher and close icon.
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect  } from 'react'
 import styled from 'styled-components'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -91,8 +91,11 @@ const Tab = styled.button`
  * Renders auth modal with tab-like switcher and close button
  * @param {{ onClose: () => void }} props
  */
-const AuthModal = ({ onClose }) => {
-  const [mode, setMode] = useState('login')
+const AuthModal = ({ onClose, mode = 'login', message }) => {
+  const [currentMode, setMode] = useState(mode)
+  useEffect(() => {
+    setMode(mode)
+  }, [mode])
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -102,18 +105,21 @@ const AuthModal = ({ onClose }) => {
         <CloseButton onClick={onClose}>
           <FiX />
         </CloseButton>
-        
+               {message && (
+            <p style={{ textAlign: 'center', marginBottom: '0.6rem' }}>{message}</p>
+          )}
+
           <Tabs role="tablist">
-            <Tab role="tab" aria-selected={mode === 'login'} $active={mode === 'login'} onClick={() => setMode('login')}>
+               <Tab role="tab" aria-selected={currentMode === 'login'} $active={currentMode === 'login'} onClick={() => setMode('login')}>
               Log In
             </Tab>
-            <Tab role="tab" aria-selected={mode === 'register'} $active={mode === 'register'} onClick={() => setMode('register')}>
+            <Tab role="tab" aria-selected={currentMode === 'register'} $active={currentMode === 'register'} onClick={() => setMode('register')}>
               Register
             </Tab>
           </Tabs>
 
 
-        {mode === 'login' ? (
+       {currentMode === 'login' ? (
           <LoginForm
             onSuccess={() => {
               dispatch(setAuthModalMode(null)) // close modal

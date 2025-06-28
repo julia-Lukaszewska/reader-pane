@@ -82,7 +82,7 @@ export const authApi = createApi({
      * Register mutation
      * POST /auth/register
      * @param {{ email: string, password: string, name: string }} userData
-     * @returns {{ access: string, user: object }}
+     * @returns {{ access: string }}
      */
     register: builder.mutation({
       query: userData => ({

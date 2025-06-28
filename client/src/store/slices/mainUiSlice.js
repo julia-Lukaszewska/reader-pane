@@ -16,7 +16,7 @@ const initialState = {
   loginModalOpen: false,     // whether login modal is open
   registerModalOpen: false,  // whether register modal is open
   authModalMode: null,  // 'login' | 'register' | null
-
+authModalMessage: null,
 }
 
 //-----------------------------------------------------------------------------
@@ -93,6 +93,9 @@ const mainUiSlice = createSlice({
     setRegisterModalOpen(state, action) {
       state.registerModalOpen = action.payload
     },
+        setAuthModalMessage(state, action) {
+      state.authModalMessage = action.payload
+    },
     /**
  * Sets the auth modal mode (login/register/null).
  *
@@ -117,6 +120,7 @@ export const {
   setActiveItem,
   clearActiveItem,
   setLoginModalOpen,
+  setAuthModalMessage,
   setRegisterModalOpen,
     setAuthModalMode,
 } = mainUiSlice.actions
