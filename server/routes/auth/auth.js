@@ -14,9 +14,30 @@
 import express from 'express'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
+import { body, validationResult } from 'express-validator'
 import User from '../../models/User.js'
 
 const router = express.Router()
+const registerValidators = [
+  body('name').trim().notEmpty().withMessage('Name is required'),
+  body('email').trim().isEmail().withMessage('Invalid email format'),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+]
+
+const loginValidators = [
+  body('email').notEmpty().withMessage('Email is required'),
+  body('password').notEmpty().withMessage('Password is required')
+]
+
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ message: errors.array()[0].msg })
+  }
+  next()
+}
 
 // -----------------------------------------------------------------------------
 // FUNCTION – issue access and refresh tokens
@@ -71,7 +92,7 @@ const issueTokens = async (user, res) => {
 // ROUTE – user registration
 // -----------------------------------------------------------------------------
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerValidators, handleValidationErrors, async (req, res) => {
   const { email, password, name } = req.body
   console.log('[REGISTER] Incoming data:', { email, name })
 
@@ -79,7 +100,7 @@ router.post('/register', async (req, res) => {
     const exists = await User.findOne({ email })
     if (exists) {
       console.warn('[REGISTER] Email already in use:', email)
-      return res.status(409).json({ error: 'User already exists' })
+         return res.status(409).json({ message: 'User already exists' })
     }
 
     const user = await User.create({ email, password, name })
@@ -87,16 +108,22 @@ router.post('/register', async (req, res) => {
     return await issueTokens(user, res)
   } catch (err) {
     console.error('[REGISTER] Error:', err)
-    return res.status(500).json({ error: 'Registration failed.' })
+     if (err.name === 'ValidationError') {
+      const message = Object.values(err.errors)[0].message
+      return res.status(400).json({ message })
+    }
+    return res.status(500).json({ message: 'Registration failed.' })
+
   }
 })
-
 
 // -----------------------------------------------------------------------------
 // ROUTE – local login (email + password)
 // -----------------------------------------------------------------------------
 
 router.post('/login',
+    loginValidators,
+  handleValidationErrors,
   passport.authenticate('local', { session: false, failWithError: true }),
   async (req, res) => {
     console.log('[LOGIN] Successful login for:', req.user.email)
@@ -105,7 +132,7 @@ router.post('/login',
   (err, req, res, _next) => {
     console.warn('[LOGIN] Failed login for:', req.body.email)
     console.error('[LOGIN ERROR]', err?.message || err)
-    return res.status(401).json({ error: 'Invalid email or password.' })
+    return res.status(401).json({ message: err?.message || 'Invalid email or password' })
   }
 )
 
@@ -120,7 +147,7 @@ router.get('/me', passport.authenticate('jwt', { session: false }), async (req, 
     return res.status(200).json({ user })
   } catch (err) {
     console.error('[GET /me] Error fetching user:', err)
-    return res.status(500).json({ error: 'Failed to retrieve user.' })
+     return res.status(500).json({ message: 'Failed to retrieve user.' })
   }
 })
 
@@ -159,7 +186,8 @@ router.post('/refresh', async (req, res) => {
   if (Array.isArray(rt)) rt = rt.slice(-1)[0]
   rt = typeof rt === 'string' ? rt.replace(/^"|"$/g, '').trim() : rt
 
-  if (!rt) return res.status(401).json({ error: 'No refresh token.' })
+  if (!rt) return res.status(401).json({ message: 'No refresh token.' })
+
 
   try {
     const { id } = jwt.verify(rt, process.env.JWT_REFRESH_KEY)
@@ -167,7 +195,8 @@ router.post('/refresh', async (req, res) => {
     const entry = user?.refresh.find(r => r.token === rt)
 
     if (!entry || entry.exp < new Date())
-      return res.status(401).json({ error: 'Expired or invalid refresh token' })
+      return res.status(401).json({ message: 'Expired or invalid refresh token' })
+
 
     const access = jwt.sign({ id }, process.env.JWT_ACCESS_KEY, {
       expiresIn: '15m',
@@ -175,7 +204,7 @@ router.post('/refresh', async (req, res) => {
     return res.json({ access, user: await User.findById(id).select('-password') })
   } catch (err) {
     console.error('[REFRESH]', err.message)
-    return res.status(401).json({ error: 'Invalid or malformed refresh token' })
+    return res.status(401).json({ message: 'Invalid or malformed refresh token' })
   }
 })
 

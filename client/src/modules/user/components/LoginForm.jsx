@@ -103,9 +103,11 @@ export default function LoginForm({ onSuccess }) {
         {isLoading ? 'Logging in...' : 'Log In'}
       </SubmitButton>
 
-      {error && <ErrorText>{error?.data?.message || 'Login failed. Check your credentials.'}
-        </ErrorText>}
-
+           {error && (
+        <ErrorText>
+          {error?.data?.message || error?.data?.error || 'Login failed. Check your credentials.'}
+        </ErrorText>
+      )}
     </Form>
   )
 }

@@ -112,8 +112,11 @@ export default function RegisterForm({ onSuccess }) {
         {isLoading ? 'Registering...' : 'Register'}
       </SubmitButton>
 
-      {error && <ErrorText>{error?.data?.message || 'Registration failed. Please try again.'}
-        </ErrorText>}
+      {error && (
+        <ErrorText>
+          {error?.data?.message || error?.data?.error || 'Registration failed. Please try again.'}
+        </ErrorText>
+      )}
 
     </Form>
   )
