@@ -103,7 +103,38 @@ const $variants = {
       box-shadow: 0 0 0.5rem rgba(0, 80, 160, 0.3);
     }
   `,
+  header_btn: css`
+   width: 9rem;
+    height: 4rem;
+    padding: 0.2rem;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 300;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--bg-icon-default);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background-blend-mode: overlay;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0.3rem 1rem rgba(0, 64, 128, 0.3);
+    transition: all 0.3s ease;
 
+    &:hover {
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 80, 160, 0.4);
+      background: var(--bg-icon-hover);
+    }
+
+    &:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 0.5rem rgba(0, 80, 160, 0.3);
+    }
+  `,
   //-----------------------------------------------------------------------------
   // Close icon button (used in modals)
   //-----------------------------------------------------------------------------

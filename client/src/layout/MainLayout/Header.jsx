@@ -132,13 +132,16 @@ const Header = () => {
 
       <BtnGroup>
            {!isLoggedIn ? (
-          <Button onClick={() => dispatch(setAuthModalMode('login'))}>
+           <Button
+            $variant="header_btn"
+            onClick={() => dispatch(setAuthModalMode('login'))}
+          >
             login
           </Button>
         ) : (
              <>
             <span>{user?.name || storedUser?.name}</span>
-            <Button onClick={logout}>logout</Button>
+              <Button $variant="header_btn" onClick={logout}>logout</Button>
           </>
         )}
         <Switch variant="theme" onClick={handleToggleTheme} />
