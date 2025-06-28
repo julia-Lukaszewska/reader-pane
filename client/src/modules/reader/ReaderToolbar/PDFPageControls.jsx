@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 // Imports
 //-----------------------------------------------------------------------------
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
 import { useLocation } from 'react-router-dom'
@@ -53,6 +53,21 @@ const Info = styled.span`
   font-size: 0.9rem;
   color: #fff;
 `
+const PageInput = styled.input`
+  width: 3rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #fff;
+  background: transparent;
+  border: 1px solid #fff;
+  border-radius: 0.25rem;
+  -moz-appearance: textfield;
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`
 
 //-----------------------------------------------------------------------------
 // Component: PDFPageControls
@@ -70,17 +85,30 @@ export default function PDFPageControls() {
   const currentPage = useSelector(selectCurrentPage)
   const viewMode = useSelector(selectPageViewMode) // 'single' | 'double'
 
-  
+    const [value, setValue] = useState(String(currentPage))
+
+  useEffect(() => {
+    setValue(String(currentPage))
+  }, [currentPage])
   const step = viewMode === 'double' ? 2 : 1
   
   /**
    * Navigate to a page number, clamped to valid range.
    * @param {number} n - Target page number
   */
- const goTo = useCallback((n) => {
-   const page = Math.max(1, Math.min(totalPages, n))
-   dispatch(setCurrentPage(page))
-  }, [dispatch, totalPages])
+const goTo = useCallback((n) => {
+  const page = Math.max(1, Math.min(totalPages, n))
+  dispatch(setCurrentPage(page))
+ }, [dispatch, totalPages])
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      const num = parseInt(value, 10)
+      if (!Number.isNaN(num)) {
+        goTo(num)
+      }
+    }
+  }
 
   const prevDisabled = currentPage - step < 1
   const nextDisabled = currentPage + step > totalPages
@@ -95,7 +123,15 @@ export default function PDFPageControls() {
         <IoChevronBack />
       </button>
 
-      <Info>{currentPage} / {totalPages}</Info>
+       <PageInput
+        type='text'
+        inputMode='numeric'
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      <Info>/ {totalPages}</Info>
+      
 
       <button onClick={() => goTo(currentPage + step)} disabled={nextDisabled}>
         <IoChevronForward />

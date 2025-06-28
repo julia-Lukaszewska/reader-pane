@@ -18,7 +18,7 @@ import {
   selectVisibleBooks,
 } from '@/store/selectors'
 import { ConfirmModal } from '@/components'
-
+import { useLocation } from 'react-router-dom'
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -68,7 +68,9 @@ const BooksManagementToolbar = () => {
   const visible    = useSelector(selectVisibleBooks)
   const visibleIds = visible.map(b => b._id)
   const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedIds.includes(id))
-  const { archiveAll } = useBulkBookActions()
+  const { archiveAll, restoreAll } = useBulkBookActions()
+  const { pathname } = useLocation()
+  const inArchiveView = pathname === '/library/archive'
 
   //--- Exit management mode and clear selection
   const exitManaging = () => {
@@ -83,7 +85,11 @@ const BooksManagementToolbar = () => {
 
   //--- Archive selected books (set isArchived = true)
   const handleArchive = async () => {
- await archiveAll(selectedIds)
+    if (inArchiveView) {
+      await restoreAll(selectedIds)
+    } else {
+      await archiveAll(selectedIds)
+    }
     exitManaging()
   }
 
@@ -101,7 +107,7 @@ const BooksManagementToolbar = () => {
         <div>{selectedIds.length} selected books</div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Button onClick={handleDelete} disabled={selectedIds.length === 0}>Delete</Button>
-          <Button onClick={handleArchive} disabled={selectedIds.length === 0}>Archive</Button>
+          <Button onClick={handleArchive} disabled={selectedIds.length === 0}>{inArchiveView ? 'Restore' : 'Archive'}</Button>
           <Button onClick={handleToggleSelectAll}>
             {allSelected ? 'Deselect All' : 'Select All'}
           </Button>

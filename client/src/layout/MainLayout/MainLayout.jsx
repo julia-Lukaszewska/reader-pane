@@ -28,6 +28,9 @@ const LayoutWrapper = styled.div`
   transition: grid-template-columns 0.4s ease;
    background: ${({ $isHome }) => $isHome ? 'var(--gradient-main-v4)' : 'var(--gradient-metal-deepblue-v7)'};
   color: var(--color-light-0);
+    @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `
 
 const MainContent = styled.main`
@@ -60,13 +63,12 @@ const MainLayout = () => {
    
   const { isLoggedIn } = useAuth()
 
-
   // Automatically close sidebar on route change
   useEffect(() => {
     dispatch(setSidebar(false))
   }, [location.pathname, dispatch])
 
- 
+  
 
   return (
    <LayoutWrapper $open={sidebarOpen} $isHome={isHome}>

@@ -628,7 +628,9 @@ const GlobalStyles = createGlobalStyle`
     rgba(0, 0, 0, 0.25) 2px
   );
 
-         }
+ 
+}
+
        
  ${resetBaseStyles}
  

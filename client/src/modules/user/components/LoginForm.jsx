@@ -47,13 +47,17 @@ const Input = styled.input`
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 0.3rem 1rem rgba(0, 64, 128, 0.3);
     transition: all 0.3s ease;
-
+ background: transparent;
     &:hover {
       box-shadow: 0 0.5rem 1.5rem rgba(0, 80, 160, 0.4);
       background: var(--bg-icon-hover);
     }
 
-  
+    &:active {
+      transform: scale(0.95);
+       background: transparent;
+      box-shadow: 0 0 0.5rem rgba(0, 80, 160, 0.3);
+    }
   `
 
 const SubmitButton = styled.button`

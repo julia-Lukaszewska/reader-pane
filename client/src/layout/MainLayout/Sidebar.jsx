@@ -23,6 +23,7 @@ const SidebarStyled = styled.div`
   justify-items: center;
   z-index: 1000;
   transition: all 0.4s ease;
+ 
 `
   
 //-----------------------------------------------------------------------------
