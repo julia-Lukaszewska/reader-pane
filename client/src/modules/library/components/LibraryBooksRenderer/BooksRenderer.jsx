@@ -37,7 +37,7 @@ const LibraryBooksRenderer = ({
   const sortMode = useSelector(selectSortMode)
   const stateViewMode = useSelector(selectLibraryViewMode)
   const viewMode = viewModeProp ?? stateViewMode
-  const searchQuery = useSelector(selectSearchQuery)
+ const searchQuery = useSelector(selectSearchQuery) || ''
   const dispatch = useDispatch()
   const page = useSelector(selectLibraryPage)
 

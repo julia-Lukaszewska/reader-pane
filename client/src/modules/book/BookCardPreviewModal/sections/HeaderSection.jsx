@@ -64,7 +64,7 @@ const HeartButton = styled.button`
   filter: drop-shadow(0 0 0.6em ${({ $active }) => $active ? '#de3683cc' : 'transparent'});
   transition: color .12s, filter .13s, transform .12s;
   margin-top: 0.13em;
-
+ font-size: 1.6em;
   &:hover {
     color: rgb(214, 0, 64);
     transform: scale(1.08);
