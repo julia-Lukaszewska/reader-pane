@@ -5,7 +5,7 @@
 import { useLocation } from 'react-router-dom'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { IoGrid, IoList, IoReorderThree, IoTrash, IoChevronBack, IoChevronForward } from 'react-icons/io5'
+import { IoGrid, IoList, IoReorderThree, IoTrash, IoChevronBack, IoChevronForward , IoSearch } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AddBookTile from '@upload/AddBookTile'
@@ -98,13 +98,14 @@ const PageNav = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5em;
+    font-size: 0.8em;
 `
 
 const NavButton = styled.button`
   background: none;
   border: none;
   color: var(--text-primary);
-  font-size: 1.2em;
+  font-size: 1em;
   cursor: pointer;
   &:disabled {
     opacity: 0.5;
@@ -114,6 +115,27 @@ const NavButton = styled.button`
 
 const PaginationInfo = styled.span`
   color: var(--text-primary);
+`
+const SearchWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`
+
+const SearchIcon = styled(IoSearch)`
+  position: absolute;
+  left: 0.6em;
+  top: 50%;
+  z-index: 2000;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: white;
+  opacity: 0.7;
+`
+
+const SearchInput = styled(LibraryToolbarInput)`
+  padding-left: 2em;
+  color: white;
 `
 
 
@@ -183,12 +205,15 @@ const section = useMemo(() => {
           </LibraryToolbarButton>
         )}
     
-        <LibraryToolbarInput
-          type="text"
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-        />
+          <SearchWrapper>
+          <SearchIcon />
+          <SearchInput
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+          />
+        </SearchWrapper>
 
         {inLibrary && (
           <>
