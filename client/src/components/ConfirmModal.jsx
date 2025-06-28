@@ -15,7 +15,9 @@ import {
   clearPreviewBook
 } from '@/store/slices/bookSlice'
 import { useUpdateBookFlagsMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi'
-
+import { selectSelectedBookIds } from '@/store/selectors'
+import { setManageMode, clearSelected } from '@/store/slices/bookSlice'
+import { useBulkBookActions } from '@library/hooks'
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
@@ -59,16 +61,20 @@ const ConfirmModal = () => {
   const variant = useSelector(selectConfirmDeleteVariant)
   const book = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
   const previewId = useSelector(selectPreviewBookId)
+    const selectedIds = useSelector(selectSelectedBookIds)
   const [updateFlags] = useUpdateBookFlagsMutation()
   const [deleteBook] = useDeleteBookMutation()
+    const { deleteAll } = useBulkBookActions()
   const [isLoading, setLoading] = useState(false)
 
-  if (!confirmId || !book) return null
+
 
   const isLibrary = variant === 'library'
   const isPermanent = variant === 'permanent-delete'
   const isRestore = variant === 'restore'
+  const isBulkDelete = variant === 'bulk-delete'
 
+  if (!isBulkDelete && (!confirmId || !book)) return null
   const close = () => dispatch(clearConfirmDelete())
 
   const closeAll = () => {
@@ -108,7 +114,18 @@ const ConfirmModal = () => {
     setLoading(false)
     closeAll()
   }
-
+  const handleBulkDelete = async () => {
+    setLoading(true)
+    try {
+      await deleteAll(selectedIds)
+    } catch (err) {
+      console.error('Bulk delete error:', err)
+    }
+    setLoading(false)
+    dispatch(clearSelected())
+    dispatch(setManageMode(false))
+    close()
+  }
   return (
     <Overlay onClick={close}>
       <ModalBox onClick={e => e.stopPropagation()}>
@@ -116,6 +133,7 @@ const ConfirmModal = () => {
           {isLibrary && `What do you want to do with “${book.meta.title}”?`}
           {isPermanent && `Permanently delete “${book.meta.title}”?`}
           {isRestore && `Restore “${book.meta.title}” to library?`}
+          {isBulkDelete && `Are you sure you want to delete ${selectedIds.length} books?`}
         </Title>
 
         <BtnRow>
@@ -144,6 +162,16 @@ const ConfirmModal = () => {
           {isRestore && (
             <>
               <Button $variant="button_primary" onClick={handleRestore} disabled={isLoading}>
+                Yes
+              </Button>
+              <Button $variant="button_secondary" onClick={close}>
+                Cancel
+              </Button>
+            </>
+          )}
+                    {isBulkDelete && (
+            <>
+              <Button $variant="button_primary" onClick={handleBulkDelete} disabled={isLoading}>
                 Yes
               </Button>
               <Button $variant="button_secondary" onClick={close}>

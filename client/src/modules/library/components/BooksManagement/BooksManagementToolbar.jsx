@@ -10,6 +10,7 @@ import {
   clearSelected,
   setManageMode,
   setSelectedIds,
+  setConfirmDelete,
 } from '@/store/slices/bookSlice'
 import { useBulkBookActions } from '@library/hooks'
 import {
@@ -67,8 +68,8 @@ const BooksManagementToolbar = () => {
   const visible    = useSelector(selectVisibleBooks)
   const visibleIds = visible.map(b => b._id)
   const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedIds.includes(id))
-  const { deleteAll, archiveAll } = useBulkBookActions()
- const [showConfirm, setShowConfirm] = useState(false)
+  const { archiveAll } = useBulkBookActions()
+
   //--- Exit management mode and clear selection
   const exitManaging = () => {
     dispatch(clearSelected())
@@ -77,12 +78,7 @@ const BooksManagementToolbar = () => {
 
   //--- Delete selected books from backend
   const handleDelete = () => {
-    setShowConfirm(true)
-  }
-
-  const handleConfirmDelete = async () => {
-    await deleteAll(selectedIds)
-    exitManaging()
+    dispatch(setConfirmDelete({ id: 'bulk', variant: 'bulk-delete' }))
   }
 
   //--- Archive selected books (set isArchived = true)
@@ -95,11 +91,11 @@ const BooksManagementToolbar = () => {
   const handleClearSelection = () => {
     exitManaging()
   }
+
   const handleToggleSelectAll = () => {
     dispatch(setSelectedIds(allSelected ? [] : visibleIds))
   }
-
-   return (
+  return (
     <>
       <ManagementWrapper>
         <div>{selectedIds.length} selected books</div>
@@ -112,13 +108,6 @@ const BooksManagementToolbar = () => {
           <Button onClick={handleClearSelection}>Cancel</Button>
         </div>
       </ManagementWrapper>
-      {showConfirm && (
-        <ConfirmModal
-          count={selectedIds.length}
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
     </>
   )
 }

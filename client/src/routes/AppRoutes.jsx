@@ -4,7 +4,7 @@
  */
 
 import React, { lazy, Suspense } from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { LoadingSpinner } from '@/components'
 import PrivateRoute from './PrivateRoute'
 import libraryRoutes from './LibraryRoutes'
@@ -22,7 +22,7 @@ import {
   HomeView,
   ReaderView,
   SettingsView,
-  PageNotFoundView,
+
 } from '@/views'
 
 //-----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
         <MainLayout />
       </Suspense>
     ),
-    errorElement: <PageNotFoundView />, // 404 under MainLayout
+  errorElement: <Navigate to="/" replace />,
     children: [
        { index: true, element: <HomeView /> }, // Public: Home page
       {
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
           { path: 'settings', element: <SettingsView /> },         // /settings
         ],
       },
-      { path: '*', element: <PageNotFoundView /> }, // Catch-all 404
+   { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ])
