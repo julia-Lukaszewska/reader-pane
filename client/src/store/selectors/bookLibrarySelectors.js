@@ -10,7 +10,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { booksAdapter } from '@/store/api/booksPrivateApi/booksAdapter'
 import { booksApi } from '@/store/api/booksPrivateApi'
-
+import { LIBRARY_PAGE_SIZE } from '@/utils/constants'
 //-----------------------------------------------------------------------------
 // RTK Query: Normalized book data (getBooks)
 //-----------------------------------------------------------------------------
@@ -151,6 +151,19 @@ export const selectIsPreviewOpen = (state) => Boolean(state.book.previewBookId)
  * Returns an array of selected book IDs.
  */
 export const selectSelectedBookIds = (state) => state.book.selectedIds
+export const selectLibraryPage = (state) => state.book.libraryPage
+
+export const selectVisibleBooksCount = createSelector(
+  selectVisibleBooks,
+  list => list.length
+)
+
+export const selectLibraryTotalBooks = selectVisibleBooksCount
+
+export const selectLibraryTotalPages = createSelector(
+  selectVisibleBooksCount,
+  count => Math.max(1, Math.ceil(count / LIBRARY_PAGE_SIZE))
+)
 
 /**
  * Returns the progress mode used in the reader ('current' or 'max').

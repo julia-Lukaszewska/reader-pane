@@ -1,15 +1,17 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import { selectLibraryViewMode, selectSortMode } from '@/store/selectors'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectLibraryViewMode, selectSortMode, selectLibraryPage } from '@/store/selectors'
+import { setLibraryPage } from '@/store/slices/bookSlice'
+import { LIBRARY_PAGE_SIZE } from '@/utils/constants'
 import { useGetBooksQuery } from '@/store/api/booksPrivateApi'
 import sortBooks from '@book/utils/sortBooks'
 import {
   LibraryGridLayout,
   LibraryListLayout,
   LibraryTableLayout,
-  PaginationControls,
+
 } from '@library/components'
 
 /* --------------------------------------------- */
@@ -28,18 +30,19 @@ const LibraryBooksRenderer = ({
   onRestore,
   onDelete,
   viewMode: viewModeProp,
-   pageSize = 12,
+
 }) => {
   const { pathname } = useLocation()
   const { data: bookData } = useGetBooksQuery()
   const sortMode = useSelector(selectSortMode)
   const stateViewMode = useSelector(selectLibraryViewMode)
   const viewMode = viewModeProp ?? stateViewMode
-  const [page, setPage] = useState(1)
+  const dispatch = useDispatch()
+  const page = useSelector(selectLibraryPage)
 
   useEffect(() => {
-    setPage(1)
-  }, [pathname, sortMode, pageSize])
+    dispatch(setLibraryPage(1))
+  }, [pathname, sortMode, dispatch])
   /* --------------------------------------------- */
   /* FILTER BOOKS BY PATH                          */
   /* --------------------------------------------- */
@@ -64,12 +67,16 @@ const LibraryBooksRenderer = ({
   /* SORT BOOKS                                    */
   /* --------------------------------------------- */
   const sortedBooks = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
-  const totalPages = Math.max(1, Math.ceil(sortedBooks.length / pageSize))
+  const totalPages = Math.max(1, Math.ceil(sortedBooks.length / LIBRARY_PAGE_SIZE))
   const paginatedBooks = useMemo(() => {
-    const start = (page - 1) * pageSize
-    const end = start + pageSize
+    const start = (page - 1) * LIBRARY_PAGE_SIZE
+    const end = start + LIBRARY_PAGE_SIZE
     return sortedBooks.slice(start, end)
-  }, [sortedBooks, page, pageSize])
+  }, [sortedBooks, page])
+
+  useEffect(() => {
+    if (page > totalPages) dispatch(setLibraryPage(totalPages))
+  }, [totalPages, page, dispatch])
   /* --------------------------------------------- */
   /* UI FLAGS                                      */
   /* --------------------------------------------- */
@@ -93,26 +100,11 @@ const LibraryBooksRenderer = ({
 
   switch (viewMode) {
     case 'grid':
-            return (
-        <>
-          <PaginationControls page={page} totalPages={totalPages} onChange={setPage} />
-          <LibraryGridLayout {...commonProps} />
-        </>
-      )
+      return <LibraryGridLayout {...commonProps} />
     case 'list':
-        return (
-        <>
-          <PaginationControls page={page} totalPages={totalPages} onChange={setPage} />
-          <LibraryListLayout {...commonProps} />
-        </>
-      )
+      return <LibraryListLayout {...commonProps} />
     case 'table':
-            return (
-        <>
-          <PaginationControls page={page} totalPages={totalPages} onChange={setPage} />
-          <LibraryTableLayout {...commonProps} />
-        </>
-      )
+      return <LibraryTableLayout {...commonProps} />
     default:
       return <EmptyMessage>Invalid view mode: {viewMode}</EmptyMessage>
   }

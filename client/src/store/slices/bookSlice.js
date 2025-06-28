@@ -27,6 +27,7 @@ const initialState = {
   previewBookId: null,
   isManageMode: false,
   libraryFilter: 'all',
+  libraryPage: 1,
   selectedIds: [],
   libraryViewMode: 'grid',
   sortMode: 'title-asc',
@@ -88,6 +89,9 @@ const bookSlice = createSlice({
     setSortMode: (state, action) => {
       state.sortMode = action.payload
     },
+       setLibraryPage: (state, action) => {
+      state.libraryPage = action.payload
+    },
     setProgressMode: (state, action) => {
       state.progressMode = action.payload
     },
@@ -121,6 +125,7 @@ export const {
   clearSelected,
   setLibraryViewMode,
   setSortMode,
+  setLibraryPage,
   setLibraryFilter,
   setProgressMode,
   setLastOpenedBookId,

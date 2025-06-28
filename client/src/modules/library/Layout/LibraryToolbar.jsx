@@ -5,7 +5,7 @@
 import { useLocation } from 'react-router-dom'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { IoGrid, IoList, IoReorderThree, IoTrash } from 'react-icons/io5'
+import { IoGrid, IoList, IoReorderThree, IoTrash, IoChevronBack, IoChevronForward } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AddBookTile from '@upload/AddBookTile'
@@ -19,6 +19,7 @@ import {
   toggleManageMode,
   clearSelected,
   setSelectedIds,
+  setLibraryPage,
   setLibraryViewMode,
   setSortMode,
 } from '@/store/slices/bookSlice'
@@ -29,6 +30,9 @@ import {
   selectVisibleBooks,
   selectLibraryViewMode,
   selectSortMode,
+    selectLibraryPage,
+  selectLibraryTotalPages,
+  selectLibraryTotalBooks,
 } from '@/store/selectors'
 
 /* --------------------------------------------------------------------------- */
@@ -86,6 +90,28 @@ const IconButton = styled.button.withConfig({
     opacity: 0.8;
   }
 `
+const PageNav = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+`
+
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.2em;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+`
+
+const PaginationInfo = styled.span`
+  color: var(--text-primary);
+`
+
 
 /* --------------------------------------------------------------------------- */
 /*  COMPONENT: LibraryToolbar                                                  */
@@ -102,6 +128,9 @@ const LibraryToolbar = () => {
   const visible    = useSelector(selectVisibleBooks)
   const visibleIds = visible.map(b => b._id)
   const allSelected = visibleIds.length > 0 && visibleIds.every(id => selected.includes(id))
+  const page       = useSelector(selectLibraryPage)
+  const totalPages = useSelector(selectLibraryTotalPages)
+  const totalBooks = useSelector(selectLibraryTotalBooks)
 
   const handleToggleSelectAll = () => {
     dispatch(setSelectedIds(allSelected ? [] : visibleIds))
@@ -125,7 +154,16 @@ const section = useMemo(() => {
   return (
     <ToolbarWrapper>
       <SectionTitle>{section}</SectionTitle>
-
+      
+            <PageNav>
+              <NavButton onClick={() => dispatch(setLibraryPage(page - 1))} disabled={page <= 1}>
+                <IoChevronBack />
+              </NavButton>
+              <PaginationInfo>{page} / {totalPages} </PaginationInfo>
+              <NavButton onClick={() => dispatch(setLibraryPage(page + 1))} disabled={page >= totalPages}>
+                <IoChevronForward />
+              </NavButton>
+            </PageNav>
       <ToolbarActions>
         {viewMode === 'list' && !isManaging && (
           <AddBookTile />
