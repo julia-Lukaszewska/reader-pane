@@ -18,6 +18,7 @@ import { useBulkBookActions } from '@library/hooks'
 import {
   toggleManageMode,
   clearSelected,
+  setSelectedIds,
   setLibraryViewMode,
   setSortMode,
 } from '@/store/slices/bookSlice'
@@ -25,6 +26,7 @@ import {
 import {
   selectIsManageMode,
   selectSelectedBookIds,
+  selectVisibleBooks,
   selectLibraryViewMode,
   selectSortMode,
 } from '@/store/selectors'
@@ -97,7 +99,13 @@ const LibraryToolbar = () => {
   const selected   = useSelector(selectSelectedBookIds)
   const viewMode   = useSelector(selectLibraryViewMode)
   const sortMode   = useSelector(selectSortMode)
+  const visible    = useSelector(selectVisibleBooks)
+  const visibleIds = visible.map(b => b._id)
+  const allSelected = visibleIds.length > 0 && visibleIds.every(id => selected.includes(id))
 
+  const handleToggleSelectAll = () => {
+    dispatch(setSelectedIds(allSelected ? [] : visibleIds))
+  }
 
 const { pathname } = useLocation()
 
@@ -131,7 +139,11 @@ const section = useMemo(() => {
             {isManaging ? 'Done' : 'Manage'}
           </LibraryToolbarButton>
         )}
-
+       {isManaging && visibleIds.length > 0 && (
+          <LibraryToolbarButton onClick={handleToggleSelectAll}>
+            {allSelected ? 'Deselect All' : 'Select All'}
+          </LibraryToolbarButton>
+        )}
         {isManaging && selected.length > 0 && (
           <LibraryToolbarButton onClick={handleBatchDelete} $danger>
             <IoTrash /> Delete selected
