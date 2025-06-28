@@ -70,7 +70,7 @@ export default function LibraryLayout() {
       <Outlet />
 
       {/* Bulk actions */}
-      {isManageMode && selectedIds.length > 0 && <BooksManagementToolbar />}
+      {isManageMode && <BooksManagementToolbar />}
     </Container>
   )
 }

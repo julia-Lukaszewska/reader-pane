@@ -3,12 +3,20 @@
  * @description Toolbar for bulk actions (delete, archive, cancel) on selected books in management mode.
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
-import { clearSelected, setManageMode } from '@/store/slices/bookSlice'
+import {
+  clearSelected,
+  setManageMode,
+  setSelectedIds,
+} from '@/store/slices/bookSlice'
 import { useBulkBookActions } from '@library/hooks'
-import { selectSelectedBookIds } from '@/store/selectors'
+import {
+  selectSelectedBookIds,
+  selectVisibleBooks,
+} from '@/store/selectors'
+import { ConfirmModal } from '@/components'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -56,9 +64,11 @@ const Button = styled.button`
 const BooksManagementToolbar = () => {
   const dispatch = useDispatch()
   const selectedIds = useSelector(selectSelectedBookIds)
-
+  const visible    = useSelector(selectVisibleBooks)
+  const visibleIds = visible.map(b => b._id)
+  const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedIds.includes(id))
   const { deleteAll, archiveAll } = useBulkBookActions()
-
+ const [showConfirm, setShowConfirm] = useState(false)
   //--- Exit management mode and clear selection
   const exitManaging = () => {
     dispatch(clearSelected())
@@ -66,8 +76,12 @@ const BooksManagementToolbar = () => {
   }
 
   //--- Delete selected books from backend
-  const handleDelete = async () => {
-     await deleteAll(selectedIds)
+  const handleDelete = () => {
+    setShowConfirm(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    await deleteAll(selectedIds)
     exitManaging()
   }
 
@@ -81,19 +95,31 @@ const BooksManagementToolbar = () => {
   const handleClearSelection = () => {
     exitManaging()
   }
+  const handleToggleSelectAll = () => {
+    dispatch(setSelectedIds(allSelected ? [] : visibleIds))
+  }
 
-  //--- Do not render if nothing is selected
-  if (selectedIds.length === 0) return null
-
-  return (
-    <ManagementWrapper>
-      <div>{selectedIds.length} selected books</div>
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <Button onClick={handleDelete}>Delete</Button>
-        <Button onClick={handleArchive}>Archive</Button>
-        <Button onClick={handleClearSelection}>Cancel</Button>
-      </div>
-    </ManagementWrapper>
+   return (
+    <>
+      <ManagementWrapper>
+        <div>{selectedIds.length} selected books</div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Button onClick={handleDelete} disabled={selectedIds.length === 0}>Delete</Button>
+          <Button onClick={handleArchive} disabled={selectedIds.length === 0}>Archive</Button>
+          <Button onClick={handleToggleSelectAll}>
+            {allSelected ? 'Deselect All' : 'Select All'}
+          </Button>
+          <Button onClick={handleClearSelection}>Cancel</Button>
+        </div>
+      </ManagementWrapper>
+      {showConfirm && (
+        <ConfirmModal
+          count={selectedIds.length}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
+    </>
   )
 }
 
