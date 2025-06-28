@@ -85,7 +85,11 @@ export const LibraryToolbarSelect = styled.select`
   background-position: right 0.75em center;
   background-repeat: no-repeat;
   background-size: 1em;
-
+  
+  option {
+    color: var(--color-dark-900);
+    background: var(--color-light-100);
+  }
   ${({ $active }) =>
     $active &&
     css`

@@ -10,10 +10,10 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Header, Sidebar } from '@/layout/MainLayout'
-import { setSidebar } from '@/store/slices/mainUiSlice'
+import { setSidebar, setAuthModalMode } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
-
+import { selectAuthModalMode } from '@/store/selectors'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -26,7 +26,7 @@ const LayoutWrapper = styled.div`
   width: 100vw;
   height: 100vh;  
   transition: grid-template-columns 0.4s ease;
-  background: var(--gradient-metal-deepblue-v7);
+   background: ${({ $isHome }) => $isHome ? 'var(--gradient-main-v4)' : 'var(--gradient-metal-deepblue-v7)'};
   color: var(--color-light-0);
 `
 
@@ -53,7 +53,9 @@ const MainContent = styled.main`
 const MainLayout = () => {
   const dispatch = useDispatch()
   const location = useLocation()
+  const isHome = location.pathname === '/'
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
+   const authModalMode = useSelector(selectAuthModalMode)
   const { isLoggedIn } = useAuth()
 
 
@@ -65,14 +67,19 @@ const MainLayout = () => {
  
 
   return (
-    <LayoutWrapper $open={sidebarOpen}>
+   <LayoutWrapper $open={sidebarOpen} $isHome={isHome}>
       <Header />
       <Sidebar />
       <MainContent>
         <Outlet />
       </MainContent>
 
-      {!isLoggedIn && <AuthModal onClose={() => {}} />}
+          {authModalMode && (
+        <AuthModal
+          mode={authModalMode}
+          onClose={() => dispatch(setAuthModalMode(null))}
+        />
+      )}
     </LayoutWrapper>
   )
 }

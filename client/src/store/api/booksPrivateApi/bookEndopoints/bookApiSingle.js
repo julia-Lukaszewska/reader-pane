@@ -108,8 +108,7 @@ export const bookApiSingle = booksApi.injectEndpoints({
       }),
       invalidatesTags: (_res, _err, id) => [
         { type: 'Books', id },
-        { type: 'Books', id: 'LIST' },
-        { type: 'BooksStatic', id: 'LIST' },
+   
       ],
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         const patch = dispatch(

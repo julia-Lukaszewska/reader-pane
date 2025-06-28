@@ -5,6 +5,7 @@
 
 import { RxReader } from 'react-icons/rx'
 import { CgEreader } from 'react-icons/cg'
+import { IoDocumentText } from 'react-icons/io5'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { selectTotalPages } from '@/store/selectors/readerSelectors'
@@ -74,6 +75,13 @@ const PageViewModeToggle = () => {
         title='Single Page View'
       >
         <RxReader />
+      </IconBtn>
+    <IconBtn
+        $active={pageViewMode === 'scroll'}
+        onClick={() => handleToggle('scroll')}
+        title='Scroll View'
+      >
+        <IoDocumentText />
       </IconBtn>
 
       <IconBtn

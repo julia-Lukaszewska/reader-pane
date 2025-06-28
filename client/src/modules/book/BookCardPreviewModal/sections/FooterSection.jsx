@@ -2,7 +2,7 @@
  * @file FooterSection.jsx
  * @description Footer section of the preview modal. Renders buttons for edit/save/cancel/close actions.
  */
-
+import { useState } from 'react'
 import styled from 'styled-components'
 import useEditBook from '@/modules/book/hooks/useEditBook'
 import { useDispatch, useSelector } from 'react-redux'
@@ -66,6 +66,7 @@ const Button = styled.button`
 
 const FooterSection = () => {
    const dispatch = useDispatch()
+   const [isSaving, setSaving] = useState(false)
   const isEditing = useSelector(selectIsEditingMain)
   const form = useSelector(selectBookModalForm)
   const previewBookId = useSelector(selectPreviewBookId)
@@ -81,7 +82,8 @@ const FooterSection = () => {
     dispatch(setEditingMain(false))
   }
 const handleSave = async () => {
-  if (!previewBookId) return false
+   if (!previewBookId || isSaving) return false
+  setSaving(true)
   const updates = {
     meta: {
       ...form.meta,
@@ -90,6 +92,7 @@ const handleSave = async () => {
   }
 
   const success = await editBook(previewBookId, updates)
+  setSaving(false)
   if (success) {
     dispatch(setEditingMain(false))
   }
@@ -113,7 +116,9 @@ const handleClose = async () => {
       {isEditing ? (
         <>
           <Button onClick={handleCancel}>Cancel</Button>
-          <Button $primary onClick={handleSave}>Save Changes</Button>
+             <Button $primary onClick={handleSave} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
         </>
       ) : (
         <>

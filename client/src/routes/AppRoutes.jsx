@@ -11,9 +11,8 @@ import libraryRoutes from './LibraryRoutes'
 //-----------------------------------------------------------------------------
 // Lazy-loaded Layouts
 //-----------------------------------------------------------------------------
-const HomeLayout    = lazy(() => import('@/layout/HomeLayout'))
+
 const MainLayout    = lazy(() => import('@/layout/MainLayout'))
-const LibraryLayout = lazy(() => import('@/layout/LibraryLayout'))
 const ReaderLayout  = lazy(() => import('@/layout/ReaderLayout'))
    
 //-----------------------------------------------------------------------------
@@ -30,17 +29,7 @@ import {
 // Route Configuration
 //-----------------------------------------------------------------------------
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: (
-      <Suspense fallback={<LoadingSpinner />}>
-        <HomeLayout />
-      </Suspense>
-    ),
-    children: [
-      { index: true, element: <HomeView /> }, // Public: Home page
-    ],
-  },
+ 
   {
     path: '/',
     element: (
@@ -50,6 +39,7 @@ const router = createBrowserRouter([
     ),
     errorElement: <PageNotFoundView />, // 404 under MainLayout
     children: [
+       { index: true, element: <HomeView /> }, // Public: Home page
       {
         element: <PrivateRoute />, // Protect all nested routes
         children: [

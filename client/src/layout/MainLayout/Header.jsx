@@ -10,7 +10,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { toggleTheme, toggleSidebar, setAuthModalMode  } from '@/store/slices/mainUiSlice'
 import { Switch, Button } from '@/components'
 import { SlHome, SlMenu } from 'react-icons/sl'
-
+import useLogout from '@/modules/user/hooks/useLogout'
+import { getAuth } from '@/utils/storageService'
 import { useAuth } from '@/modules/user/hooks'
 import useCurrentUser from '@/modules/user/hooks/useCurrentUser'
 //-----------------------------------------------------------------------------
@@ -98,6 +99,8 @@ const Header = () => {
   const isHomeView = location.pathname === '/'
  const { isLoggedIn } = useAuth()
   const { user } = useCurrentUser()
+    const logout = useLogout()
+  const storedUser = getAuth()?.user
   const goHome = () => navigate('/')
   const handleToggleSidebar = () => dispatch(toggleSidebar())
   const handleToggleTheme = () => dispatch(toggleTheme())
@@ -133,7 +136,10 @@ const Header = () => {
             login
           </Button>
         ) : (
-          <span>{user?.name}</span>
+             <>
+            <span>{user?.name || storedUser?.name}</span>
+            <Button onClick={logout}>logout</Button>
+          </>
         )}
         <Switch variant="theme" onClick={handleToggleTheme} />
       </BtnGroup>
