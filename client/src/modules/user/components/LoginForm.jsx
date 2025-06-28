@@ -16,27 +16,45 @@ import styled from 'styled-components'
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.4em;
+  gap: 0.4em;
 `
 
 const Label = styled.label`
   display: flex;
   flex-direction: column;
-  font-size: 0.75em;
+  font-size: 0.85em;
 `
 
 const Input = styled.input`
-  padding: 0.6em 1em;
-  border-radius: 0.6em;
-  font-size: 1em;
-  font-weight: 500;
-  border: 1px solid var(--color-dark-600);
-  background: var(--glass-bg);
-  filter: brightness(1.35) ;
-  color: var(--color-light-0);
-  outline: none;
-  margin-top: 0.4em;
-`
+    width: 100%;
+    height: 100%;
+    font-size: 1.3em;
+    padding:  0.8em 0.9em  ;
+   
+ 
+    margin: 0.3em 0 ;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background-blend-mode: overlay;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0.3rem 1rem rgba(0, 64, 128, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 80, 160, 0.4);
+      background: var(--bg-icon-hover);
+    }
+
+  
+  `
 
 const SubmitButton = styled.button`
   padding: 0.8em 1.2em;

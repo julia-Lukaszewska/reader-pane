@@ -4,9 +4,10 @@
  */
 
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useRegisterMutation } from '@/store/api/authApi/authApi'
 import styled from 'styled-components'
-
+import { setAuthModalMode, setAuthModalMessage } from '@/store/slices/mainUiSlice'
 //-----------------------------------------------------------------------------
 // Styled components (shared with LoginForm)
 //-----------------------------------------------------------------------------
@@ -14,7 +15,7 @@ import styled from 'styled-components'
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1.4em;
+  gap: 0.7em;
 `
 
 const Label = styled.label`
@@ -24,16 +25,38 @@ const Label = styled.label`
 `
 
 const Input = styled.input`
-  padding: 0.6em 1em;
-  border-radius: 0.6em;
-  font-size: 1em;
-  border: 1px solid var(--color-dark-600);
-  background: var(--glass-bg);
-  filter: brightness(1.35);
-  color: var(--color-light-0);
-  outline: none;
-  margin-top: 0.4em;
-`
+     width: 100%;
+    height: 200%;
+    font-size: 1.3em;
+    padding:  0.8em 0.9em  ;
+   
+ 
+    margin: 0.3em 0 ;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background-blend-mode: overlay;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0.3rem 1rem rgba(0, 64, 128, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 80, 160, 0.4);
+      background: var(--bg-icon-hover);
+    }
+
+    &:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 0.5rem rgba(0, 80, 160, 0.3);
+    }
+  `
 
 const SubmitButton = styled.button`
   padding: 0.8em 1.2em;
@@ -61,6 +84,12 @@ const ErrorText = styled.p`
   margin-top: -0.5em;
 `
 
+const PasswordHint = styled.p`
+  font-size: 0.95em;
+  color: var(--color-light-600);
+  margin: 0.8em;
+  font-weight: 100;
+`
 //-----------------------------------------------------------------------------
 // Component: RegisterForm
 //-----------------------------------------------------------------------------
@@ -77,7 +106,7 @@ export default function RegisterForm({ onSuccess }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [register, { isLoading, error }] = useRegisterMutation()
-
+  const dispatch = useDispatch()
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -85,6 +114,8 @@ export default function RegisterForm({ onSuccess }) {
       setName('')
       setEmail('')
       setPassword('')
+           dispatch(setAuthModalMessage('Registration successful. Please log in'))
+      dispatch(setAuthModalMode('login'))
       onSuccess?.() // Switch to login tab
     } catch (err) {
       console.error('Register failed:', err)
@@ -103,9 +134,12 @@ export default function RegisterForm({ onSuccess }) {
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       </Label>
 
-      <Label>
+       <Label>
         Password
         <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <PasswordHint>
+          Password must be at least 8 characters and include uppercase, lowercase, number and special character
+        </PasswordHint>
       </Label>
 
       <SubmitButton type="submit" disabled={isLoading}>
