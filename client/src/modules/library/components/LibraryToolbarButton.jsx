@@ -98,3 +98,8 @@ export const LibraryToolbarSelect = styled.select`
       border: var(--toolbar-button-border-width) solid var(--toolbar-button-accent);
     `}
 `
+
+export const LibraryToolbarInput = styled.input`
+  ${sharedStyles};
+  width: 12em;
+`

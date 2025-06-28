@@ -51,7 +51,7 @@ const bookPersistConfig = {
   storage,
   whitelist: [
    
-    
+    'searchQuery',
     'libraryViewMode',
     'sortMode',
     'selectedIds',

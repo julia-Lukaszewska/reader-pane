@@ -123,7 +123,10 @@ export const selectLibraryViewMode = (state) => state.book.libraryViewMode
 export const selectSortMode = (state) => state.book.sortMode
 
 
-
+/**
+ * Returns current search query for filtering books
+ */
+export const selectSearchQuery = (state) => state.book.searchQuery
 /**
  * Returns the currently active book ID.
  */

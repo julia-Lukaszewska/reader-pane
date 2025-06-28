@@ -12,15 +12,16 @@ import AddBookTile from '@upload/AddBookTile'
 import {
   LibraryToolbarButton,
   LibraryToolbarSelect,
+  LibraryToolbarInput,
 } from '@library/components/LibraryToolbarButton'
 
-import { useBulkBookActions } from '@library/hooks'
 import {
   toggleManageMode,
   clearSelected,
   setSelectedIds,
   setLibraryPage,
   setLibraryViewMode,
+  setSearchQuery,
   setSortMode,
 } from '@/store/slices/bookSlice'
 
@@ -29,6 +30,7 @@ import {
   selectSelectedBookIds,
   selectLibraryViewMode,
   selectSortMode,
+  selectSearchQuery,
   selectVisibleBooks,
   selectLibraryPage,
   selectLibraryTotalPages,
@@ -129,7 +131,7 @@ const LibraryToolbar = () => {
   const sortMode   = useSelector(selectSortMode)
   const visible    = useSelector(selectVisibleBooks)
   const visibleIds = visible.map(b => b._id)
-
+const searchQuery = useSelector(selectSearchQuery)
   const page       = useSelector(selectLibraryPage)
   const totalPages = useSelector(selectLibraryTotalPages)
   const totalBooks = useSelector(selectLibraryTotalBooks)
@@ -181,6 +183,12 @@ const section = useMemo(() => {
           </LibraryToolbarButton>
         )}
     
+        <LibraryToolbarInput
+          type="text"
+          placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+        />
 
         {inLibrary && (
           <>

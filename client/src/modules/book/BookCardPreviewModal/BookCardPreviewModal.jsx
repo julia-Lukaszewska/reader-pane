@@ -141,7 +141,11 @@ export default function BookCardPreviewModal() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [closeModal])
-
+  // Ensure modal does not persist after route changes
+  useEffect(() => () => {
+    dispatch(clearPreviewBook())
+    dispatch(resetForm())
+  }, [dispatch])
   // 4) Mount via portal
   const container = document.getElementById('modal-root') || document.body
   return createPortal(

@@ -2,7 +2,7 @@ import { useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectLibraryViewMode, selectSortMode, selectLibraryPage } from '@/store/selectors'
+import { selectLibraryViewMode, selectSortMode, selectLibraryPage, selectSearchQuery } from '@/store/selectors'
 import { setLibraryPage } from '@/store/slices/bookSlice'
 import { LIBRARY_PAGE_SIZE } from '@/utils/constants'
 import { useGetBooksQuery } from '@/store/api/booksPrivateApi'
@@ -37,12 +37,13 @@ const LibraryBooksRenderer = ({
   const sortMode = useSelector(selectSortMode)
   const stateViewMode = useSelector(selectLibraryViewMode)
   const viewMode = viewModeProp ?? stateViewMode
+  const searchQuery = useSelector(selectSearchQuery)
   const dispatch = useDispatch()
   const page = useSelector(selectLibraryPage)
 
   useEffect(() => {
     dispatch(setLibraryPage(1))
-  }, [pathname, sortMode, dispatch])
+}, [pathname, sortMode, searchQuery, dispatch])
   /* --------------------------------------------- */
   /* FILTER BOOKS BY PATH                          */
   /* --------------------------------------------- */
@@ -67,12 +68,21 @@ const LibraryBooksRenderer = ({
   /* SORT BOOKS                                    */
   /* --------------------------------------------- */
   const sortedBooks = useMemo(() => sortBooks(books, sortMode), [books, sortMode])
-  const totalPages = Math.max(1, Math.ceil(sortedBooks.length / LIBRARY_PAGE_SIZE))
+  const searchedBooks = useMemo(() => {
+    const q = searchQuery.toLowerCase()
+    if (!q) return sortedBooks
+    return sortedBooks.filter(b => {
+      const title = (b.meta.title || '').toLowerCase()
+      const author = (b.meta.author || '').toLowerCase()
+      return title.includes(q) || author.includes(q)
+    })
+  }, [sortedBooks, searchQuery])
+  const totalPages = Math.max(1, Math.ceil(searchedBooks.length / LIBRARY_PAGE_SIZE))
   const paginatedBooks = useMemo(() => {
     const start = (page - 1) * LIBRARY_PAGE_SIZE
     const end = start + LIBRARY_PAGE_SIZE
-    return sortedBooks.slice(start, end)
-  }, [sortedBooks, page])
+    return searchedBooks.slice(start, end)
+  }, [searchedBooks, page])
 
   useEffect(() => {
     if (page > totalPages) dispatch(setLibraryPage(totalPages))
@@ -83,7 +93,7 @@ const LibraryBooksRenderer = ({
   const shouldHideAddTile =
     hideAddTile || pathname === '/library/archive' || pathname === '/library/favorites'
 
-  if (!sortedBooks.length && shouldHideAddTile) {
+  if (!searchedBooks.length && shouldHideAddTile) {
     return <EmptyMessage>No books found.</EmptyMessage>
   }
 

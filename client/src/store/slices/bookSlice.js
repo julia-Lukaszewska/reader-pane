@@ -29,6 +29,7 @@ const initialState = {
   libraryFilter: 'all',
   libraryPage: 1,
   selectedIds: [],
+  searchQuery: '',
   libraryViewMode: 'grid',
   sortMode: 'title-asc',
   progressMode: 'current',
@@ -89,6 +90,9 @@ const bookSlice = createSlice({
     setSortMode: (state, action) => {
       state.sortMode = action.payload
     },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload
+    },
        setLibraryPage: (state, action) => {
       state.libraryPage = action.payload
     },
@@ -122,6 +126,7 @@ export const {
   setManageMode,
   setSelectedIds,
   toggleSelect,
+  setSearchQuery,
   clearSelected,
   setLibraryViewMode,
   setSortMode,

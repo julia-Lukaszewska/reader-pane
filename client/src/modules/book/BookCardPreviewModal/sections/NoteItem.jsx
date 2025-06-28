@@ -90,9 +90,13 @@ export default function NoteItem({ note, onSave, readOnly }) {
     }
   }, [isEditing])
 
-  const handleBlur = () => {
+  const save = () => {
     setIsEditing(false)
     if (value !== note.text) onSave(note.id, value)
+  }
+
+  const handleBlur = () => {
+    save()
   }
 
   const handleKeyDown = e => {
@@ -100,6 +104,10 @@ export default function NoteItem({ note, onSave, readOnly }) {
       e.preventDefault()
       if (textareaRef.current) textareaRef.current.blur()
     }
+  }
+
+  const handleSave = () => {
+    save()
   }
 
   return (
@@ -118,20 +126,26 @@ export default function NoteItem({ note, onSave, readOnly }) {
           $empty={!note.text}
           onClick={() => !readOnly && setIsEditing(true)}
         >
-          {note.text || <span style={{ opacity: 0.48 }}>No note</span>}
+          {note.text || <span style={{ opacity: 0.48 }}>Click to add note</span>}
         </NoteContent>
       )}
       <DateRow>
-        <DateLabel>Last edited:</DateLabel>
-        <span>
-          {note.createdAt
-            ? new Date(note.createdAt).toLocaleDateString('en-GB', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-              })
-            : ''}
-        </span>
+        {isEditing && !readOnly ? (
+          <button onClick={handleSave}>Save note</button>
+        ) : (
+          <>
+            <DateLabel>Last edited:</DateLabel>
+            <span>
+              {note.createdAt
+                ? new Date(note.createdAt).toLocaleDateString('en-GB', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                  })
+                : ''}
+            </span>
+          </>
+        )}
       </DateRow>
     </BookField>
   )
