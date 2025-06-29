@@ -60,11 +60,11 @@ const HeartButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: ${({ $active }) => $active ? 'rgb(214, 0, 64)' : 'rgba(129, 129, 129, 0.39)'};
-  filter: drop-shadow(0 0 0.6em ${({ $active }) => $active ? '#de3683cc' : 'transparent'});
+  color: ${({ $active }) => $active ? 'rgb(214, 0, 64)' : 'rgba(211, 211, 211, 0.616)'};
+  
   transition: color .12s, filter .13s, transform .12s;
   margin-top: 0.13em;
- font-size: 1.6em;
+ font-size: 2.2em;
   &:hover {
     color: rgb(214, 0, 64);
     transform: scale(1.08);

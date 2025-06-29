@@ -6,8 +6,8 @@
 import React from 'react'
 import styled from 'styled-components'
 import AppRoutes from '@/routes/AppRoutes'
-import GlobalStyles from '@/styles/GlobalStyles'
 import AuthController from '@/controllers/AuthController'
+import GlobalStyles from '@/styles/GlobalStyles.jsx'
 
 
 // -----------------------------------------------------------------------------
