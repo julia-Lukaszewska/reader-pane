@@ -11,9 +11,13 @@ import { toggleTheme, toggleSidebar, setAuthModalMode  } from '@/store/slices/ma
 import { Switch, Button } from '@/components'
 import { SlHome, SlMenu } from 'react-icons/sl'
 import useLogout from '@/modules/user/hooks/useLogout'
+import { SlUser } from 'react-icons/sl'
+
 import { getAuth } from '@/utils/storageService'
 import { useAuth } from '@/modules/user/hooks'
 import useCurrentUser from '@/modules/user/hooks/useCurrentUser'
+import logo from '@/assets/logo.svg'
+
 //-----------------------------------------------------------------------------
 // Styled components
 //-----------------------------------------------------------------------------
@@ -59,11 +63,14 @@ const HeaderStyled = styled.header`
   border-bottom: 0.2rem solid rgba(150, 232, 255, 0.315);
   z-index: 1;
 `
-
-const Title = styled.h1`
-  position: absolute;
+const TitleWrapper = styled.div`
+   position: absolute;
   top: 50%;
   left: 50%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
   transform: translate(-50%, -50%);
   font-size: 2.4rem;
   font-weight: 300;
@@ -71,8 +78,31 @@ const Title = styled.h1`
   letter-spacing: 0.4rem;
   font-family: 'Poppins', sans-serif;
   color: white;
-  text-shadow: var(--color-);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
   transition: color 0.3s ease;
+  
+`
+
+const Title = styled.h1`
+  position: relative;
+  
+  
+  font-size: 2.4rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.4rem;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s ease;
+`
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.2em;
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 `
 
 const BtnGroup = styled.div`
@@ -80,7 +110,12 @@ const BtnGroup = styled.div`
   align-items: center;
   gap: 1.2rem;
 `
-
+const LogoImg = styled.img`
+  height: 1.2em;
+  margin-right: 0.53rem;
+  opacity: 1;
+  filter: drop-shadow(2px 2px 3px rgba(5, 23, 46, 0.25));
+  `
 //-----------------------------------------------------------------------------
 // Component: Header
 //-----------------------------------------------------------------------------
@@ -127,9 +162,10 @@ const Header = () => {
           </Button>
         )}
       </BtnGroup>
-
-      <Title>Pane</Title>
-
+      <TitleWrapper>
+        <LogoImg src={logo} alt="Reader-App Logo" />
+        <Title>Pane</Title>
+      </TitleWrapper>
       <BtnGroup>
            {!isLoggedIn ? (
            <Button
@@ -140,7 +176,11 @@ const Header = () => {
           </Button>
         ) : (
              <>
-            <span>{user?.name || storedUser?.name}</span>
+             <UserInfo>
+    <SlUser aria-label="User icon" />
+    <span>{user?.name || storedUser?.name}</span>
+  </UserInfo>
+
               <Button $variant="header_btn" onClick={logout}>logout</Button>
           </>
         )}
