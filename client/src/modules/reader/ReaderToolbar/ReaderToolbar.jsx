@@ -30,7 +30,8 @@ const StyledToolbar = styled.nav`
   background: var(--gradient-metal-blue-light);
   border-bottom: 1rem solid var(--color-metal-100);
   overflow: hidden;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.384);
+  box-shadow: var(--reader-toolbar-shadow);
+
 `
 
 const LeftSection = styled.div`

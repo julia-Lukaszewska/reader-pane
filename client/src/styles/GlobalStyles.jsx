@@ -7,7 +7,7 @@ import resetBaseStyles from './resetBaseStyles'
 import lightVars from './themes/lightVariables'
 import darkVars from './themes/darkVariables'
 
-/* zmienne motywu – wstrzykujemy do :root */
+
 const Variables = createGlobalStyle`
   :root {
     ${({ $mode }) => ($mode === 'dark' ? darkVars : lightVars)}
