@@ -7,8 +7,7 @@ ${collorPalete}
 ${gradients}
 
 
-
-
+--sidebar-bg: var(--sidebar-bg-gradient);
 --home-bg: var(--home-bg-gradient-01);
 --library-bg: var(--home-bg-gradient-01);
 --library-bg-01: var(--library-bg-gradient-01);
@@ -69,7 +68,8 @@ ${gradients}
 
   --menu-tile-overlay-shadow: 0 0 2rem rgba(0, 0, 0, 0.2);
 
-  --menu-tile-bg-active: var(--gradient-main-v4);
+  --menu-tile-bg-active: var(--menu-tile-bg-active-gradient-02);
+  
   --menu-tile-bg-inactive: var(--gradient-main-v2);
 
   --menu-tile-z-active: 2000;

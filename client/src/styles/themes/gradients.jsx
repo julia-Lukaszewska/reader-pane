@@ -205,6 +205,74 @@ export default css`
             rgb(var(--color-gray-09) / .02) 1px,
             rgb(var(--color-gray-02) / .02) 2px
           );
-        
+       // ---------------------------------------------------------------------------
+       //------ Sidebar gradient
+      // --------------------------------------------------------------------------- 
+      --sidebar-bg-gradient:
+      linear-gradient(
+      37deg,
+      rgb(var(--color-200-09) / .8) 20%,
+      rgb(var(--color-200-04) / .78) 45%,
+      rgb(var(--color-200-03) / .533) 70%,
+      rgb(var(--color-200-08) / .733) 100%
+    ),
+    linear-gradient(
+      125deg,
+      rgb(var(--color-200-10) / .6) 0%,
+      rgb(var(--color-200-10) / .5) 50%,
+      rgb(var(--color-200-05) / .1) 100%
+    ),
+    repeating-linear-gradient(
+      70deg,
+      rgb(255 255 255 / .035) 0px,
+      rgb(var(--color-200-09) / .4) 2px,
+      rgb(var(--color-200-04) / .25) 2px,
+      rgb(var(--color-200-10) / .03) 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgb(var(--color-200-04)/ .02) 0px,
+      rgb(var(--color-200-04) / .28) 20%,
+      rgb(var(--color-200-09) / .025) 1px,
+      rgb(var(--color-200-09) / .3) 2px
+    );
+    //--------------------------------------------------     
+   //------ menu tile background active
+   //--------------------------------------------------   
 
+      --menu-tile-bg-active-gradient:
+      linear-gradient(
+        138deg,
+        rgb(var(--color-200-03) / .81) 20%,
+        rgb(var(--color-200-04) / .973) 45%,
+        rgb(var(--color-200-06) / .573) 70%,
+        rgb(var(--color-200-08) / .874) 100%
+      ),
+      linear-gradient(
+        15deg,
+        rgb(var(--color-200-10)) 0%,
+        rgb(var(--color-200-10) / .589) 50%,
+        rgb(var(--color-200-05) / .384) 100%
+      ),
+      repeating-linear-gradient(
+        310deg,
+        rgb(255 255 255 / .04) 0rem,
+        rgb(var(--color-200-09) / .578) 0.2rem,
+        rgb(var(--color-200-08) / .33) 0.22rem,
+        rgb(var(--color-200-09) / .03) 0.3rem
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgb(255 255 255 / .02) 0rem,
+        rgb(var(--color-200-04) / .441) 0.1rem,
+        rgb(0 0 0 / .02) 0.1rem,
+        rgb(0 0 0 / .062) 0.1rem
+      );
+      --menu-tile-bg-active-gradient-02:
+      linear-gradient(
+       140deg,
+      rgb(var(--color-200-05) / .726) 0%,
+      rgb(var(--color-200-02) / .247) 50%,
+     rgb(var(--color-200-09) / .08) 100%
+);
   `

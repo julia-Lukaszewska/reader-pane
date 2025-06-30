@@ -46,12 +46,7 @@ const StyledTile = styled.div`
   border-radius: 1em;
   cursor: pointer;
 
-  background: linear-gradient(
-    140deg,
-    rgba(65, 132, 255, 0.726) 0%,
-    rgba(160, 200, 216, 0.247) 50%,
-    rgba(255, 255, 255, 0.08) 100%
-  );
+  background: var(--menu-tile-bg-active);
 
   filter: brightness(1.2) saturate(100%) contrast(0.9);
 

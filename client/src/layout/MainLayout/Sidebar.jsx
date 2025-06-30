@@ -14,7 +14,7 @@ import { SidebarMenu } from '@/layout/MainLayout'
 const SidebarStyled = styled.div`
   grid-column: 1;
   grid-row: 2 / 3;
-  background: var(--gradient-main-v2);
+  background: var(--sidebar-bg);
   color: var(--color-dark-900);
   border-right: 3px solid var(--see-akcent-02);
   display: ${({ $isOpen }) => ($isOpen ? 'grid' : 'none')};

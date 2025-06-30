@@ -58,12 +58,7 @@ const StyledSubTile = styled.div`
   cursor: pointer;
 
   //------ Visual
-  background: linear-gradient(
-    140deg,
-    rgba(65, 132, 255, 0.548) 0%,
-    rgba(125, 192, 255, 0.123) 45%,
-    rgba(13, 56, 105, 0.349) 100%
-  );
+  background: var(--menu-tile-bg-active);
   border: 2px solid rgba(22, 67, 95, 0.193);
   border-radius: 0.6em;
 
