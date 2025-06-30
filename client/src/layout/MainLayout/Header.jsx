@@ -24,34 +24,8 @@ import logo from '@/assets/logo.svg'
 
 const HeaderStyled = styled.header`  
   position: relative;
-  background:
-    linear-gradient(
-      37deg,
-      #2f6eb23a 20%,
-      #6fafe642 45%,
-      #9bd4ff1c 70%,
-      #417cbf2f 100%
-    ),
-    linear-gradient(
-      125deg,
-      rgba(64, 172, 255, 0.549) 0%,
-      rgba(30, 32, 106, 0.47) 50%,
-      rgba(61, 105, 171, 0.08) 100%
-    ),
-    repeating-linear-gradient(
-      70deg,
-      rgba(255, 255, 255, 0.04) 0px,
-      rgba(8, 75, 88, 0.578) 2px,
-      rgba(0, 0, 0, 0.03) 2px,
-      rgba(222, 222, 222, 0.03) 4px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(255, 255, 255, 0.02) 0px,
-      rgba(127, 196, 198, 0.441) 20%,
-      rgba(0, 0, 0, 0.02) 1px,
-      rgba(0, 0, 0, 0.02) 2px
-    );
+  background: var(--header-gradient-01);
+   
   grid-row: 1;
   grid-column: 1 / 3;
   height: 10vh;

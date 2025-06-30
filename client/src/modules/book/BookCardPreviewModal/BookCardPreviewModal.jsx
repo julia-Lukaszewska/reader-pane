@@ -89,7 +89,7 @@ const ModalGrid = styled.div`
     'footer footer';
 
   /* Appearance */
-  background: var(--gradient-main);
+  background: var(--modal-bg-01);
   backdrop-filter: blur(12px) saturate(120%);
   box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.08);
 

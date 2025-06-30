@@ -1,7 +1,19 @@
 import { css } from 'styled-components'
-
+import gradients from './gradients'
+import collorPalete from './collorPalete'
 export default css`
 
+${collorPalete}
+${gradients}
+
+
+
+
+--home-bg: var(--home-bg-gradient-01);
+--library-bg: var(--home-bg-gradient-01);
+--library-bg-01: var(--library-bg-gradient-01);
+--library-toolbar-bg-01: var(--library-toolbar-gradient-01);
+--modal-bg-01: var(--modal-gradient-01);
 //------------------------------------------------------------------
 //--------ListItemLibrary
 //------------------------------------------------------------------
@@ -19,6 +31,7 @@ export default css`
 /* Sizing & spacing */
 --toolbar-button-padding: 0.3em 0.9em;
 --toolbar-button-gap: 0.5em;
+
 --toolbar-button-font-size: 0.85em;
 --toolbar-button-font-weight: 500;
 --toolbar-button-border-width: 0.12em;
@@ -140,37 +153,8 @@ export default css`
         --see-akcent: rgb(194, 249, 255);
         --see-akcent-02: hsl(210 70% 69% / 0.6);
         --see-akcent-03: hsl(206 50% 61%);
-  // ---------------------------------------------------------------------------
-  //------ Tile background inactive (MenuTile)
-  // ---------------------------------------------------------------------------
-        --tile-bg-inactive:
-        linear-gradient(
-          37deg,
-          #2f6eb23a 20%,
-          #6fafe642 45%,
-          #9bd4ff1c 70%,
-          #417cbf2f 100%
-          ),
-        linear-gradient(
-          125deg,
-          rgba(64, 172, 255, 0.549) 0%,
-          rgba(30, 32, 106, 0.47) 50%,
-          rgba(61, 105, 171, 0.08) 100%
-        ),
-        repeating-linear-gradient(
-          70deg,
-          rgba(255, 255, 255, 0.04) 0px,
-          rgba(8, 75, 88, 0.578) 2px,
-          rgba(0, 0, 0, 0.03) 2px,
-          rgba(222, 222, 222, 0.03) 4px
-        ),
-        repeating-linear-gradient(
-          -45deg,
-          rgba(255, 255, 255, 0.02) 0px,
-          rgba(127, 196, 198, 0.441) 20%,
-          rgba(0, 0, 0, 0.02) 1px,
-          rgba(0, 0, 0, 0.02) 2px
-          );
+  
+
 
 
   // ---------------------------------------------------------------------------

@@ -131,7 +131,7 @@ const Row = styled.div`
   height: var(--row-height);
   font-size: var(--row-font-size);
   padding: 1.5% 2%;
-  background: var(--gradient-main);
+  background: var(--bookCard-bg-inactive);
   border-radius: 1em;
   box-shadow: var(--glass-shadow);
   backdrop-filter: blur(6px);

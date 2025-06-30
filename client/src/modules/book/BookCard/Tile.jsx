@@ -22,7 +22,7 @@ const TileBox = styled.div`
   width: var(--tile-size);
   aspect-ratio: 2 / 3;
   flex: none;
-  background: var(--gradient-main);
+  background: var(--bookCard-bg-inactive);
   backdrop-filter: blur(6px);
   border-radius: var(--border-radius);
   justify-content: space-between;

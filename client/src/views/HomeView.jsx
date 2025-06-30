@@ -29,7 +29,7 @@ const StyledHomeView = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  background: var(--gradient-main-v22);
+  background: var(--home-bg);
   filter: brightness(1) contrast(1.2);
   color: var(--color-light-9);
   z-index: 100;

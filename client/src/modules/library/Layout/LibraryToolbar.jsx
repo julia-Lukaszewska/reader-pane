@@ -49,7 +49,7 @@ const ToolbarWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0.4em 1.9em;
-  background: var(--gradient-main-v2);
+  background: var(--library-toolbar-bg-01);
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
   margin-bottom: 1em;

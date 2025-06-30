@@ -26,7 +26,7 @@ const LayoutWrapper = styled.div`
   width: 100vw;
   height: 100vh;  
   transition: grid-template-columns 0.4s ease;
-   background: ${({ $isHome }) => $isHome ? 'var(--gradient-main-v4)' : 'var(--gradient-metal-deepblue-v7)'};
+   background: ${({ $isHome }) => $isHome ? 'var(--home-bg)' : 'var(--library-bg)'};
   color: var(--color-light-0);
     @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -36,9 +36,9 @@ const LayoutWrapper = styled.div`
 const MainContent = styled.main`
   grid-row: 2;
   grid-column: 2;
-  padding: 1rem;
+  padding: 0rem;
   overflow-y: auto;
-  background-color: var(--see-07);
+  background-color: var(--home-bg);
   z-index: 200;
 `
 

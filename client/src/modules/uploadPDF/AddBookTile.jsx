@@ -31,7 +31,7 @@ const AddTile = styled.div.withConfig({
     `
     width: var(--tile-size);
     aspect-ratio: 2 / 3;
-    background: var(--gradient-main);
+    background: var(--bookCard-bg-inactive);
     backdrop-filter: blur(6px);
     border-radius: var(--border-radius);
     box-shadow: var(--glass-shadow);
