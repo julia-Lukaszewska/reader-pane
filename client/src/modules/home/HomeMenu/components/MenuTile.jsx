@@ -48,7 +48,6 @@ const StyledTile = styled.div`
 
   background: var(--menu-tile-bg-active);
 
-  filter: brightness(1.2) saturate(100%) contrast(0.9);
 
   box-shadow:
     inset 0 0 0.6rem rgba(255, 255, 255, 0.411),

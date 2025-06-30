@@ -50,7 +50,7 @@ const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgb(var(--color-400-10) / .6);
   backdrop-filter: blur(5px);
   z-index: 1000;
 `;
@@ -63,7 +63,7 @@ const ModalWrapper = styled.div`
   flex-direction: column;
   overflow: hidden;
   border-radius: 1rem;
-  background: rgba(30, 35, 45, 0.85);
+ 
   backdrop-filter: blur(12px);
   border: 1.5px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.4),

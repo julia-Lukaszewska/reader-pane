@@ -16,7 +16,7 @@ const $variants = {
   //-----------------------------------------------------------------------------
   sidebar_btn: css`
     width: 14rem;
-    background: var(--gradient-main-v3, #a1f1ff82);
+    background: var(--sidebar-button-gradient);
     color: white;
     backdrop-filter: blur(6px);
     border: 2px solid rgba(194, 249, 255, 0.996);
@@ -29,7 +29,7 @@ const $variants = {
 
     &:hover {
       box-shadow: 0 0.4rem 1rem rgba(17, 46, 132, 0.513);
-      background: var(--gradient-main);
+      background: var(--sidebar-button-gradient-hoover);
     }
 
     &:active {

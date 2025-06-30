@@ -6,7 +6,7 @@ export default css`
 ${collorPalete}
 ${gradients}
 
-
+--manage-toolbar-bg: var(--library-toolbar-gradient-01);
 --sidebar-bg: var(--sidebar-bg-gradient);
 --home-bg: var(--home-bg-gradient-01);
 --library-bg: var(--home-bg-gradient-01);

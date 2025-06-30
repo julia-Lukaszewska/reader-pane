@@ -31,7 +31,7 @@ const ManagementWrapper = styled.div`
   align-items: center;
   padding: 1rem 2rem;
   margin-bottom: 1rem;
-  background: var(--glass-bg);
+  background: var(--manage-toolbar-bg);
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
 `
