@@ -20,6 +20,9 @@ ${shadows(mode)};
 --library-bg-01: var(--library-bg-gradient-01);
 --library-toolbar-bg-01: var(--library-toolbar-gradient-01);
 --modal-bg-01: var(--modal-gradient-01);
+
+--button-bg-01: var(--sidebar-bg-gradient);
+--button-bg-02: rgb(var(--color-400-05) / 0.8);
 //------------------------------------------------------------------
 //--------ListItemLibrary
 //------------------------------------------------------------------
@@ -27,8 +30,11 @@ ${shadows(mode)};
   --row-width: 83.333vw;
   --row-height: calc(var(--row-width) / 9);
   --row-font-size: calc(var(--row-width) * 0.015);
-
---text-primary: rgb(var(--color-100-02) / 1);
+--text-color-01: rgb(var(--color-500-01) / 1);
+--text-color-02: rgb(var(--color-500-02) / 1);
+--text-color-03: rgb(var(--color-500-10) / 1);
+--text-color-04: rgb(var(--color-500-03) / 1);
+--text-primary: rgb(var(--color-500-02) / 1);
 
 //------------------------------------------------------------------
 //--------Toolbar styles (glass-metal modern look)
@@ -48,11 +54,11 @@ ${shadows(mode)};
 /* Default state */
 --toolbar-button-bg-default: rgb(var(--color-400-05) / 0.7);
 --toolbar-button-bg-hover:  rgb(var(--color-400-06) / 0.9);
---toolbar-button-text-color: rgb(var(--color-400-01) / 1);
+--toolbar-button-text-color: var(--text-primary);
 --toolbar-button-border-color: rgb(var(--color-400-01) / 1);
 
 /* Focus state */
---toolbar-button-focus-border-color: rgb(var(--color-400-01) / 1);
+--toolbar-button-focus-border-color: var(--text-primary);
 
 
 /* Active (selected/clicked) state */

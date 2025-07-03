@@ -28,19 +28,19 @@ const Container = styled.div`
 `
 
 const Title = styled.h2`
-  color: #ffffff;
+  color: var(--text-color-01);
   font-size: 4rem;
   margin-bottom: 1.5rem;
 `
 
 const Subtitle = styled.p`
-  color: #ffffff;
+  color: var(--text-color-01);
   font-size: 2.5rem;
   margin-bottom: 1rem;
 `
 
 const Note = styled.p`
-  color: #ffffff;
+  color: var(--text-color-01);
   font-size: 2rem;
   opacity: 0.9;
 `

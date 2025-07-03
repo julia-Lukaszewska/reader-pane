@@ -17,7 +17,7 @@ const $variants = {
   sidebar_btn: css`
     width: 14rem;
     background: var(--sidebar-button-gradient);
-    color: var(--text-primary);
+    color: var(--text-color-02);
     backdrop-filter: blur(6px);
     border: 2px solid rgba(194, 249, 255, 0.996);
     box-shadow: 0 0.4rem 1rem rgba(2, 12, 59, 0.513);
@@ -49,7 +49,7 @@ const $variants = {
     background: var(--bg-icon-default);
     font-size: 2rem;
     display: flex;
-    color: var(--text-primary);
+    color: var(--text-color-01);
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(6px);
@@ -107,7 +107,7 @@ const $variants = {
    width: 9rem;
     height: 4rem;
     padding: 0.2rem;
-    color:rgb(var(--color-400-01) / 1);
+    color:var(--text-color-01);
     font-size: 1.3rem;
     font-weight: 300;
     border-radius: 999px;
@@ -197,7 +197,7 @@ const $variants = {
     letter-spacing: 1px;
     text-transform: uppercase;
     background: var(--gradient-main-v4);
-    color: var(--text-primary);
+    color: var(--text-color-01);
     border-radius: 0.6rem;
     border: 1px solid var(--see-akcent);
     backdrop-filter: blur(30px);
@@ -220,7 +220,7 @@ const $variants = {
   //-----------------------------------------------------------------------------
   modal_primary: css`
     background: var(--sidebar-button-gradient);
-    color: var(--text-primary);
+    color: var(--text-color-01);
     padding: 0.8rem 1.6rem;
     font-weight: 600;
     border-radius: var(--border-radius-sm);
@@ -274,7 +274,7 @@ const baseStyles = css`
   background: var(--sidebar-button-gradient);
   backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-shadow);
-  color: rgb(var(--color-400-09) / 1);
+  color:var(--text-color-01);
   text-align: center;
   letter-spacing: 0.5px;
   text-shadow: var(--glass-text-shadow);
@@ -299,7 +299,7 @@ const baseStyles = css`
   &:disabled {
     cursor: not-allowed;
     background-color: rgb(var(--color-400-02) / 1);
-    color: rgb(var(--color-400-04) / 1);
+    color: var(--text-color-02);
   }
 `
 

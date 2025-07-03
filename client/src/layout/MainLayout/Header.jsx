@@ -51,7 +51,7 @@ const TitleWrapper = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.4rem;
   font-family: 'Poppins', sans-serif;
-  color: white;
+  color: var(--text-color-01);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
   transition: color 0.3s ease;
   
@@ -66,7 +66,7 @@ const Title = styled.h1`
   text-transform: uppercase;
   letter-spacing: 0.4rem;
   font-family: 'Poppins', sans-serif;
-  color: white;
+  color: var(--text-color-01);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
   transition: color 0.3s ease;
 `
@@ -75,7 +75,7 @@ const UserInfo = styled.div`
   align-items: center;
   gap: 0.4rem;
   font-size: 1.2em;
-  color: white;
+  color: var(--text-color-01);
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 `
 

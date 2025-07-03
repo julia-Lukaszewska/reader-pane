@@ -12,7 +12,7 @@ const StyledSelect = styled.select`
   padding: 0.4em 1em;
   border-radius: 0.9em;
   background: rgba(255,255,255,0.14);
-  color: #ffffff;
+  color: var(--text-color-01);
   border: 1.5px solid var(--color-blue-500);
   transition: border-color 0.15s, box-shadow 0.15s;
 

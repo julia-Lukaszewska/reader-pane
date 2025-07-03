@@ -61,7 +61,7 @@ const Input = styled.input`
 const SubmitButton = styled.button`
   padding: 0.8em 1.2em;
   background: var(--gradient-blue);
-  color: white;
+  color: var(--text-color-01);
   font-weight: bold;
   border: none;
   border-radius: 0.8em;
@@ -86,7 +86,7 @@ const ErrorText = styled.p`
 
 const PasswordHint = styled.p`
   font-size: 0.95em;
-  color: var(--color-light-600);
+  color: var(--text-color-03);
   margin: 0.8em;
   font-weight: 100;
 `

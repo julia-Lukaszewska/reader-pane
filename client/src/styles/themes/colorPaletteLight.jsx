@@ -48,17 +48,31 @@ export default css`
  // ---------------------------------------------------------------------------
  //------ Colors 400
  // ---------------------------------------------------------------------------
-
---color-400-01: 255 255 255; /* white             #ffffffff */
---color-400-02: 198 217 247; /* columbia-blue     #c6d9f7ff */
---color-400-03: 169 198 243; /* jordy-blue-2      #a9c6f3ff */
---color-400-04: 140 179 238; /* jordy-blue        #8cb3eeff */
---color-400-05: 104 155 232; /* cornflower-blue   #689be8ff */
---color-400-06:  69 132 227; /* azure             #4584e3ff */
---color-400-07:  38 110 217; /* celtic-blue       #266ed9ff */
---color-400-08:  28  91 186; /* denim             #1c5bbaff */
---color-400-09:  23  74 151; /* polynesian-blue   #174a97ff */
---color-400-10:  17  56 115; /* yale-blue         #113873ff */
+ 
+ --color-400-01: 255 255 255; /* white             #ffffffff */
+ --color-400-02: 198 217 247; /* columbia-blue     #c6d9f7ff */
+ --color-400-03: 169 198 243; /* jordy-blue-2      #a9c6f3ff */
+ --color-400-04: 140 179 238; /* jordy-blue        #8cb3eeff */
+ --color-400-05: 104 155 232; /* cornflower-blue   #689be8ff */
+ --color-400-06:  69 132 227; /* azure             #4584e3ff */
+ --color-400-07:  38 110 217; /* celtic-blue       #266ed9ff */
+ --color-400-08:  28  91 186; /* denim             #1c5bbaff */
+ --color-400-09:  23  74 151; /* polynesian-blue   #174a97ff */
+ --color-400-10:  17  56 115; /* yale-blue         #113873ff */
+ 
+ // ---------------------------------------------------------------------------
+ //------ Colors 500
+ // ---------------------------------------------------------------------------
+--color-500-01: 244 247 255; /* ghost-white       #f4f7ffff */
+--color-500-02: 229 237 255; /* lavender-web-2    #e5edffff */
+--color-500-03: 215 227 255; /* lavender-web      #d7e3ffff */
+--color-500-04: 200 216 255; /* periwinkle-2      #c8d8ffff */
+--color-500-05: 186 206 255; /* periwinkle        #baceffff */
+--color-500-06: 171 196 255; /* jordy-blue-3      #abc4ffff */
+--color-500-07: 157 186 255; /* jordy-blue-2      #9dbaffff */
+--color-500-08: 142 175 255; /* jordy-blue        #8eafffff */
+--color-500-09: 128 165 255; /* vista-blue        #80a5ffff */
+--color-500-10: 113 155 255; /* cornflower-blue   #719bffff */
  // ---------------------------------------------------------------------------
  //------ Colors gray
  // ---------------------------------------------------------------------------

@@ -48,17 +48,31 @@ export default css`
  // ---------------------------------------------------------------------------
  //------ Colors 400
  // ---------------------------------------------------------------------------
-
---color-400-01:  40  37  85; /* space-cadet        #282555ff */
---color-400-02:  53  34  89; /* russian-violet     #352259ff */
---color-400-03:  84  24  99; /* palatinate         #541863ff */
---color-400-04:  68  31  91; /* russian-violet-2   #441f5bff */
---color-400-05:  32  50  90; /* delft-blue         #20325aff */
---color-400-06:  26  62  96; /* indigo-dye-3       #1a3e60ff */
---color-400-07:  19  72 103; /* indigo-dye-2       #134867ff */
---color-400-08:  11  81 111; /* indigo-dye         #0b516fff */
---color-400-09:   6  89 116; /* midnight-green-2   #065974ff */
---color-400-10:   0  96 122; /* midnight-green     #00607aff */
+ 
+ --color-400-01: 101 217 225; /* tiffany-blue     #65d9e1ff */
+ --color-400-02:  20 116 138; /* cerulean         #14748aff */
+ --color-400-03:  11  82  91; /* midnight-green   #0b525bff */
+ --color-400-04:  20  69  82; /* midnight-green-2 #144552ff */
+ --color-400-05:  27  58  75; /* charcoal         #1b3a4bff */
+ --color-400-06:  77  25  77; /* palatinate       #4d194dff */
+ --color-400-07:  33  47  69; /* prussian-blue    #212f45ff */
+ --color-400-08:  62  31  71; /* dark-purple-2    #3e1f47ff */
+ --color-400-09:  49  34  68; /* dark-purple      #312244ff */
+ --color-400-10:  39  38  64; /* space-cadet      #272640ff */
+ 
+ // ---------------------------------------------------------------------------
+ //------ Colors 400
+ // ---------------------------------------------------------------------------
+--color-500-01: 241 247 240; /* mint-cream      #f1f7f0ff */
+--color-500-02: 212 255 252; /* mint-green      #d4fffcff */
+--color-500-03: 110 222 237; /* electric-blue   #6edeedff */
+--color-500-04:  20  69  82; /* midnight-green  #144552ff */
+--color-500-05:  27  58  75; /* charcoal        #1b3a4bff */
+--color-500-06:  33  47  69; /* prussian-blue   #212f45ff */
+--color-500-07:  39  38  64; /* space-cadet     #272640ff */
+--color-500-08:  49  34  68; /* dark-purple     #312244ff */
+--color-500-09:  63  30  73; /* russian-violet  #3f1e49ff */
+--color-500-10:  77  25  77; /* palatinate      #4d194dff */
  // ---------------------------------------------------------------------------
  //------ Colors gray
  // ---------------------------------------------------------------------------

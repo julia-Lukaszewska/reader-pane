@@ -53,7 +53,7 @@ const CloseWrapper = styled.div`
 
 const Close = styled.span`
   font-size: 1.1em;
-  color: var(--text-secondary);
+  color: var(--text-color-02);
   cursor: pointer;
 
   &:hover {
@@ -74,7 +74,7 @@ const Title = styled.h3`
   font-size: 0.65em;
   font-weight: 600;
   text-align: center;
-  color: var(--text-primary);
+ color: var(--text-color-01);
   -webkit-line-clamp: 2;
   display: -webkit-box;
   -webkit-box-orient: vertical;

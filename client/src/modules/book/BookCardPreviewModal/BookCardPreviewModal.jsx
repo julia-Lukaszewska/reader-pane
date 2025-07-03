@@ -93,7 +93,7 @@ const ModalGrid = styled.div`
   backdrop-filter: blur(12px) saturate(120%);
   box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.08);
 
-  color: var(--color-light-0);
+ color: var(--text-color-01);
   font-size: var(--modal-font-size);
 `;
 

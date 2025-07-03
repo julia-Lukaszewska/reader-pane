@@ -58,7 +58,7 @@ const CustomSelectInput = ({ name, value, onChange, options = [] }) => {
             ...base,
             fontSize: 'inherit',
             background: 'rgba(255,255,255,0.14)',
-            color: '#f5f8ff',
+            color: 'var(--text-color-01)',
             border: state.isFocused
               ? '1.5px solid var(--color-blue-400)'
               : '1.5px solid var(--color-blue-500)',

@@ -23,7 +23,7 @@ const SwitchContent = styled.div`
   width: 100%;
   padding: 0 0.8rem;
   font-size: 1.4rem;
-  color: var(--color-brand-100);
+  color: var(--text-color-01);
   position: relative;
   z-index: 2;
 `

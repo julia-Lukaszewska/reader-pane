@@ -40,5 +40,5 @@ const StyledLabel = styled.label`
   align-items: center;
   gap: 0.5em;
   font-size: var(--modal-xxl);
-  color: var(--color-light-0);
+ color: var(--text-color-01);
 `

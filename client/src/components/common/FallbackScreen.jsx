@@ -14,7 +14,7 @@ const Center = styled.div`
   justify-content: center;
   height: 100%;
   font-size: 1.2rem;
-  color: var(--text-secondary);
+  color: var(--text-color-01);
 `
 
 //-----------------------------------------------------

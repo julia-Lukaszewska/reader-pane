@@ -55,6 +55,6 @@ const Label = styled.div`
 //--- Field content
 const Content = styled.div`
   width: 100%;
-  color: #ffffff;
+  color: var(--text-color-01);
   font-weight: 500;
 `

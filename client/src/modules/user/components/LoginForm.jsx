@@ -29,7 +29,7 @@ const Input = styled.input`
     width: 100%;
     height: 100%;
     font-size: 1.3em;
-    padding:  0.8em 0.9em  ;
+    padding:  0.8em 0.9em ;
    
  
     margin: 0.3em 0 ;
@@ -63,7 +63,7 @@ const Input = styled.input`
 const SubmitButton = styled.button`
   padding: 0.8em 1.2em;
   background: var(--gradient-blue);
-  color: white;
+  color: var(--text-color-01);
   font-weight: bold;
   border: none;
   border-radius: 0.8em;

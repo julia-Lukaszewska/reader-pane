@@ -32,7 +32,7 @@ const Overlay = styled.div`
 const ModalBox = styled.div`
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
-  color: var(--color-dark-900);
+  color: var(--text-color-01);
   padding: 2.4rem;
   border-radius: var(--border-radius);
   box-shadow: var(--glass-shadow);

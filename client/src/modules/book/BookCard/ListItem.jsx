@@ -202,7 +202,7 @@ const ExtraInfo = styled.div`
 const Title = styled.div`
   font-weight: 600;
   font-size: 0.8em;
-  color: var(--text-primary);
+  color: var(--text-color-01);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -210,7 +210,7 @@ const Title = styled.div`
 
 const Author = styled.div`
   font-size: 0.7em;
-  color: var(--text-secondary);
+ color: var(--text-color-01);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,7 +219,7 @@ const Author = styled.div`
 const Date = styled.div`
   grid-area: date;
   font-size: 0.9em;
-  color: var(--text-secondary);
+  color: var(--text-color-01);
   white-space: nowrap;
 `
 
@@ -241,7 +241,7 @@ const Select = styled.div`
 
   button {
     font-size: 1.2em;
-    color: var(--text-secondary);
+    color: var(--text-color-01);
     background: none;
     border: none;
     cursor: pointer;

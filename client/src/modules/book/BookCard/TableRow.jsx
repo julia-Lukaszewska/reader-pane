@@ -26,7 +26,7 @@ const Row = styled.tr`
 const Td = styled.td`
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--text-color-01);
 `
 
 const IconTd = styled(Td)`

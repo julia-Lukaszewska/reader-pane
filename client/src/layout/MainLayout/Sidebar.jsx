@@ -15,7 +15,7 @@ const SidebarStyled = styled.div`
   grid-column: 1;
   grid-row: 2 / 3;
   background: var(--sidebar-bg);
-  color: var(--color-dark-900);
+  color: var(--text-color-01);
   border-right: 3px solid var(--see-akcent-02);
   display: ${({ $isOpen }) => ($isOpen ? 'grid' : 'none')};
   grid-template-rows: 5vh auto 2fr;

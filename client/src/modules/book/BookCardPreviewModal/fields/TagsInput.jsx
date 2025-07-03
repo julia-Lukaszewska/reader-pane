@@ -69,7 +69,7 @@ const Wrapper = styled.div`
 // Individual tag element
 const Tag = styled.span`
   background: var(--color-blue-500);
-  color: white;
+  color: var(--text-color-01);
   padding: 0.2em 0.6em;
   border-radius: 1em;
   display: flex;
@@ -81,7 +81,7 @@ const Remove = styled.button`
   margin-left: 0.4em;
   background: none;
   border: none;
-  color: white;
+  color: var(--text-color-01);
   cursor: pointer;
 `
 
@@ -91,7 +91,7 @@ const Input = styled.input`
   min-width: 6em;
   border: none;
   background: transparent;
-  color: white;
+  color: var(--text-color-01);
 
   &:focus {
     outline: none;
