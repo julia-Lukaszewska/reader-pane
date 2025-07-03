@@ -26,7 +26,7 @@ const TileBox = styled.div`
   backdrop-filter: blur(6px);
   border-radius: var(--border-radius);
   justify-content: space-between;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--book-tile-shadow);
   padding: 4%;
   display: flex;
   flex-direction: column;
@@ -39,7 +39,7 @@ const TileBox = styled.div`
 
   &:hover {
     transform: translateY(-4%);
-    box-shadow: var(--glass-shadow-hover);
+    box-shadow: var(--book-tile-shadow-hover);
   }
 `
 

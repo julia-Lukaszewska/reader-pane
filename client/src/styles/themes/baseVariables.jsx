@@ -1,10 +1,12 @@
 import { css } from 'styled-components'
 import gradients from './gradients'
 import collorPalete from './collorPalete'
+import shadows from './shadows'
 export default css`
 
-${collorPalete}
-${gradients}
+${collorPalete};
+${gradients};
+${shadows};
 
 --manage-toolbar-bg: var(--library-toolbar-gradient-01);
 --sidebar-bg: var(--sidebar-bg-gradient);
@@ -46,7 +48,7 @@ ${gradients}
 
 /* Focus state */
 --toolbar-button-focus-border-color: rgba(228, 236, 254, 0.8);
---toolbar-button-focus-shadow: 0 0 0 0.12em rgba(90, 145, 255, 0.25);
+
 
 /* Active (selected/clicked) state */
 --toolbar-button-bg-active-hover: linear-gradient(145deg, #6e98cc, #305c94);
@@ -61,19 +63,14 @@ ${gradients}
   // -----------------------------------------------------------------
   //------MenuTile styles
   // ------------------------------------------------------------------
- --menu-tile-shadow:
-  inset 0 0 1.2rem rgba(255, 255, 255, 0.707),
-  inset 0.4em 0 1.2em rgba(0, 115, 255, 0.9),
-  0 0 2.4rem rgba(255, 255, 255, 0.072);
 
-  --menu-tile-overlay-shadow: 0 0 2rem rgba(0, 0, 0, 0.2);
 
   --menu-tile-bg-active: var(--menu-tile-bg-active-gradient-02);
   
   --menu-tile-bg-inactive: var(--gradient-main-v2);
 
-  --menu-tile-z-active: 2000;
-  --menu-tile-z-inactive: 1000;
+  --menu-tile-z-active: 3000;
+  --menu-tile-z-inactive: 2000;
   --menu-tile-overlay-opacity: 0.92;
 
   //------------------------------------------------------------------------------
@@ -81,7 +78,7 @@ ${gradients}
   //------------------------------------------------------------------------------ 
   --menu-subtile-bg-active: rgba(28, 38, 68, 0.12);
   --menu-subtile-border: 1px solid rgba(255, 255, 255, 0.08);
-  --menu-subtile-shadow: 0 0 1.2rem rgba(17, 82, 195, 0.482), 0 0 0.2rem rgba(255, 255, 255, 0.06);
+
   --menu-subtile-hover-blur: blur(4px);
 
   // ---------------------------------------------------------------------------
@@ -119,7 +116,7 @@ ${gradients}
 
        --color-yellow-400: #ffbb00;
        --color-yellow-300: #ffbb00;
-  // ---------------------------------------------------------------------------
+  /* // ---------------------------------------------------------------------------
   //------ Accent blue shades 
   // ---------------------------------------------------------------------------
         --color-blue-100: #dceaf8;
@@ -129,35 +126,14 @@ ${gradients}
         --color-blue-500: #3f83c5;
         --color-blue-600: #2c6aad;
         --color-blue-700: #1f518a;
+ */
 
-  // ---------------------------------------------------------------------------
-  //------ Icon colors and shadows 
-  // ---------------------------------------------------------------------------
-        --color-icon-default: var(--color-blue-700);
-        --bg-icon-default: rgba(53, 38, 218, 0.194);
-        --bg-icon-hover: rgba(255, 255, 255, 0.1);
-        --shadow-icon: 0 0 0.8rem rgba(60, 100, 180, 0.25);
-        --shadow-icon-hover: 0 0 1.5rem rgba(60, 100, 180, 0.35);
 
-  // ---------------------------------------------------------------------------
-  //------ SEE colors – semantic effects 
-  // ---------------------------------------------------------------------------
-        --see-01: rgba(0, 116, 210, 0.71);
-        --see-02: rgba(71, 175, 255, 0.98);
-        --see-03: rgba(31, 32, 109, 0.85);
-        --see-04: rgba(72, 254, 248, 0.07);
-        --see-05: rgb(0, 108, 197);
-        --see-06: rgba(207, 229, 255, 0.705);
-        --see-07: rgb(133, 175, 209);
-        --see-08: rgba(22, 140, 209, 0.151);
-        --see-akcent: rgb(194, 249, 255);
-        --see-akcent-02: hsl(210 70% 69% / 0.6);
-        --see-akcent-03: hsl(206 50% 61%);
   
 
+`
 
-
-  // ---------------------------------------------------------------------------
+  /* // ---------------------------------------------------------------------------
   //------ Tile background active (MenuTile) 
   // ---------------------------------------------------------------------------
        --tile-bg-active:
@@ -601,4 +577,4 @@ ${gradients}
 
  
 
-`
+` */

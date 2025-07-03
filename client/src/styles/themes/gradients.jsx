@@ -60,7 +60,7 @@ export default css`
           linear-gradient(
               37deg,
           rgb(var(--color-400-09) / .608) 20%,  
-          rgb(var(--color-400-10) / .075) 45%,  
+          rgb(var(--color-400-08) / .075) 45%,  
           rgb(var(--color-400-03) / .588) 70%,  
           rgb(var(--color-400-04) / .188) 100%  
         ),
@@ -68,7 +68,7 @@ export default css`
         /* 3rd layer ------------------------------------------------ */
         linear-gradient(
             125deg,
-            rgb(var(--color-400-08) / .185) 1%,   
+            rgb(var(--color-400-02) / .185) 1%,   
             rgb(var(--color-400-06) / .11) 50%,  
             rgb(var(--color-400-04) / .486) 100%   
             ),
@@ -77,18 +77,18 @@ export default css`
             repeating-linear-gradient(
                 190deg,
                 rgb(var(--color-400-01) / .055) 0px,
-                rgb(var(--color-200-01) / .459) 0px, 
-                rgb(var(--color-200-04) / .171) 2px, 
-                rgb(var(--color-400-05) / .651) 3px  
+                rgb(var(--color-400-01) / .159) 0px, 
+                rgb(var(--color-400-04) / .171) 2px, 
+                rgb(var(--color-400-02) / .251) 3px  
                 ),
                 
          /* 5th layer – cross-hatch -------------------------------- */
          repeating-linear-gradient(
              -45deg,
-             rgb(var(--color-400-01) / .253) 9px,
-             rgb(var(--color-400-04) / .63)  20%, 
+             rgb(var(--color-400-01) / .253) 3px,
+             rgb(var(--color-400-04) / .43)  20%, 
              rgb(var(--color-400-02) / .425) 1px,
-             rgb(var(--color-400-01) / .966) 0px
+             rgb(var(--color-400-01) / .266) 0px
              );
              
                     
@@ -256,17 +256,17 @@ export default css`
       ),
       repeating-linear-gradient(
         310deg,
-        rgb(255 255 255 / .04) 0rem,
-        rgb(var(--color-400-09) / .578) 0.2rem,
+      
+        rgb(var(--color-400-06) / .578) 0.2rem,
         rgb(var(--color-400-08) / .33) 0.22rem,
         rgb(var(--color-400-09) / .03) 0.3rem
       ),
       repeating-linear-gradient(
         -45deg,
-        rgb(255 255 255 / .02) 0rem,
+        
         rgb(var(--color-400-04) / .441) 0.1rem,
-        rgb(var(--color-400-10) / .02) 0.1rem,
-        rgb(var(--color-400-09)/ .062) 0.1rem
+        rgb(var(--color-400-08) / .02) 0.1rem,
+        rgb(var(--color-400-09)/ .62) 0.1rem
       );
       --menu-tile-bg-active-gradient-02:
       linear-gradient(
@@ -278,7 +278,7 @@ export default css`
 
 
    //--------------------------------------------------     
-   //------ menu tile background active
+   //------ sidebar button
    //--------------------------------------------------   
 
    --sidebar-button-gradient:

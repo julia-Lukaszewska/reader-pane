@@ -59,12 +59,10 @@ const StyledSubTile = styled.div`
 
   //------ Visual
   background: var(--menu-tile-bg-active);
-  border: 2px solid rgba(22, 67, 95, 0.193);
+  border: var(--menu-subtile-main-border);
   border-radius: 0.6em;
 
-  box-shadow:
-    inset 0 0 1em rgba(36, 70, 98, 0.63),
-    0 0 0.9rem rgba(7, 60, 158, 0.25);
+  box-shadow: var(--subtile-main-shadow);
 
   backdrop-filter: blur(9px) saturate(110%);
 
@@ -76,15 +74,13 @@ const StyledSubTile = styled.div`
   //------ Interaction
   transition:
     transform 0.3s ease,
-    box-shadow 0.5s ease,
+    box-shadow 0.2s ease,
     backdrop-filter 0.6s ease,
     filter 0.3s ease;
 
   &:hover {
     transform: scale(1.05);
-    box-shadow:
-      inset 0 0 0.6rem rgba(22, 5, 5, 0.1),
-      0 0 1.2rem rgba(15, 21, 29, 0.831);
+    box-shadow: var(--menu-subtile-shadow-hover);
     filter: brightness(1.15);
   }
 `

@@ -47,11 +47,9 @@ const StyledTile = styled.div`
   cursor: pointer;
 
   background: var(--menu-tile-bg-active);
+  border: var(--menu-tile-main-border);
 
-
-  box-shadow:
-    inset 0 0 0.6rem rgba(255, 255, 255, 0.411),
-    0 0 0.9rem rgba(0, 0, 0, 0.25);
+  box-shadow: var(--menu-tile-shadow);
 
   grid-area: ${({ $isActive, $area }) =>
     $isActive ? '1 / 1 / 3 / 3' : $area};
