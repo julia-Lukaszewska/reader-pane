@@ -1,12 +1,15 @@
 import { css } from 'styled-components'
 import gradients from './gradients'
-
+import colorPaletteDark from './colorPaletteDark'
+import colorPaletteLight from './colorPaletteLight'
 import shadows from './shadows'
 
 
 
 export default (mode = 'light') => css`
 
+
+ ${mode === 'dark' ? colorPaletteDark : colorPaletteLight}
 ${gradients(mode)};
 ${shadows(mode)};
 

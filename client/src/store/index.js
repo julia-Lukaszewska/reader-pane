@@ -75,7 +75,7 @@ const readerPersistConfig = {
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['book', 'reader', 'mainUi', booksApi.reducerPath],
+  whitelist: ['book', 'reader', 'ui', booksApi.reducerPath],
   transforms: [expireIn(24 * 60 * 60 * 1000, 'libraryCacheExpiration')],
 }
 

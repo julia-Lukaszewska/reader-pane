@@ -27,7 +27,7 @@ const LayoutWrapper = styled.div`
   height: 100vh;  
   transition: grid-template-columns 0.4s ease;
    background: ${({ $isHome }) => $isHome ? 'var(--home-bg)' : 'var(--library-bg)'};
-  color: var(--color-light-0);
+  color: var(--color-400-01);
     @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }

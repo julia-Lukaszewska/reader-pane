@@ -298,7 +298,7 @@ const baseStyles = css`
 
   &:disabled {
     cursor: not-allowed;
-    background-color: var(--color-light-200);
+    background-color: var(--color-400-02);
     color: var(--color-blue-300);
   }
 `
