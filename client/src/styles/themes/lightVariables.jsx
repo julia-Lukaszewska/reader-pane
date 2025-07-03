@@ -1,8 +1,9 @@
+
 import { css } from 'styled-components'
 import baseVars from './baseVariables'
 
 export default css`
-  ${baseVars}
+  ${baseVars('light')}
   
 
 

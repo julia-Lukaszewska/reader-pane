@@ -1,8 +1,10 @@
 import { css } from 'styled-components'
-import collorPalete from './collorPalete'
-export default css`
+import colorPaletteDark from './colorPaletteDark'
+import colorPaletteLight from './colorPaletteLight'
 
- ${collorPalete}
+export default (mode = 'light') => css`
+
+ ${mode === 'dark' ? colorPaletteDark : colorPaletteLight}
  // ---------------------------------------------------------------------------
  //------ Book Card Inactive 
  // ---------------------------------------------------------------------------

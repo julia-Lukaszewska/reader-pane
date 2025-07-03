@@ -1,8 +1,9 @@
 import { css } from 'styled-components'
-import collorPalete from './collorPalete'
-export default css`
+import colorPaletteDark from './colorPaletteDark'
+import colorPaletteLight from './colorPaletteLight'
+export default (mode = 'light') => css`
 
-${collorPalete}
+ ${mode === 'dark' ? colorPaletteDark : colorPaletteLight}
 
 --toolbar-button-focus-shadow: 0 0 0 0.12em rgba(90, 145, 255, 0.25);
 
