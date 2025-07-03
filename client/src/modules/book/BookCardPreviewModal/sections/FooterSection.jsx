@@ -42,7 +42,7 @@ const Button = styled.button`
   background: ${({ $primary }) => $primary
     ? 'var(--gradient-main-v6), linear-gradient(90deg,rgba(40,130,255,.32),rgba(100,190,255,.18))'
     : 'rgba(255,255,255,0.07)'};
-  color: ${({ $primary }) => $primary ? '#fff' : 'var(--color-light-0)'};
+  color: ${({ $primary }) => $primary ? 'var(--text-color-01)' : 'var(--text-color-02)'};
   font-weight: 600;
   box-shadow: ${({ $primary }) => $primary
     ? '0 0 18px 1.5px rgba(34,124,255,0.14)'

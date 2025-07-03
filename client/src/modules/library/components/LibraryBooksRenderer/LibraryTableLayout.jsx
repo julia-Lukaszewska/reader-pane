@@ -35,7 +35,7 @@ const Th = styled.th`
   text-align: left;
   padding: 0.75rem;
   border-bottom: 2px solid var(--border-color);
-  color: var(--text-secondary);
+  color: var(--text-color-02);
   cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
 
   &:hover {
@@ -48,7 +48,7 @@ const Th = styled.th`
 const Td = styled.td`
   padding: 0.75rem;
   border-bottom: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--text-color-01);
 `
 
 

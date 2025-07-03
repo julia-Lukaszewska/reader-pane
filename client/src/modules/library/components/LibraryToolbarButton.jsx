@@ -20,8 +20,8 @@ const sharedStyles = css`
   padding: var(--toolbar-button-padding);
   font-size: var(--toolbar-button-font-size);
   font-weight: var(--toolbar-button-font-weight);
-  color: var(--toolbar-button-text);
-  background: var(--toolbar-button-bg);
+  color: var(--text-color-01);
+  background: var(--button-bg-02);
   border: var(--toolbar-button-border-width) solid var(--toolbar-button-border);
   border-radius: var(--toolbar-button-border-radius);
   backdrop-filter: var(--toolbar-button-blur);
@@ -30,7 +30,7 @@ const sharedStyles = css`
   cursor: pointer;
 
   &:hover {
-    background: var(--toolbar-button-bg-hover);
+    background: var(--button-bg-02-hover);
   }
 
   &:focus {
@@ -53,7 +53,7 @@ export const LibraryToolbarButton = styled.button`
   ${({ $danger }) =>
     $danger &&
     css`
-      background: var(--toolbar-button-danger);
+      background: var(--toolbar-button-danger-hover);
       color: var(--toolbar-button-danger-text);
       border: none;
 
@@ -87,14 +87,14 @@ export const LibraryToolbarSelect = styled.select`
   background-size: 1em;
   
   option {
-    color: var(--color-dark-900);
-    background: var(--color-light-100);
+    color: var(--text-color-02);
+    background: var(--button-bg-02);
   }
   ${({ $active }) =>
     $active &&
     css`
-      background: var(--toolbar-button-accent);
-      color: var(--toolbar-button-accent-text);
+      background: var(--button-bg-02);
+      color: var(--text-color-02);
       border: var(--toolbar-button-border-width) solid var(--toolbar-button-accent);
     `}
 `

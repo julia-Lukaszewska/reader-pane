@@ -45,18 +45,15 @@ const ReadButton = styled.button`
   border-radius: 0.9em;
   border: none;
   font-weight: 600;
-  background: linear-gradient(
-    90deg,
-    rgba(40, 130, 255, 0.32),
-    rgba(100, 190, 255, 0.18)
-  );
-  color: #ffffff;
+  background: var(--button-bg-01);
+  
+  color: var(--text-color-01);
   box-shadow: 0 0 18px 1.5px rgba(34, 124, 255, 0.12);
   cursor: pointer;
   transition: background 0.13s;
 
   &:hover {
-    background: rgba(40, 130, 255, 0.44);
+    background: var(button-bg-01-hover);
   }
 `
 

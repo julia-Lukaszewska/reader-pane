@@ -31,7 +31,7 @@ const ModalBox = styled.div`
   position: relative;
   background: var(--gradient-main);
   backdrop-filter: blur(12px) saturate(120%);
-  color: var(--color-light-0);
+  color: var(--text-color-01);
   padding: 2.5em 2em 1.2em;
   border-radius: 1.2rem;
   width: 100%;
@@ -48,13 +48,13 @@ const CloseButton = styled.button`
   right: 1rem;
   background: none;
   border: none;
-  color: var(--color-light-500);
+  color: var(--text-color-04);
   font-size: 1.4rem;
   cursor: pointer;
   transition: color 0.2s ease;
 
   &:hover {
-    color: white;
+    color: var(--text-color-01)
   }
 `
 

@@ -22,7 +22,9 @@ ${shadows(mode)};
 --modal-bg-01: var(--modal-gradient-01);
 
 --button-bg-01: var(--sidebar-bg-gradient);
---button-bg-02: rgb(var(--color-400-05) / 0.8);
+--button-bg-01-hover: var(--sidebar-bg-gradient);
+--button-bg-02: rgb(var(--color-400-05) / 0.7);
+--button-bg-02-hover:  rgb(var(--color-400-06) / 0.9);
 //------------------------------------------------------------------
 //--------ListItemLibrary
 //------------------------------------------------------------------

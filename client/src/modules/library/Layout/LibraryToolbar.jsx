@@ -87,7 +87,7 @@ const IconButton = styled.button.withConfig({
   border: none;
   font-size: 1.5em;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--text-color-01);
   opacity: ${({ $active }) => ($active ? 1 : 0.4)};
   transition: opacity 0.2s;
   &:hover {
@@ -104,7 +104,7 @@ const PageNav = styled.div`
 const NavButton = styled.button`
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--text-color-01);
   font-size: 1em;
   cursor: pointer;
   &:disabled {
@@ -114,7 +114,7 @@ const NavButton = styled.button`
 `
 
 const PaginationInfo = styled.span`
-  color: var(--text-primary);
+  color: var(--text-color-01);
 `
 const SearchWrapper = styled.div`
   position: relative;
@@ -129,13 +129,13 @@ const SearchIcon = styled(IoSearch)`
   z-index: 2000;
   transform: translateY(-50%);
   pointer-events: none;
-  color: white;
+  color: var(--text-color-01);
   opacity: 0.7;
 `
 
 const SearchInput = styled(LibraryToolbarInput)`
   padding-left: 2em;
-  color: white;
+  color: var(--text-color-01);
 `
 
 

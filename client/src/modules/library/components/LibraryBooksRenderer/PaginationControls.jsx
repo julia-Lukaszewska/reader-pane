@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 const Button = styled.button`
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--text-color-01);
   font-size: 1.5rem;
   cursor: pointer;
   &:disabled {
@@ -23,7 +23,7 @@ const Button = styled.button`
 `
 
 const Info = styled.span`
-  color: var(--text-primary);
+  color: var(--text-color-01);
 `
 
 export default function PaginationControls({ page, totalPages, onChange }) {
