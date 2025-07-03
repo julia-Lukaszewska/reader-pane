@@ -28,7 +28,7 @@ ${shadows(mode)};
   --row-height: calc(var(--row-width) / 9);
   --row-font-size: calc(var(--row-width) * 0.015);
 
-
+--text-primary: rgb(var(--color-100-02) / 1);
 
 //------------------------------------------------------------------
 //--------Toolbar styles (glass-metal modern look)
@@ -46,17 +46,17 @@ ${shadows(mode)};
 --toolbar-select-padding-right: 1.5em;
 
 /* Default state */
---toolbar-button-bg-default: rgba(255, 255, 255, 0.08);
---toolbar-button-bg-hover: rgba(255, 255, 255, 0.332);
---toolbar-button-text-color: #f4f4f4;
---toolbar-button-border-color: rgba(255, 255, 255, 0.22);
+--toolbar-button-bg-default: rgb(var(--color-400-05) / 0.7);
+--toolbar-button-bg-hover:  rgb(var(--color-400-06) / 0.9);
+--toolbar-button-text-color: rgb(var(--color-400-01) / 1);
+--toolbar-button-border-color: rgb(var(--color-400-01) / 1);
 
 /* Focus state */
---toolbar-button-focus-border-color: rgba(228, 236, 254, 0.8);
+--toolbar-button-focus-border-color: rgb(var(--color-400-01) / 1);
 
 
 /* Active (selected/clicked) state */
---toolbar-button-bg-active-hover: linear-gradient(145deg, #6e98cc, #305c94);
+--toolbar-button-bg-active-hover: rgb(var(--color-400-01) / 1);
 --toolbar-button-border-active: transparent;
 
 /* Danger (delete/alert) state */
@@ -64,7 +64,12 @@ ${shadows(mode)};
 --toolbar-button-bg-danger-hover: linear-gradient(145deg, #932e2e, #b64545);
 --toolbar-button-border-danger: transparent;
 
-
+  // ---------------------------------------------------------------------------
+  //------ Icon colors and shadows 
+  // ---------------------------------------------------------------------------
+        --color-icon-default: rgb(var(--color-400-01) / 1);
+        --bg-icon-default:rgb(var(--color-400-05) / 0.4);
+        --bg-icon-hover: rgb(var(--color-400-06) / 0.7);
   // -----------------------------------------------------------------
   //------MenuTile styles
   // ------------------------------------------------------------------
@@ -72,7 +77,7 @@ ${shadows(mode)};
 
   --menu-tile-bg-active: var(--menu-tile-bg-active-gradient-02);
   
-  --menu-tile-bg-inactive: var(--gradient-main-v2);
+
 
   --menu-tile-z-active: 3000;
   --menu-tile-z-inactive: 2000;
@@ -81,8 +86,8 @@ ${shadows(mode)};
   //------------------------------------------------------------------------------
   //------MenuSubTile styles
   //------------------------------------------------------------------------------ 
-  --menu-subtile-bg-active: rgba(28, 38, 68, 0.12);
-  --menu-subtile-border: 1px solid rgba(255, 255, 255, 0.08);
+
+
 
   --menu-subtile-hover-blur: blur(4px);
 
@@ -113,12 +118,5 @@ ${shadows(mode)};
       /* highlight for editable elements */
        box-shadow: 0 0 0 2px var(--color-blue-400) inset;
        }
-      // ---------------------------------------------------------------------------
-  //------ Basic colors: light and dark shades
-  // ---------------------------------------------------------------------------
 
-
-
-       --color-yellow-400: #ffbb00;
-       --color-yellow-300: #ffbb00;
  `

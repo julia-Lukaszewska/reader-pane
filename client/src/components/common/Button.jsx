@@ -17,7 +17,7 @@ const $variants = {
   sidebar_btn: css`
     width: 14rem;
     background: var(--sidebar-button-gradient);
-    color: white;
+    color: var(--text-primary);
     backdrop-filter: blur(6px);
     border: 2px solid rgba(194, 249, 255, 0.996);
     box-shadow: 0 0.4rem 1rem rgba(2, 12, 59, 0.513);
@@ -49,7 +49,7 @@ const $variants = {
     background: var(--bg-icon-default);
     font-size: 2rem;
     display: flex;
-    color: white;
+    color: var(--text-primary);
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(6px);
@@ -107,7 +107,7 @@ const $variants = {
    width: 9rem;
     height: 4rem;
     padding: 0.2rem;
-    color: white;
+    color:rgb(var(--color-400-01) / 1);
     font-size: 1.3rem;
     font-weight: 300;
     border-radius: 999px;
@@ -146,7 +146,7 @@ const $variants = {
     border: none;
     padding: 0;
     font-size: 1.6rem;
-    color: white;
+    color: var(--text-primary);
     cursor: pointer;
     z-index: 2;
     text-shadow: -1px 1px 3px #2a2a80;
@@ -174,7 +174,7 @@ const $variants = {
     max-width: 18rem;
     background: var(--gradient-metal-violet-mystic);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    color: var(--color-dark-900);
+    color: var(--text-primary);
 
     &:hover {
       transform: scale(1.05);
@@ -197,7 +197,7 @@ const $variants = {
     letter-spacing: 1px;
     text-transform: uppercase;
     background: var(--gradient-main-v4);
-    color: white;
+    color: var(--text-primary);
     border-radius: 0.6rem;
     border: 1px solid var(--see-akcent);
     backdrop-filter: blur(30px);
@@ -219,8 +219,8 @@ const $variants = {
   // Modal primary button
   //-----------------------------------------------------------------------------
   modal_primary: css`
-    background: var(--color-accent);
-    color: white;
+    background: var(--sidebar-button-gradient);
+    color: var(--text-primary);
     padding: 0.8rem 1.6rem;
     font-weight: 600;
     border-radius: var(--border-radius-sm);
@@ -228,7 +228,7 @@ const $variants = {
     backdrop-filter: blur(6px);
 
     &:hover {
-      background: var(--color-accent-dark);
+       background: var(--sidebar-button-gradient-hoover);
     }
 
     &:active {
@@ -240,7 +240,7 @@ const $variants = {
   // Modal secondary button
   //-----------------------------------------------------------------------------
   modal_secondary: css`
-    background: var(--glass-bg);
+    background: var(--sidebar-button-gradient);
     color: var(--text-primary);
     padding: 0.8rem 1.6rem;
     font-weight: 500;
@@ -249,7 +249,7 @@ const $variants = {
     backdrop-filter: blur(6px);
 
     &:hover {
-      background: var(--glass-bg-hover);
+      background: var(--sidebar-button-gradient-hoover);
     }
 
     &:active {
@@ -271,10 +271,10 @@ const baseStyles = css`
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: all 0.3s ease;
-  background: var(--glass-bg);
+  background: var(--sidebar-button-gradient);
   backdrop-filter: var(--glass-blur);
   box-shadow: var(--glass-shadow);
-  color: var(--color-dark-900);
+  color: rgb(var(--color-400-09) / 1);
   text-align: center;
   letter-spacing: 0.5px;
   text-shadow: var(--glass-text-shadow);
@@ -298,8 +298,8 @@ const baseStyles = css`
 
   &:disabled {
     cursor: not-allowed;
-    background-color: var(--color-400-02);
-    color: var(--color-blue-300);
+    background-color: rgb(var(--color-400-02) / 1);
+    color: rgb(var(--color-400-04) / 1);
   }
 `
 

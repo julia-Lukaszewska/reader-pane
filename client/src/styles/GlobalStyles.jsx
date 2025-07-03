@@ -2,14 +2,14 @@ import React from 'react'
 import { createGlobalStyle } from 'styled-components'
 import { useSelector } from 'react-redux'
 import { selectTheme } from '@/store/selectors/uiSelectors'
-
+import baseVariables from './themes/baseVariables'
 import resetBaseStyles from './resetBaseStyles'
 
 
 
 const Variables = createGlobalStyle`
   :root {
-    ${({ $mode }) => ($mode === 'dark' ? darkVars : lightVars)}
+     ${({ $mode }) => baseVariables($mode)}
   }
 `
 

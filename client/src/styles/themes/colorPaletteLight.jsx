@@ -14,7 +14,7 @@ export default css`
 --color-100-05: 72 202 228;   /* vivid-sky-blue      #48cae4ff */
 --color-100-04: 144 224 239;  /* non-photo-blue-v1   #90e0efff */
 --color-100-03: 166 230 242;  /* non-photo-blue-v2   #a6e6f2ff */
---color-100-02: 184 235 245;  /* non-photo-blue-v3   #b8ebf5ff */
+--color-100-02: 184 235 245;  /* non-photo-blue-v3   #effcff*/
 --color-100-01: 198 239 247;  /* light-cyan          #c6eff7ff */
 //------------------------------------------------------------------
 //-------- Colors 200  (blue)
@@ -86,12 +86,7 @@ export default css`
         --see-akcent: rgb(194, 249, 255);
         --see-akcent-02: hsl(210 70% 69% / 0.6);
         --see-akcent-03: hsl(206 50% 61%);
-  // ---------------------------------------------------------------------------
-  //------ Icon colors and shadows 
-  // ---------------------------------------------------------------------------
-        --color-icon-default: var(--color-blue-700);
-        --bg-icon-default: rgba(53, 38, 218, 0.194);
-        --bg-icon-hover: rgba(255, 255, 255, 0.1);
+
    
 
 `
