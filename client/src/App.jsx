@@ -7,7 +7,7 @@ import React from 'react'
 import styled from 'styled-components'
 import AppRoutes from '@/routes/AppRoutes'
 import AuthController from '@/controllers/AuthController'
-import GlobalStyles from '@/styles/GlobalStyles.jsx'
+
 
 
 // -----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ const App = () => {
 
   return (
     <>
-      <GlobalStyles />
+    
       <AuthController />
       <StyledApp>
         <AppRoutes />

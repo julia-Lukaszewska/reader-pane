@@ -4,8 +4,7 @@ import { useSelector } from 'react-redux'
 import { selectTheme } from '@/store/selectors/uiSelectors'
 
 import resetBaseStyles from './resetBaseStyles'
-import lightVars from './themes/lightVariables'
-import darkVars from './themes/darkVariables'
+
 
 
 const Variables = createGlobalStyle`
