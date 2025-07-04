@@ -31,8 +31,8 @@ const GENRE_LIST = [
 
 const Wrapper = styled.div`
   grid-area: meta;
-  background: rgba(33, 53, 91, 0.13);
-  color: white;
+  background: var(--modal-bg-02);
+  color:var(--text-color-01);
   padding: 1em;
   display: grid;
   grid-template-columns: 1fr 1fr;

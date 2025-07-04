@@ -34,7 +34,7 @@ const StyledTextarea = styled.textarea`
   resize: none;
   border-radius: 0.7em;
   padding: 0.8em 0.7em;
-  background: rgba(34,51,115,0.14);
+  background:var(--modal-bg-02);
   border: .1em solid #3a6ef07b;
   box-shadow: 0 1px 8px 0 rgba(80,140,230,0.08);
   outline: none;
@@ -43,7 +43,7 @@ const StyledTextarea = styled.textarea`
   overflow-y: auto;
 
   &:focus {
-    background: rgba(38,66,140,0.16);
+    background:var(--modal-bg-03);
     border-color: var(--color-blue-400, #579dff4c);
     box-shadow: 0 0 0 2px var(--color-blue-200, #9fc4c417);
   }

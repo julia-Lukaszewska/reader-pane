@@ -4,95 +4,91 @@
  * Shows title and action buttons (home, sidebar toggle, theme switch).
  */
 
-import { useDispatch } from 'react-redux'
 import styled from 'styled-components'
+import { useDispatch } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { toggleTheme, toggleSidebar, setAuthModalMode  } from '@/store/slices/mainUiSlice'
-import { Switch, Button } from '@/components'
-import { SlHome, SlMenu } from 'react-icons/sl'
+import { toggleTheme, toggleSidebar, setAuthModalMode } from '@/store/slices/mainUiSlice'
+import { Switch } from '@/components'
+import { SlHome, SlMenu, SlUser } from 'react-icons/sl'
+import Button,{$variants} from '@/components/common/Button'
 import useLogout from '@/modules/user/hooks/useLogout'
-import { SlUser } from 'react-icons/sl'
-
-import { getAuth } from '@/utils/storageService'
 import { useAuth } from '@/modules/user/hooks'
 import useCurrentUser from '@/modules/user/hooks/useCurrentUser'
+import { getAuth } from '@/utils/storageService'
 import logo from '@/assets/logo.svg'
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Styled components
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-const HeaderStyled = styled.header`  
+const HeaderStyled = styled.header`
   position: relative;
-  background: var(--header-gradient-01);
-   
-  grid-row: 1;
-  grid-column: 1 / 3;
-  height: 10vh;
-  width: 100vw;
   display: flex;
   align-items: center;
+  background: var(--header-gradient-01);
+  grid-row: 1;
+  grid-column: 1 / 3;
+ 
+  font-size: var(--text-01);
   justify-content: space-between;
-  padding: 0 3rem;
-  border-bottom: 0.2rem solid rgba(150, 232, 255, 0.315);
-  z-index: 1;
+  padding: var(--padding-03);
+  border-bottom: var(--border-01);
+  z-index: var(--index-default);
 `
+
 const TitleWrapper = styled.div`
-   position: absolute;
+  position: absolute;
   top: 50%;
   left: 50%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
   transform: translate(-50%, -50%);
-  font-size: 2.4rem;
-  font-weight: 300;
-  text-transform: uppercase;
-  letter-spacing: 0.4rem;
-  font-family: 'Poppins', sans-serif;
-  color: var(--text-color-01);
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-  transition: color 0.3s ease;
-  
 `
 
 const Title = styled.h1`
   position: relative;
-  
-  
-  font-size: 2.4rem;
+  font-size: var(--space-lg);
   font-weight: 300;
   text-transform: uppercase;
-  letter-spacing: 0.4rem;
-  font-family: 'Poppins', sans-serif;
+  letter-spacing:var(--space-xs);
+  font-family: var(--font-family-01);
   color: var(--text-color-01);
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-  transition: color 0.3s ease;
+  /* text-shadow: var(--shadow-02); */
+  filter: drop-shadow(var(--shadow-02));
+ 
 `
+
 const UserInfo = styled.div`
+position: relative;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 1.2em;
+  font-size: var(--space-lg);
+  margin: var(--space-m);
+  gap: var(--space-md);
   color: var(--text-color-01);
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: var(--shadow-02);
 `
 
 const BtnGroup = styled.div`
+position: relative;
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: var(--space-lg);
 `
+
 const LogoImg = styled.img`
-  height: 1.2em;
-  margin-right: 0.53rem;
+  height: var(--space-lg);
+  margin-right: var(--space-xs);
   opacity: 1;
-  filter: drop-shadow(2px 2px 3px rgba(5, 23, 46, 0.25));
-  `
-//-----------------------------------------------------------------------------
+  filter: drop-shadow(var(--shadow-02));
+`
+
+
+// -----------------------------------------------------------------------------
 // Component: Header
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 /**
  * Renders a header with title and action buttons depending on route.
@@ -105,19 +101,21 @@ const Header = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const isHomeView = location.pathname === '/'
- const { isLoggedIn } = useAuth()
+  const { isLoggedIn } = useAuth()
   const { user } = useCurrentUser()
-    const logout = useLogout()
+  const logout = useLogout()
   const storedUser = getAuth()?.user
+
+  const isHomeView = location.pathname === '/'
+
   const goHome = () => navigate('/')
   const handleToggleSidebar = () => dispatch(toggleSidebar())
   const handleToggleTheme = () => dispatch(toggleTheme())
 
   return (
     <HeaderStyled>
-      <BtnGroup>
-        {!isHomeView && (
+      <BtnGroup>  
+       
           <Button
             $variant="circle_icon_btn"
             onClick={handleToggleSidebar}
@@ -125,7 +123,7 @@ const Header = () => {
           >
             <SlMenu />
           </Button>
-        )}
+        
         {!isHomeView && (
           <Button
             $variant="circle_icon_btn"
@@ -136,26 +134,29 @@ const Header = () => {
           </Button>
         )}
       </BtnGroup>
+
       <TitleWrapper>
         <LogoImg src={logo} alt="Reader-App Logo" />
         <Title>Pane</Title>
       </TitleWrapper>
+
       <BtnGroup>
-           {!isLoggedIn ? (
-           <Button
+        {!isLoggedIn ? (
+          <Button
             $variant="header_btn"
             onClick={() => dispatch(setAuthModalMode('login'))}
           >
             login
           </Button>
         ) : (
-             <>
-             <UserInfo>
-    <SlUser aria-label="User icon" />
-    <span>{user?.name || storedUser?.name}</span>
-  </UserInfo>
-
-              <Button $variant="header_btn" onClick={logout}>logout</Button>
+          <>
+            <UserInfo>
+              <SlUser aria-label="User icon" />
+              <span>{user?.name || storedUser?.name}</span>
+            </UserInfo>
+            <Button $variant="header_btn" onClick={logout}>
+              logout
+            </Button>
           </>
         )}
         <Switch variant="theme" onClick={handleToggleTheme} />

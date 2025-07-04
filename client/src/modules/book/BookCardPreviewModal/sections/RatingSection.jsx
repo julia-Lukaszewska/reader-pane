@@ -45,7 +45,7 @@ const ReadButton = styled.button`
   border-radius: 0.9em;
   border: none;
   font-weight: 600;
-  background: var(--button-bg-01);
+  background: var(--button-bg-02);
   
   color: var(--text-color-01);
   box-shadow: 0 0 18px 1.5px rgba(34, 124, 255, 0.12);
@@ -53,7 +53,7 @@ const ReadButton = styled.button`
   transition: background 0.13s;
 
   &:hover {
-    background: var(button-bg-01-hover);
+    background: var(--button-bg-02-hover);
   }
 `
 

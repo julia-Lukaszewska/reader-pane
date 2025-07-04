@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   display: grid;
   width: 100%;
   max-height: 100%;
-  background: rgba(250,250,255,0.04);
+  background: var(--modal-bg-01);
 
   grid-template-columns: 1fr 1fr;
   grid-template-rows: ${({ $editing }) => $editing ? 'auto 1fr' : 'auto auto 1fr'};

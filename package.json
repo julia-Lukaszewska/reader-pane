@@ -8,26 +8,19 @@
     "dev:open": "cross-env BRANCH=dev concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev:open --prefix client\"",
     "open:main": "start https://reader-pane-main.vercel.app",
     "open:build": "start https://reader-pane.vercel.app",
-    
-    
-    "build:dev":   "cross-env BRANCH=dev   npm run build --prefix client",
-    "build:main":  "cross-env BRANCH=main  npm run build --prefix client",
+    "build:dev": "cross-env BRANCH=dev   npm run build --prefix client",
+    "build:main": "cross-env BRANCH=main  npm run build --prefix client",
     "build:build": "cross-env BRANCH=build npm run build --prefix client",
-    
-  
-    "start:dev":   "cross-env BRANCH=dev   npm start --prefix server",
-    "start:main":  "cross-env BRANCH=main  npm start --prefix server",
+    "start:dev": "cross-env BRANCH=dev   npm start --prefix server",
+    "start:main": "cross-env BRANCH=main  npm start --prefix server",
     "start:build": "cross-env BRANCH=build npm start --prefix server",
-    
-   
     "build": "echo \"Please use build:dev, build:main, or build:build\"",
     "start": "echo \"Please use start:dev, start:main, or start:build\"",
-
-    "lint":      "npm run lint --prefix client && npm run lint --prefix server",
-    "format":    "npm run format --prefix client && npm run format --prefix server",
-    "lint:all":  "eslint . --ext .js,.jsx --config config/eslint.config.js --ignore-path config/.eslintignore",
-    "format:all":"prettier . --write --config config/prettier.config.js --ignore-path config/.prettierignore",
-    "install:all":"npm install --prefix client && npm install --prefix server"
+    "lint": "npm run lint --prefix client && npm run lint --prefix server",
+    "format": "npm run format --prefix client && npm run format --prefix server",
+    "lint:all": "eslint . --ext .js,.jsx --config config/eslint.config.js --ignore-path config/.eslintignore",
+    "format:all": "prettier . --write --config config/prettier.config.js --ignore-path config/.prettierignore",
+    "install:all": "npm install --prefix client && npm install --prefix server"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",

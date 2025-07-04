@@ -20,7 +20,7 @@ const TagList = styled.div`
 //--- Individual tag badge
 const Tag = styled.span`
   display: inline-block;
-  background: var(--gradient-main-v3), linear-gradient(90deg,#7db6ff 0%,#5deed5 100%);
+  background: var(--modal-bg-01);
   color: var(--text-color-01);
   padding: 0.12em 1.1em;
   border-radius: 1.2em;

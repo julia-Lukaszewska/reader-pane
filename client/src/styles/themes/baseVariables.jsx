@@ -12,7 +12,7 @@ export default (mode = 'light') => css`
  ${mode === 'dark' ? colorPaletteDark : colorPaletteLight}
 ${gradients(mode)};
 ${shadows(mode)};
-
+--color-accent: rgb(var(--color-500-04));
 --manage-toolbar-bg: var(--library-toolbar-gradient-01);
 --sidebar-bg: var(--sidebar-bg-gradient);
 --home-bg: var(--home-bg-gradient-01);
@@ -20,7 +20,8 @@ ${shadows(mode)};
 --library-bg-01: var(--library-bg-gradient-01);
 --library-toolbar-bg-01: var(--library-toolbar-gradient-01);
 --modal-bg-01: var(--modal-gradient-01);
-
+--modal-bg-02:rgb(var(--color-400-10) / .2);
+--modal-bg-03: rgb(var(--color-400-09) / .7);
 --button-bg-01: var(--sidebar-bg-gradient);
 --button-bg-01-hover: var(--sidebar-bg-gradient);
 --button-bg-02: rgb(var(--color-400-05) / 0.7);
@@ -28,16 +29,94 @@ ${shadows(mode)};
 //------------------------------------------------------------------
 //--------ListItemLibrary
 //------------------------------------------------------------------
+  --header-text-xs: 1.0em;   /* very small header text */
+  --header-text-sm: 1.2em;   /* small header text */
+  --header-text-md: 1.4em;   /* standard header text */
+  --header-text-lg: 1.6em;   /* moderately large header text */
+  --header-text-xl: 1.8em;   /* large header text */
+  --header-text-xxl: 2.0em;  /* largest header text */
+
+  --space-xxxs: 0.05em; /* ultra small spacing */
+  --space-xxs: 0.1em;   /* extra extra small spacing */
+  --space-xs: 0.2em;    /* very small spacing */
+  --space-sm: 0.4em;    /* small spacing */
+  --space-m: 0.6em;    /* standard spacing */
+  --space-md: 0.8em;    /* standard spacing */
+  --space-l: 1.0em;     /* between md and lg */
+  --space-lg: 1.2em;    /* moderately large spacing */
+  --space-xl: 1.6em;    /* large spacing */
+  --space-xxl: 2.0em;   /* largest spacing */
+  --space-3xl: 2.4em;   /* extra large */
+
+
+--font-family-01: 'Poppins', sans-serif;
+  
+  --padding-01: var(--space-sm) var(--space-lg);
+  --padding-02: var(--space-m) var(--space-md);
+ --padding-03: var(--space-m) var(--space-3xl);
+ --padding-04: var(--space-sm) var(--space-l);
+  --border-01: var(--space-xxs) solid rgb(var(--color-500-02) / .7);
+  --border-02: var(--space-xxxs) solid rgb(var(--color-500-03) / .8);
+  --border-03: var(--space-xxs) solid rgb(var(--color-500-01) / .6);
+
+  --text-01: var(--space-md);
+  
 
   --row-width: 83.333vw;
   --row-height: calc(var(--row-width) / 9);
   --row-font-size: calc(var(--row-width) * 0.015);
+
+
 --text-color-01: rgb(var(--color-500-01) / 1);
 --text-color-02: rgb(var(--color-500-02) / 1);
 --text-color-03: rgb(var(--color-500-10) / 1);
 --text-color-04: rgb(var(--color-500-03) / 1);
 --text-primary: rgb(var(--color-500-02) / 1);
 
+--scale-active-01: 0.95;
+--scale-hover-01: 1.1;
+
+--shadow-01: 0 var(--space-xxs) var(--space-md) rgb(var(--color-400-08) / .7);
+--shadow-01-hover: 0 var(--space-xs) var(--space-lg) rgb(var(--color-400-09) / .9);
+--shadow-02: 0 var(--space-xxxs) var(--space-xs) rgb(var(--color-400-09) / .5);
+--shadow-02-hover: 0 var(--space-xxxs) var(--space-xs) rgb(var(--color-400-10) / .9);
+
+  --index-base: 0;
+  --index-default: 1;
+  --index-dropdown: 10;
+  --index-sticky: 50;
+  --index-header: 100;
+  --index-overlay: 200;
+  --index-modal: 500;
+  --index-popover: 1000;
+  --index-toast: 2000;
+  --index-loader: 5000;
+  --index-ultimate: 10000;
+
+
+  --letter-spacing-md: var(--space-xxs);
+
+  --border-radius-xs: var(--space-xxs);   /* very small */
+  --border-radius-sm: var(--space-xs);    /* small */
+  --border-radius-md: var(--space-sm);    /* medium */
+  --border-radius-lg: var(--space-md);    /* large */
+  --border-radius-xl: var(--space-l);     /* extra large */
+  --border-radius-xxl: var(--space-xl);   /* huge */
+  --border-radius-full: 50em;             /* fully rounded (pill/circle) */
+
+  --blur-xs: blur(0.1em);
+  --blur-sm: blur(0.2em);
+  --blur-md: blur(0.4em);
+  --blur-lg: blur(0.6em);
+  --blur-xl: blur(0.8em);
+  --blur-xxl: blur(1em);
+
+   --transition-fast: all 0.15s ease;    /* fast */
+  --transition-medium: all 0.3s ease;   /* default */
+  --transition-slow: all 0.5s ease;     /* slow */
+
+  --transition-fade: opacity 0.3s ease; /* fade */
+  --transition-transform: transform 0.3s ease; /* transform only */
 //------------------------------------------------------------------
 //--------Toolbar styles (glass-metal modern look)
 //------------------------------------------------------------------

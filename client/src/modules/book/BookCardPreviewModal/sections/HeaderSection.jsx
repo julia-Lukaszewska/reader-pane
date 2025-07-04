@@ -20,7 +20,7 @@ import useUpdateSingleBookFlag from '@book/hooks/useUpdateSingleBookFlag'
 const Wrapper = styled.div`
   display: grid;
   grid-area: header;
-  background: rgba(46, 51, 80, 0.11);
+  background: var(--modal-bg-02);
   gap: 0.9em 1em;
   padding: 0.7em 0.9em;
   grid-template-columns: 1.7fr 1fr 2.2em;

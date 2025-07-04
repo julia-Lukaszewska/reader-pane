@@ -21,7 +21,7 @@ import { useBulkBookActions } from '@library/hooks'
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: var(--backdrop-color);
+  background: var(--modal-bg-02);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +30,7 @@ const Overlay = styled.div`
 `
 
 const ModalBox = styled.div`
-  background: var(--glass-bg);
+  background: var(--modal-bg-01);
   backdrop-filter: var(--glass-blur);
   color: var(--text-color-01);
   padding: 2.4rem;

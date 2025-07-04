@@ -30,7 +30,7 @@ const Footer = styled.div`
   justify-content: flex-end;
   gap: 1.3em;
   padding: 1.5em 2.5em;
-  background: var(--gradient-main-v7), rgba(30,40,80,0.23);
+  background: var(--modal-bg-01);
   border-top: 1.5px solid rgba(255,255,255,0.08);
   box-shadow: 0 4px 38px 0 rgba(60,100,220,0.10);
   backdrop-filter: blur(12px) saturate(115%);

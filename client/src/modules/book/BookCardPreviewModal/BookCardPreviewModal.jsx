@@ -50,7 +50,7 @@ const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(var(--color-400-10) / .6);
+  background: var(--modal-bg-02);
   backdrop-filter: blur(5px);
   z-index: 1000;
 `;
