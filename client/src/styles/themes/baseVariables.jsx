@@ -63,6 +63,7 @@ ${shadows(mode)};
 
 
   --text-01: var(--space-md);
+  --text-02: var(--space-l);
   
 
   --row-width: 83.333vw;

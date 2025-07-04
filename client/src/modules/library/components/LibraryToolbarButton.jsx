@@ -70,11 +70,14 @@ export const LibraryIconButton = styled(LibraryToolbarButton)`
   margin: 0;
   background: transparent;
   border: none;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--border-radius-full);
+  height: 80%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  svg { font-size: 1.35em; }
+  svg { font-size: inherit; }
 
   &:hover        { background: var(--button-bg-02-hover); }
   &[disabled]    { opacity: 0.4; pointer-events: none;   }
