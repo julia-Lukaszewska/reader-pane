@@ -16,15 +16,16 @@ import styled, { css } from 'styled-components'
 const sharedStyles = css`
   display: inline-flex;
   align-items: center;
-  gap: var(--toolbar-button-gap);
-  padding: var(--toolbar-button-padding);
-  font-size: var(--toolbar-button-font-size);
-  font-weight: var(--toolbar-button-font-weight);
+  gap: var(--space-xs);
+  font-size: var(--text-01);
+  padding: var(--padding-05);
+  font-weight: var(--weight-01);
   color: var(--text-color-01);
   background: var(--button-bg-02);
-  border: var(--toolbar-button-border-width) solid var(--toolbar-button-border);
-  border-radius: var(--toolbar-button-border-radius);
-  backdrop-filter: var(--toolbar-button-blur);
+  margin:var(--margin-01);
+  border: var(--border-02);
+  border-radius: var(--border-radius-lg);
+  backdrop-filter: var(--blur-xs);
   white-space: nowrap;
   transition: background 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
@@ -35,8 +36,8 @@ const sharedStyles = css`
 
   &:focus {
     outline: none;
-    border-color: var(--toolbar-button-focus-border);
-    box-shadow: var(--toolbar-button-focus-shadow);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-02);
   }
 `
 
@@ -50,27 +51,34 @@ const sharedStyles = css`
 export const LibraryToolbarButton = styled.button`
   ${sharedStyles};
 
-  ${({ $danger }) =>
-    $danger &&
-    css`
-      background: var(--toolbar-button-danger-hover);
-      color: var(--toolbar-button-danger-text);
-      border: none;
-
-      &:hover {
-        background: var(--toolbar-button-danger-hover);
-      }
-    `}
+ 
 
   ${({ $active }) =>
     $active &&
     css`
       background: var(--toolbar-button-accent);
-      color: var(--toolbar-button-accent-text);
-      border: var(--toolbar-button-border-width) solid var(--toolbar-button-accent);
+      color: var(--text-color-01);
+      border: var(--border-03);
     `}
 `
 
+// -----------------------------------------------------------------------------
+// Component: LibraryIconButton
+// -----------------------------------------------------------------------------
+export const LibraryIconButton = styled(LibraryToolbarButton)`
+  padding: var(--space-xs);
+  margin: 0;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg { font-size: 1.35em; }
+
+  &:hover        { background: var(--button-bg-02-hover); }
+  &[disabled]    { opacity: 0.4; pointer-events: none;   }
+  `
 // -----------------------------------------------------------------------------
 // Component: LibraryToolbarSelect
 // -----------------------------------------------------------------------------
@@ -81,10 +89,10 @@ export const LibraryToolbarButton = styled.button`
 export const LibraryToolbarSelect = styled.select`
   ${sharedStyles};
   appearance: none;
-  padding-right: var(--toolbar-select-padding-right);
+  padding-right: var(--space-sm);
   background-position: right 0.75em center;
   background-repeat: no-repeat;
-  background-size: 1em;
+  
   
   option {
     color: var(--text-color-02);
@@ -95,11 +103,11 @@ export const LibraryToolbarSelect = styled.select`
     css`
       background: var(--button-bg-02);
       color: var(--text-color-02);
-      border: var(--toolbar-button-border-width) solid var(--toolbar-button-accent);
+      border: var(--border-01);
     `}
 `
 
 export const LibraryToolbarInput = styled.input`
   ${sharedStyles};
-  width: 12em;
+  
 `

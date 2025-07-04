@@ -12,6 +12,7 @@ import AddBookTile from '@upload/AddBookTile'
 import {
   LibraryToolbarButton,
   LibraryToolbarSelect,
+  LibraryIconButton,
   LibraryToolbarInput,
 } from '@library/components/LibraryToolbarButton'
 
@@ -48,70 +49,47 @@ const ToolbarWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.4em 1.9em;
+  padding:var(--padding-03);
+    font-weight:var(--weight-01);
+  font-size: var(--text-01);
   background: var(--library-toolbar-bg-01);
-  backdrop-filter: var(--glass-blur);
-  border-radius: var(--border-radius);
-  margin-bottom: 1em;
-  gap: 1.5em;
+  backdrop-filter: var(--blur-lg);
+  margin-bottom: var(--space-xs);
+  gap: var(--gap-toolbar);
   flex-wrap: nowrap;
   white-space: nowrap;
 `
 
 const SectionTitle = styled.h2`
-  font-size: 1.3em;
-  font-weight: 500;
-  white-space: nowrap;
+  
+
+  
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 0;
+ 
   flex-shrink: 0;
 `
 
 const ToolbarActions = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  
   flex-wrap: nowrap;
 `
 
 const ViewToggle = styled.div`
   display: flex;
-  gap: 0.5em;
+  
 `
 
-const IconButton = styled.button.withConfig({
-  shouldForwardProp: (prop) => prop !== '$active',
-})`
-  background: transparent;
-  border: none;
-  font-size: 1.5em;
-  cursor: pointer;
-  color: var(--text-color-01);
-  opacity: ${({ $active }) => ($active ? 1 : 0.4)};
-  transition: opacity 0.2s;
-  &:hover {
-    opacity: 0.8;
-  }
-`
+
 const PageNav = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5em;
-    font-size: 0.8em;
+ 
+    
 `
 
-const NavButton = styled.button`
-  background: none;
-  border: none;
-  color: var(--text-color-01);
-  font-size: 1em;
-  cursor: pointer;
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-`
 
 const PaginationInfo = styled.span`
   color: var(--text-color-01);
@@ -129,13 +107,13 @@ const SearchIcon = styled(IoSearch)`
   z-index: 2000;
   transform: translateY(-50%);
   pointer-events: none;
-  color: var(--text-color-01);
+  
   opacity: 0.7;
 `
 
 const SearchInput = styled(LibraryToolbarInput)`
   padding-left: 2em;
-  color: var(--text-color-01);
+ 
 `
 
 
@@ -180,15 +158,15 @@ const section = useMemo(() => {
       </SectionTitle>
 
                        <PageNav>
-              <NavButton onClick={() => dispatch(setLibraryPage(page - 1))} disabled={page <= 1}>
+             <LibraryIconButton onClick={() => dispatch(setLibraryPage(page - 1))} disabled={page <= 1}>
                 <IoChevronBack />
-              </NavButton>
+              </LibraryIconButton>
               <PaginationInfo>
                 {page} / {totalPages} 
               </PaginationInfo>
-              <NavButton onClick={() => dispatch(setLibraryPage(page + 1))} disabled={page >= totalPages}>
+             <LibraryIconButton onClick={() => dispatch(setLibraryPage(page + 1))} disabled={page >= totalPages}>
                 <IoChevronForward />
-              </NavButton>
+              </LibraryIconButton>
                 {pageBooks} of {totalBooks} books
             </PageNav>
       <ToolbarActions>
@@ -233,27 +211,27 @@ const section = useMemo(() => {
             </LibraryToolbarSelect>
 
             <ViewToggle>
-              <IconButton
+              <LibraryIconButton
                 $active={viewMode === 'grid'}
                 onClick={() => dispatch(setLibraryViewMode('grid'))}
                 title="Grid view"
               >
                 <IoGrid />
-              </IconButton>
-              <IconButton
+               </LibraryIconButton>
+              <LibraryIconButton
                 $active={viewMode === 'list'}
                 onClick={() => dispatch(setLibraryViewMode('list'))}
                 title="List view"
               >
                 <IoList />
-              </IconButton>
-              <IconButton
+              </LibraryIconButton>
+              <LibraryIconButton
                 $active={viewMode === 'table'}
                 onClick={() => dispatch(setLibraryViewMode('table'))}
                 title="Table view"
               >
                 <IoReorderThree />
-              </IconButton>
+              </LibraryIconButton>
             </ViewToggle>
           </>
         )}

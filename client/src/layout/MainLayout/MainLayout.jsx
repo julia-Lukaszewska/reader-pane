@@ -28,17 +28,15 @@ const LayoutWrapper = styled.div`
   transition: grid-template-columns 0.4s ease;
    background: ${({ $isHome }) => $isHome ? 'var(--home-bg)' : 'var(--library-bg)'};
  color: var(--text-color-01);
-    @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+ 
 `
 
 const MainContent = styled.main`
   grid-row: 2;
   grid-column: 2;
-  padding: 0rem;
+  padding: 0em;
   overflow-y: auto;
-  background-color: var(--home-bg);
+  /* background-color: var(--home-bg); */
   z-index: 200;
 `
 

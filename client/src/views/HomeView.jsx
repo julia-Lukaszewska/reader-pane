@@ -25,6 +25,7 @@ import { clearActiveItem } from '@/store/slices/mainUiSlice'
 const StyledHomeView = styled.div`
   position: relative;
   display: flex;
+  font-size: var(--text-01);
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -44,7 +45,8 @@ const StyledHomeView = styled.div`
 //------ StyledMenu
 //-----------------------------------------------------
 const StyledMenu = styled(HomeMenu)`
-  display: grid;
+  display: flex;
+
   position: relative;
   width: 60vh;
   height: 60vh;

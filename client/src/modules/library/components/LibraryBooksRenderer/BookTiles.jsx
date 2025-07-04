@@ -61,7 +61,7 @@ const BookTiles = ({
   if (viewType === 'list') {
     return (
       <>
-        {!hideAddTile && <AddBookTile />}
+        {!hideAddTile }
         {books.map(book =>
           book ? (
             <BookCard

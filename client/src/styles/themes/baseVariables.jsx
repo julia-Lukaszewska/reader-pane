@@ -50,14 +50,17 @@ ${shadows(mode)};
 
 
 --font-family-01: 'Poppins', sans-serif;
-  
+  --margin-01: var(--space-sm);
   --padding-01: var(--space-sm) var(--space-lg);
   --padding-02: var(--space-m) var(--space-md);
  --padding-03: var(--space-m) var(--space-3xl);
  --padding-04: var(--space-sm) var(--space-l);
+ --padding-05: var(--space-xxs) var(--space-md);
   --border-01: var(--space-xxs) solid rgb(var(--color-500-02) / .7);
   --border-02: var(--space-xxxs) solid rgb(var(--color-500-03) / .8);
   --border-03: var(--space-xxs) solid rgb(var(--color-500-01) / .6);
+--gap-toolbar: var(--space-xxs);
+
 
   --text-01: var(--space-md);
   
@@ -66,7 +69,8 @@ ${shadows(mode)};
   --row-height: calc(var(--row-width) / 9);
   --row-font-size: calc(var(--row-width) * 0.015);
 
-
+--weight-01: 400;
+--weight-02: 500;
 --text-color-01: rgb(var(--color-500-01) / 1);
 --text-color-02: rgb(var(--color-500-02) / 1);
 --text-color-03: rgb(var(--color-500-10) / 1);
