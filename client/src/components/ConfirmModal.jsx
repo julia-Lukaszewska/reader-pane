@@ -1,23 +1,32 @@
-
-
+/**
+ * @file ConfirmModal.jsx
+ * @description Modal used to confirm archive, delete, restore, or bulk delete actions for books.
+ */
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
+
 import { Button } from '@/components'
 import {
   selectConfirmDeleteId,
   selectConfirmDeleteVariant,
   selectBookById,
-  selectPreviewBookId
+  selectPreviewBookId,
+  selectSelectedBookIds,
 } from '@/store/selectors'
 import {
   clearConfirmDelete,
-  clearPreviewBook
+  clearPreviewBook,
+  setManageMode,
+  clearSelected,
 } from '@/store/slices/bookSlice'
 import { useUpdateBookFlagsMutation, useDeleteBookMutation } from '@/store/api/booksPrivateApi'
-import { selectSelectedBookIds } from '@/store/selectors'
-import { setManageMode, clearSelected } from '@/store/slices/bookSlice'
 import { useBulkBookActions } from '@library/hooks'
+
+/* --------------------------------------------------------------------------- */
+/*  STYLED COMPONENTS                                                          */
+/* --------------------------------------------------------------------------- */
+
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
@@ -33,48 +42,68 @@ const ModalBox = styled.div`
   background: var(--modal-bg-01);
   backdrop-filter: var(--glass-blur);
   color: var(--text-color-01);
-  padding: 2.4rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--glass-shadow);
+  padding: var(--padding-02);
+  font-size: var(--text-01);
+  display: grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  align-items: center;
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-02);
   max-width: 420px;
+  gap: var(--space-xxl);
+  
+  min-height: 25vh;
   width: 90%;
   text-align: center;
 `
 
 const Title = styled.h3`
-  margin-bottom: 1.6rem;
-  font-size: 1.8rem;
-  text-shadow: var(--glass-text-shadow);
+  font-size: inherit;
+  text-shadow: var(--shadow-02);
+   letter-spacing: var(--letter-spacing-md);
+font-size: var(--text-02);
+font-weight: var(--weight-01);
+  display: flex;
+flex-wrap: nowrap;
 `
 
 const BtnRow = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
-  gap: 1.2rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  gap: var(--space-l);
 `
+
+/* --------------------------------------------------------------------------- */
+/*  COMPONENT: ConfirmModal                                                   */
+/* --------------------------------------------------------------------------- */
 
 const ConfirmModal = () => {
   const dispatch = useDispatch()
+
+  // Selectors
   const confirmId = useSelector(selectConfirmDeleteId)
   const variant = useSelector(selectConfirmDeleteVariant)
-  const book = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
   const previewId = useSelector(selectPreviewBookId)
-    const selectedIds = useSelector(selectSelectedBookIds)
+  const selectedIds = useSelector(selectSelectedBookIds)
   const [updateFlags] = useUpdateBookFlagsMutation()
   const [deleteBook] = useDeleteBookMutation()
-    const { deleteAll } = useBulkBookActions()
+  const { deleteAll } = useBulkBookActions()
   const [isLoading, setLoading] = useState(false)
 
+  const book = useSelector(useMemo(() => selectBookById(confirmId), [confirmId]))
 
-
+  // Flags
   const isLibrary = variant === 'library'
   const isPermanent = variant === 'permanent-delete'
   const isRestore = variant === 'restore'
   const isBulkDelete = variant === 'bulk-delete'
 
+  // Check if should render
   if (!isBulkDelete && (!confirmId || !book)) return null
+
+  // Close helpers
   const close = () => dispatch(clearConfirmDelete())
 
   const closeAll = () => {
@@ -82,6 +111,7 @@ const ConfirmModal = () => {
     if (previewId === confirmId) dispatch(clearPreviewBook())
   }
 
+  // Actions
   const handleArchive = async () => {
     setLoading(true)
     try {
@@ -114,6 +144,7 @@ const ConfirmModal = () => {
     setLoading(false)
     closeAll()
   }
+
   const handleBulkDelete = async () => {
     setLoading(true)
     try {
@@ -126,6 +157,8 @@ const ConfirmModal = () => {
     dispatch(setManageMode(false))
     close()
   }
+
+  // Render
   return (
     <Overlay onClick={close}>
       <ModalBox onClick={e => e.stopPropagation()}>
@@ -139,21 +172,28 @@ const ConfirmModal = () => {
         <BtnRow>
           {isLibrary && (
             <>
-              <Button $variant="button_secondary" onClick={handleArchive} disabled={isLoading}>
+              <Button $variant="sidebar_btn" onClick={handleArchive} disabled={isLoading}>
                 Archive
               </Button>
-              <Button $variant="button_primary" onClick={handlePermanentDelete} disabled={isLoading}>
+              <Button $variant="sidebar_btn" onClick={handlePermanentDelete} disabled={isLoading}>
                 Delete
+              </Button>
+              <Button
+                $variant="sidebar_btn"
+                onClick={close}
+                style={{ marginTop: '1.4rem' }}
+              >
+                Cancel
               </Button>
             </>
           )}
 
           {isPermanent && (
             <>
-              <Button $variant="button_primary" onClick={handlePermanentDelete} disabled={isLoading}>
+              <Button $variant="sidebar_btn" onClick={handlePermanentDelete} disabled={isLoading}>
                 Yes
               </Button>
-              <Button $variant="button_secondary" onClick={close}>
+              <Button $variant="sidebar_btn" onClick={close}>
                 Cancel
               </Button>
             </>
@@ -161,35 +201,26 @@ const ConfirmModal = () => {
 
           {isRestore && (
             <>
-              <Button $variant="button_primary" onClick={handleRestore} disabled={isLoading}>
+              <Button $variant="sidebar_btn" onClick={handleRestore} disabled={isLoading}>
                 Yes
               </Button>
-              <Button $variant="button_secondary" onClick={close}>
+              <Button $variant="sidebar_btn" onClick={close}>
                 Cancel
               </Button>
             </>
           )}
-                    {isBulkDelete && (
+
+          {isBulkDelete && (
             <>
-              <Button $variant="button_primary" onClick={handleBulkDelete} disabled={isLoading}>
+              <Button $variant="sidebar_btn" onClick={handleBulkDelete} disabled={isLoading}>
                 Yes
               </Button>
-              <Button $variant="button_secondary" onClick={close}>
+              <Button $variant="sidebar_btn" onClick={close}>
                 Cancel
               </Button>
             </>
           )}
         </BtnRow>
-
-        {isLibrary && (
-          <Button
-            $variant="button_link"
-            onClick={close}
-            style={{ marginTop: '1.4rem' }}
-          >
-            Cancel
-          </Button>
-        )}
       </ModalBox>
     </Overlay>
   )

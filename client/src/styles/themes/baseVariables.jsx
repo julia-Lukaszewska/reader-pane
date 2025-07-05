@@ -48,6 +48,12 @@ ${shadows(mode)};
   --space-xxl: 2.0em;   /* largest spacing */
   --space-3xl: 2.4em;   /* extra large */
 
+ --switch-size: 1.8em;
+  --switch-text: calc(var(--switch-size) / 2);
+  --switch-gap: calc((var(--switch-size) - var(--switch-text)) / 2);
+  --switch-padding:calc(var(--switch-gap) / 2) calc(var(--switch-gap) / 2 );
+    --switch-icon-color-active: rgb(var(--color-500-02) / 1);
+  --switch-icon-color-unactive: rgb(var(--color-500-02) / 0.3);
 
 --font-family-01: 'Poppins', sans-serif;
   --margin-01: var(--space-sm);
@@ -59,6 +65,7 @@ ${shadows(mode)};
   --border-01: var(--space-xxs) solid rgb(var(--color-500-02) / .7);
   --border-02: var(--space-xxxs) solid rgb(var(--color-500-03) / .8);
   --border-03: var(--space-xxs) solid rgb(var(--color-500-01) / .6);
+  --border-04: var(--space-xxs) solid rgb(var(--color-500-01) / .2);
 --gap-toolbar: var(--space-xxs);
 
 
