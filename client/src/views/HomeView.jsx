@@ -47,7 +47,7 @@ const StyledHomeView = styled.div`
 const StyledMenu = styled(HomeMenu)`
   display: flex;
 
-  position: relative;
+  position: sticky;
   width: 60vh;
   height: 60vh;
   transform: rotate(45deg);

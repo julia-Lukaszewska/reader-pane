@@ -21,13 +21,14 @@ import MenuTile from './MenuTile'
 //-----------------------------------------------------
 
 const Wrapper = styled.div`
-  position: relative;
+  position:relative ;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 50vw;
   height: 50vw;
   overflow: hidden;
+  padding: 10%;
 `
 
 //------ StyledHomeMenu
@@ -35,8 +36,8 @@ const Wrapper = styled.div`
 
 const StyledHomeMenu = styled.div`
   display: grid;
-  width: 60%;
-  height: 60%;
+  width: 70%;
+  height: 70%;
   grid-template-areas:
     'LT RT'
     'LB RB';

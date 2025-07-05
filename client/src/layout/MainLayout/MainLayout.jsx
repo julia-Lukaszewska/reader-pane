@@ -10,7 +10,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
 import { Header, Sidebar } from '@/layout/MainLayout'
-import { setSidebar, setAuthModalMode,  setAuthModalMessage } from '@/store/slices/mainUiSlice'
+import { setSidebar, setAuthModalMode, setAuthModalMessage } from '@/store/slices/mainUiSlice'
 import { useAuth } from '@/modules/user/hooks'
 import AuthModal from '@/modules/user/components/AuthModal'
 import { selectAuthModalMode, selectAuthModalMessage } from '@/store/selectors'
@@ -26,17 +26,15 @@ const LayoutWrapper = styled.div`
   width: 100vw;
   height: 100vh;  
   transition: grid-template-columns 0.4s ease;
-   background: ${({ $isHome }) => $isHome ? 'var(--home-bg)' : 'var(--home-bg)'};
- color: var(--text-color-01);
- 
+  background: ${({ $isHome }) => $isHome ? 'var(--home-bg)' : 'var(--home-bg)'};
+  color: var(--text-color-01);
 `
 
 const MainContent = styled.main`
   grid-row: 2;
   grid-column: 2;
   padding: 0em;
-  overflow-y: auto;
-  /* background-color: var(--home-bg); */
+  overflow-y: ${({ $isHome }) => ($isHome ? 'hidden' : 'auto')};
   z-index: 200;
 `
 
@@ -58,7 +56,7 @@ const MainLayout = () => {
   const sidebarOpen = useSelector((state) => state.ui.sidebarOpen)
   const authModalMode = useSelector(selectAuthModalMode)
   const authModalMessage = useSelector(selectAuthModalMessage)
-   
+
   const { isLoggedIn } = useAuth()
 
   // Automatically close sidebar on route change
@@ -66,17 +64,15 @@ const MainLayout = () => {
     dispatch(setSidebar(false))
   }, [location.pathname, dispatch])
 
-  
-
   return (
-   <LayoutWrapper $open={sidebarOpen} $isHome={isHome}>
+    <LayoutWrapper $open={sidebarOpen} $isHome={isHome}>
       <Header />
       <Sidebar />
-      <MainContent>
+      <MainContent $isHome={isHome}>
         <Outlet />
       </MainContent>
 
-         {authModalMode && (
+      {authModalMode && (
         <AuthModal
           mode={authModalMode}
           message={authModalMessage}
