@@ -43,7 +43,7 @@ const Container = styled.div`
   align-items: center;
   height: 100%;
   width: 100%;
-  background: var(--library-bg-01);
+  
 `
 
 //-----------------------------------------------------------------------------

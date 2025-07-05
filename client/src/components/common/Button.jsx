@@ -128,6 +128,30 @@ const $variants = {
     border-radius: var(--border-radius-lg);
     border:var(--border-03);
   `,
+  //-----------------------------------------------------------------------------
+  // Header button ghost (subtelny, półprzezroczysty)
+  //-----------------------------------------------------------------------------
+  header_btn_ghost: css`
+    ${header_btn};
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--space-md);
+    background: rgb(var(--color-400-02) / .1);
+    border-radius: var(--border-radius-lg);
+    border: var(--border-03);
+    box-shadow: var(--shadow-03);
+     backdrop-filter: var(--blur-xs);
+  -webkit-backdrop-filter: var(--blur-xs);
+background-blend-mode: none;
+    &:hover {
+      background:  rgb(var(--color-400-06) / .1);
+      box-shadow: var(--shadow-03-hover);
+    }
+
+    &:active {
+      transform: scale(var(--scale-active-01));
+      box-shadow: var(--shadow-03);
+    }
+  `,
 }
 
 // -----------------------------------------------------------------------------

@@ -16,9 +16,8 @@ const ListWrapper = styled.div`
   width: 100%;
   height: 99%;
   padding: 2%; 
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  border-radius: var(--border-radius);
+  
+
   overflow-y: scroll;                        
   display: flex;
   flex-direction: column;

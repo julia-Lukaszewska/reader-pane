@@ -22,9 +22,9 @@ const TileBox = styled.div`
   width: var(--tile-size);
   aspect-ratio: 2 / 3;
   flex: none;
-  background: var(--bookCard-bg-inactive);
+  background: var(--bookCard-bg-inactive-02);
   backdrop-filter: blur(6px);
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-md);
   justify-content: space-between;
   box-shadow: var(--book-tile-shadow);
   padding: 4%;
@@ -57,7 +57,7 @@ const Close = styled.span`
   cursor: pointer;
 
   &:hover {
-    color: var(--color-accent);
+    color: var(--text-color-01);
   }
 `
 
@@ -71,8 +71,8 @@ const TitleWrapper = styled.div`
 `
 
 const Title = styled.h3`
-  font-size: 0.65em;
-  font-weight: 600;
+  font-size: var(--text-03);
+  font-weight: var(--weight-01);
   text-align: center;
  color: var(--text-color-01);
   -webkit-line-clamp: 2;

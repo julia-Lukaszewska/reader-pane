@@ -6,20 +6,21 @@ import { AddBookTile } from '@/modules/uploadPDF'
 // Styled components specific to table view
 const AddRow = styled.tr`
   td {
-    padding: 1rem 0;
+    padding:  0;
   }
 `
 
 const Td = styled.td`
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-color-01);
+  padding: var(--padding-04);
+  font-size: var(--text-01);
+  border-bottom: var(--border-03);
+  color: var(--text-01);
 `
 
 const EmptyRow = styled.tr`
   td {
     padding: 2rem;
-    color: var(--text-color-02);
+    color: var(--text-02);
     font-style: italic;
     text-align: center;
   }

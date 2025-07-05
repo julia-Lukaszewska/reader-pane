@@ -33,7 +33,7 @@ const AddTile = styled.div.withConfig({
     aspect-ratio: 2 / 3;
     background: var(--bookCard-bg-inactive);
     backdrop-filter: blur(6px);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-md);
     box-shadow: var(--glass-shadow);
     padding: 0.5rem;
   `}

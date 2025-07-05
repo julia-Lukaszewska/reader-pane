@@ -15,6 +15,8 @@ import CardButtons from './CardButtons'
 import RatingStars from '@/components/common/RatingStars'
 import ProgressBar from '@book/components/ProgressBar'
 import { selectIsManageMode } from '@/store/selectors'
+import Button from '@/components/common/Button'
+
 
 // -----------------------------------------------------------------------------
 // Component: ListItem
@@ -95,7 +97,10 @@ const ListItem = ({ book, onOpenPreview, onRemoveClick }) => {
 
         {!isManageMode && (
           <More>
-            <button onClick={onOpenPreview}>See more</button>
+            <Button $variant="header_btn_ghost" onClick={onOpenPreview}>
+              See more
+            </Button>
+
           </More>
         )}
       </Row>
@@ -131,9 +136,9 @@ const Row = styled.div`
   height: var(--row-height);
   font-size: var(--row-font-size);
   padding: 1.5% 2%;
-  background: var(--bookCard-bg-inactive);
+  background: var(--bookCard-bg-inactive-02);
   border-radius: 1em;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow-02);
   backdrop-filter: blur(6px);
   transition: transform 0.2s ease;
 
@@ -237,18 +242,18 @@ const Select = styled.div`
   display: flex;
   justify-content: end;
   align-items: start;
-  font-size: 1em;
+  
 
   button {
-    font-size: 1.2em;
-    color: var(--text-color-01);
-    background: none;
-    border: none;
+    
+   
+   
+    
     cursor: pointer;
     transition: color 0.2s ease, transform 0.15s ease;
 
     &:hover {
-      color: var(--color-accent);
+      
       transform: scale(1.15);
     }
   }
@@ -261,17 +266,13 @@ const More = styled.div`
   align-items: center;
 
   button {
-    font-size: 0.7em;
-    padding: 0.25em 0.6em;
-    border-radius: 0.4em;
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-accent);
-    border: none;
+
+
     cursor: pointer;
     transition: background 0.2s ease;
+    
 
-    &:hover {
-      background: rgba(255, 255, 255, 0.12);
-    }
+   
+    
   }
 `

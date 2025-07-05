@@ -33,21 +33,23 @@ const Table = styled.table`
 //--- Table header cell
 const Th = styled.th`
   text-align: left;
-  padding: 0.75rem;
-  border-bottom: 2px solid var(--border-color);
+  font-weight: var(--weight-01);
+  font-size: var(--text-01);
+  padding:var(--padding-02);
+  border-bottom:var(--border-02);
   color: var(--text-color-02);
   cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
 
   &:hover {
     color: ${({ sortable }) =>
-      sortable ? 'var(--color-accent)' : 'var(--text-secondary)'};
+      sortable ? 'rgb(var(--color-400-02)/.7)' : 'var(--text-02)'};
   }
 `
 
 //--- Table data cell
 const Td = styled.td`
   padding: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom:  var(--border-02);
   color: var(--text-color-01);
 `
 

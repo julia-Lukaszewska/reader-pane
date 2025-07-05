@@ -26,11 +26,11 @@ const StyledToolbar = styled.nav`
   align-items: center;
   height: 7vh;
   width: 100%;
-  padding: 2rem 3rem;
-  background: var(--gradient-metal-blue-light);
-  border-bottom: 1rem solid var(--color-metal-100);
+  padding: var(--padding-03);
+  background: rgb(var(--color-400-04) / .6);
+  border-bottom: var(--border-02);
   overflow: hidden;
-  box-shadow: var(--reader-toolbar-shadow);
+  box-shadow: var(--shadow-02);
 
 `
 

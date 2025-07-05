@@ -19,14 +19,15 @@ import { selectIsManageMode } from '@/store/selectors'
 
 const Row = styled.tr`
   &:nth-child(even) {
-    background: rgba(255, 255, 255, 0.05);
+    background:rgb(var(--color-400-03) / .3);
   }
 `
 
 const Td = styled.td`
   padding: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-color-01);
+  border-bottom: var(--border-02);
+  color: var(--text-01);
+  font-size: var(--text-01);
 `
 
 const IconTd = styled(Td)`

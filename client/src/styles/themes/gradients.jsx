@@ -43,6 +43,36 @@ export default (mode = 'light') => css`
            rgb(var(--color-400-09) / .02) 1px,
            rgb(var(--color-400-09) / .02) 2px
          );
+ // ---------------------------------------------------------------------------
+ //------ Book Card Inactive 
+ // ---------------------------------------------------------------------------
+  --bookCard-bg-inactive-02:
+         /* 1st layer ------------------------------------------ */
+         linear-gradient(
+           37deg,
+           rgb(var(--color-400-05) / .36) 20%,
+           rgb(var(--color-400-02) / .26) 45%,
+           rgb(var(--color-400-08) / .11) 70%,
+           rgb(var(--color-400-07) / .18) 100%
+         ),
+     
+         /* 2nd layer ------------------------------------------ */
+         linear-gradient(
+           125deg,
+           rgb(var(--color-400-03) / .15) 0%,
+           rgb(var(--color-400-08) / .27) 50%,
+           rgb(var(--color-400-02) / .08) 100%
+         ),
+    
+     
+         /* 4th layer – cross-hatch ---------------------------- */
+         repeating-linear-gradient(
+           -45deg,
+           rgb(var(--color-400-01) / .02) 0px,
+           rgb(var(--color-400-01) / .11) 20%,
+           rgb(var(--color-400-01) / .02) 1px,
+           rgb(var(--color-400-05) / .02) 2px
+         );
 
   // ---------------------------------------------------------------------------
   //------ HomeView background 

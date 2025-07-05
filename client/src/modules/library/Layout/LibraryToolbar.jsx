@@ -46,14 +46,15 @@ const TopRowWrapper = styled.div`
   width: 100vw;
   display: grid;
   font-size: var(--text-01);
-
+ border-bottom: var(--border-02);
   grid-template-areas: "LT CT RT";
   grid-template-columns: auto auto 1fr;
   align-items: center;
-  padding: var(--toolbar-padding-01);
-  background: var(--library-toolbar-bg-01); /* background for top row */
+  padding: var(--padding-01);
+ background: rgb(var(--color-400-04) / .6);
   backdrop-filter: var(--blur-lg);
   gap: var(--gap-toolbar);
+  box-shadow: var(--shadow-02);
 `
 
 const BottomRowWrapper = styled.div`
@@ -61,12 +62,13 @@ const BottomRowWrapper = styled.div`
   display: grid;
   height:auto;
   font-size: var(--text-01);
+  box-shadow: var(--shadow-02);
   grid-template-areas: "LB CB RB";
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
- padding: var(--toolbar-padding-01);
+ padding: var(--padding-01);
 justify-content: center;
-  background: var(--button-bg-02); /* background for bottom row */
+  background: rgb(var(--color-400-05) / .6);
   backdrop-filter: var(--blur-md);
   gap: var(--gap-toolbar);
   

@@ -20,7 +20,7 @@ const BooksGrid = styled.div`
   width: 100%;
   overflow-y: scroll;
   justify-content: start;
-  background: var(--glass-bg);
+  
   backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
 `

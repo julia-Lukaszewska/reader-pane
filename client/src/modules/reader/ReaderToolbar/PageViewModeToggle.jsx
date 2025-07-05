@@ -31,8 +31,8 @@ const IconBtn = styled.button.withConfig({
     $disabled
       ? 'var(--text-disabled)'
       : $active
-      ? 'var(--color-accent)'
-      : 'var(--text-muted)'};
+      ? 'var(--text-color-01)'
+      : 'var(--text-color-01-hover)'};
   transition: color 0.3s;
 
   &:hover {

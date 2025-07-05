@@ -18,6 +18,8 @@ ${shadows(mode)};
 --home-bg: var(--home-bg-gradient-01);
 --library-bg: var(--home-bg-gradient-01);
 --library-bg-01: var(--library-bg-gradient-01);
+
+
 --library-toolbar-bg-01: var(--library-toolbar-gradient-01);
 --modal-bg-01: var(--modal-gradient-01);
 --modal-bg-02:rgb(var(--color-400-10) / .2);
@@ -67,6 +69,7 @@ ${shadows(mode)};
 
 --text-01: var(--space-md);
 --text-02: var(--space-l);
+--text-03: var(--space-m);
 
 --switch-text: var(--text-01);
 --switch-size: calc(var(--switch-text) * 2.4);
