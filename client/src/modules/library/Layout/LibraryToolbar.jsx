@@ -48,9 +48,9 @@ const TopRowWrapper = styled.div`
   font-size: var(--text-01);
 
   grid-template-areas: "LT CT RT";
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto auto 1fr;
   align-items: center;
-  padding: var(--padding-03);
+  padding: var(--toolbar-padding-01);
   background: var(--library-toolbar-bg-01); /* background for top row */
   backdrop-filter: var(--blur-lg);
   gap: var(--gap-toolbar);
@@ -59,11 +59,13 @@ const TopRowWrapper = styled.div`
 const BottomRowWrapper = styled.div`
   width: 100vw;
   display: grid;
+  height:auto;
   font-size: var(--text-01);
   grid-template-areas: "LB CB RB";
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: var(--padding-02);
+ padding: var(--toolbar-padding-01);
+justify-content: center;
   background: var(--button-bg-02); /* background for bottom row */
   backdrop-filter: var(--blur-md);
   gap: var(--gap-toolbar);
@@ -72,12 +74,18 @@ const BottomRowWrapper = styled.div`
 
 const SectionTitle = styled.h2`
   grid-area: LT;
-  
+
  letter-spacing: var(--letter-spacing-md);
 font-size: var(--text-02);
 font-weight: var(--weight-01);
-  display: flex;
-flex-wrap: nowrap;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  
+  text-overflow: ellipsis;
+  padding: var(--space-sm);
+
+
 `
 
 const CenterTop = styled.div`
@@ -121,7 +129,7 @@ const SortWrapper = styled.div`
   grid-area: RT;
   display: flex;
   justify-content: flex-end;
-  display: flex;
+ 
 flex-wrap: nowrap;
   align-items: center;
 `
@@ -164,7 +172,10 @@ const ViewWrapper = styled.div`
   align-items: center;
   gap: var(--gap-toolbar);
 `
-
+const ToolbarWrapper = styled.div`
+width:100%;
+padding: var(--padding-06);
+`
 /* --------------------------------------------------------------------------- */
 /*  COMPONENT: LibraryToolbar                                                  */
 /* --------------------------------------------------------------------------- */
@@ -195,7 +206,7 @@ const LibraryToolbar = () => {
   const inLibrary = true
 
   return (
-    <>
+    <ToolbarWrapper>
       <TopRowWrapper>
         <SectionTitle>{section}</SectionTitle>
 
@@ -287,7 +298,7 @@ const LibraryToolbar = () => {
           </LibraryIconButton>
         </ViewWrapper>
       </BottomRowWrapper>
-    </>
+    </ ToolbarWrapper>
   )
 }
 

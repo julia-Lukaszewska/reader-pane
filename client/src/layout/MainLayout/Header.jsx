@@ -10,7 +10,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { toggleTheme, toggleSidebar, setAuthModalMode } from '@/store/slices/mainUiSlice'
 import { Switch } from '@/components'
 import { SlHome, SlMenu, SlUser } from 'react-icons/sl'
-import Button,{$variants} from '@/components/common/Button'
+import Button from '@/components/common/Button'
 import useLogout from '@/modules/user/hooks/useLogout'
 import { useAuth } from '@/modules/user/hooks'
 import useCurrentUser from '@/modules/user/hooks/useCurrentUser'
@@ -22,69 +22,75 @@ import logo from '@/assets/logo.svg'
 // -----------------------------------------------------------------------------
 
 const HeaderStyled = styled.header`
-  position: relative;
-  display: flex;
+  display: grid; 
+  width:100vw;
+   gap: var(--space-xxl);
+  grid-template-areas: "left center right";
+grid-template-columns: 1fr 1fr 1fr;
+
+
   align-items: center;
   background: var(--header-gradient-01);
-  grid-row: 1;
-  grid-column: 1 / 3;
- 
-  font-size: var(--text-01);
-  justify-content: space-between;
   padding: var(--padding-03);
   border-bottom: var(--border-01);
   z-index: var(--index-default);
 `
 
-const TitleWrapper = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
+const BtnGroup = styled.div`
+  grid-area: left;
   display: flex;
+  
+  align-items: center;
+  gap: var(--space-l);
+  flex-shrink: 0;
+`
+
+const TitleWrapper = styled.div`
+  grid-area: center;
+  display: flex;
+  padding:var(--padding-01);
   flex-direction: row;
+  justify-content: center;
   align-items: center;
   gap: var(--space-sm);
-  transform: translate(-50%, -50%);
+  flex-shrink: 0;
+`
+
+const RightGroup = styled.div`
+  grid-area: right;
+  display: flex;
+  font-size: var(--text-01);
+  align-items: center;
+  gap: var(--space-lg);
+  justify-content: end;
+  flex-shrink: 0;
 `
 
 const Title = styled.h1`
-  position: relative;
   font-size: var(--space-lg);
   font-weight: 300;
+  
   text-transform: uppercase;
-  letter-spacing:var(--space-xs);
+  letter-spacing: var(--space-xs);
   font-family: var(--font-family-01);
   color: var(--text-color-01);
-  /* text-shadow: var(--shadow-02); */
   filter: drop-shadow(var(--shadow-02));
- 
-`
-
-const UserInfo = styled.div`
-position: relative;
-  display: flex;
-  align-items: center;
-  font-size: var(--space-lg);
-  margin: var(--space-m);
-  gap: var(--space-md);
-  color: var(--text-color-01);
-  text-shadow: var(--shadow-02);
-`
-
-const BtnGroup = styled.div`
-position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
 `
 
 const LogoImg = styled.img`
   height: var(--space-lg);
-  margin-right: var(--space-xs);
   opacity: 1;
   filter: drop-shadow(var(--shadow-02));
 `
 
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: var(--text-02);
+  gap: var(--space-md);
+  color: var(--text-color-01);
+  text-shadow: var(--shadow-02);
+`
 
 // -----------------------------------------------------------------------------
 // Component: Header
@@ -115,15 +121,14 @@ const Header = () => {
   return (
     <HeaderStyled>
       <BtnGroup>  
-       
-          <Button
-            $variant="circle_icon_btn"
-            onClick={handleToggleSidebar}
-            ariaLabel="Open menu"
-          >
-            <SlMenu />
-          </Button>
-        
+        <Button
+          $variant="circle_icon_btn"
+          onClick={handleToggleSidebar}
+          ariaLabel="Open menu"
+        >
+          <SlMenu />
+        </Button>
+
         {!isHomeView && (
           <Button
             $variant="circle_icon_btn"
@@ -140,7 +145,7 @@ const Header = () => {
         <Title>Pane</Title>
       </TitleWrapper>
 
-      <BtnGroup>
+      <RightGroup>
         {!isLoggedIn ? (
           <Button
             $variant="header_btn"
@@ -160,7 +165,7 @@ const Header = () => {
           </>
         )}
         <Switch variant="theme" onClick={handleToggleTheme} />
-      </BtnGroup>
+      </RightGroup>
     </HeaderStyled>
   )
 }

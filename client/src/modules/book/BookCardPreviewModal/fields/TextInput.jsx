@@ -73,10 +73,10 @@ export function Textarea({ name, value, onChange }) {
 
 const StyledInput = styled.input`
   padding: 0.45em 0.7em;
-  border-radius: .5em;
-  background: rgba(255,255,255,0.14);
+  border-radius: var(--border-radius-md);
+  background: rgb( var(--color-400-03)/.3);
   color: var(--text-color-01);
-  border: 1.5px solid var(--color-blue-500);
+  border: var(--border-03);
   box-shadow: 0 1px 8px 0 rgba(80,140,230,0.08);
   transition: box-shadow .16s, border-color .16s, background .15s;
 
@@ -87,8 +87,8 @@ const StyledInput = styled.input`
 
   &:focus {
     box-shadow: 0 0 0 2px var(--see-02), 0 2px 12px 0 rgba(60,170,255,0.09);
-    border-color: var(--color-blue-400);
-    background: rgba(68,110,240,0.11);
+    border-color: rgb(var(--color-400-05) / .4);
+    background: rgb( var(--color-400-02)/.3);
     outline: none;
   }
 `

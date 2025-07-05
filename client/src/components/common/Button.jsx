@@ -7,6 +7,43 @@
 import styled, { css } from 'styled-components'
 
 // -----------------------------------------------------------------------------
+// Header button separate definition (zachowana nazwa)
+// -----------------------------------------------------------------------------
+
+const header_btn = css`
+  padding: var(--space-sm) var(--space-l);
+  color: var(--text-color-01);
+  font-size: var(--text-01);
+  font-weight: 300;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg-icon-default);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  background-blend-mode: overlay;
+  border: var(--border-02);
+  box-shadow: var(--shadow-01);
+  transition: var(--transition-medium);
+
+  &:hover {
+    transform: scale(var(--scale-hover-01));
+    box-shadow: var(--shadow-01-hover);
+    background: var(--shadow-icon-hover);
+  }
+
+  &:active {
+    transform: scale(var(--scale-active-01));
+    box-shadow: var(--shadow-01);
+    background: var(--button-bg-02-hover);
+  }
+`
+
+// -----------------------------------------------------------------------------
 // Button variants
 // -----------------------------------------------------------------------------
 
@@ -26,11 +63,10 @@ const $variants = {
     border-radius: var(--border-radius-lg);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-md);
-   
     transition: var(--transition-medium);
 
     &:hover {
-      box-shadow:var(--shadow-02-hover);
+      box-shadow: var(--shadow-02-hover);
       background: var(--sidebar-button-gradient-hoover);
     }
 
@@ -44,9 +80,7 @@ const $variants = {
   // Circle icon button
   //-----------------------------------------------------------------------------
   circle_icon_btn: css`
-    
-  
-    padding: var(--space-lg);
+    padding: var(--space-md);
     border-radius: var(--border-radius-full);
     background: var(--bg-icon-default);
     font-size: var(--text-01);
@@ -58,8 +92,13 @@ const $variants = {
     -webkit-backdrop-filter: var(--blur-md);
     background-blend-mode: overlay;
     border: var(--border-02);
-    box-shadow:var(--shadow-01);
+    box-shadow: var(--shadow-01);
     transition: var(--transition-medium);
+
+    svg {
+      width: var(--text-01);
+      height: var(--text-01);
+    }
 
     &:hover {
       transform: scale(var(--scale-hover-01));
@@ -69,49 +108,26 @@ const $variants = {
 
     &:active {
       transform: scale(var(--scale-active-01));
-       box-shadow: var(--shadow-01-hover);
+      box-shadow: var(--shadow-01-hover);
     }
   `,
-
-
 
   //-----------------------------------------------------------------------------
   // Header button
   //-----------------------------------------------------------------------------
-  header_btn: css`
-    
-    padding: var(--space-md) var(--space-lg);
-    color: var(--text-color-01);
-    font-size: var(--text-01);
-    font-weight: 300;
-    border-radius: var(--border-radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    background: var(--bg-icon-default);
-     backdrop-filter: var(--blur-md);
-    -webkit-backdrop-filter: var(--blur-md);
-    background-blend-mode: overlay;
-    border: var(--border-02);
-     box-shadow:var(--shadow-01);
-    transition: var(--transition-medium);
+  header_btn,
 
-   &:hover {
-      transform: scale(var(--scale-hover-01));
-      box-shadow: var(--shadow-01-hover);
-      background: var(--shadow-icon-hover);
-    }
-
-    &:active {
-      transform: scale(var(--scale-active-01));
-       box-shadow: var(--shadow-01-hover);
-    }
+  //-----------------------------------------------------------------------------
+  // Header button large
+  //-----------------------------------------------------------------------------
+  header_btn_large: css`
+    ${header_btn};
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--space-lg);
+    background: rgb(var(--color-400-09) / .2);
+    border-radius: var(--border-radius-lg);
+    border:var(--border-03);
   `,
-
-
 }
 
 // -----------------------------------------------------------------------------

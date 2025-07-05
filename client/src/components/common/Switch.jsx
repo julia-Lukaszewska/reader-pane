@@ -10,13 +10,14 @@ const Grid = styled.div`
   grid-template-columns: var(--switch-size) var(--switch-size);
   justify-content: center;
   align-items: center;
+  
   background: var(--bg-icon-default);
   border-radius: var(--border-radius-full);
   border: var(--border-02);
-  padding: var(--switch-padding);
+ 
   cursor: pointer;
   backdrop-filter: blur(6px);
-  gap: var(--switch-gap);
+ 
   position: relative;
 `
 
@@ -33,7 +34,8 @@ const Thumb = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
-  border: var(--border-04);
+  align-items:center;
+  border: var(--border-03);
   background: var(--text-color-03);
   border-radius: var(--border-radius-full);
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -42,7 +44,10 @@ const Thumb = styled.div`
 `
 
 const Icon = styled.div`
+display:flex;
   font-size: var(--switch-text);
+  align-self: center;
+  justify-self: center;
    color: ${({ $active }) => $active ? 'var(--switch-icon-color-active)' : 'var(--switch-icon-color-unactive)'};
   z-index: 2;
 `

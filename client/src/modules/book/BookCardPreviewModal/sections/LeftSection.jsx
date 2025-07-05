@@ -6,6 +6,7 @@
 import styled from 'styled-components'
 import CoverSection from './CoverSection'
 import RatingSection from './RatingSection'
+import Button from '@/components/common/Button'
 
 //-----------------------------------------------------------------------------
 // Styled components

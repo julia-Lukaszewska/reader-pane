@@ -38,7 +38,7 @@ const Wrapper = styled.div`
   gap: 0.4em;
   background: ${({ $editable }) =>
     $editable ? 'rgba(53, 80, 170, 0.07)' : 'transparent'};
-  border-radius: 0.7em;
+  border-radius: var(--border-radius-md);
   padding: 0.1em 0.8em;
   transition: background 0.17s;
 `
@@ -46,15 +46,15 @@ const Wrapper = styled.div`
 //--- Label text
 const Label = styled.div`
   font-size: var(--modal-md);
-  color: var(--color-blue-200);
+  color: rgb(var(--color-400-03) / .9);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  font-weight: 600;
+  font-weight: var(--weight-01);
 `
 
 //--- Field content
 const Content = styled.div`
   width: 100%;
   color: var(--text-color-01);
-  font-weight: 500;
+  font-weight: var(--weight-01);
 `

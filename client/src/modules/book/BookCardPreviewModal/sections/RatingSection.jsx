@@ -19,6 +19,7 @@ import { useUpdateBookRatingMutation} from '@/store/api/booksPrivateApi'
 import { selectBookById, selectPreviewBookId, selectBookModalForm } from '@/store/selectors'
 import { updateFlagField } from '@/store/slices/bookModalSlice'
 import {useOpenReader} from '@reader/hooks'
+import Button from '@/components/common/Button'
 
 // -----------------------------------------------------------------------------
 // Styled Components
@@ -38,7 +39,7 @@ const RatingGrid = styled.div`
   height: 100%;
 `
 
-const ReadButton = styled.button`
+const ReadButton = styled(Button)`
   grid-area: read;
   margin-top: 0.9em;
   padding: 0.7em 1.8em;
@@ -112,7 +113,10 @@ const openReader = useOpenReader(bookId)
 
   return (
     <RatingGrid>
-      <ReadButton onClick={openReader}>Read</ReadButton>
+     <Button $variant="header_btn_large" onClick={openReader}>
+  Read
+</Button>
+
 
       <Row>
         <RatingStars

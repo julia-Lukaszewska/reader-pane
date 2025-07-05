@@ -26,6 +26,7 @@ ${shadows(mode)};
 --button-bg-01-hover: var(--sidebar-bg-gradient);
 --button-bg-02: rgb(var(--color-400-05) / 0.7);
 --button-bg-02-hover:  rgb(var(--color-400-06) / 0.9);
+--button-bg-03:var(--sidebar-button-gradient);
 //------------------------------------------------------------------
 //--------ListItemLibrary
 //------------------------------------------------------------------
@@ -48,30 +49,30 @@ ${shadows(mode)};
   --space-xxl: 2.0em;   /* largest spacing */
   --space-3xl: 2.4em;   /* extra large */
 
- --switch-size: 1.8em;
-  --switch-text: calc(var(--switch-size) / 2);
-  --switch-gap: calc((var(--switch-size) - var(--switch-text)) / 2);
-  --switch-padding:calc(var(--switch-gap) / 2) calc(var(--switch-gap) / 2 );
-    --switch-icon-color-active: rgb(var(--color-500-02) / 1);
-  --switch-icon-color-unactive: rgb(var(--color-500-02) / 0.3);
-
---font-family-01: 'Poppins', sans-serif;
+  --toolbar-padding-01:var(--space-sm) var(--space-l);
+  --font-family-01: 'Poppins', sans-serif;
   --margin-01: var(--space-sm);
   --padding-01: var(--space-sm) var(--space-lg);
   --padding-02: var(--space-m) var(--space-md);
- --padding-03: var(--space-m) var(--space-3xl);
+  --padding-03: var(--space-m) var(--space-3xl);
  --padding-04: var(--space-sm) var(--space-l);
  --padding-05: var(--space-xxs) var(--space-md);
-  --border-01: var(--space-xxs) solid rgb(var(--color-500-02) / .7);
+ --padding-06:  var(--space-xs) 0;
+ --border-01: var(--space-xxs) solid rgb(var(--color-500-02) / .7);
   --border-02: var(--space-xxxs) solid rgb(var(--color-500-03) / .8);
   --border-03: var(--space-xxs) solid rgb(var(--color-500-01) / .6);
   --border-04: var(--space-xxs) solid rgb(var(--color-500-01) / .2);
---gap-toolbar: var(--space-xxs);
+--gap-toolbar: var(--space-sm);
 
 
-  --text-01: var(--space-md);
-  --text-02: var(--space-l);
-  
+--text-01: var(--space-md);
+--text-02: var(--space-l);
+
+--switch-text: var(--text-01);
+--switch-size: calc(var(--switch-text) * 2.4);
+
+   --switch-icon-color-active: rgb(var(--color-500-02) / 1);
+ --switch-icon-color-unactive: rgb(var(--color-500-02) / 0.3);
 
   --row-width: 83.333vw;
   --row-height: calc(var(--row-width) / 9);

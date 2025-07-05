@@ -18,6 +18,7 @@ import {
   resetForm,
 } from '@/store/slices/bookModalSlice'
 import { clearPreviewBook } from '@/store/slices/bookSlice'
+import Button from '@/components/common/Button'
 
 //-----------------------------------------------------------------------------
 // Styled components
@@ -28,36 +29,14 @@ const Footer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1.3em;
-  padding: 1.5em 2.5em;
-  background: var(--modal-bg-01);
+  gap: var(--space-lg);
+  
+  padding: var(--padding-01);
+  border-radius: var(--border-radius-xl);
+  /* background: var(--modal-bg-01); */
   border-top: 1.5px solid rgba(255,255,255,0.08);
   box-shadow: 0 4px 38px 0 rgba(60,100,220,0.10);
   backdrop-filter: blur(12px) saturate(115%);
-`
-
-const Button = styled.button`
-  padding: 0.5em 1.8em;
-  border: none;
-  background: ${({ $primary }) => $primary
-    ? 'var(--gradient-main-v6), linear-gradient(90deg,rgba(40,130,255,.32),rgba(100,190,255,.18))'
-    : 'rgba(255,255,255,0.07)'};
-  color: ${({ $primary }) => $primary ? 'var(--text-color-01)' : 'var(--text-color-02)'};
-  font-weight: 600;
-  box-shadow: ${({ $primary }) => $primary
-    ? '0 0 18px 1.5px rgba(34,124,255,0.14)'
-    : '0 0 6px 0 rgba(0,0,0,0.08)'};
-  transition: background .13s, box-shadow .15s, filter .14s;
-  cursor: pointer;
-  filter: blur(0) brightness(1.04);
-
-  &:hover {
-    background: ${({ $primary }) => $primary
-      ? 'var(--gradient-main-v5), rgba(80,180,255,0.24)'
-      : 'rgba(255,255,255,0.14)'};
-    box-shadow: 0 0 28px 2.2px rgba(44,114,255,0.23);
-    filter: brightness(1.09) saturate(1.08);
-  }
 `
 
 //-----------------------------------------------------------------------------
@@ -65,8 +44,8 @@ const Button = styled.button`
 //-----------------------------------------------------------------------------
 
 const FooterSection = () => {
-   const dispatch = useDispatch()
-   const [isSaving, setSaving] = useState(false)
+  const dispatch = useDispatch()
+  const [isSaving, setSaving] = useState(false)
   const isEditing = useSelector(selectIsEditingMain)
   const form = useSelector(selectBookModalForm)
   const previewBookId = useSelector(selectPreviewBookId)
@@ -81,53 +60,58 @@ const FooterSection = () => {
     dispatch(setForm(form)) // restores current snapshot
     dispatch(setEditingMain(false))
   }
-const handleSave = async () => {
-   if (!previewBookId || isSaving) return false
-  setSaving(true)
-  const updates = {
-    meta: {
-      ...form.meta,
-      updatedAt: new Date().toISOString(),
-    },
+
+  const handleSave = async () => {
+    if (!previewBookId || isSaving) return false
+    setSaving(true)
+    const updates = {
+      meta: {
+        ...form.meta,
+        updatedAt: new Date().toISOString(),
+      },
+    }
+
+    const success = await editBook(previewBookId, updates)
+    setSaving(false)
+    if (success) {
+      dispatch(setEditingMain(false))
+    }
+    return success
   }
 
-  const success = await editBook(previewBookId, updates)
-  setSaving(false)
-  if (success) {
-    dispatch(setEditingMain(false))
+  const handleClose = async () => {
+    if (isEditing) {
+      const ok = await handleSave()
+      if (!ok) return
+    }
+    dispatch(clearPreviewBook())
+    dispatch(resetForm())
   }
-  return success
-}
 
+return (
+  <Footer>
+    {isEditing ? (
+      <>
+        <Button $variant="header_btn_large" onClick={handleSave} disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Changes'}
+        </Button>
+        <Button $variant="header_btn_large" onClick={handleCancel}>
+          Cancel
+        </Button>
+      </>
+    ) : (
+      <>
+        <Button $variant="header_btn_large" onClick={handleEdit}>
+          Edit
+        </Button>
+        <Button $variant="header_btn_large" onClick={handleClose}>
+          Close
+        </Button>
+      </>
+    )}
+  </Footer>
+)
 
-
-
-const handleClose = async () => {
- if (isEditing) {
-    const ok = await handleSave()
-    if (!ok) return
-  }
-  dispatch(clearPreviewBook())
-  dispatch(resetForm())
-}
-
-  return (
-    <Footer>
-      {isEditing ? (
-        <>
-          <Button onClick={handleCancel}>Cancel</Button>
-             <Button $primary onClick={handleSave} disabled={isSaving}>
-            {isSaving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </>
-      ) : (
-        <>
-          <Button onClick={handleClose}>Close</Button>
-          <Button $primary onClick={handleEdit}>Edit</Button>
-        </>
-      )}
-    </Footer>
-  )
 }
 
 export default FooterSection
