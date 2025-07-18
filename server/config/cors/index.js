@@ -25,7 +25,7 @@ function normalizeEnv(env) {
   const alias = env.toLowerCase()
   if (alias === 'dev' || alias === 'development') return 'development'
   if (alias === 'stage' || alias === 'staging') return 'staging'
-  if (alias === 'prod' || alias === 'production' || alias === 'main') 
+  if (alias === 'prod' || alias === 'production' || alias === 'main'|| alias === 'build') 
     return 'production'
   return alias
 }
