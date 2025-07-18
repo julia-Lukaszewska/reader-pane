@@ -26,7 +26,8 @@
     "@eslint/js": "^9.28.0",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
-    "devcert": "^1.2.2"
+    "devcert": "^1.2.2",
+    "jsdoc": "^4.0.4"
   },
   "dependencies": {
     "express": "^5.1.0"
