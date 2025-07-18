@@ -55,11 +55,11 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 app.use(cookieParser())
 app.use(
   cors(
-    getCorsOptions(
-      BRANCH === 'main' ? 'production'
-      : BRANCH === 'staging' ? 'staging'
-      : 'development'
-    )
+     getCorsOptions(
+       ['main', 'build'].includes(BRANCH) ? 'production'
+       : BRANCH === 'staging' ? 'staging'
+       : 'development'
+     )
   )
 )
 app.use((req, res, next) => {
