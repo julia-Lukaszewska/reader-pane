@@ -1,49 +1,59 @@
 /**
  * @file useBackendReady.js
- * @description React hook that polls the backend health check endpoint
- *              and returns a boolean indicating whether the backend is ready.
+ * @description React hook that checks if the backend is ready to serve requests.
+ * Skips the check entirely on development branch. In other environments,
+ * it polls the `/health` endpoint every 2 seconds until the backend responds with `{ status: 'ok' }`.
  */
 
 import { useState, useEffect } from 'react'
 
 /**
- * Custom hook that continuously checks the backend `/health` endpoint
- * until it responds with `{ status: 'ok' }`.
- * Polling occurs every 2 seconds until the backend is available.
+ * Custom hook that monitors backend readiness by polling the `/health` endpoint.
+ * - If on `dev` branch, backend is assumed to be always ready (no polling).
+ * - Otherwise, polling continues every 2s until backend reports `{ status: 'ok' }`.
  *
  * @returns {boolean} `true` if backend is ready, `false` otherwise
  */
 export default function useBackendReady() {
-  const [ready, setReady] = useState(false)
+  const branch = import.meta.env.BRANCH
+
+  // In dev branch, we assume backend is already available
+  const [ready, setReady] = useState(branch === 'dev')
 
   useEffect(() => {
+    // Skip polling entirely in development
+    if (branch === 'dev') return
+
     let id
 
-    // Async function to poll the backend
+    // Async polling function
     const check = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/health`)
-        // Attempt to parse JSON response (fallback to empty object on failure)
+        // Normalize base URL (remove trailing /api if present)
+        const base = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '')
+        const res = await fetch(`${base}/health`)
+
+        // Try to parse JSON (fallback to empty object)
         const json = await res.json().catch(() => ({}))
 
-        // Check if backend responded OK and status is explicitly "ok"
+        // If backend responds with ok status, mark as ready
         if (res.ok && json.status === 'ok') {
           setReady(true)
           return
         }
       } catch {
-        // ignore fetch errors and continue polling
+        // Ignore errors and continue polling
       }
 
-      // Retry after 2 seconds if backend is not ready
+      // Retry after 2 seconds
       id = setTimeout(check, 2000)
     }
 
     check()
 
-    // Cleanup on unmount to avoid memory leaks
+    // Cleanup timeout on unmount or branch change
     return () => clearTimeout(id)
-  }, [])
+  }, [branch])
 
   return ready
 }
