@@ -93,7 +93,7 @@ const ModalGrid = styled.div`
   backdrop-filter: blur(12px) saturate(120%);
   box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.08);
 
- color: var(--text-color-01);
+  color: var(--text-color-01);
   font-size: var(--modal-font-size);
 `;
 
@@ -105,14 +105,17 @@ export default function BookCardPreviewModal() {
 
   // 1) Only render if previewBookId exists
   const previewBookId = useSelector(selectPreviewBookId)
-  if (!previewBookId) return null
 
   // 2) Fetch book data via RTK Query
-  const { data: book } = useGetBookByIdQuery(previewBookId)
+  const { data: book } = useGetBookByIdQuery(previewBookId, {
+    skip: !previewBookId,
+  })
   const form           = useSelector(selectBookModalForm)
   const isEditingMain  = useSelector(selectIsEditingMain)
   const isEditingNotes = useSelector(selectIsEditingNotes)
   const { editBook }   = useEditBook()
+
+  if (!previewBookId) return null
 
   // 3) Close modal (with optimistic save if editing)
   const closeModal = useCallback(async () => {
