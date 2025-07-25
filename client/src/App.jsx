@@ -7,6 +7,8 @@ import React from 'react'
 import styled from 'styled-components'
 import AppRoutes from '@/routes/AppRoutes'
 import AuthController from '@/controllers/AuthController'
+import { BackendWakeupOverlay } from '@/components'
+import { useBackendReady } from '@/hooks'
 
 
 
@@ -29,7 +31,9 @@ const StyledApp = styled.div`
  * Wraps the application with global styles and renders the main route component.
  */
 const App = () => {
+const ready = useBackendReady()
 
+  if (!ready) return <BackendWakeupOverlay />
   return (
     <>
     
