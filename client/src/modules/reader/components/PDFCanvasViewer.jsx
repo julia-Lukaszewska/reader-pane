@@ -10,9 +10,6 @@ import {
   selectRenderedPages,
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
-import {
-  selectTotalPages
-} from '@/store/selectors/readerSelectors'
 import { PAGE_HEIGHT } from '@reader/utils/pdfConstants'
 
 /* --- styled components ---------------------------------------------------- */
@@ -49,7 +46,7 @@ const fallbackRef = useRef(null)
 const wrapper = containerRef || fallbackRef
 
   const pageRefs = useRef({})
-
+console.log('visiblePages:', visiblePages)
   const scale = useSelector(selectStreamScale)
   const scaleKey = scale.toFixed(2)
   const renderedRaw = useSelector(selectRenderedPages)
@@ -89,15 +86,10 @@ const wrapper = containerRef || fallbackRef
 
   const placeholderW = PAGE_HEIGHT * scale * 0.75
   const placeholderH = PAGE_HEIGHT * scale
-    const firstPage = visiblePages[0] ?? 1
-  const lastPage = visiblePages[visiblePages.length - 1] ?? 0
-  const topPad = (firstPage - 1) * placeholderH
-  const bottomPad = (total - lastPage) * placeholderH
 
   return (
     <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
-         <div style={{ height: topPad }} />
         {visiblePages.map(page => (
           <Canvas
             key={page}
@@ -107,7 +99,6 @@ const wrapper = containerRef || fallbackRef
             data-page={page}
           />
         ))}
-         <div style={{ height: bottomPad }} />
       </PagesContainer>
     </ScrollWrapper>
   )
