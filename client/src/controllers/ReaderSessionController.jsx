@@ -57,7 +57,7 @@ export default function ReaderSessionController({ children, containerRef }) {
 
     const fallbackPivot = currentPage
     const pivot = visiblePages.length
-      ? (mode === 'scroll' ? Math.min(...visiblePages) : currentPage)
+      ? (mode === 'scroll' ? Math.max(...visiblePages) : currentPage)
       : fallbackPivot
 
     const range = getRangeAround(pivot, chunkSize)        // ← NEW
