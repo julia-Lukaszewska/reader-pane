@@ -50,7 +50,7 @@ const wrapper = containerRef || fallbackRef
 
   const pageRefs = useRef({})
 
-  const total = useSelector(selectTotalPages)
+  const scale = useSelector(selectStreamScale)
   const scaleKey = scale.toFixed(2)
   const renderedRaw = useSelector(selectRenderedPages)
 
