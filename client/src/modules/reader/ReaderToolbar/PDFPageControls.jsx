@@ -86,7 +86,7 @@ export default function PDFPageControls() {
   const viewMode = useSelector(selectPageViewMode) // 'single' | 'double'
 
     const [value, setValue] = useState(String(currentPage))
-
+const isScrollMode = viewMode === 'scroll'
   useEffect(() => {
     setValue(String(currentPage))
   }, [currentPage])
@@ -97,9 +97,10 @@ export default function PDFPageControls() {
    * @param {number} n - Target page number
   */
 const goTo = useCallback((n) => {
+  if (isScrollMode) return
   const page = Math.max(1, Math.min(totalPages, n))
   dispatch(setCurrentPage(page))
- }, [dispatch, totalPages])
+}, [dispatch, totalPages, isScrollMode])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -110,8 +111,8 @@ const goTo = useCallback((n) => {
     }
   }
 
-  const prevDisabled = currentPage - step < 1
-  const nextDisabled = currentPage + step > totalPages
+ const prevDisabled = isScrollMode || currentPage - step < 1
+const nextDisabled = isScrollMode || currentPage + step > totalPages
   
   // Show only when on reader route and book/page data is valid
   if (!loc.pathname.startsWith('/read') || !bookId || totalPages < 1) {
@@ -127,6 +128,7 @@ const goTo = useCallback((n) => {
         type='text'
         inputMode='numeric'
         value={value}
+         readOnly={isScrollMode}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
       />

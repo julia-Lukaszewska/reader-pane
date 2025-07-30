@@ -15,7 +15,7 @@ import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
 import { selectBookById }          from '@/store/selectors'
 import {
   selectCurrentPage,
-  selectTotalPages,
+
   selectPageViewMode,
 } from '@/store/selectors/readerSelectors'
 import { setCurrentRange, resetStreamState } from '@/store/slices/streamSlice'
@@ -49,31 +49,38 @@ export default function ReaderSessionController({ children, containerRef }) {
 
   /* --- update currentRange in Redux ------------------------------------- */
   const currentRange = useSelector(selectCurrentRange)
-  const visiblePages = useSelector(s => s.stream.visiblePages)
+ 
   const currentPage  = useSelector(selectCurrentPage)
-  const totalPages   = useSelector(selectTotalPages)
+
   const mode         = useSelector(selectPageViewMode)
 
   useEffect(() => {
     if (!ready) return
 
-    const fallbackPivot = currentPage
-    const pivot = visiblePages.length
-       ? (mode === 'scroll'
-          ? Math.min(totalPages, Math.max(...visiblePages) + 1)
-          : currentPage)
-      : fallbackPivot
+    if (mode === 'scroll') {
+      if (!currentRange) {
+        dispatch(setCurrentRange(getRangeAround(currentPage, chunkSize)))
+        return
+      }
 
-    const range = getRangeAround(pivot, chunkSize)        // ← NEW
-
-    if (
-      !currentRange ||
-      currentRange[0] !== range[0] ||
-      currentRange[1] !== range[1]
-    ) {
-      dispatch(setCurrentRange(range))
+      if (currentPage > currentRange[1]) {
+        const start = currentRange[0] + chunkSize
+        dispatch(setCurrentRange([start, start + chunkSize - 1]))
+      } else if (currentPage < currentRange[0]) {
+        const start = Math.max(1, currentRange[0] - chunkSize)
+        dispatch(setCurrentRange([start, start + chunkSize - 1]))
+      }
+    } else {
+      const range = getRangeAround(currentPage, chunkSize)
+      if (
+        !currentRange ||
+        currentRange[0] !== range[0] ||
+        currentRange[1] !== range[1]
+      ) {
+        dispatch(setCurrentRange(range))
+      }
     }
-  }, [ready, visiblePages, dispatch, mode, currentPage, totalPages, chunkSize])
+  }, [ready, mode, currentPage, currentRange, chunkSize, dispatch])
 
   /* --- trigger preloading of adjacent chunks ---------------------------- */
   usePreloadController()

@@ -27,7 +27,8 @@
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "devcert": "^1.2.2",
-    "jsdoc": "^4.0.4"
+    "jsdoc": "^4.0.4",
+    "jsdoc-to-markdown": "^9.1.2"
   },
   "dependencies": {
     "express": "^5.1.0"
