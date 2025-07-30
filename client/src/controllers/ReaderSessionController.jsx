@@ -15,6 +15,7 @@ import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
 import { selectBookById }          from '@/store/selectors'
 import {
   selectCurrentPage,
+  selectTotalPages,
   selectPageViewMode,
 } from '@/store/selectors/readerSelectors'
 import { setCurrentRange, resetStreamState } from '@/store/slices/streamSlice'
@@ -50,6 +51,7 @@ export default function ReaderSessionController({ children, containerRef }) {
   const currentRange = useSelector(selectCurrentRange)
   const visiblePages = useSelector(s => s.stream.visiblePages)
   const currentPage  = useSelector(selectCurrentPage)
+  const totalPages   = useSelector(selectTotalPages)
   const mode         = useSelector(selectPageViewMode)
 
   useEffect(() => {
@@ -57,7 +59,9 @@ export default function ReaderSessionController({ children, containerRef }) {
 
     const fallbackPivot = currentPage
     const pivot = visiblePages.length
-      ? (mode === 'scroll' ? Math.max(...visiblePages) : currentPage)
+       ? (mode === 'scroll'
+          ? Math.min(totalPages, Math.max(...visiblePages) + 1)
+          : currentPage)
       : fallbackPivot
 
     const range = getRangeAround(pivot, chunkSize)        // ← NEW
@@ -69,7 +73,7 @@ export default function ReaderSessionController({ children, containerRef }) {
     ) {
       dispatch(setCurrentRange(range))
     }
-  }, [ready, visiblePages, currentRange, dispatch, mode, currentPage, chunkSize])
+  }, [ready, visiblePages, dispatch, mode, currentPage, totalPages, chunkSize])
 
   /* --- trigger preloading of adjacent chunks ---------------------------- */
   usePreloadController()
