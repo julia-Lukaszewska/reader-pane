@@ -10,7 +10,7 @@ import useStartingPage      from '@/modules/reader/hooks/useStartingPage'
 import usePreloadController from '@/modules/reader/hooks/usePreloadController'
 import useVisiblePages      from '@/modules/reader/hooks/useVisiblePages'
 import useSaveProgress      from '@/modules/reader/hooks/useSaveProgress'
-
+import useScrollCurrentPage from '@/modules/reader/hooks/useScrollCurrentPage'
 import { selectCurrentRange }      from '@/store/selectors/streamSelectors'
 import { selectBookById }          from '@/store/selectors'
 import {
@@ -44,6 +44,7 @@ export default function ReaderSessionController({ children, containerRef }) {
 
   /* --- track visible pages (scroll / resize) ---------------------------- */
   useVisiblePages(containerRef, PAGE_HEIGHT)
+  useScrollCurrentPage(containerRef, PAGE_HEIGHT)
   useSaveProgress()
 
 

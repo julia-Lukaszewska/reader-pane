@@ -26,32 +26,30 @@ const generatePageArray = (start, end) => {
 
 export default function useVisiblePages(containerRef, pageHeight) {
   const dispatch = useDispatch()
-    const mode = useSelector(selectPageViewMode)
+  const mode = useSelector(selectPageViewMode)
   const scale = useSelector(selectStreamScale)
   const curPage = useSelector(selectCurrentPage)
   const total = useSelector(selectTotalPages)
-  const range = useSelector(selectCurrentRange)
 
   const prev = useRef([])
-   const initializedRef = useRef(false)
-  const updateVisiblePages = useCallback(() => {
-      const el = containerRef.current
-    if (!el) return
 
-    const { before, after } = RENDER_OFFSETS[mode]
+  const updateVisiblePages = useCallback(() => {
+    const el = containerRef.current
+    if (!el || !pageHeight || pageHeight === 0) return
+
     let start, end
 
-   if (mode === 'scroll') {
-   const active = range || [curPage, curPage]
-      start = Math.max(1, active[0] - before)
-      end = Math.min(total, active[1] + after)
+    if (mode === 'scroll') {
+   
+      return
     } else {
+      // single / double mode
+      const { before, after } = RENDER_OFFSETS[mode]
       const step = mode === 'double' ? 2 : 1
       const last = Math.min(total, curPage + (step - 1))
 
       start = Math.max(1, curPage - before)
       end = Math.min(total, last + after)
-
     }
 
     const list = generatePageArray(start, end)
@@ -64,9 +62,11 @@ export default function useVisiblePages(containerRef, pageHeight) {
 
     prev.current = list
     dispatch(setVisiblePages(list))
-  }, [containerRef, pageHeight, mode, scale, curPage, total, range, dispatch])
+  }, [containerRef, pageHeight, mode, scale, curPage, total, dispatch])
 
   useEffect(() => {
+    if (mode === 'scroll') return 
+
     updateVisiblePages()
-  }, [updateVisiblePages])
+  }, [mode, updateVisiblePages])
 }

@@ -1,9 +1,9 @@
-//-----------------------------------------------------------------------------
-// PDFCanvasViewer – full optimized version
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------- 
+// PDFCanvasViewer.jsx – full optimized version with integrated hooks
+//----------------------------------------------------------------------------- 
 import React, { useRef, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { BitmapCache } from '@reader/utils/bitmapCache'
 import {
@@ -11,6 +11,10 @@ import {
   selectStreamScale,
 } from '@/store/selectors/streamSelectors'
 import { PAGE_HEIGHT } from '@reader/utils/pdfConstants'
+import { selectPageViewMode } from '@/store/selectors/readerSelectors'
+import useVisiblePages from '@reader/hooks/useVisiblePages'
+import useUpdateCurrentRange from '@reader/hooks/useUpdateCurrentRange'
+import { setCurrentPage } from '@/store/slices/readerSlice'
 
 /* --- styled components ---------------------------------------------------- */
 const ScrollWrapper = styled.div`
@@ -37,21 +41,32 @@ const Canvas = styled.canvas`
 
 /* --- component ------------------------------------------------------------ */
 export default function PDFCanvasViewer({
-  containerRef,
-  visiblePages,
+  pageHeight = PAGE_HEIGHT,
   sidebarOpen = false,
   direction = 'row',
 }) {
-const fallbackRef = useRef(null)
-const wrapper = containerRef || fallbackRef
+  const fallbackRef = useRef(null)
+  const containerRef = fallbackRef
+  const dispatch = useDispatch()
 
   const pageRefs = useRef({})
-console.log('visiblePages:', visiblePages)
+  const mode = useSelector(selectPageViewMode)
+
+  // Hook integration for visible pages and range tracking
+  const currentRange = useUpdateCurrentRange(containerRef, pageHeight)
+  const visiblePages = useVisiblePages(containerRef, pageHeight)
+
+  // Update current page dynamically to match page in view in scroll mode
+  useEffect(() => {
+    if (mode === 'scroll' && visiblePages?.length > 0) {
+      dispatch(setCurrentPage(visiblePages[0]))
+    }
+  }, [mode, visiblePages, dispatch])
+
   const scale = useSelector(selectStreamScale)
   const scaleKey = scale.toFixed(2)
   const renderedRaw = useSelector(selectRenderedPages)
 
-  // Memoized rendered cache
   const rendered = useMemo(() => renderedRaw[scaleKey] ?? {}, [renderedRaw, scaleKey])
 
   // Draw logic using requestAnimationFrame
@@ -74,31 +89,34 @@ console.log('visiblePages:', visiblePages)
         ctx.fillStyle = '#aaa'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillText('Ładowanie...', canvas.width / 2, canvas.height / 2)
+        ctx.fillText('Loading...', canvas.width / 2, canvas.height / 2)
       }
     }
 
     const raf = requestAnimationFrame(() => {
-      visiblePages.forEach(drawPage)
+      Object.keys(pageRefs.current).forEach((key) => drawPage(Number(key)))
     })
     return () => cancelAnimationFrame(raf)
-  }, [visiblePages, rendered])
+  }, [rendered])
 
   const placeholderW = PAGE_HEIGHT * scale * 0.75
   const placeholderH = PAGE_HEIGHT * scale
 
   return (
-    <ScrollWrapper ref={wrapper} $sidebar={sidebarOpen}>
+    <ScrollWrapper ref={containerRef} $sidebar={sidebarOpen}>
       <PagesContainer $dir={direction}>
-        {visiblePages.map(page => (
-          <Canvas
-            key={page}
-            ref={el => (pageRefs.current[page] = el)}
-            width={placeholderW}
-            height={placeholderH}
-            data-page={page}
-          />
-        ))}
+        {Object.keys(rendered).map((pageKey) => {
+          const page = Number(pageKey)
+          return (
+            <Canvas
+              key={page}
+              ref={(el) => (pageRefs.current[page] = el)}
+              width={placeholderW}
+              height={placeholderH}
+              data-page={page}
+            />
+          )
+        })}
       </PagesContainer>
     </ScrollWrapper>
   )

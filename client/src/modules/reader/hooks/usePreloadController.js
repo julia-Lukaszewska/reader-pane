@@ -8,8 +8,10 @@ import {
   selectVisiblePages,
   selectPreloadedRanges,
   selectStreamScale,
+  selectCurrentRange,
+
 } from '@/store/selectors/streamSelectors'
-import { selectBookId }      from '@/store/selectors/readerSelectors'
+import { selectBookId, selectPageViewMode }      from '@/store/selectors/readerSelectors'
 import { selectBookById }    from '@/store/selectors'
 import { useGetBookRangesQuery } from '@/store/api/booksPrivateApi'  
 import { CHUNK_SIZE }        from '@reader/utils/pdfConstants'
@@ -17,7 +19,9 @@ import useRangeStreamer      from './useRangeStreamer'
 
 export default function usePreloadController() {
   /* --- basic slice data -------------------------------------------------- */
-  const visible   = useSelector(selectVisiblePages)
+ const visible = useSelector(selectPageViewMode) === 'scroll'
+  ? useSelector(selectCurrentRange)
+  : useSelector(selectVisiblePages)
   const scale     = useSelector(selectStreamScale)
   const rangesObj = useSelector(selectPreloadedRanges) || {}
   const preloaded = rangesObj[scale.toFixed(2)] ?? []
@@ -32,7 +36,7 @@ const { isFetching: rangesLoading } = useGetBookRangesQuery(bookId, { skip: !boo
   const queuedRef   = useRef(new Set())
 
   /* --- reset queue on scale change -------------------------------------- */
-  useEffect(() => queuedRef.current.clear(), [scale, chunkSize])
+  useEffect(() => queuedRef.current.clear(), [scale, chunkSize, bookId])
 
   /* --- schedule preloads ------------------------------------------------- */
   useEffect(() => {
@@ -68,5 +72,5 @@ const { isFetching: rangesLoading } = useGetBookRangesQuery(bookId, { skip: !boo
         streamRange([start, start + chunkSize - 1])
         console.debug('[Preload] scheduled', key)
       })
-  }, [visible, preloaded, scale, chunkSize, streamRange])
+  }, [visible, preloaded, scale, chunkSize, streamRange,  rangesLoading])
 }
